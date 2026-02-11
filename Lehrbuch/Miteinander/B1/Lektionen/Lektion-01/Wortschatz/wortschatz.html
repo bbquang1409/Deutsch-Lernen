@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lektion 01 – Wortschatz</title>
+  <title>Lektion XX – Wortschatz</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -18,166 +18,105 @@
       text-align: center;
       margin-bottom: 30px;
     }
-    h2 {
-      color: #2563eb;
-      border-bottom: 2px solid #bfdbfe;
-      padding-bottom: 8px;
-      margin-top: 50px;
+    .word-list {
+      max-width: 900px;
+      margin: 0 auto;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
+    .word-item {
       background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 12px;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
+    .word-item:hover {
       background: #eff6ff;
+      transform: translateX(6px);
+    }
+    .word-header {
+      font-size: 1.35em;
+      font-weight: bold;
       color: #1e40af;
-      font-weight: bold;
     }
-    tr:hover {
-      background: #f1f5f9;
-    }
-    .bullet {
-      color: #3b82f6;
-      font-weight: bold;
+    .meaning {
+      color: #2563eb;
+      font-size: 1.1em;
+      margin: 6px 0;
     }
     .example {
       color: #4b5563;
       font-style: italic;
+      margin-top: 8px;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 520px;
+      z-index: 1000;
+      width: 90%;
+    }
+    .popup h3 {
+      margin: 0 0 15px;
+      color: #1e40af;
+    }
+    .close-btn {
+      float: right;
+      font-size: 2em;
+      cursor: pointer;
+      color: #999;
     }
   </style>
 </head>
 <body>
 
-  <h1>Lektion 01 – Wortschatz</h1>
+  <h1>Lektion XX – Wortschatz</h1>
+  <div class="word-list" id="wordList">Đang tải từ vựng...</div>
 
-  <!-- Start / Willkommen -->
-  <h2>Start – Willkommen!</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">die Türkei</span> (Sg.)</td><td>Thổ Nhĩ Kỳ</td><td>Meine Frau und ich kommen aus der Türkei.</td></tr>
-    <tr><td><span class="bullet">das Gebäck</span> (hier: nur Sg.)</td><td>bánh ngọt, bánh quy</td><td>Ich liebe Baklava! Mein absolutes Lieblingsgebäck!</td></tr>
-    <tr><td><span class="bullet">die Runde, -n</span></td><td>vòng tròn, nhóm bạn</td><td>Ein Bier in geselliger Runde!</td></tr>
-    <tr><td><span class="bullet">der Integrationskurs, -e</span></td><td>khóa học hòa nhập</td><td>Präsentieren Sie eine Gruppe, z.B. den Integrationskurs.</td></tr>
-  </table>
+  <!-- Popup chi tiết khi click vào từ -->
+  <div class="popup" id="popup">
+    <span class="close-btn" onclick="closePopup()">×</span>
+    <h3 id="popup-word"></h3>
+    <p><strong>Nghĩa:</strong> <span id="popup-meaning"></span></p>
+    <p><strong>Loại từ / Số nhiều:</strong> <span id="popup-type"></span></p>
+    <p><strong>Perfekt (sein/haben):</strong> <span id="popup-perfekt"></span></p>
+    <p><strong>Ví dụ (tiếng Đức):</strong> <span id="popup-example-de"></span></p>
+    <p><strong>Dịch ví dụ (tiếng Việt):</strong> <span id="popup-example-vi"></span></p>
+  </div>
 
-  <!-- A1 -->
-  <h2>A1</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">städtisch</span></td><td>thuộc thành phố</td><td>Nach meiner Ausbildung zur Krankenpflegerin habe ich im städtischen Krankenhaus Neuberg drei Jahre als Krankenpflegerin gearbeitet.</td></tr>
-    <tr><td><span class="bullet">die Herausforderung, -en</span></td><td>thách thức</td><td>Jetzt suche ich eine neue berufliche Herausforderung.</td></tr>
-    <tr><td><span class="bullet">die Fremdsprache, -n</span></td><td>ngoại ngữ</td><td>Fremdsprachen: Englisch und Deutsch fließend.</td></tr>
-    <tr><td><span class="bullet">fließend</span></td><td>thành thạo</td><td>—</td></tr>
-  </table>
+  <script>
+    // Tự động load file wortschatz-data.html trong cùng folder
+    fetch('wortschatz-data.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('wordList').innerHTML = html;
+      })
+      .catch(() => {
+        document.getElementById('wordList').innerHTML = '<p style="color:red; text-align:center;">Chưa có dữ liệu từ vựng cho Lektion này.</p>';
+      });
 
-  <!-- A2 -->
-  <h2>A2</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">der Zufall, -e</span></td><td>sự tình cờ</td><td>So ein Zufall!</td></tr>
-    <tr><td><span class="bullet">die Software, -s</span></td><td>phần mềm</td><td>Ich bin immer noch Software für Systemintegration installieren, Kunden beraten...</td></tr>
-  </table>
+    function showDetail(word, meaning, type, perfekt, exampleDe, exampleVi) {
+      document.getElementById('popup-word').textContent = word;
+      document.getElementById('popup-meaning').textContent = meaning;
+      document.getElementById('popup-type').textContent = type;
+      document.getElementById('popup-perfekt').textContent = perfekt;
+      document.getElementById('popup-example-de').textContent = exampleDe;
+      document.getElementById('popup-example-vi').textContent = exampleVi;
+      document.getElementById('popup').style.display = 'block';
+    }
 
-  <!-- A3 -->
-  <h2>A3</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">gratulieren</span> (hat gratuliert)</td><td>chúc mừng</td><td>Ich gratuliere!</td></tr>
-    <tr><td><span class="bullet">Klasse</span></td><td>tuyệt vời</td><td>Klasse Glückwunsch!</td></tr>
-    <tr><td><span class="bullet">nützlich</span></td><td>hữu ích</td><td>Sprachen sind nützlich für ihn.</td></tr>
-  </table>
-
-  <!-- A4 -->
-  <h2>A4</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">die Möglichkeit, -en</span></td><td>cơ hội, khả năng</td><td>Die Informationsveranstaltung zu Möglichkeiten der Weiterbildung war spannend!</td></tr>
-    <tr><td><span class="bullet">die Weiterbildung, -en</span></td><td>đào tạo nâng cao</td><td>Weiterbildung zum Industriemeister Elektrotechnik.</td></tr>
-    <tr><td><span class="bullet">die Industrie, -n</span></td><td>công nghiệp</td><td>—</td></tr>
-    <tr><td><span class="bullet">der Meister, -</span></td><td>thợ bậc thầy</td><td>—</td></tr>
-    <tr><td><span class="bullet">die Meisterin, -nen</span></td><td>nữ thợ bậc thầy</td><td>—</td></tr>
-    <tr><td><span class="bullet">finanziell</span></td><td>tài chính</td><td>Finanzielle Förderung möglich.</td></tr>
-    <tr><td><span class="bullet">die Förderung, -en</span></td><td>hỗ trợ, tài trợ</td><td>—</td></tr>
-    <tr><td><span class="bullet">das Klima, -ta</span></td><td>khí hậu</td><td>Gar gut fürs Klima...</td></tr>
-  </table>
-
-  <!-- B1–B4 -->
-  <h2>B1 – B4</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">überhaupt</span></td><td>hoàn toàn, nói chung</td><td>Willst du die Uhr denn überhaupt als Fitnessuhr nutzen?</td></tr>
-    <tr><td><span class="bullet">übrigens</span></td><td>nhân tiện</td><td>Ich hab übrigens gerade an dich gedacht.</td></tr>
-    <tr><td><span class="bullet">überprüfen</span> (hat überprüft)</td><td>kiểm tra</td><td>Die Uhr überprüft alle Daten.</td></tr>
-    <tr><td><span class="bullet">die Diät, -en</span></td><td>chế độ ăn kiêng</td><td>Die Uhr checkt deine Diät.</td></tr>
-    <tr><td><span class="bullet">faul</span></td><td>lười biếng</td><td>Trotzdem empfehle ich dir einen faulen Tag.</td></tr>
-    <tr><td><span class="bullet">obwohl</span></td><td>mặc dù</td><td>Obwohl die Uhr das gar nicht mag, mache ich mir einen faulen Tag.</td></tr>
-    <tr><td><span class="bullet">die Erholung (Sg.)</span></td><td>sự nghỉ ngơi</td><td>Von Erholung keine Spur.</td></tr>
-    <tr><td><span class="bullet">die Spur, -en</span></td><td>dấu vết</td><td>—</td></tr>
-    <tr><td><span class="bullet">nämlich</span></td><td>cụ thể là</td><td>Mir geht es nämlich gar nicht schlecht.</td></tr>
-    <tr><td><span class="bullet">schweigen</span> (hat geschwiegen)</td><td>im lặng</td><td>Und weil die Uhr nicht schweigen kann, ziehe ich sie einfach nicht mehr an.</td></tr>
-    <tr><td><span class="bullet">die Reaktion, -en</span></td><td>phản ứng</td><td>Wie finden Sie die Reaktion der Frau am Ende des Lieds?</td></tr>
-    <tr><td><span class="bullet">die Gewohnheit, -en</span></td><td>thói quen</td><td>Ich wollte einige Gewohnheiten verändern und die Fitnessuhr hilft mir dabei.</td></tr>
-    <tr><td><span class="bullet">ständig</span></td><td>liên tục</td><td>Und dann habe ich ständig alles gecheckt: Blutdruck, Puls, Schritte...</td></tr>
-    <tr><td><span class="bullet">der Blutdruck (Sg.)</span></td><td>huyết áp</td><td>—</td></tr>
-    <tr><td><span class="bullet">das Blut (Sg.)</span></td><td>máu</td><td>—</td></tr>
-    <tr><td><span class="bullet">der Druck (Sg.)</span></td><td>áp lực</td><td>—</td></tr>
-    <tr><td><span class="bullet">der Puls (Sg.)</span></td><td>mạch</td><td>—</td></tr>
-    <tr><td><span class="bullet">verbrauchen</span> (hat verbraucht)</td><td>tiêu thụ</td><td>Die Dinger verbrauchen ganz schön viel Strom.</td></tr>
-    <tr><td><span class="bullet">halt</span></td><td>thì thôi</td><td>Aber praktisch ist halt: Man kann seine sportlichen Leistungen gut teilen und vergleichen.</td></tr>
-    <tr><td><span class="bullet">die Leistung, -en</span></td><td>thành tích, hiệu suất</td><td>—</td></tr>
-    <tr><td><span class="bullet">die Rolle, -n</span></td><td>vai trò</td><td>Wählen Sie eine Rolle, dass...</td></tr>
-    <tr><td><span class="bullet">die Gefahr, -en</span></td><td>nguy hiểm</td><td>—</td></tr>
-    <tr><td><span class="bullet">beachten</span> (hat beachtet)</td><td>chú ý</td><td>Obwohl eine Fitnessuhr motiviert, muss man beachten, dass...</td></tr>
-    <tr><td><span class="bullet">die Teilnahme, -n</span></td><td>sự tham gia</td><td>Teilnahme am Gesundheits-Check-up.</td></tr>
-    <tr><td><span class="bullet">die Vorsorge (Sg.)</span></td><td>sự phòng ngừa</td><td>Man muss alle drei Jahre Vorsorgeuntersuchungen machen lassen.</td></tr>
-    <tr><td><span class="bullet">regelmäßig</span></td><td>thường xuyên</td><td>—</td></tr>
-    <tr><td><span class="bullet">die Impfung, -en</span></td><td>tiêm chủng</td><td>Impfungen sind Teil des Bonusprogramms.</td></tr>
-  </table>
-
-  <!-- C1 -->
-  <h2>C1</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">die Mitgliedschaft, -en</span></td><td>tư cách thành viên</td><td>Mitgliedschaft im Sportverein.</td></tr>
-    <tr><td><span class="bullet">der Raucher, -</span></td><td>người hút thuốc</td><td>Als Nichtraucher/in sammelt man auch Bonuswerte.</td></tr>
-    <tr><td><span class="bullet">die Raucherin, -nen</span></td><td>nữ người hút thuốc</td><td>—</td></tr>
-    <tr><td><span class="bullet">wertvoll</span></td><td>giá trị</td><td>—</td></tr>
-    <tr><td><span class="bullet">(sich) testen</span> (hat [sich] getestet)</td><td>tự kiểm tra</td><td>Testen Sie sich selbst: Sind Sie ein Gewohnheitstier?</td></tr>
-    <tr><td><span class="bullet">das Interview, -s</span></td><td>cuộc phỏng vấn</td><td>Ich habe gestern ein interessantes Interview zum Thema Fitnessuhren gehört.</td></tr>
-    <tr><td><span class="bullet">das Mitglied, -er</span></td><td>thành viên</td><td>Außerdem sammelt man Bonuswerte, wenn man Mitglied in einem Sportverein ist.</td></tr>
-    <tr><td><span class="bullet">besonders-</span></td><td>đặc biệt</td><td>Die Krankenkasse hat ein besonderes Angebot.</td></tr>
-    <tr><td><span class="bullet">teilnehmen</span> (hat teilgenommen)</td><td>tham gia</td><td>Dafür muss man alle drei Jahre an einem Gesundheits-Check-up teilnehmen.</td></tr>
-    <tr><td><span class="bullet">Sport treiben</span> (hat Sport getrieben)</td><td>chơi thể thao</td><td>Ich treibe ja auch schon Sport.</td></tr>
-    <tr><td><span class="bullet">sinnvoll</span></td><td>có ý nghĩa</td><td>Ich finde sinnvoll, dass man regelmäßig zum Zahnarzt geht.</td></tr>
-    <tr><td><span class="bullet">seltsam</span></td><td>lạ lùng</td><td>Ich finde seltsam, dass man seine Fitness-Daten teilt.</td></tr>
-    <tr><td><span class="bullet">negativ</span></td><td>tiêu cực</td><td>Etwas negativ bewerten.</td></tr>
-  </table>
-
-  <!-- C2–C3 -->
-  <h2>C2 – C3</h2>
-  <table>
-    <tr><th>Wort / Ausdruck</th><th>Bedeutung / Ergänzung</th><th>Beispielsatz</th></tr>
-    <tr><td><span class="bullet">der Tagesablauf (hier: nur Sg.)</span></td><td>lịch trình trong ngày</td><td>Sie haben meistens denselben Tagesablauf?</td></tr>
-    <tr><td><span class="bullet">angenehm</span></td><td>thư giãn</td><td>Das ist manchmal ganz angenehm.</td></tr>
-    <tr><td><span class="bullet">die Eile (Sg.)</span></td><td>sự vội vã</td><td>Manchmal bin ich zu sehr in Eile.</td></tr>
-    <tr><td><span class="bullet">die Eile (Sg.)</span></td><td>sự vội vã</td><td>Sie haben seit Ihrer Kindheit dasselbe Hobby?</td></tr>
-    <tr><td><span class="bullet">treu</span></td><td>trung thành</td><td>Sicher, ich bin treu.</td></tr>
-    <tr><td><span class="bullet">sich wohl fühlen</span> (hat sich wohl gefühlt)</td><td>cảm thấy khỏe</td><td>Ja, damit fühle ich mich wohl!</td></tr>
-    <tr><td><span class="bullet">zuverlässig</span></td><td>đáng tin cậy</td><td>Unsere Fitnessuhr prüft zuverlässig, ob Sie genug schlafen.</td></tr>
-    <tr><td><span class="bullet">das Abenteuer, -</span></td><td>cuộc phiêu lưu</td><td>Ich brauche keine Abenteuer.</td></tr>
-    <tr><td><span class="bullet">maximal</span></td><td>tối đa</td><td>Maximal ein paar Jahre hintereinander.</td></tr>
-    <tr><td><span class="bullet">ankreuzen</span> (hat angekreuzt)</td><td>đánh dấu</td><td>Was hast du wie oft angekreuzt?</td></tr>
-    <tr><td><span class="bullet">fest</span></td><td>cố định</td><td>Aber Sie haben auch gern ein paar feste Gewohnheiten.</td></tr>
-    <tr><td><span class="bullet">derselbe / dieselbe / dasselbe</span></td><td>cùng một</td><td>Ich benutze schon lange dieselbe Kaffeemaschine.</td></tr>
-  </table>
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+  </script>
 
 </body>
 </html>
