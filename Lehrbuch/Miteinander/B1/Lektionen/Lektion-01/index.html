@@ -13,6 +13,7 @@
       color: #333;
       text-align: center;
       padding: 20px;
+      position: relative;
     }
     h1 { color: #1e40af; margin-bottom: 10px; }
     .zurueck {
@@ -53,33 +54,73 @@
       min-height: 500px;
       text-align: left;
     }
+    /* Nút U ẩn ở góc phải dưới */
+    #unlock-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: #1e40af;
+      color: white;
+      font-size: 1.8em;
+      font-weight: bold;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 999;
+      transition: all 0.3s;
+    }
+    #unlock-btn:hover {
+      background: #3b82f6;
+      transform: scale(1.1);
+    }
+    /* Hộp nhập pass ẩn */
+    #pass-dialog {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    #pass-input {
+      width: 100%;
+      padding: 10px;
+      margin: 15px 0;
+      font-size: 1.2em;
+    }
+    #submit-pass, #cancel-pass {
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
   <h1>Lektion 01</h1>
-  <a href="../../Lektionen/index.html" class="zurueck">← Zurück zu den Lektionen</a>
+  <a href="../Lektionen/index.html" class="zurueck">← Zurück zu den Lektionen</a>
 
   <div class="tab-grid">
-    <!-- Unterrichten -->
-    <div class="tab-card" data-folder="Unterrichten" data-file="unterrichten-01.html">
-      <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
-      <h2>Unterrichten</h2>
-    </div>
-
-    <!-- Wortschatz (tên file cố định, không số) -->
+    <!-- Wortschatz (không số) -->
     <div class="tab-card" data-folder="Wortschatz" data-file="wortschatz.html">
       <div class="icon"><i class="fas fa-book"></i></div>
       <h2>Wortschatz</h2>
     </div>
 
-    <!-- Grammatik -->
+    <!-- Grammatik (có số) -->
     <div class="tab-card" data-folder="Grammatik" data-file="grammatik-01.html">
       <div class="icon"><i class="fas fa-chalkboard-user"></i></div>
       <h2>Grammatik</h2>
     </div>
 
-    <!-- Übung -->
+    <!-- Übung (có số) -->
     <div class="tab-card" data-folder="Übung" data-file="uebung-01.html">
       <div class="icon"><i class="fas fa-edit"></i></div>
       <h2>Übung</h2>
@@ -88,10 +129,27 @@
 
   <div id="content">Wähle einen Bereich oben aus...</div>
 
+  <!-- Nút U ẩn ở góc phải dưới -->
+  <button id="unlock-btn">U</button>
+
+  <!-- Hộp nhập pass -->
+  <div id="pass-dialog">
+    <h2>Passwort eingeben</h2>
+    <input type="password" id="pass-input" placeholder="Passwort...">
+    <button id="submit-pass">Öffnen</button>
+    <button id="cancel-pass">Abbrechen</button>
+  </div>
+
   <script>
     const cards = document.querySelectorAll('.tab-card');
     const content = document.getElementById('content');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const passDialog = document.getElementById('pass-dialog');
+    const passInput = document.getElementById('pass-input');
+    const submitPass = document.getElementById('submit-pass');
+    const cancelPass = document.getElementById('cancel-pass');
 
+    // Load tab bình thường
     cards.forEach(card => {
       card.addEventListener('click', () => {
         const folder = card.dataset.folder;
@@ -112,6 +170,44 @@
             content.innerHTML = `<p style="color:red; text-align:center;">Noch kein Inhalt verfügbar.<br>${err.message}</p>`;
           });
       });
+    });
+
+    // Nút U: hiện hộp pass
+    unlockBtn.addEventListener('click', () => {
+      passDialog.style.display = 'block';
+    });
+
+    // Hủy
+    cancelPass.addEventListener('click', () => {
+      passDialog.style.display = 'none';
+      passInput.value = '';
+    });
+
+    // Kiểm tra pass
+    submitPass.addEventListener('click', () => {
+      if (passInput.value === '1409') {
+        passDialog.style.display = 'none';
+        // Thêm tab Unterrichten vào grid
+        const unterrichtenCard = document.createElement('div');
+        unterrichtenCard.className = 'tab-card';
+        unterrichtenCard.innerHTML = `
+          <div class="icon"><i class="fas fa-chalkboard-teacher"></i></div>
+          <h2>Unterrichten</h2>
+        `;
+        unterrichtenCard.addEventListener('click', () => {
+          const url = 'Unterrichten/unterrichten-01.html';
+          content.innerHTML = 'Lade Inhalt...';
+          fetch(url)
+            .then(response => response.text())
+            .then(html => content.innerHTML = html)
+            .catch(err => content.innerHTML = `<p style="color:red;">Fehler: ${err.message}</p>`);
+        });
+        document.querySelector('.tab-grid').appendChild(unterrichtenCard);
+        unlockBtn.style.display = 'none'; // ẩn nút U sau khi mở
+      } else {
+        alert('Falsches Passwort!');
+      }
+      passInput.value = '';
     });
   </script>
 
