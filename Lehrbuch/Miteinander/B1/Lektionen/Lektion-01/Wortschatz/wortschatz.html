@@ -95,12 +95,15 @@
   <script>
     // Tự động load file wortschatz-data.html trong cùng folder
     fetch('wortschatz-data.html')
-      .then(r => r.text())
+      .then(response => {
+        if (!response.ok) throw new Error('Không tìm thấy file dữ liệu');
+        return response.text();
+      })
       .then(html => {
         document.getElementById('wordList').innerHTML = html;
       })
-      .catch(() => {
-        document.getElementById('wordList').innerHTML = '<p style="color:red; text-align:center;">Chưa có dữ liệu từ vựng cho Lektion này.</p>';
+      .catch(err => {
+        document.getElementById('wordList').innerHTML = '<p style="color:red; text-align:center;">Chưa có dữ liệu từ vựng.<br>' + err.message + '</p>';
       });
 
     function showDetail(word, meaning, type, perfekt, exampleDe, exampleVi) {
