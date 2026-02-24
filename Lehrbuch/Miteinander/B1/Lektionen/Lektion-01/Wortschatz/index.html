@@ -24,7 +24,6 @@
   <h1>Lektion 01 – Wortschatz</h1>
   <div class="word-list" id="wordList">Đang tải từ vựng...</div>
 
-  <!-- Popup chi tiết -->
   <div class="popup" id="popup">
     <span class="close-btn" onclick="closePopup()">×</span>
     <h3 id="popup-word"></h3>
@@ -37,17 +36,23 @@
   </div>
 
   <script>
-    // Load dữ liệu từ file wortschatz-01.html (thay số theo Lektion)
-    fetch('wortschatz-01.html')
-      .then(response => {
-        if (!response.ok) throw new Error('Không tìm thấy dữ liệu từ vựng');
-        return response.text();
-      })
-      .then(html => {
-        document.getElementById('wordList').innerHTML = html;
+    fetch('wortschatz-data.json')
+      .then(response => response.json())
+      .then(data => {
+        let html = '';
+        data.forEach(item => {
+          html += `
+            <div class="word-item" onclick="showDetail('${item.word}', '${item.meaning}', '${item.type}', '${item.perfekt}', '${item.exampleDe}', '${item.exampleVi}')">
+              <div class="word-header">${item.word}</div>
+              <div class="meaning">${item.meaning}</div>
+              <div class="example">${item.exampleDe}</div>
+            </div>
+          `;
+        });
+        document.getElementById('wordList').innerHTML = html || '<p style="color:red;text-align:center;">Chưa có từ vựng.</p>';
       })
       .catch(err => {
-        document.getElementById('wordList').innerHTML = '<p style="color:red;text-align:center;">Chưa có dữ liệu từ vựng.<br>' + err.message + '</p>';
+        document.getElementById('wordList').innerHTML = '<p style="color:red;text-align:center;">Lỗi tải dữ liệu.<br>' + err.message + '</p>';
       });
 
     function showDetail(word, meaning, type, perfekt, exampleDe, exampleVi) {
