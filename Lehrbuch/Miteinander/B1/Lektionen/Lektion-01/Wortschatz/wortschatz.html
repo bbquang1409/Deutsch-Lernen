@@ -16,36 +16,13 @@
     .popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:520px; z-index:1000; width:90%; }
     .popup h3 { margin:0 0 15px; color:#1e40af; }
     .close-btn { float:right; font-size:2em; cursor:pointer; color:#999; }
+    .speak-btn { background:#3b82f6; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-top:10px; }
   </style>
 </head>
 <body>
 
   <h1>Lektion 01 – Wortschatz</h1>
-  <div class="word-list" id="wordList">
-    <!-- Dữ liệu từ vựng được nhúng trực tiếp ở đây -->
-    <!-- Bạn chỉ cần thay phần này cho từng Lektion -->
-    <div class="word-item" onclick="showDetail('die Türkei', 'Thổ Nhĩ Kỳ', 'Danh từ nữ (chỉ dùng số ít)', '-', 'Meine Frau und ich kommen aus der Türkei.', 'Vợ tôi và tôi đến từ Thổ Nhĩ Kỳ.')">
-      <div class="word-header">die Türkei <span style="color:#666">(Sg.)</span></div>
-      <div class="meaning">Thổ Nhĩ Kỳ</div>
-      <div class="example">Meine Frau und ich kommen aus der Türkei.</div>
-    </div>
-
-    <div class="word-item" onclick="showDetail('das Gebäck', 'bánh ngọt, bánh quy', 'Danh từ trung (chỉ dùng số ít)', '-', 'Ich liebe Baklava! Mein absolutes Lieblingsgebäck!', 'Tôi yêu Baklava lắm! Đó là món bánh ngọt yêu thích nhất của tôi!')">
-      <div class="word-header">das Gebäck <span style="color:#666">(nur Sg.)</span></div>
-      <div class="meaning">bánh ngọt, bánh quy</div>
-      <div class="example">Ich liebe Baklava! Mein absolutes Lieblingsgebäck!</div>
-    </div>
-
-    <!-- Thêm toàn bộ từ vựng còn lại từ ảnh bạn gửi vào đây -->
-    <!-- Ví dụ: -->
-    <div class="word-item" onclick="showDetail('die Runde', 'vòng tròn, nhóm bạn', 'Danh từ nữ', 'Runden', 'Ein Bier in geselliger Runde!', 'Một ly bia trong nhóm bạn vui vẻ!')">
-      <div class="word-header">die Runde, -n</div>
-      <div class="meaning">vòng tròn, nhóm bạn</div>
-      <div class="example">Ein Bier in geselliger Runde!</div>
-    </div>
-
-    <!-- ... paste tiếp các từ khác từ ảnh bạn gửi ... -->
-  </div>
+  <div class="word-list" id="wordList">Đang tải từ vựng...</div>
 
   <!-- Popup chi tiết -->
   <div class="popup" id="popup">
@@ -54,11 +31,25 @@
     <p><strong>Nghĩa:</strong> <span id="popup-meaning"></span></p>
     <p><strong>Loại từ / Số nhiều:</strong> <span id="popup-type"></span></p>
     <p><strong>Perfekt (sein/haben):</strong> <span id="popup-perfekt"></span></p>
-    <p><strong>Ví dụ (tiếng Đức):</strong> <span id="popup-example-de"></span></p>
-    <p><strong>Dịch ví dụ (tiếng Việt):</strong> <span id="popup-example-vi"></span></p>
+    <p><strong>Ví dụ:</strong> <span id="popup-example-de"></span></p>
+    <p><strong>Dịch ví dụ:</strong> <span id="popup-example-vi"></span></p>
+    <button class="speak-btn" onclick="speakWord()">Đọc to từ này</button>
   </div>
 
   <script>
+    // Tự động load file wortschatz-data.html trong cùng folder
+    fetch('wortschatz-data.html')
+      .then(response => {
+        if (!response.ok) throw new Error('Không tìm thấy file dữ liệu');
+        return response.text();
+      })
+      .then(html => {
+        document.getElementById('wordList').innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('wordList').innerHTML = '<p style="color:red;text-align:center;">Chưa có dữ liệu từ vựng.<br>' + err.message + '</p>';
+      });
+
     function showDetail(word, meaning, type, perfekt, exampleDe, exampleVi) {
       document.getElementById('popup-word').textContent = word;
       document.getElementById('popup-meaning').textContent = meaning;
@@ -71,6 +62,14 @@
 
     function closePopup() {
       document.getElementById('popup').style.display = 'none';
+    }
+
+    function speakWord() {
+      const word = document.getElementById('popup-word').textContent.split(' ')[0]; // lấy từ đầu tiên để đọc
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'de-DE';
+      utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
     }
   </script>
 
