@@ -14,8 +14,10 @@
     .option { background:#eff6ff; margin-bottom:10px; padding:10px; border-radius:6px; cursor:pointer; transition:all 0.2s; }
     .option:hover { background:#bfdbfe; }
     .option.selected { background:#3b82f6; color:white; }
+    .option.correct { background:#10b981; color:white; }
+    .option.wrong { background:#ef4444; color:white; }
     #submit-btn { background:#1e40af; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-top:20px; }
-    #result { margin-top:20px; font-weight:bold; }
+    #result { margin-top:20px; font-weight:bold; font-size:1.2em; }
   </style>
 </head>
 <body>
@@ -24,69 +26,79 @@
   <a href="index.html" class="zurueck">← Zurück zu den Bereichen</a>
 
   <div class="quiz-container">
-    <div id="quiz" class="quiz"></div>
+    <div id="quiz"></div>
     <button id="submit-btn">Überprüfen</button>
     <div id="result"></div>
   </div>
 
   <script>
-    // Dữ liệu từ vựng (nhúng trực tiếp, thay cho từng Lektion)
+    // Dữ liệu từ vựng (nhúng trực tiếp, thêm đầy đủ từ vựng của bạn vào đây)
     const vocabulary = [
-      { word: 'die Türkei (f.)', meaning: 'Thổ Nhĩ Kỳ', wrong1: 'Đức', wrong2: 'Pháp' },
-      { word: 'das Gebäck (n.)', meaning: 'bánh ngọt, bánh quy', wrong1: 'nước uống', wrong2: 'món ăn' },
-      { word: 'die Runde, -n (f.)', meaning: 'nhóm bạn, buổi tụ họp', wrong1: 'căn phòng', wrong2: 'con đường' },
-      { word: 'der Integrationskurs, -e (m.)', meaning: 'khóa học hòa nhập', wrong1: 'khóa học nấu ăn', wrong2: 'khóa học lái xe' },
-      // Thêm đầy đủ từ vựng còn lại theo mẫu này (word, meaning, 2 wrong meanings)
+      { word: 'die Türkei (f.)', correct: 'Thổ Nhĩ Kỳ', wrong: ['Đức', 'Pháp', 'Ý'] },
+      { word: 'das Gebäck (n.)', correct: 'bánh ngọt, bánh quy', wrong: ['nước uống', 'món ăn', 'trái cây'] },
+      { word: 'die Runde, -n (f.)', correct: 'nhóm bạn, buổi tụ họp', wrong: ['căn phòng', 'con đường', 'sách vở'] },
+      { word: 'der Integrationskurs, -e (m.)', correct: 'khóa học hòa nhập', wrong: ['khóa học nấu ăn', 'khóa học lái xe', 'khóa học thể thao'] },
+      { word: 'städtisch', correct: 'thuộc thành phố', wrong: ['thuộc nông thôn', 'thuộc núi', 'thuộc biển'] },
+      { word: 'die Herausforderung, -en (f.)', correct: 'thách thức', wrong: ['cơ hội', 'dễ dàng', 'thư giãn'] },
+      { word: 'die Fremdsprache, -n (f.)', correct: 'ngoại ngữ', wrong: ['ngôn ngữ mẹ đẻ', 'tiếng địa phương', 'tiếng máy tính'] },
+      { word: 'fließend', correct: 'thành thạo', wrong: ['kém', 'trung bình', 'hiểu lơ mơ'] },
+      { word: 'der Zufall, -e (m.)', correct: 'sự tình cờ', wrong: ['kế hoạch', 'ý định', 'sự sắp đặt'] },
+      { word: 'die Software, -s (f.)', correct: 'phần mềm', wrong: ['phần cứng', 'máy tính', 'mạng lưới'] },
+      // Thêm đầy đủ từ còn lại vào đây (tương tự mẫu)
       // Ví dụ:
-      { word: 'städtisch', meaning: 'thuộc thành phố', wrong1: 'thuộc nông thôn', wrong2: 'thuộc núi' },
-      { word: 'die Herausforderung, -en (f.)', meaning: 'thách thức', wrong1: 'cơ hội', wrong2: 'dễ dàng' },
+      { word: 'gratulieren', correct: 'chúc mừng', wrong: ['chào hỏi', 'cảm ơn', 'xin lỗi'] },
+      { word: 'Klasse!', correct: 'tuyệt vời!', wrong: ['tệ quá', 'bình thường', 'không ổn'] },
       // ... thêm tiếp ...
     ];
 
     const quizContainer = document.getElementById('quiz');
     const submitBtn = document.getElementById('submit-btn');
     const resultContainer = document.getElementById('result');
+    let currentQuiz = [];
+    let selections = [];
 
     function generateQuiz() {
       // Chọn ngẫu nhiên 10-15 từ
-      const numQuestions = Math.floor(Math.random() * 6) + 10; // 10-15
-      const shuffled = vocabulary.sort(() => 0.5 - Math.random()).slice(0, numQuestions);
+      const numQuestions = Math.floor(Math.random() * 6) + 10;
+      currentQuiz = vocabulary.sort(() => 0.5 - Math.random()).slice(0, numQuestions);
 
       let html = '';
-      shuffled.forEach((item, index) => {
+      currentQuiz.forEach((item, index) => {
+        const options = [item.correct, ...item.wrong].sort(() => 0.5 - Math.random());
         html += `
           <div class="question">Was bedeutet "${item.word}"?</div>
-          <div class="options">
-            <div class="option" onclick="selectOption(${index}, 0)">${item.meaning}</div>
-            <div class="option" onclick="selectOption(${index}, 1)">${item.wrong1}</div>
-            <div class="option" onclick="selectOption(${index}, 2)">${item.wrong2}</div>
+          <div class="options" id="options-${index}">
+            ${options.map((opt, i) => `<div class="option" onclick="selectOption(${index}, ${i})">${opt}</div>`).join('')}
           </div>
         `;
       });
       quizContainer.innerHTML = html;
       submitBtn.style.display = 'block';
       resultContainer.innerHTML = '';
+      selections = [];
     }
-
-    let selections = [];
 
     function selectOption(questionIndex, optionIndex) {
       selections[questionIndex] = optionIndex;
-      const options = quizContainer.querySelectorAll('.options')[questionIndex].querySelectorAll('.option');
+      const options = document.getElementById(`options-${questionIndex}`).querySelectorAll('.option');
       options.forEach(opt => opt.classList.remove('selected'));
       options[optionIndex].classList.add('selected');
     }
 
     submitBtn.addEventListener('click', () => {
       let score = 0;
-      selections.forEach((selected, index) => {
-        if (selected === 0) score++;
+      currentQuiz.forEach((item, index) => {
+        const selectedOption = document.getElementById(`options-${index}`).querySelectorAll('.option')[selections[index]];
+        if (selectedOption.textContent === item.correct) {
+          score++;
+          selectedOption.classList.add('correct');
+        } else {
+          selectedOption.classList.add('wrong');
+        }
       });
-      resultContainer.innerHTML = `Bạn đúng ${score} / ${selections.length} câu!`;
+      resultContainer.innerHTML = `Bạn đúng ${score} / ${currentQuiz.length} câu!`;
       submitBtn.style.display = 'none';
-      quizContainer.innerHTML = '';
-      generateQuiz(); // Reset quiz mới
-      selections = [];
+      generateQuiz(); // Tạo quiz mới
     });
 
     generateQuiz();
