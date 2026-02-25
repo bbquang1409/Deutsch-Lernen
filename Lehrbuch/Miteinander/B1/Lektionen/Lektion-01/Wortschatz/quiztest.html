@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lektion 01 – Quiztest</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; padding:40px 20px; background:#f8f9fa; color:#333; line-height:1.6; }
+    h1 { color:#1e40af; text-align:center; margin-bottom:30px; }
+    .zurueck { display:block; margin:15px 0; color:#3b82f6; text-decoration:none; font-weight:bold; text-align:center; }
+    .quiz-container { max-width:900px; margin:0 auto; background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+    .question { font-size:1.2em; font-weight:bold; margin-bottom:15px; }
+    .options { display:flex; flex-direction:column; }
+    .option { background:#eff6ff; margin-bottom:10px; padding:10px; border-radius:6px; cursor:pointer; transition:all 0.2s; }
+    .option:hover { background:#bfdbfe; }
+    .option.selected { background:#3b82f6; color:white; }
+    #submit-btn { background:#1e40af; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-top:20px; }
+    #result { margin-top:20px; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+  <h1>Lektion 01 – Quiztest</h1>
+  <a href="index.html" class="zurueck">← Zurück zu den Bereichen</a>
+
+  <div class="quiz-container">
+    <div id="quiz" class="quiz"></div>
+    <button id="submit-btn">Überprüfen</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    // Dữ liệu từ vựng (nhúng trực tiếp, thay cho từng Lektion)
+    const vocabulary = [
+      { word: 'die Türkei (f.)', meaning: 'Thổ Nhĩ Kỳ', wrong1: 'Đức', wrong2: 'Pháp' },
+      { word: 'das Gebäck (n.)', meaning: 'bánh ngọt, bánh quy', wrong1: 'nước uống', wrong2: 'món ăn' },
+      { word: 'die Runde, -n (f.)', meaning: 'nhóm bạn, buổi tụ họp', wrong1: 'căn phòng', wrong2: 'con đường' },
+      { word: 'der Integrationskurs, -e (m.)', meaning: 'khóa học hòa nhập', wrong1: 'khóa học nấu ăn', wrong2: 'khóa học lái xe' },
+      // Thêm đầy đủ từ vựng còn lại theo mẫu này (word, meaning, 2 wrong meanings)
+      // Ví dụ:
+      { word: 'städtisch', meaning: 'thuộc thành phố', wrong1: 'thuộc nông thôn', wrong2: 'thuộc núi' },
+      { word: 'die Herausforderung, -en (f.)', meaning: 'thách thức', wrong1: 'cơ hội', wrong2: 'dễ dàng' },
+      // ... thêm tiếp ...
+    ];
+
+    const quizContainer = document.getElementById('quiz');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultContainer = document.getElementById('result');
+
+    function generateQuiz() {
+      // Chọn ngẫu nhiên 10-15 từ
+      const numQuestions = Math.floor(Math.random() * 6) + 10; // 10-15
+      const shuffled = vocabulary.sort(() => 0.5 - Math.random()).slice(0, numQuestions);
+
+      let html = '';
+      shuffled.forEach((item, index) => {
+        html += `
+          <div class="question">Was bedeutet "${item.word}"?</div>
+          <div class="options">
+            <div class="option" onclick="selectOption(${index}, 0)">${item.meaning}</div>
+            <div class="option" onclick="selectOption(${index}, 1)">${item.wrong1}</div>
+            <div class="option" onclick="selectOption(${index}, 2)">${item.wrong2}</div>
+          </div>
+        `;
+      });
+      quizContainer.innerHTML = html;
+      submitBtn.style.display = 'block';
+      resultContainer.innerHTML = '';
+    }
+
+    let selections = [];
+
+    function selectOption(questionIndex, optionIndex) {
+      selections[questionIndex] = optionIndex;
+      const options = quizContainer.querySelectorAll('.options')[questionIndex].querySelectorAll('.option');
+      options.forEach(opt => opt.classList.remove('selected'));
+      options[optionIndex].classList.add('selected');
+    }
+
+    submitBtn.addEventListener('click', () => {
+      let score = 0;
+      selections.forEach((selected, index) => {
+        if (selected === 0) score++;
+      });
+      resultContainer.innerHTML = `Bạn đúng ${score} / ${selections.length} câu!`;
+      submitBtn.style.display = 'none';
+      quizContainer.innerHTML = '';
+      generateQuiz(); // Reset quiz mới
+      selections = [];
+    });
+
+    generateQuiz();
+  </script>
+
+</body>
+</html>

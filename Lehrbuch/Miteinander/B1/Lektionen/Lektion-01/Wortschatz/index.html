@@ -3,72 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lektion 01 – Wortschatz</title>
+  <title>Miteinander B1 – Lektion 01 Wortschatz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { font-family: system-ui, sans-serif; margin:0; padding:40px 20px; background:#f8f9fa; color:#333; line-height:1.6; }
-    h1 { color:#1e40af; text-align:center; margin-bottom:30px; }
-    .word-list { max-width:900px; margin:0 auto; }
-    .word-item { background:white; margin-bottom:12px; padding:16px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer; transition:all 0.2s; }
-    .word-item:hover { background:#eff6ff; transform:translateX(6px); }
-    .word-header { font-size:1.35em; font-weight:bold; color:#1e40af; }
-    .meaning { color:#2563eb; font-size:1.1em; margin:6px 0; }
-    .example { color:#4b5563; font-style:italic; margin-top:8px; }
-    .popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:520px; z-index:1000; width:90%; }
-    .popup h3 { margin:0 0 15px; color:#1e40af; }
-    .close-btn { float:right; font-size:2em; cursor:pointer; color:#999; }
-    .speak-btn { background:#3b82f6; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-top:10px; }
+    body { font-family: system-ui, sans-serif; margin:0; background:#f0f4f8; color:#333; text-align:center; padding:20px; }
+    h1 { color:#1e40af; margin-bottom:10px; }
+    .zurueck { display:block; margin:15px 0; color:#3b82f6; text-decoration:none; font-weight:bold; }
+    .tab-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; max-width:1000px; margin:40px auto; }
+    .tab-card { background:white; border-radius:16px; padding:40px 20px; box-shadow:0 8px 24px rgba(0,0,0,0.1); cursor:pointer; transition:all 0.3s; }
+    .tab-card:hover { transform:translateY(-10px); box-shadow:0 20px 40px rgba(0,0,0,0.18); }
+    .tab-card .icon { font-size:5em; margin-bottom:15px; color:#3b82f6; }
+    .tab-card h2 { margin:10px 0; font-size:1.8em; color:#1e40af; }
   </style>
 </head>
 <body>
 
-  <h1>Lektion 01 – Wortschatz</h1>
-  <div class="word-list" id="wordList">Đang tải từ vựng...</div>
+  <h1>Lektion 01 Wortschatz</h1>
+  <a href="../index.html" class="zurueck">← Zurück zu Lektion 01</a>
 
-  <!-- Popup chi tiết -->
-  <div class="popup" id="popup">
-    <span class="close-btn" onclick="closePopup()">×</span>
-    <h3 id="popup-word"></h3>
-    <p><strong>Nghĩa:</strong> <span id="popup-meaning"></span></p>
-    <p><strong>Loại từ / Số nhiều:</strong> <span id="popup-type"></span></p>
-    <p><strong>Perfekt (sein/haben):</strong> <span id="popup-perfekt"></span></p>
-    <p><strong>Ví dụ:</strong> <span id="popup-example-de"></span></p>
-    <p><strong>Dịch ví dụ:</strong> <span id="popup-example-vi"></span></p>
-    <button class="speak-btn" onclick="speakWord()">Đọc to từ này</button>
+  <div class="tab-grid">
+    <div class="tab-card" onclick="window.location.href='wortlist.html'">
+      <div class="icon"><i class="fas fa-list"></i></div>
+      <h2>Wortlist</h2>
+    </div>
+
+    <div class="tab-card" onclick="window.location.href='quiztest.html'">
+      <div class="icon"><i class="fas fa-question-circle"></i></div>
+      <h2>Quiztest</h2>
+    </div>
+
+    <div class="tab-card" onclick="window.location.href='uebung.html'">
+      <div class="icon"><i class="fas fa-puzzle-piece"></i></div>
+      <h2>Übung</h2>
+    </div>
   </div>
-
-  <script>
-    // Load file wortschatz-data.html (dùng text() vì là HTML, không json())
-    fetch('wortschatz-data.html')
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('wordList').innerHTML = html;
-      })
-      .catch(err => {
-        document.getElementById('wordList').innerHTML = '<p style="color:red; text-align:center;">Lỗi tải dữ liệu.<br>' + err.message + '</p>';
-      });
-
-    function showDetail(word, meaning, type, perfekt, exampleDe, exampleVi) {
-      document.getElementById('popup-word').textContent = word;
-      document.getElementById('popup-meaning').textContent = meaning;
-      document.getElementById('popup-type').textContent = type;
-      document.getElementById('popup-perfekt').textContent = perfekt;
-      document.getElementById('popup-example-de').textContent = exampleDe;
-      document.getElementById('popup-example-vi').textContent = exampleVi;
-      document.getElementById('popup').style.display = 'block';
-    }
-
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
-    }
-
-    function speakWord() {
-      const word = document.getElementById('popup-word').textContent.split(' ')[0];
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'de-DE';
-      utterance.rate = 0.9;
-      speechSynthesis.speak(utterance);
-    }
-  </script>
 
 </body>
 </html>
