@@ -37,15 +37,21 @@
       background:#1e40af; 
       color:white; 
       border:none; 
-      padding:14px 28px; 
-      margin:10px 5px; 
-      border-radius:8px; 
+      padding:16px 32px; 
+      margin:15px 0; 
+      border-radius:12px; 
       cursor:pointer; 
-      font-size:1.2em; 
-      width:90%; 
-      max-width:400px; 
+      font-size:1.3em; 
+      width:100%; 
+      max-width:500px; 
+      box-shadow:0 4px 12px rgba(0,0,0,0.15); 
+      transition:all 0.2s; 
     }
-    .mode-btn:hover { background:#2563eb; }
+    .mode-btn:hover { 
+      background:#2563eb; 
+      transform:translateY(-2px); 
+      box-shadow:0 6px 16px rgba(0,0,0,0.2); 
+    }
     .quiz-container { 
       max-width:100%; 
       margin:0 auto; 
@@ -53,24 +59,32 @@
       padding:20px; 
       border-radius:12px; 
       box-shadow:0 4px 16px rgba(0,0,0,0.1); 
+      display:none; 
+    }
+    .progress { 
+      font-size:1.3em; 
+      font-weight:bold; 
+      text-align:center; 
+      margin-bottom:15px; 
+      color:#1e40af; 
     }
     .question { 
-      font-size:1.4em; 
+      font-size:1.5em; 
       font-weight:bold; 
-      margin:20px 0; 
+      margin:25px 0; 
       text-align:center; 
     }
     .options { 
       display:flex; 
       flex-direction:column; 
-      gap:12px; 
+      gap:14px; 
     }
     .option { 
       background:#eff6ff; 
-      padding:16px; 
-      border-radius:8px; 
+      padding:18px; 
+      border-radius:10px; 
       cursor:pointer; 
-      font-size:1.2em; 
+      font-size:1.3em; 
       transition:all 0.2s; 
       text-align:center; 
     }
@@ -78,58 +92,80 @@
     .option.selected { background:#3b82f6; color:white; }
     .option.correct { background:#10b981; color:white; }
     .option.wrong { background:#ef4444; color:white; }
-    .controls { text-align:center; margin:25px 0; }
-    .next-btn, .submit-btn, .retry-btn { 
+    .controls { text-align:center; margin:30px 0; }
+    .submit-btn { 
       background:#1e40af; 
       color:white; 
       border:none; 
-      padding:14px 32px; 
-      border-radius:8px; 
+      padding:16px 40px; 
+      border-radius:10px; 
       cursor:pointer; 
-      font-size:1.2em; 
-      margin:10px; 
-      width:90%; 
-      max-width:400px; 
+      font-size:1.3em; 
+      margin:15px 0; 
+      width:100%; 
+      max-width:500px; 
+      box-shadow:0 4px 12px rgba(0,0,0,0.15); 
     }
-    .next-btn:hover, .submit-btn:hover, .retry-btn:hover { background:#2563eb; }
+    .submit-btn:hover { background:#2563eb; transform:translateY(-2px); }
     #result { 
-      margin-top:30px; 
-      font-size:1.4em; 
+      margin:40px auto; 
+      font-size:2.2em; 
       font-weight:bold; 
       text-align:center; 
-      color:#1e40af; 
+      padding:30px; 
+      border-radius:16px; 
+      max-width:90%; 
     }
+    #result.good { background:#d1fae5; color:#065f46; }
+    #result.medium { background:#fef3c7; color:#92400e; }
+    #result.bad { background:#fee2e2; color:#991b1b; }
+    .retry-btn { 
+      background:#1e40af; 
+      color:white; 
+      border:none; 
+      padding:16px 40px; 
+      border-radius:10px; 
+      cursor:pointer; 
+      font-size:1.3em; 
+      margin:20px auto; 
+      display:block; 
+      width:100%; 
+      max-width:500px; 
+      box-shadow:0 4px 12px rgba(0,0,0,0.15); 
+    }
+    .retry-btn:hover { background:#2563eb; transform:translateY(-2px); }
     @media (max-width: 600px) {
-      .mode-btn, .next-btn, .submit-btn, .retry-btn { width:100%; margin:10px 0; }
-      .quiz-container { padding:15px; }
-      .question { font-size:1.3em; }
-      .option { font-size:1.1em; padding:14px; }
+      body { padding:15px; }
+      h1 { font-size:1.6em; }
+      .question { font-size:1.4em; }
+      .option { font-size:1.2em; padding:16px; }
+      .mode-btn, .submit-btn, .retry-btn { font-size:1.2em; padding:14px 20px; }
+      #result { font-size:1.8em; padding:20px; }
     }
   </style>
 </head>
 <body>
 
   <h1>Lektion 01 – Quiztest</h1>
-  <a href="index.html" class="zurueck">← Zurück zu den Bereichen</a>
+  <a href="index.html" class="zurueck">← Zurück zu Wortschatz</a>
 
-  <div class="mode-buttons">
-    <button class="mode-btn" onclick="startFullMode()">Toàn bộ danh sách (Học bài)</button>
-    <button class="mode-btn" onclick="startRandomMode()">Zufalltest 10 từ</button>
+  <div class="mode-buttons" id="modeButtons">
+    <button class="mode-btn" onclick="startFullMode()">Vokabeln lernen</button>
+    <button class="mode-btn" onclick="startRandomMode()">Zufallstest 10 Wörter</button>
   </div>
 
-  <div class="quiz-container" id="quizContainer" style="display:none;">
+  <div class="quiz-container" id="quizContainer">
+    <div id="progress" class="progress"></div>
     <div id="question" class="question"></div>
     <div id="options" class="options"></div>
     <div class="controls">
-      <button class="next-btn" id="nextBtn" style="display:none;">Tiếp theo</button>
       <button class="submit-btn" id="submitBtn" style="display:none;">Überprüfen</button>
-      <button class="retry-btn" id="retryBtn" style="display:none;">Nächste</button>
     </div>
     <div id="result"></div>
+    <button class="retry-btn" id="retryBtn" style="display:none;">Neuer Test</button>
   </div>
 
   <script>
-    // Toàn bộ từ vựng (đã đầy đủ từ ảnh bạn gửi)
     const vocabulary = [
       { word: 'die Türkei', meaning: 'Thổ Nhĩ Kỳ' },
       { word: 'das Gebäck', meaning: 'bánh ngọt, bánh quy' },
@@ -207,21 +243,32 @@
     const questionDiv = document.getElementById('question');
     const optionsDiv = document.getElementById('options');
     const submitBtn = document.getElementById('submitBtn');
-    const nextBtn = document.getElementById('nextBtn');
     const retryBtn = document.getElementById('retryBtn');
     const resultDiv = document.getElementById('result');
+    const progressDiv = document.getElementById('progress');
+    const modeButtons = document.getElementById('modeButtons');
 
     let mode = '';
     let currentIndex = 0;
     let score = 0;
     let questionsAnswered = 0;
+    let usedWords = [];
     let currentQuestion = null;
     let selectedOption = null;
+
+    function speakWord(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'de-DE';
+      utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
+    }
 
     function startFullMode() {
       mode = 'full';
       currentIndex = 0;
       score = 0;
+      usedWords = [];
+      modeButtons.style.display = 'none';
       quizContainer.style.display = 'block';
       generateFullQuestion();
     }
@@ -231,6 +278,8 @@
       currentIndex = 0;
       score = 0;
       questionsAnswered = 0;
+      usedWords = [];
+      modeButtons.style.display = 'none';
       quizContainer.style.display = 'block';
       generateRandomQuestion();
     }
@@ -245,7 +294,7 @@
       }
       options.sort(() => Math.random() - 0.5);
       optionsDiv.innerHTML = '';
-      options.forEach((opt, i) => {
+      options.forEach((opt) => {
         const div = document.createElement('div');
         div.className = 'option';
         div.textContent = opt;
@@ -253,24 +302,47 @@
         optionsDiv.appendChild(div);
       });
       submitBtn.style.display = 'block';
-      nextBtn.style.display = 'none';
       retryBtn.style.display = 'none';
       resultDiv.textContent = '';
+      progressDiv.textContent = '';
       selectedOption = null;
     }
 
     function generateRandomQuestion() {
       if (questionsAnswered >= 10) {
-        resultDiv.textContent = `Bạn đúng ${score} / 10 câu!`;
+        let message = '';
+        let className = '';
+        if (score >= 8) {
+          message = 'Gratuliere! Sehr gut!';
+          className = 'good';
+          speakWord('Gratuliere! Sehr gut!');
+        } else if (score >= 5) {
+          message = 'Gut gemacht!';
+          className = 'medium';
+          speakWord('Gut gemacht!');
+        } else {
+          message = 'Schade... Das Ergebnis ist nicht so gut. Du solltest fleißiger lernen.';
+          className = 'bad';
+          speakWord('Schade. Das Ergebnis ist nicht so gut. Du solltest fleißiger lernen.');
+        }
+        resultDiv.textContent = message;
+        resultDiv.className = className;
+        retryBtn.textContent = 'Neuer Test';
         retryBtn.style.display = 'block';
         submitBtn.style.display = 'none';
-        nextBtn.style.display = 'none';
         optionsDiv.innerHTML = '';
         questionDiv.textContent = '';
+        progressDiv.textContent = '';
         return;
       }
-      currentQuestion = vocabulary[Math.floor(Math.random() * vocabulary.length)];
-      questionDiv.textContent = `Was bedeutet "${currentQuestion.word.split(',')[0].trim()}"?`; // Chỉ hiển thị số ít
+
+      let available = vocabulary.filter(item => !usedWords.includes(item.word));
+      if (available.length === 0) available = vocabulary;
+      currentQuestion = available[Math.floor(Math.random() * available.length)];
+      usedWords.push(currentQuestion.word);
+
+      questionDiv.textContent = `Was bedeutet "${currentQuestion.word.split(',')[0].trim()}"?`;
+      progressDiv.textContent = `${questionsAnswered + 1}/10`;
       const options = [currentQuestion.meaning];
       while (options.length < 4) {
         const random = vocabulary[Math.floor(Math.random() * vocabulary.length)].meaning;
@@ -278,7 +350,7 @@
       }
       options.sort(() => Math.random() - 0.5);
       optionsDiv.innerHTML = '';
-      options.forEach((opt, i) => {
+      options.forEach((opt) => {
         const div = document.createElement('div');
         div.className = 'option';
         div.textContent = opt;
@@ -286,35 +358,38 @@
         optionsDiv.appendChild(div);
       });
       submitBtn.style.display = 'block';
-      nextBtn.style.display = 'none';
       retryBtn.style.display = 'none';
       resultDiv.textContent = '';
+      resultDiv.className = '';
       selectedOption = null;
     }
 
     function selectOption(element, isCorrect) {
       selectedOption = element;
       const options = optionsDiv.querySelectorAll('.option');
-      options.forEach(opt => opt.classList.remove('selected'));
+      options.forEach(opt => {
+        opt.classList.remove('selected', 'correct', 'wrong');
+      });
       element.classList.add('selected');
       if (isCorrect) {
         element.classList.add('correct');
+        speakWord('Richtig!');
         speakWord(currentQuestion.word);
         resultDiv.textContent = 'Richtig!';
         submitBtn.style.display = 'none';
-        if (mode === 'full') {
-          setTimeout(() => {
+        setTimeout(() => {
+          if (mode === 'full') {
             currentIndex = (currentIndex + 1) % vocabulary.length;
             generateFullQuestion();
-          }, 1500);
-        } else {
-          questionsAnswered++;
-          score++;
-          setTimeout(generateRandomQuestion, 1500);
-        }
+          } else {
+            questionsAnswered++;
+            score++;
+            generateRandomQuestion();
+          }
+        }, 3000);
       } else {
         element.classList.add('wrong');
-        resultDiv.textContent = 'Falsch. Noch mal bitte.';
+        resultDiv.textContent = 'Falsch. Noch einmal bitte.';
       }
     }
 
