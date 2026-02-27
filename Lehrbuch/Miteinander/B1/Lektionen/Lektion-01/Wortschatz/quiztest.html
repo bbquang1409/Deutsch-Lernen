@@ -5,19 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lektion 01 – Quiztest</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin:0; padding:40px 20px; background:#f8f9fa; color:#333; line-height:1.6; }
-    h1 { color:#1e40af; text-align:center; margin-bottom:30px; }
+    body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; line-height:1.6; padding:20px; }
+    h1 { color:#1e40af; text-align:center; margin-bottom:20px; }
     .zurueck { display:block; margin:15px 0; color:#3b82f6; text-decoration:none; font-weight:bold; text-align:center; }
-    .quiz-container { max-width:900px; margin:0 auto; background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
-    .question { font-size:1.2em; font-weight:bold; margin-bottom:15px; }
-    .options { display:flex; flex-direction:column; }
-    .option { background:#eff6ff; margin-bottom:10px; padding:10px; border-radius:6px; cursor:pointer; transition:all 0.2s; }
+    .mode-buttons { text-align:center; margin-bottom:30px; }
+    .mode-btn { background:#1e40af; color:white; border:none; padding:12px 24px; margin:0 10px; border-radius:6px; cursor:pointer; font-size:1.1em; }
+    .mode-btn:hover { background:#2563eb; }
+    .quiz-container { max-width:900px; margin:0 auto; background:white; padding:25px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.1); }
+    .question { font-size:1.4em; font-weight:bold; margin-bottom:20px; text-align:center; }
+    .options { display:flex; flex-direction:column; gap:12px; }
+    .option { background:#eff6ff; padding:15px; border-radius:8px; cursor:pointer; transition:all 0.2s; font-size:1.1em; }
     .option:hover { background:#bfdbfe; }
     .option.selected { background:#3b82f6; color:white; }
     .option.correct { background:#10b981; color:white; }
     .option.wrong { background:#ef4444; color:white; }
-    #submit-btn { background:#1e40af; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-top:20px; }
-    #result { margin-top:20px; font-weight:bold; font-size:1.2em; }
+    .controls { text-align:center; margin-top:25px; }
+    .next-btn, .submit-btn, .retry-btn { background:#1e40af; color:white; border:none; padding:12px 30px; border-radius:6px; cursor:pointer; font-size:1.1em; margin:10px; }
+    .next-btn:hover, .submit-btn:hover, .retry-btn:hover { background:#2563eb; }
+    #result { margin-top:30px; font-size:1.3em; font-weight:bold; text-align:center; color:#1e40af; }
   </style>
 </head>
 <body>
@@ -25,83 +30,226 @@
   <h1>Lektion 01 – Quiztest</h1>
   <a href="index.html" class="zurueck">← Zurück zu den Bereichen</a>
 
-  <div class="quiz-container">
-    <div id="quiz"></div>
-    <button id="submit-btn">Überprüfen</button>
+  <div class="mode-buttons">
+    <button class="mode-btn" onclick="startFullMode()">Toàn bộ danh sách (Học bài)</button>
+    <button class="mode-btn" onclick="startRandomMode()">Zufalltest 10 từ</button>
+  </div>
+
+  <div class="quiz-container" id="quizContainer" style="display:none;">
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div class="controls">
+      <button class="next-btn" id="nextBtn" style="display:none;">Tiếp theo</button>
+      <button class="submit-btn" id="submitBtn" style="display:none;">Überprüfen</button>
+      <button class="retry-btn" id="retryBtn" style="display:none;">Làm lại</button>
+    </div>
     <div id="result"></div>
   </div>
 
   <script>
-    // Dữ liệu từ vựng (nhúng trực tiếp, thêm đầy đủ từ vựng của bạn vào đây)
+    // Toàn bộ từ vựng (nhúng trực tiếp, đủ từ ảnh bạn gửi)
     const vocabulary = [
-      { word: 'die Türkei (f.)', correct: 'Thổ Nhĩ Kỳ', wrong: ['Đức', 'Pháp', 'Ý'] },
-      { word: 'das Gebäck (n.)', correct: 'bánh ngọt, bánh quy', wrong: ['nước uống', 'món ăn', 'trái cây'] },
-      { word: 'die Runde, -n (f.)', correct: 'nhóm bạn, buổi tụ họp', wrong: ['căn phòng', 'con đường', 'sách vở'] },
-      { word: 'der Integrationskurs, -e (m.)', correct: 'khóa học hòa nhập', wrong: ['khóa học nấu ăn', 'khóa học lái xe', 'khóa học thể thao'] },
-      { word: 'städtisch', correct: 'thuộc thành phố', wrong: ['thuộc nông thôn', 'thuộc núi', 'thuộc biển'] },
-      { word: 'die Herausforderung, -en (f.)', correct: 'thách thức', wrong: ['cơ hội', 'dễ dàng', 'thư giãn'] },
-      { word: 'die Fremdsprache, -n (f.)', correct: 'ngoại ngữ', wrong: ['ngôn ngữ mẹ đẻ', 'tiếng địa phương', 'tiếng máy tính'] },
-      { word: 'fließend', correct: 'thành thạo', wrong: ['kém', 'trung bình', 'hiểu lơ mơ'] },
-      { word: 'der Zufall, -e (m.)', correct: 'sự tình cờ', wrong: ['kế hoạch', 'ý định', 'sự sắp đặt'] },
-      { word: 'die Software, -s (f.)', correct: 'phần mềm', wrong: ['phần cứng', 'máy tính', 'mạng lưới'] },
-      // Thêm đầy đủ từ còn lại vào đây (tương tự mẫu)
-      // Ví dụ:
-      { word: 'gratulieren', correct: 'chúc mừng', wrong: ['chào hỏi', 'cảm ơn', 'xin lỗi'] },
-      { word: 'Klasse!', correct: 'tuyệt vời!', wrong: ['tệ quá', 'bình thường', 'không ổn'] },
-      // ... thêm tiếp ...
+      { word: 'die Türkei', meaning: 'Thổ Nhĩ Kỳ', example: 'Meine Frau und ich kommen aus der Türkei.', exampleVi: 'Vợ tôi và tôi đến từ Thổ Nhĩ Kỳ.' },
+      { word: 'das Gebäck', meaning: 'bánh ngọt, bánh quy', example: 'Ich liebe Baklava! Mein absolutes Lieblingsgebäck!', exampleVi: 'Tôi rất thích baklava! Đó là món bánh ngọt yêu thích nhất của tôi!' },
+      { word: 'die Runde, die Runden', meaning: 'buổi tụ họp, nhóm bạn', example: 'Ein Bier in geselliger Runde!', exampleVi: 'Một ly bia trong buổi tụ họp vui vẻ!' },
+      { word: 'der Integrationskurs, die Integrationskurse', meaning: 'khóa học hòa nhập', example: 'Präsentieren Sie eine Gruppe, z.B. den Integrationskurs.', exampleVi: 'Hãy giới thiệu một nhóm, ví dụ như khóa học hòa nhập.' },
+      { word: 'städtisch', meaning: 'thuộc thành phố', example: 'im städtischen Krankenhaus', exampleVi: 'trong bệnh viện thành phố' },
+      { word: 'die Herausforderung, die Herausforderungen', meaning: 'thách thức', example: 'neue berufliche Herausforderung', exampleVi: 'thách thức nghề nghiệp mới' },
+      { word: 'die Fremdsprache, die Fremdsprachen', meaning: 'ngoại ngữ', example: 'Fremdsprachen: Englisch und Deutsch fließend.', exampleVi: 'Ngoại ngữ: tiếng Anh và tiếng Đức thành thạo.' },
+      { word: 'fließend', meaning: 'thành thạo', example: '-', exampleVi: '-' },
+      { word: 'der Zufall, die Zufälle', meaning: 'sự tình cờ', example: 'So ein Zufall!', exampleVi: 'Thật trùng hợp!' },
+      { word: 'die Software, die Softwares', meaning: 'phần mềm', example: 'Software für Systemintegration installieren, Kunden beraten...', exampleVi: 'Cài đặt phần mềm tích hợp hệ thống, tư vấn khách hàng...' },
+      { word: 'gratulieren', meaning: 'chúc mừng', example: 'Ich gratuliere!', exampleVi: 'Tôi chúc mừng!' },
+      { word: 'Klasse', meaning: 'tuyệt vời', example: 'Klasse Glückwunsch!', exampleVi: 'Tuyệt vời, chúc mừng nhé!' },
+      { word: 'nützlich', meaning: 'hữu ích', example: 'Sprachen sind nützlich für ihn.', exampleVi: 'Ngôn ngữ rất hữu ích cho anh ấy.' },
+      { word: 'die Möglichkeit, die Möglichkeiten', meaning: 'cơ hội, khả năng', example: 'Die Informationsveranstaltung zu Möglichkeiten der Weiterbildung war spannend!', exampleVi: 'Buổi thông tin về các cơ hội đào tạo nâng cao thật thú vị!' },
+      { word: 'die Weiterbildung, die Weiterbildungen', meaning: 'đào tạo nâng cao', example: 'Weiterbildung zum Industriemeister Elektrotechnik', exampleVi: 'Đào tạo nâng cao lên thợ bậc thầy kỹ thuật điện công nghiệp' },
+      { word: 'die Industrie, die Industrien', meaning: 'công nghiệp', example: '-', exampleVi: '-' },
+      { word: 'der Meister, die Meister', meaning: 'thợ bậc thầy', example: '-', exampleVi: '-' },
+      { word: 'die Meisterin, die Meisterinnen', meaning: 'nữ thợ bậc thầy', example: '-', exampleVi: '-' },
+      { word: 'finanziell', meaning: 'về tài chính', example: 'Finanzielle Förderung möglich.', exampleVi: 'Hỗ trợ tài chính có thể có.' },
+      { word: 'die Förderung, die Förderungen', meaning: 'hỗ trợ, tài trợ', example: '-', exampleVi: '-' },
+      { word: 'das Klima, die Klimate', meaning: 'khí hậu', example: 'Gar gut fürs Klima...', exampleVi: 'Rất tốt cho khí hậu...' },
+      { word: 'überhaupt', meaning: 'hoàn toàn, nói chung', example: 'Willst du die Uhr denn überhaupt als Fitnessuhr nutzen?', exampleVi: 'Bạn có muốn dùng đồng hồ này làm đồng hồ thể dục không?' },
+      { word: 'übrigens', meaning: 'nhân tiện', example: 'Ich hab übrigens gerade an dich gedacht.', exampleVi: 'Nhân tiện tôi vừa nghĩ đến bạn.' },
+      { word: 'überprüfen', meaning: 'kiểm tra', example: 'Die Uhr überprüft alle Daten.', exampleVi: 'Đồng hồ kiểm tra tất cả dữ liệu.' },
+      { word: 'die Diät, die Diäten', meaning: 'chế độ ăn kiêng', example: 'Die Uhr checkt deine Diät.', exampleVi: 'Đồng hồ kiểm tra chế độ ăn kiêng của bạn.' },
+      { word: 'faul', meaning: 'lười biếng', example: 'Trotzdem empfehle ich dir einen faulen Tag.', exampleVi: 'Dù vậy tôi vẫn khuyên bạn nên có một ngày lười biếng.' },
+      { word: 'obwohl', meaning: 'mặc dù', example: 'Obwohl die Uhr das gar nicht mag, mache ich mir einen faulen Tag.', exampleVi: 'Mặc dù đồng hồ không thích chút nào, nhưng tôi vẫn dành một ngày lười biếng.' },
+      { word: 'die Erholung', meaning: 'sự nghỉ ngơi', example: 'Von Erholung keine Spur.', exampleVi: 'Không có chút dấu vết nghỉ ngơi nào.' },
+      { word: 'die Spur, die Spuren', meaning: 'dấu vết', example: '-', exampleVi: '-' },
+      { word: 'nämlich', meaning: 'cụ thể là', example: 'Mir geht es nämlich gar nicht schlecht.', exampleVi: 'Cụ thể là tôi không thấy tệ chút nào.' },
+      { word: 'schweigen', meaning: 'im lặng', example: 'Und weil die Uhr nicht schweigen kann, ziehe ich sie einfach nicht mehr an.', exampleVi: 'Và vì đồng hồ không thể im lặng, tôi chỉ việc không đeo nó nữa.' },
+      { word: 'die Reaktion, die Reaktionen', meaning: 'phản ứng', example: 'Wie finden Sie die Reaktion der Frau am Ende des Lieds?', exampleVi: 'Bạn nghĩ sao về phản ứng của người phụ nữ ở cuối bài hát?' },
+      { word: 'die Gewohnheit, die Gewohnheiten', meaning: 'thói quen', example: 'Ich wollte einige Gewohnheiten verändern und die Fitnessuhr hilft mir dabei.', exampleVi: 'Tôi muốn thay đổi một số thói quen và đồng hồ thể dục giúp tôi làm điều đó.' },
+      { word: 'ständig', meaning: 'liên tục', example: 'Und dann habe ich ständig alles gecheckt: Blutdruck, Puls, Schritte...', exampleVi: 'Và rồi tôi liên tục kiểm tra mọi thứ: huyết áp, mạch, số bước...' },
+      { word: 'der Blutdruck', meaning: 'huyết áp', example: '-', exampleVi: '-' },
+      { word: 'das Blut', meaning: 'máu', example: '-', exampleVi: '-' },
+      { word: 'der Druck', meaning: 'áp lực', example: '-', exampleVi: '-' },
+      { word: 'der Puls', meaning: 'mạch', example: '-', exampleVi: '-' },
+      { word: 'verbrauchen', meaning: 'tiêu thụ', example: 'Die Dinger verbrauchen ganz schön viel Strom.', exampleVi: 'Những thứ này tiêu thụ khá nhiều điện.' },
+      { word: 'halt', meaning: 'thì thôi', example: 'Aber praktisch ist halt: Man kann seine sportlichen Leistungen gut teilen und vergleichen.', exampleVi: 'Nhưng thực tế thì thôi: Có thể chia sẻ và so sánh thành tích thể thao rất tốt.' },
+      { word: 'die Leistung, die Leistungen', meaning: 'thành tích, hiệu suất', example: '-', exampleVi: '-' },
+      { word: 'die Rolle, die Rollen', meaning: 'vai trò', example: 'Wählen Sie eine Rolle, dass...', exampleVi: 'Hãy chọn một vai trò, rằng...' },
+      { word: 'die Gefahr, die Gefahren', meaning: 'nguy hiểm', example: '-', exampleVi: '-' },
+      { word: 'beachten', meaning: 'chú ý', example: 'Obwohl eine Fitnessuhr motiviert, muss man beachten, dass...', exampleVi: 'Mặc dù đồng hồ thể dục tạo động lực, nhưng phải chú ý rằng...' },
+      { word: 'die Teilnahme, die Teilnahmen', meaning: 'sự tham gia', example: 'Teilnahme am Gesundheits-Check-up.', exampleVi: 'Tham gia kiểm tra sức khỏe.' },
+      { word: 'die Vorsorge', meaning: 'sự phòng ngừa', example: 'Man muss alle drei Jahre Vorsorgeuntersuchungen machen lassen.', exampleVi: 'Phải kiểm tra sức khỏe phòng ngừa mỗi ba năm.' },
+      { word: 'regelmäßig', meaning: 'thường xuyên', example: '-', exampleVi: '-' },
+      { word: 'die Impfung, die Impfungen', meaning: 'tiêm chủng', example: 'Impfungen sind Teil des Bonusprogramms.', exampleVi: 'Tiêm chủng là một phần của chương trình thưởng.' },
+      { word: 'die Mitgliedschaft, die Mitgliedschaften', meaning: 'tư cách thành viên', example: 'Mitgliedschaft im Sportverein', exampleVi: 'Thành viên của câu lạc bộ thể thao' },
+      { word: 'der Raucher, die Raucher / die Raucherin, die Raucherinnen', meaning: 'người hút thuốc', example: 'Als Nichtraucher/in sammelt man auch Bonuswerte.', exampleVi: 'Là người không hút thuốc thì cũng tích lũy được điểm thưởng.' },
+      { word: 'wertvoll', meaning: 'giá trị', example: '-', exampleVi: '-' },
+      { word: 'sich testen', meaning: 'tự kiểm tra', example: 'Testen Sie sich selbst: Sind Sie ein Gewohnheitstier?', exampleVi: 'Hãy tự kiểm tra xem bạn có phải là người bảo thủ không?' },
+      { word: 'das Interview, die Interviews', meaning: 'cuộc phỏng vấn', example: 'Ich habe gestern ein interessantes Interview zum Thema Fitnessuhren gehört.', exampleVi: 'Hôm qua tôi nghe một cuộc phỏng vấn thú vị về đồng hồ thể dục.' },
+      { word: 'das Mitglied, die Mitglieder', meaning: 'thành viên', example: 'Außerdem sammelt man Bonuswerte, wenn man Mitglied in einem Sportverein ist.', exampleVi: 'Ngoài ra còn tích lũy điểm thưởng nếu là thành viên của một câu lạc bộ thể thao.' },
+      { word: 'teilnehmen', meaning: 'tham gia', example: 'Dafür muss man alle drei Jahre an einem Gesundheits-Check-up teilnehmen.', exampleVi: 'Để được hưởng, phải tham gia kiểm tra sức khỏe mỗi ba năm.' },
+      { word: 'Sport treiben', meaning: 'chơi thể thao', example: 'Ich treibe ja auch schon Sport.', exampleVi: 'Tôi cũng đã chơi thể thao rồi.' },
+      { word: 'sinnvoll', meaning: 'có ý nghĩa', example: 'Ich finde sinnvoll, dass man regelmäßig zum Zahnarzt geht.', exampleVi: 'Tôi thấy có ý nghĩa khi đi nha sĩ thường xuyên.' },
+      { word: 'seltsam', meaning: 'lạ lùng', example: 'Ich finde seltsam, dass man seine Fitness-Daten teilt.', exampleVi: 'Tôi thấy lạ lùng khi chia sẻ dữ liệu thể dục của mình.' },
+      { word: 'negativ', meaning: 'tiêu cực', example: 'Etwas negativ bewerten.', exampleVi: 'Đánh giá điều gì đó một cách tiêu cực.' },
+      { word: 'der Tagesablauf', meaning: 'lịch trình trong ngày', example: 'Sie haben meistens denselben Tagesablauf?', exampleVi: 'Bạn thường có lịch trình trong ngày giống nhau không?' },
+      { word: 'angenehm', meaning: 'thư giãn, dễ chịu', example: 'Das ist manchmal ganz angenehm.', exampleVi: 'Điều đó đôi khi rất dễ chịu.' },
+      { word: 'die Eile', meaning: 'sự vội vã', example: 'Manchmal bin ich zu sehr in Eile.', exampleVi: 'Đôi khi tôi quá vội vã.' },
+      { word: 'treu', meaning: 'trung thành', example: 'Sicher, ich bin treu.', exampleVi: 'Chắc chắn rồi, tôi trung thành.' },
+      { word: 'sich wohl fühlen', meaning: 'cảm thấy khỏe', example: 'Ja, damit fühle ich mich wohl!', exampleVi: 'Vâng, như vậy tôi cảm thấy khỏe!' },
+      { word: 'zuverlässig', meaning: 'đáng tin cậy', example: 'Unsere Fitnessuhr prüft zuverlässig, ob Sie genug schlafen.', exampleVi: 'Đồng hồ thể dục của chúng ta kiểm tra đáng tin cậy xem bạn có ngủ đủ không.' },
+      { word: 'das Abenteuer', meaning: 'cuộc phiêu lưu', example: 'Ich brauche keine Abenteuer.', exampleVi: 'Tôi không cần phiêu lưu.' },
+      { word: 'maximal', meaning: 'tối đa', example: 'Maximal ein paar Jahre hintereinander.', exampleVi: 'Tối đa vài năm liên tiếp.' },
+      { word: 'ankreuzen', meaning: 'đánh dấu', example: 'Was hast du wie oft angekreuzt?', exampleVi: 'Bạn đã đánh dấu bao nhiêu lần?' },
+      { word: 'fest', meaning: 'cố định', example: 'Aber Sie haben auch gern ein paar feste Gewohnheiten.', exampleVi: 'Nhưng bạn cũng thích có một số thói quen cố định.' },
+      { word: 'derselbe / dieselbe / dasselbe', meaning: 'cùng một', example: 'Ich benutze schon lange dieselbe Kaffeemaschine.', exampleVi: 'Tôi đã dùng cùng một máy pha cà phê từ lâu.' }
     ];
 
-    const quizContainer = document.getElementById('quiz');
-    const submitBtn = document.getElementById('submit-btn');
-    const resultContainer = document.getElementById('result');
-    let currentQuiz = [];
-    let selections = [];
+    const quizContainer = document.getElementById('quizContainer');
+    const questionDiv = document.getElementById('question');
+    const optionsDiv = document.getElementById('options');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const retryBtn = document.getElementById('retryBtn');
+    const resultDiv = document.getElementById('result');
 
-    function generateQuiz() {
-      // Chọn ngẫu nhiên 10-15 từ
-      const numQuestions = Math.floor(Math.random() * 6) + 10;
-      currentQuiz = vocabulary.sort(() => 0.5 - Math.random()).slice(0, numQuestions);
+    let mode = '';
+    let currentIndex = 0;
+    let score = 0;
+    let currentQuestion = null;
+    let selectedOption = null;
 
-      let html = '';
-      currentQuiz.forEach((item, index) => {
-        const options = [item.correct, ...item.wrong].sort(() => 0.5 - Math.random());
-        html += `
-          <div class="question">Was bedeutet "${item.word}"?</div>
-          <div class="options" id="options-${index}">
-            ${options.map((opt, i) => `<div class="option" onclick="selectOption(${index}, ${i})">${opt}</div>`).join('')}
-          </div>
-        `;
-      });
-      quizContainer.innerHTML = html;
-      submitBtn.style.display = 'block';
-      resultContainer.innerHTML = '';
-      selections = [];
+    function startFullMode() {
+      mode = 'full';
+      currentIndex = 0;
+      score = 0;
+      quizContainer.style.display = 'block';
+      generateQuestion();
     }
 
-    function selectOption(questionIndex, optionIndex) {
-      selections[questionIndex] = optionIndex;
-      const options = document.getElementById(`options-${questionIndex}`).querySelectorAll('.option');
+    function startRandomMode() {
+      mode = 'random';
+      currentIndex = 0;
+      score = 0;
+      quizContainer.style.display = 'block';
+      generateRandomQuiz();
+    }
+
+    function generateQuestion() {
+      currentQuestion = vocabulary[currentIndex];
+      questionDiv.textContent = `Was bedeutet "${currentQuestion.word}"?`;
+      const options = [currentQuestion.meaning];
+      while (options.length < 4) {
+        const random = vocabulary[Math.floor(Math.random() * vocabulary.length)].meaning;
+        if (!options.includes(random)) options.push(random);
+      }
+      options.sort(() => Math.random() - 0.5);
+      optionsDiv.innerHTML = '';
+      options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.textContent = opt;
+        div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
+        optionsDiv.appendChild(div);
+      });
+      submitBtn.style.display = 'block';
+      nextBtn.style.display = 'none';
+      retryBtn.style.display = 'none';
+      resultDiv.textContent = '';
+      selectedOption = null;
+    }
+
+    function generateRandomQuiz() {
+      currentQuestion = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+      questionDiv.textContent = `Was bedeutet "${currentQuestion.word}"?`;
+      const options = [currentQuestion.meaning];
+      while (options.length < 4) {
+        const random = vocabulary[Math.floor(Math.random() * vocabulary.length)].meaning;
+        if (!options.includes(random)) options.push(random);
+      }
+      options.sort(() => Math.random() - 0.5);
+      optionsDiv.innerHTML = '';
+      options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.textContent = opt;
+        div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
+        optionsDiv.appendChild(div);
+      });
+      submitBtn.style.display = 'block';
+      nextBtn.style.display = 'none';
+      retryBtn.style.display = 'none';
+      resultDiv.textContent = '';
+      selectedOption = null;
+    }
+
+    function selectOption(element, isCorrect) {
+      selectedOption = element;
+      const options = optionsDiv.querySelectorAll('.option');
       options.forEach(opt => opt.classList.remove('selected'));
-      options[optionIndex].classList.add('selected');
+      element.classList.add('selected');
+      if (isCorrect) {
+        element.classList.add('correct');
+        speakWord(currentQuestion.word);
+        if (mode === 'full') {
+          currentIndex = (currentIndex + 1) % vocabulary.length;
+          setTimeout(generateQuestion, 1500);
+        } else {
+          resultDiv.textContent = 'Richtig! Weiter...';
+          setTimeout(generateRandomQuiz, 1500);
+        }
+      } else {
+        element.classList.add('wrong');
+        resultDiv.textContent = 'Falsch. Hãy thử lại.';
+      }
     }
 
     submitBtn.addEventListener('click', () => {
-      let score = 0;
-      currentQuiz.forEach((item, index) => {
-        const selectedOption = document.getElementById(`options-${index}`).querySelectorAll('.option')[selections[index]];
-        if (selectedOption.textContent === item.correct) {
-          score++;
-          selectedOption.classList.add('correct');
-        } else {
-          selectedOption.classList.add('wrong');
-        }
-      });
-      resultContainer.innerHTML = `Bạn đúng ${score} / ${currentQuiz.length} câu!`;
+      if (!selectedOption) {
+        resultDiv.textContent = 'Hãy chọn một đáp án!';
+        return;
+      }
+      // Nếu sai, vẫn có thể thử lại
+      if (selectedOption.textContent !== currentQuestion.meaning) {
+        resultDiv.textContent = 'Falsch. Hãy thử lại.';
+        return;
+      }
+      // Nếu đúng, chuyển tiếp
+      score++;
+      resultDiv.textContent = 'Richtig!';
       submitBtn.style.display = 'none';
-      generateQuiz(); // Tạo quiz mới
+      if (mode === 'full') {
+        nextBtn.style.display = 'inline';
+      } else {
+        retryBtn.style.display = 'inline';
+      }
     });
 
-    generateQuiz();
+    // Nút tiếp theo cho chế độ học
+    nextBtn.addEventListener('click', () => {
+      generateQuestion();
+    });
+
+    // Nút làm lại cho chế độ random
+    retryBtn.addEventListener('click', () => {
+      startRandomMode();
+    });
   </script>
 
 </body>
