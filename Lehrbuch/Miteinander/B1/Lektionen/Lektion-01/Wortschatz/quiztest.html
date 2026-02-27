@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lektion 01 – Quiztest</title>
+  <title>Lektion 01 – Wortschatztest</title>
   <style>
     body { 
       font-family: system-ui, sans-serif; 
@@ -139,12 +139,12 @@
 </head>
 <body>
 
-  <h1>Lektion 01 – Quiztest</h1>
+  <h1>Lektion 01 – Wortschatztest</h1>
   <a href="index.html" class="zurueck">← Zurück zu Wortschatz</a>
 
   <div class="mode-buttons" id="modeButtons">
     <button class="mode-btn" onclick="startFullMode()">Vokabeln lernen</button>
-    <button class="mode-btn" onclick="startRandomMode()">Zufallstest 10 Wörter</button>
+    <button class="mode-btn" onclick="startRandomMode()">Wortschatztest 10 Wörter</button>
   </div>
 
   <div class="quiz-container" id="quizContainer">
@@ -174,7 +174,7 @@
       { word: 'die Möglichkeit, die Möglichkeiten', meaning: 'cơ hội, khả năng' },
       { word: 'die Weiterbildung, die Weiterbildungen', meaning: 'đào tạo nâng cao' },
       { word: 'die Industrie, die Industrien', meaning: 'công nghiệp' },
-      { word: 'der Meister / die Meisterin', meaning: 'thợ bậc thầy (nữ: Meisterin)' },
+      { word: 'der Meister, die Meister\ndie Meisterin, die Meisterinnen', meaning: 'thợ bậc thầy' },
       { word: 'finanziell', meaning: 'về tài chính' },
       { word: 'die Förderung, die Förderungen', meaning: 'hỗ trợ, tài trợ' },
       { word: 'das Klima, die Klimate', meaning: 'khí hậu' },
@@ -206,7 +206,7 @@
       { word: 'regelmäßig', meaning: 'thường xuyên' },
       { word: 'die Impfung, die Impfungen', meaning: 'tiêm chủng' },
       { word: 'die Mitgliedschaft, die Mitgliedschaften', meaning: 'tư cách thành viên' },
-      { word: 'der Raucher / die Raucherin', meaning: 'người hút thuốc (nữ: Raucherin)' },
+      { word: 'der Raucher, die Raucher\ndie Raucherin, die Raucherinnen', meaning: 'người hút thuốc' },
       { word: 'wertvoll', meaning: 'giá trị' },
       { word: 'sich testen', meaning: 'tự kiểm tra' },
       { word: 'das Interview, die Interviews', meaning: 'cuộc phỏng vấn' },
@@ -245,6 +245,7 @@
     let usedWords = [];
     let currentQuestion = null;
     let selectedOption = null;
+    let firstAttemptCorrect = true;
 
     function speakWord(text) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -291,10 +292,12 @@
         div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
         optionsDiv.appendChild(div);
       });
+      retryBtn.style.display = 'none';
       resultDiv.textContent = '';
       scoreStatDiv.textContent = '';
       progressDiv.textContent = '';
       selectedOption = null;
+      firstAttemptCorrect = true;
     }
 
     function generateRandomQuestion() {
@@ -330,7 +333,7 @@
       currentQuestion = available[Math.floor(Math.random() * available.length)];
       usedWords.push(currentQuestion.word);
 
-      questionDiv.textContent = `Was bedeutet "${currentQuestion.word.split(',')[0].trim()}"?`;
+      questionDiv.textContent = `Was bedeutet "${currentQuestion.word.split('\n')[0].trim()}"?`; // Chỉ hiển thị dòng đầu (số ít)
       progressDiv.textContent = `${questionsAnswered + 1}/10`;
       const options = [currentQuestion.meaning];
       while (options.length < 4) {
@@ -350,6 +353,7 @@
       resultDiv.textContent = '';
       resultDiv.className = '';
       selectedOption = null;
+      firstAttemptCorrect = true;
     }
 
     function selectOption(element, isCorrect) {
@@ -359,6 +363,7 @@
         opt.classList.remove('selected', 'correct', 'wrong');
       });
       element.classList.add('selected');
+
       if (isCorrect) {
         element.classList.add('correct');
         speakWord('Richtig!');
@@ -370,7 +375,7 @@
             generateFullQuestion();
           } else {
             questionsAnswered++;
-            if (isCorrect) score++;  // Chỉ tăng điểm nếu đúng lần đầu
+            if (firstAttemptCorrect) score++; // Chỉ tăng điểm nếu đúng lần đầu
             generateRandomQuestion();
           }
         }, 3000);
@@ -378,6 +383,7 @@
         element.classList.add('wrong');
         resultDiv.textContent = 'Noch einmal bitte.';
         speakWord('Noch einmal bitte.');
+        firstAttemptCorrect = false; // Đánh dấu lần đầu đã sai
       }
     }
 
