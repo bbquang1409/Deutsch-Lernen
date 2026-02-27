@@ -93,20 +93,6 @@
     .option.correct { background:#10b981; color:white; }
     .option.wrong { background:#ef4444; color:white; }
     .controls { text-align:center; margin:30px 0; }
-    .submit-btn { 
-      background:#1e40af; 
-      color:white; 
-      border:none; 
-      padding:16px 40px; 
-      border-radius:10px; 
-      cursor:pointer; 
-      font-size:1.3em; 
-      margin:15px 0; 
-      width:100%; 
-      max-width:500px; 
-      box-shadow:0 4px 12px rgba(0,0,0,0.15); 
-    }
-    .submit-btn:hover { background:#2563eb; transform:translateY(-2px); }
     #result { 
       margin:40px auto; 
       font-size:2.2em; 
@@ -119,6 +105,13 @@
     #result.good { background:#d1fae5; color:#065f46; }
     #result.medium { background:#fef3c7; color:#92400e; }
     #result.bad { background:#fee2e2; color:#991b1b; }
+    #score-stat { 
+      font-size:1.6em; 
+      font-weight:bold; 
+      text-align:center; 
+      margin:20px 0; 
+      color:#1e40af; 
+    }
     .retry-btn { 
       background:#1e40af; 
       color:white; 
@@ -139,7 +132,7 @@
       h1 { font-size:1.6em; }
       .question { font-size:1.4em; }
       .option { font-size:1.2em; padding:16px; }
-      .mode-btn, .submit-btn, .retry-btn { font-size:1.2em; padding:14px 20px; }
+      .mode-btn, .retry-btn { font-size:1.2em; padding:14px 20px; }
       #result { font-size:1.8em; padding:20px; }
     }
   </style>
@@ -158,9 +151,7 @@
     <div id="progress" class="progress"></div>
     <div id="question" class="question"></div>
     <div id="options" class="options"></div>
-    <div class="controls">
-      <button class="submit-btn" id="submitBtn" style="display:none;">Überprüfen</button>
-    </div>
+    <div id="score-stat"></div>
     <div id="result"></div>
     <button class="retry-btn" id="retryBtn" style="display:none;">Neuer Test</button>
   </div>
@@ -183,8 +174,7 @@
       { word: 'die Möglichkeit, die Möglichkeiten', meaning: 'cơ hội, khả năng' },
       { word: 'die Weiterbildung, die Weiterbildungen', meaning: 'đào tạo nâng cao' },
       { word: 'die Industrie, die Industrien', meaning: 'công nghiệp' },
-      { word: 'der Meister, die Meister', meaning: 'thợ bậc thầy' },
-      { word: 'die Meisterin, die Meisterinnen', meaning: 'nữ thợ bậc thầy' },
+      { word: 'der Meister / die Meisterin', meaning: 'thợ bậc thầy (nữ: Meisterin)' },
       { word: 'finanziell', meaning: 'về tài chính' },
       { word: 'die Förderung, die Förderungen', meaning: 'hỗ trợ, tài trợ' },
       { word: 'das Klima, die Klimate', meaning: 'khí hậu' },
@@ -216,7 +206,7 @@
       { word: 'regelmäßig', meaning: 'thường xuyên' },
       { word: 'die Impfung, die Impfungen', meaning: 'tiêm chủng' },
       { word: 'die Mitgliedschaft, die Mitgliedschaften', meaning: 'tư cách thành viên' },
-      { word: 'der Raucher, die Raucher / die Raucherin, die Raucherinnen', meaning: 'người hút thuốc' },
+      { word: 'der Raucher / die Raucherin', meaning: 'người hút thuốc (nữ: Raucherin)' },
       { word: 'wertvoll', meaning: 'giá trị' },
       { word: 'sich testen', meaning: 'tự kiểm tra' },
       { word: 'das Interview, die Interviews', meaning: 'cuộc phỏng vấn' },
@@ -245,6 +235,7 @@
     const submitBtn = document.getElementById('submitBtn');
     const retryBtn = document.getElementById('retryBtn');
     const resultDiv = document.getElementById('result');
+    const scoreStatDiv = document.getElementById('score-stat');
     const progressDiv = document.getElementById('progress');
     const modeButtons = document.getElementById('modeButtons');
 
@@ -301,35 +292,36 @@
         div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
         optionsDiv.appendChild(div);
       });
-      submitBtn.style.display = 'block';
+      submitBtn.style.display = 'none'; // Bỏ nút Überprüfen
       retryBtn.style.display = 'none';
       resultDiv.textContent = '';
+      scoreStatDiv.textContent = '';
       progressDiv.textContent = '';
       selectedOption = null;
     }
 
     function generateRandomQuestion() {
       if (questionsAnswered >= 10) {
+        scoreStatDiv.textContent = `Du hast ${score} von 10 richtig gemacht.`;
         let message = '';
         let className = '';
         if (score >= 8) {
           message = 'Gratuliere! Sehr gut!';
           className = 'good';
-          speakWord('Gratuliere! Sehr gut!');
+          setTimeout(() => speakWord('Gratuliere! Sehr gut!'), 3000);
         } else if (score >= 5) {
           message = 'Gut gemacht!';
           className = 'medium';
-          speakWord('Gut gemacht!');
+          setTimeout(() => speakWord('Gut gemacht!'), 3000);
         } else {
           message = 'Schade... Das Ergebnis ist nicht so gut. Du solltest fleißiger lernen.';
           className = 'bad';
-          speakWord('Schade. Das Ergebnis ist nicht so gut. Du solltest fleißiger lernen.');
+          setTimeout(() => speakWord('Schade. Das Ergebnis ist nicht so gut. Du solltest fleißiger lernen.'), 3000);
         }
         resultDiv.textContent = message;
         resultDiv.className = className;
         retryBtn.textContent = 'Neuer Test';
         retryBtn.style.display = 'block';
-        submitBtn.style.display = 'none';
         optionsDiv.innerHTML = '';
         questionDiv.textContent = '';
         progressDiv.textContent = '';
@@ -357,7 +349,7 @@
         div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
         optionsDiv.appendChild(div);
       });
-      submitBtn.style.display = 'block';
+      submitBtn.style.display = 'none'; // Bỏ nút Überprüfen
       retryBtn.style.display = 'none';
       resultDiv.textContent = '';
       resultDiv.className = '';
@@ -376,7 +368,6 @@
         speakWord('Richtig!');
         speakWord(currentQuestion.word);
         resultDiv.textContent = 'Richtig!';
-        submitBtn.style.display = 'none';
         setTimeout(() => {
           if (mode === 'full') {
             currentIndex = (currentIndex + 1) % vocabulary.length;
@@ -390,6 +381,7 @@
       } else {
         element.classList.add('wrong');
         resultDiv.textContent = 'Falsch. Noch einmal bitte.';
+        speakWord('Falsch. Noch einmal bitte.');
       }
     }
 
