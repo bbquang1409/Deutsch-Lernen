@@ -15,55 +15,15 @@
       padding:20px; 
       min-height:100vh; 
     }
-    h1 { 
-      color:#1e40af; 
-      margin:20px 0; 
-      font-size:2em; 
-    }
-    .zurueck { 
-      display:block; 
-      margin:15px 0; 
-      color:#3b82f6; 
-      text-decoration:none; 
-      font-weight:bold; 
-      font-size:1.2em; 
-    }
-    .grid { 
-      display:grid; 
-      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); 
-      gap:25px; 
-      max-width:1000px; 
-      margin:40px auto; 
-    }
-    .card { 
-      background:white; 
-      border-radius:16px; 
-      padding:40px 20px; 
-      box-shadow:0 8px 24px rgba(0,0,0,0.1); 
-      cursor:pointer; 
-      transition:all 0.3s; 
-      text-decoration:none; 
-      color:inherit; 
-    }
-    .card:hover { 
-      transform:translateY(-10px); 
-      box-shadow:0 20px 40px rgba(0,0,0,0.18); 
-    }
-    .icon { 
-      font-size:5em; 
-      margin-bottom:15px; 
-      color:#3b82f6; 
-    }
-    .title { 
-      font-size:1.8em; 
-      color:#1e40af; 
-    }
-    @media (max-width: 600px) {
-      h1 { font-size:1.6em; }
-      .card { padding:30px 15px; }
-      .icon { font-size:4em; }
-      .title { font-size:1.5em; }
-    }
+    h1 { color:#1e40af; margin:20px 0; font-size:2em; }
+    .zurueck { display:block; margin:15px 0; color:#3b82f6; text-decoration:none; font-weight:bold; font-size:1.2em; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:25px; max-width:1000px; margin:40px auto; }
+    .card { background:white; border-radius:16px; padding:40px 20px; box-shadow:0 8px 24px rgba(0,0,0,0.1); cursor:pointer; transition:all 0.3s; text-decoration:none; color:inherit; }
+    .card:hover { transform:translateY(-10px); box-shadow:0 20px 40px rgba(0,0,0,0.18); }
+    .icon { font-size:5em; margin-bottom:15px; color:#3b82f6; }
+    .title { font-size:1.8em; color:#1e40af; }
+    .loading { font-size:1.2em; color:#666; }
+    @media (max-width: 600px) { h1 { font-size:1.6em; } .card { padding:30px 15px; } .icon { font-size:4em; } .title { font-size:1.5em; } }
   </style>
 </head>
 <body>
@@ -71,29 +31,47 @@
   <h1>Lektion 01 – Übung</h1>
   <a href="index.html" class="zurueck">← Zurück zu Wortschatz</a>
 
-  <div class="grid" id="uebungGrid"></div>
+  <div id="loading" class="loading">Đang tải danh sách bài tập...</div>
+  <div class="grid" id="uebungGrid" style="display:none;"></div>
 
   <script>
-    // Danh sách bài tập – thêm bài mới vào mảng này khi tạo file uebung-XX.html
-    const uebungen = [
-      { file: 'uebung-01.html', title: 'Übung 1: Was passt? Ergänzen Sie.' },
-      { file: 'uebung-02.html', title: 'Übung 2: Wie heißen die Wörter? Ergänzen Sie.' },
-      // Ví dụ thêm bài mới:
-      // { file: 'uebung-03.html', title: 'Übung 3: Tên bài mới' },
-    ];
+    const owner = 'bbquang1409';
+    const repo = 'Deutsch-Lernen';
+    const path = 'Lehrbuch/Miteinander/B1/Lektionen/Lektion-01/Wortschatz';
 
-    const grid = document.getElementById('uebungGrid');
+    fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`)
+      .then(res => res.json())
+      .then(files => {
+        const grid = document.getElementById('uebungGrid');
+        const loading = document.getElementById('loading');
+        loading.style.display = 'none';
+        grid.style.display = 'grid';
 
-    uebungen.forEach(uebung => {
-      const card = document.createElement('a');
-      card.href = uebung.file;
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="icon"><i class="fas fa-file-lines"></i></div>
-        <div class="title">${uebung.title}</div>
-      `;
-      grid.appendChild(card);
-    });
+        files.forEach(file => {
+          if (file.name.startsWith('uebung-') && file.name.endsWith('.html')) {
+            const num = file.name.match(/uebung-(\d+)\.html/)[1];
+            const title = `Übung ${num}: Bài tập ${num}`;
+
+            const card = document.createElement('a');
+            card.href = file.name;
+            card.className = 'card';
+            card.innerHTML = `
+              <div class="icon"><i class="fas fa-file-lines"></i></div>
+              <div class="title">${title}</div>
+            `;
+            grid.appendChild(card);
+          }
+        });
+
+        if (grid.children.length === 0) {
+          loading.textContent = 'Chưa có bài tập nào.';
+          loading.style.display = 'block';
+        }
+      })
+      .catch(err => {
+        document.getElementById('loading').textContent = 'Lỗi khi tải danh sách bài tập. Vui lòng refresh.';
+        console.error(err);
+      });
   </script>
 
 </body>
