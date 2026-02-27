@@ -3,120 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Miteinander B1 – Lektion 01</title>
+  <title>Lektion 01 – Miteinander B1</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { font-family: system-ui, sans-serif; margin:0; background:#f0f4f8; color:#333; text-align:center; padding:20px; position:relative; }
-    h1 { color:#1e40af; margin-bottom:10px; }
-    .zurueck { display:block; margin:15px 0; color:#3b82f6; text-decoration:none; font-weight:bold; }
-    .tab-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; max-width:1000px; margin:40px auto; }
-    .tab-card { background:white; border-radius:16px; padding:40px 20px; box-shadow:0 8px 24px rgba(0,0,0,0.1); cursor:pointer; transition:all 0.3s; }
-    .tab-card:hover { transform:translateY(-10px); box-shadow:0 20px 40px rgba(0,0,0,0.18); }
-    .tab-card .icon { font-size:5em; margin-bottom:15px; color:#3b82f6; }
-    .tab-card h2 { margin:10px 0; font-size:1.8em; color:#1e40af; }
-    #content { max-width:1000px; margin:40px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.1); min-height:500px; text-align:left; }
-
-    #unlock-btn {
-      position:fixed; bottom:20px; right:20px; width:50px; height:50px; background:#1e40af; color:white;
-      font-size:1.8em; font-weight:bold; border-radius:50%; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2);
-      z-index:999; transition:all 0.3s;
+    body { 
+      font-family: system-ui, sans-serif; 
+      margin:0; 
+      background:#f0f4f8; 
+      color:#333; 
+      text-align:center; 
+      padding:20px; 
+      min-height:100vh; 
     }
-    #unlock-btn:hover { background:#3b82f6; transform:scale(1.1); }
-
-    #pass-dialog {
-      display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background:white; padding:30px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:1000; width:300px;
+    h1 { 
+      color:#1e40af; 
+      margin:20px 0; 
+      font-size:2em; 
+    }
+    .grid { 
+      display:grid; 
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); 
+      gap:20px; 
+      max-width:1000px; 
+      margin:40px auto; 
+    }
+    .card { 
+      background:white; 
+      border-radius:16px; 
+      padding:40px 20px; 
+      box-shadow:0 8px 24px rgba(0,0,0,0.1); 
+      cursor:pointer; 
+      transition:all 0.3s; 
+      text-decoration:none; 
+      color:inherit; 
+    }
+    .card:hover { 
+      transform:translateY(-10px); 
+      box-shadow:0 20px 40px rgba(0,0,0,0.18); 
+    }
+    .icon { 
+      font-size:5em; 
+      margin-bottom:15px; 
+      color:#3b82f6; 
+    }
+    .title { 
+      font-size:1.8em; 
+      color:#1e40af; 
+    }
+    @media (max-width: 600px) {
+      h1 { font-size:1.6em; }
+      .card { padding:30px 15px; }
+      .icon { font-size:4em; }
+      .title { font-size:1.5em; }
     }
   </style>
 </head>
 <body>
 
   <h1>Lektion 01</h1>
-  <a href="../../Lektionen/index.html" class="zurueck">← Zurück zu den Lektionen</a>
 
-  <div class="tab-grid" id="tabGrid">
-    <!-- Wortschatz: trỏ thẳng folder Wortschatz/ để tự load index.html bên trong -->
-    <div class="tab-card" onclick="loadTab('Wortschatz', '')">
+  <div class="grid">
+    <a href="Wortschatz/index.html" class="card">
       <div class="icon"><i class="fas fa-book"></i></div>
-      <h2>Wortschatz</h2>
-    </div>
+      <div class="title">Wortschatz</div>
+    </a>
 
-    <!-- Grammatik -->
-    <div class="tab-card" data-folder="Grammatik" data-file="grammatik-01.html">
+    <a href="Grammatik/grammatik-01.html" class="card">
       <div class="icon"><i class="fas fa-chalkboard-user"></i></div>
-      <h2>Grammatik</h2>
-    </div>
+      <div class="title">Grammatik</div>
+    </a>
 
-    <!-- Übung -->
-    <div class="tab-card" data-folder="Übung" data-file="uebung-01.html">
+    <a href="Übung/uebung-01.html" class="card">
       <div class="icon"><i class="fas fa-edit"></i></div>
-      <h2>Übung</h2>
-    </div>
+      <div class="title">Übung</div>
+    </a>
   </div>
-
-  <div id="content">Wähle einen Bereich oben aus...</div>
-
-  <!-- Nút U -->
-  <button id="unlock-btn">U</button>
-
-  <!-- Hộp nhập pass -->
-  <div id="pass-dialog">
-    <h2>Passwort eingeben</h2>
-    <input type="password" id="pass-input" placeholder="Passwort..." style="width:100%; padding:10px; margin:15px 0; font-size:1.2em;">
-    <button id="submit-pass">Öffnen</button>
-    <button id="cancel-pass">Abbrechen</button>
-  </div>
-
-  <script>
-    const tabGrid = document.getElementById('tabGrid');
-    const content = document.getElementById('content');
-    const unlockBtn = document.getElementById('unlock-btn');
-    const passDialog = document.getElementById('pass-dialog');
-    const passInput = document.getElementById('pass-input');
-    const submitPass = document.getElementById('submit-pass');
-    const cancelPass = document.getElementById('cancel-pass');
-
-    const loadTab = (folder, file) => {
-      const url = folder + (file ? '/' + file : '/'); // Nếu file rỗng → load folder (tự tìm index.html)
-      content.innerHTML = 'Lade Inhalt...';
-      fetch(url)
-        .then(r => {
-          if (!r.ok) throw new Error('Datei nicht gefunden');
-          return r.text();
-        })
-        .then(html => content.innerHTML = html)
-        .catch(err => content.innerHTML = `<p style="color:red; text-align:center;">Noch kein Inhalt verfügbar.<br>${err.message}</p>`);
-    };
-
-    // 3 tab bình thường
-    document.querySelectorAll('.tab-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const folder = card.dataset.folder;
-        const file = card.dataset.file || ''; // Nếu dùng onclick, file rỗng
-        loadTab(folder, file);
-      });
-    });
-
-    // Nút U
-    unlockBtn.addEventListener('click', () => passDialog.style.display = 'block');
-
-    cancelPass.addEventListener('click', () => {
-      passDialog.style.display = 'none';
-      passInput.value = '';
-    });
-
-    submitPass.addEventListener('click', () => {
-      if (passInput.value === '1409') {
-        passDialog.style.display = 'none';
-        unlockBtn.style.display = 'none';
-        tabGrid.style.display = 'none';
-        loadTab('Unterrichten', 'unterrichten-01.html');
-      } else {
-        alert('Falsches Passwort!');
-      }
-      passInput.value = '';
-    });
-  </script>
 
 </body>
 </html>
