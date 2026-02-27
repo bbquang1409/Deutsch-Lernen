@@ -232,7 +232,6 @@
     const quizContainer = document.getElementById('quizContainer');
     const questionDiv = document.getElementById('question');
     const optionsDiv = document.getElementById('options');
-    const submitBtn = document.getElementById('submitBtn');
     const retryBtn = document.getElementById('retryBtn');
     const resultDiv = document.getElementById('result');
     const scoreStatDiv = document.getElementById('score-stat');
@@ -292,8 +291,6 @@
         div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
         optionsDiv.appendChild(div);
       });
-      submitBtn.style.display = 'none'; // Bỏ nút Überprüfen
-      retryBtn.style.display = 'none';
       resultDiv.textContent = '';
       scoreStatDiv.textContent = '';
       progressDiv.textContent = '';
@@ -349,7 +346,6 @@
         div.onclick = () => selectOption(div, opt === currentQuestion.meaning);
         optionsDiv.appendChild(div);
       });
-      submitBtn.style.display = 'none'; // Bỏ nút Überprüfen
       retryBtn.style.display = 'none';
       resultDiv.textContent = '';
       resultDiv.className = '';
@@ -374,14 +370,14 @@
             generateFullQuestion();
           } else {
             questionsAnswered++;
-            score++;
+            if (isCorrect) score++;  // Chỉ tăng điểm nếu đúng lần đầu
             generateRandomQuestion();
           }
         }, 3000);
       } else {
         element.classList.add('wrong');
-        resultDiv.textContent = 'Falsch. Noch einmal bitte.';
-        speakWord('Falsch. Noch einmal bitte.');
+        resultDiv.textContent = 'Noch einmal bitte.';
+        speakWord('Noch einmal bitte.');
       }
     }
 
