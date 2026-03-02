@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Übung 3: Lesen und denken Sie.</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding:15px; background:#f8f9fa; margin:0; min-height:100vh; }
+    h1 { color:#1e40af; text-align:center; font-size:1.6em; margin:15px 0; }
+    .zurueck { display:block; text-align:center; margin:10px 0; color:#3b82f6; font-weight:bold; font-size:1.1em; }
+    .exercise { background:white; border-radius:12px; padding:20px; margin:15px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .text { font-size:1.15em; line-height:2; }
+    .gap { 
+      display:inline-block; 
+      min-width:110px; 
+      height:38px; 
+      border-bottom:3px dashed #3b82f6; 
+      margin:0 6px; 
+      text-align:center; 
+      vertical-align:middle; 
+      background:#f0f9ff; 
+      border-radius:6px; 
+      cursor:pointer; 
+    }
+    .word-bank { 
+      display:flex; 
+      flex-wrap:wrap; 
+      gap:12px; 
+      margin:25px 0; 
+      justify-content:center; 
+    }
+    .word { 
+      background:#eff6ff; 
+      padding:12px 18px; 
+      border-radius:8px; 
+      cursor:pointer; 
+      font-size:1.05em; 
+      border:1px solid #bfdbfe; 
+    }
+    .word.selected { background:#3b82f6; color:white; }
+    .check-btn { 
+      background:#10b981; 
+      color:white; 
+      border:none; 
+      padding:14px 30px; 
+      border-radius:10px; 
+      font-size:1.2em; 
+      margin:20px auto; 
+      display:block; 
+      cursor:pointer; 
+      width:100%; 
+      max-width:400px; 
+    }
+    .check-btn:hover { background:#059669; }
+    .feedback { text-align:center; font-size:1.3em; margin:15px 0; font-weight:bold; }
+    .correct { color:#065f46; }
+    .wrong { color:#991b1b; }
+  </style>
+</head>
+<body>
+
+  <h1>Übung 3: Lesen und denken Sie.</h1>
+  <a href="uebung.html" class="zurueck">← Zurück zu Übungen</a>
+
+  <div class="exercise">
+    <div class="text">
+      <p>1. Das Leben in einem neuen Land ist nicht einfach. Es ist eine große <span class="gap" data-answer="Herausforderung"></span>.</p>
+      <p>2. Viele Ausländer machen zuerst einen <span class="gap" data-answer="Integrationskurs"></span>, um Deutsch besser zu verstehen.</p>
+      <p>3. Wenn man mehr Verantwortung haben will, macht man eine <span class="gap" data-answer="Weiterbildung"></span>.</p>
+      <p>4. Mit guten <span class="gap" data-answer="Fremdsprachen"></span> findet man schneller eine Arbeit in Deutschland.</p>
+      <p>5. Deutsch zu sprechen ist im Beruf sehr <span class="gap" data-answer="nützlich"></span>.</p>
+      <p>6. Der Kurs kostet viel Geld, aber es gibt oft eine <span class="gap" data-answer="finanzielle Förderung"></span>.</p>
+      <p>7. Jeden Tag Sport machen ist eine gesunde <span class="gap" data-answer="Gewohnheit"></span>.</p>
+      <p>8. In Deutschland gibt es viele <span class="gap" data-answer="Möglichkeiten"></span>, um sich beruflich zu entwickeln.</p>
+    </div>
+
+    <div class="word-bank" id="wordBank"></div>
+
+    <button class="check-btn" onclick="checkAnswers()">Prüfen</button>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    const words = [
+      "Herausforderung", "Integrationskurs", "Weiterbildung", "Fremdsprachen",
+      "nützlich", "finanzielle Förderung", "Gewohnheit", "Möglichkeiten"
+    ];
+
+    const bank = document.getElementById('wordBank');
+    let selectedWord = null;
+
+    words.forEach(w => {
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = w;
+      span.onclick = () => {
+        selectedWord = w;
+        document.querySelectorAll('.word').forEach(s => s.classList.remove('selected'));
+        span.classList.add('selected');
+      };
+      bank.appendChild(span);
+    });
+
+    document.querySelectorAll('.gap').forEach(gap => {
+      gap.onclick = () => {
+        if (selectedWord) {
+          gap.textContent = selectedWord;
+          gap.style.borderBottom = '3px solid #10b981';
+          selectedWord = null;
+          document.querySelectorAll('.word').forEach(s => s.classList.remove('selected'));
+        }
+      };
+    });
+
+    function checkAnswers() {
+      const gaps = document.querySelectorAll('.gap');
+      let correct = 0;
+      gaps.forEach(gap => {
+        const user = gap.textContent.trim();
+        const answer = gap.dataset.answer;
+        if (user === answer) {
+          gap.style.background = '#d1fae5';
+          correct++;
+        } else {
+          gap.style.background = '#fee2e2';
+          gap.textContent = answer;
+        }
+      });
+      const feedback = document.getElementById('feedback');
+      feedback.textContent = `Du hast ${correct} von ${gaps.length} richtig!`;
+      feedback.className = correct === gaps.length ? 'feedback correct' : 'feedback wrong';
+    }
+  </script>
+
+</body>
+</html>
