@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Täglicher Vokabeltest – Lektion 01</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; min-height:100vh; padding:15px; }
+    h1 { color:#1e40af; text-align:center; margin:20px 0; font-size:1.8em; }
+    .container { max-width:900px; margin:0 auto; background:white; border-radius:16px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+    .name-input { margin:30px auto; max-width:400px; }
+    .name-input input { width:100%; padding:14px; font-size:1.3em; border:2px solid #3b82f6; border-radius:10px; text-align:center; }
+    .start-btn { background:#1e40af; color:white; border:none; padding:14px 40px; font-size:1.3em; border-radius:10px; margin:20px auto; display:block; cursor:pointer; }
+    .timer { text-align:center; font-size:1.8em; font-weight:bold; margin:10px 0; color:#1e40af; }
+    .timer.low { color:#ef4444; }
+    .question { font-size:1.4em; font-weight:bold; margin:25px 0; text-align:center; }
+    .options { display:flex; flex-direction:column; gap:12px; }
+    .option { background:#eff6ff; padding:16px; border-radius:10px; cursor:pointer; font-size:1.2em; transition:all 0.2s; }
+    .option:hover { background:#bfdbfe; }
+    .option.selected { background:#3b82f6; color:white; }
+    .option.correct { background:#10b981; color:white; }
+    .option.wrong { background:#ef4444; color:white; }
+    .result { text-align:center; margin:40px 0; }
+    .name-result { font-size:2.8em; font-weight:bold; color:#1e40af; margin:20px 0; }
+    .score { font-size:3em; font-weight:bold; margin:15px 0; }
+    .evaluation { font-size:1.6em; margin:20px 0; }
+    .datetime { color:#666; margin-top:30px; font-size:1.2em; }
+  </style>
+</head>
+<body>
+
+  <h1>Täglicher Vokabeltest – Lektion 01</h1>
+
+  <div class="container" id="startScreen">
+    <h2>Wie heißen Sie?</h2>
+    <div class="name-input">
+      <input type="text" id="userName" placeholder="Ihr Name" autocomplete="off">
+    </div>
+    <button class="start-btn" onclick="startTest()">Test starten</button>
+  </div>
+
+  <div class="container" id="quizScreen" style="display:none;">
+    <div class="timer" id="timer">10:00</div>
+    <div id="progress" style="text-align:center; font-size:1.3em; margin-bottom:15px;"></div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+  </div>
+
+  <div class="container" id="resultScreen" style="display:none;">
+    <div class="result">
+      <div id="userNameResult" class="name-result"></div>
+      <div id="scoreResult" class="score"></div>
+      <div id="evaluation" class="evaluation"></div>
+      <div id="datetime" class="datetime"></div>
+    </div>
+    <button class="start-btn" onclick="restartTest()">Neuer Test</button>
+  </div>
+
+  <script>
+    const vocabulary = [
+      { de: "Türkei", vi: "Thổ Nhĩ Kỳ" },
+      { de: "Gebäck", vi: "bánh ngọt, bánh quy" },
+      { de: "Runde", vi: "buổi tụ họp, nhóm bạn" },
+      { de: "Integrationskurs", vi: "khóa học hòa nhập" },
+      { de: "Herausforderung", vi: "thách thức" },
+      { de: "Fremdsprache", vi: "ngoại ngữ" },
+      { de: "Zufall", vi: "sự tình cờ" },
+      { de: "Software", vi: "phần mềm" },
+      { de: "Möglichkeit", vi: "cơ hội, khả năng" },
+      { de: "Weiterbildung", vi: "đào tạo nâng cao" },
+      { de: "Industrie", vi: "công nghiệp" },
+      { de: "Meister", vi: "thợ bậc thầy" },
+      { de: "Meisterin", vi: "nữ thợ bậc thầy" },
+      { de: "Förderung", vi: "hỗ trợ, tài trợ" },
+      { de: "Klima", vi: "khí hậu" },
+      { de: "Diät", vi: "chế độ ăn kiêng" },
+      { de: "Erholung", vi: "sự nghỉ ngơi" },
+      { de: "Spur", vi: "dấu vết" },
+      { de: "Reaktion", vi: "phản ứng" },
+      { de: "Gewohnheit", vi: "thói quen" },
+      { de: "Blutdruck", vi: "huyết áp" },
+      { de: "Blut", vi: "máu" },
+      { de: "Druck", vi: "áp lực" },
+      { de: "Puls", vi: "mạch" },
+      { de: "Leistung", vi: "thành tích, hiệu suất" },
+      { de: "Rolle", vi: "vai trò" },
+      { de: "Gefahr", vi: "nguy hiểm" },
+      { de: "Teilnahme", vi: "sự tham gia" },
+      { de: "Vorsorge", vi: "sự phòng ngừa" },
+      { de: "Impfung", vi: "tiêm chủng" }
+    ];
+
+    let userName = "";
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timerInterval;
+    let timeLeft = 600; // 10 phút
+
+    function startTest() {
+      userName = document.getElementById("userName").value.trim();
+      if (!userName) {
+        alert("Bitte geben Sie Ihren Namen ein.");
+        return;
+      }
+
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("quizScreen").style.display = "block";
+
+      generateQuestions();
+      startTimer();
+      showQuestion();
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerDisplay = document.getElementById("timer");
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 120) timerDisplay.classList.add("low");
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showResult(true);
+        }
+      }, 1000);
+    }
+
+    function generateQuestions() {
+      questions = [];
+      const used = new Set();
+
+      // 8 câu Đức → Việt
+      while (questions.length < 8) {
+        const randIndex = Math.floor(Math.random() * vocabulary.length);
+        const item = vocabulary[randIndex];
+        if (used.has(item.de)) continue;
+        used.add(item.de);
+
+        let options = [item.vi];
+        while (options.length < 4) {
+          const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].vi;
+          if (!options.includes(randOpt)) options.push(randOpt);
+        }
+        options.sort(() => Math.random() - 0.5);
+        questions.push({
+          type: "de-to-vi",
+          question: item.de,
+          correct: item.vi,
+          options: options
+        });
+      }
+
+      // 8 câu Việt → Đức
+      while (questions.length < 16) {
+        const randIndex = Math.floor(Math.random() * vocabulary.length);
+        const item = vocabulary[randIndex];
+        if (used.has(item.de)) continue;
+        used.add(item.de);
+
+        let options = [item.de];
+        while (options.length < 4) {
+          const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].de;
+          if (!options.includes(randOpt)) options.push(randOpt);
+        }
+        options.sort(() => Math.random() - 0.5);
+        questions.push({
+          type: "vi-to-de",
+          question: item.vi,
+          correct: item.de,
+          options: options
+        });
+      }
+
+      // 7 câu ngữ pháp kết hợp (Artikel + Plural, Partizip Perfekt)
+      const grammar = [
+        { q: "Artikel und Plural von 'Herausforderung'?", a: "die Herausforderungen", options: ["der Herausforderungen", "die Herausforderungen", "das Herausforderungen", "den Herausforderungen"] },
+        { q: "Artikel und Plural von 'Möglichkeit'?", a: "die Möglichkeiten", options: ["der Möglichkeiten", "die Möglichkeiten", "das Möglichkeiten", "den Möglichkeiten"] },
+        { q: "Partizip Perfekt von 'teilnehmen'?", a: "teilgenommen", options: ["teilgenommen", "teilgenomm", "teilnehm", "teilnehmt"] },
+        { q: "Artikel und Plural von 'Gewohnheit'?", a: "die Gewohnheiten", options: ["der Gewohnheiten", "die Gewohnheiten", "das Gewohnheiten", "den Gewohnheiten"] },
+        { q: "Artikel und Plural von 'Förderung'?", a: "die Förderungen", options: ["der Förderungen", "die Förderungen", "das Förderungen", "den Förderungen"] },
+        { q: "Partizip Perfekt von 'gratulieren'?", a: "gratulier", options: ["gratulier", "gratulierte", "gratulieren", "gratuliert"] },
+        { q: "Artikel und Plural von 'Rolle'?", a: "die Rollen", options: ["der Rollen", "die Rollen", "das Rollen", "den Rollen"] }
+      ];
+      questions = questions.concat(grammar);
+
+      // 6 câu suy nghĩ ngữ cảnh / synonym/antonym
+      const advanced = [
+        { q: "Was gibt es sehr viel in einer Bibliothek?", a: "Buch", options: ["Buch", "Auto", "Computer", "Telefon"] },
+        { q: "Was macht man, wenn man krank ist und zum Arzt geht?", a: "Vorsorge", options: ["Vorsorge", "Sport", "Essen", "Schlafen"] },
+        { q: "Was braucht man, um in Deutschland gut zu leben?", a: "Integrationskurs", options: ["Integrationskurs", "Urlaub", "Party", "Auto"] },
+        { q: "Was ist wichtig, wenn man viele Sprachen spricht?", a: "Fremdsprachen", options: ["Fremdsprachen", "Geld", "Essen", "Wetter"] },
+        { q: "Synonym von 'nützlich'?", a: "hilfreich", options: ["hilfreich", "langweilig", "gefährlich", "teuer"] },
+        { q: "Antonym von 'langweilig'?", a: "interessant", options: ["interessant", "schwer", "teuer", "schlecht"] }
+      ];
+      questions = questions.concat(advanced);
+
+      questions = questions.sort(() => Math.random() - 0.5);
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestionIndex];
+      document.getElementById("progress").textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+
+      const questionDiv = document.getElementById("question");
+      questionDiv.innerHTML = q.type === "de-to-vi" 
+        ? `Was bedeutet <strong>"${q.question}"</strong>?`
+        : q.type === "vi-to-de" 
+          ? `Wie heißt <strong>"${q.question}"</strong> auf Deutsch?`
+          : `${q.q}`;
+
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = opt;
+        div.onclick = () => selectAnswer(opt, q.a || q.correct, div);
+        optionsDiv.appendChild(div);
+      });
+    }
+
+    function selectAnswer(selected, correct, div) {
+      const options = div.parentElement.children;
+      for (let opt of options) {
+        opt.onclick = null;
+        if (opt.textContent === correct) opt.classList.add("correct");
+        if (opt.textContent === selected && selected !== correct) opt.classList.add("wrong");
+      }
+
+      if (selected === correct) score++;
+
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          showQuestion();
+        } else {
+          showResult();
+        }
+      }, 800);
+    }
+
+    function showResult(timeUp = false) {
+      clearInterval(timerInterval);
+      document.getElementById("quizScreen").style.display = "none";
+      const resultScreen = document.getElementById("resultScreen");
+      resultScreen.style.display = "block";
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById("userNameResult").textContent = userName;
+      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
+
+      let evaluation = "";
+      if (timeUp) evaluation = "Zeit abgelaufen! " + (score >= 20 ? "Noch gut!" : "Weiter üben!");
+      else if (score >= 25) evaluation = "Ausgezeichnet! Sehr gut gemacht!";
+      else if (score >= 20) evaluation = "Sehr gut!";
+      else if (score >= 15) evaluation = "Gut!";
+      else if (score >= 10) evaluation = "Nicht schlecht, aber weiter üben.";
+      else evaluation = "Weiter üben! Du schaffst das.";
+
+      document.getElementById("evaluation").textContent = evaluation;
+      document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
+    }
+
+    function restartTest() {
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>

@@ -44,6 +44,8 @@
       transition:all 0.3s; 
       text-decoration:none; 
       color:inherit; 
+      position: relative; 
+      overflow: hidden; 
     }
     .card:hover { 
       transform:translateY(-10px); 
@@ -57,6 +59,17 @@
     .title { 
       font-size:1.8em; 
       color:#1e40af; 
+    }
+    .new-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ef4444;
+      color: white;
+      font-size: 0.8em;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
     }
     @media (max-width: 600px) {
       h1 { font-size:1.6em; }
@@ -74,12 +87,11 @@
   <div class="grid" id="uebungGrid"></div>
 
   <script>
-    // Danh sách bài tập (nur hier hinzufügen, wenn neue Übung erstellt wird)
+    // Danh sách bài tập
     const uebungen = [
       { file: 'uebung-01.html', title: 'Übung 1: Was passt? Ergänzen Sie.' },
-      { file: 'uebung-02.html', title: 'Übung 2: Wie heißen die Wörter? Ergänzen Sie.' },
-      // Beispiel für neue Übung:
-      // { file: 'uebung-03.html', title: 'Übung 3: ...' },
+      { file: 'uebung-02.html', title: 'Übung 2: Ergänzen Sie die Wörter.' },
+      { file: 'täglicher-test.html', title: 'Täglicher Vokabeltest', icon: 'fa-clock', badge: 'Neu' }
     ];
 
     const grid = document.getElementById('uebungGrid');
@@ -89,7 +101,8 @@
       card.href = uebung.file;
       card.className = 'card';
       card.innerHTML = `
-        <div class="icon"><i class="fas fa-file-lines"></i></div>
+        ${uebung.badge ? '<span class="new-badge">' + uebung.badge + '</span>' : ''}
+        <div class="icon"><i class="fas ${uebung.icon || 'fa-file-lines'}"></i></div>
         <div class="title">${uebung.title}</div>
       `;
       grid.appendChild(card);
