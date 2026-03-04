@@ -10,7 +10,30 @@
     .container { max-width:900px; margin:0 auto; background:white; border-radius:16px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
     .name-input { margin:30px auto; max-width:400px; }
     .name-input input { width:100%; padding:14px; font-size:1.3em; border:2px solid #3b82f6; border-radius:10px; text-align:center; }
-    .start-btn { background:#1e40af; color:white; border:none; padding:14px 40px; font-size:1.3em; border-radius:10px; margin:20px auto; display:block; cursor:pointer; }
+    .btn { 
+      background:#1e40af; 
+      color:white; 
+      border:none; 
+      padding:14px 40px; 
+      font-size:1.3em; 
+      border-radius:10px; 
+      margin:20px auto; 
+      display:block; 
+      cursor:pointer; 
+      opacity: 0.95; 
+      transition: opacity 0.2s, background 0.2s; 
+    }
+    .btn:hover { opacity:1; background:#2563eb; }
+    .back-btn { 
+      background:#6b7280; /* nhạt hơn, xám xanh */
+      opacity: 0.85; 
+    }
+    .back-btn:hover { opacity:1; background:#4b5563; }
+    .end-btn { 
+      background:#dc2626; 
+      opacity: 0.9; 
+    }
+    .end-btn:hover { opacity:1; background:#b91c1c; }
     .timer { text-align:center; font-size:1.8em; font-weight:bold; margin:10px 0; color:#1e40af; }
     .timer.low { color:#ef4444; }
     .question { font-size:1.4em; font-weight:bold; margin:25px 0; text-align:center; }
@@ -36,12 +59,11 @@
     <div class="name-input">
       <input type="text" id="userName" placeholder="Ihr Name" autocomplete="off">
     </div>
-    <button class="start-btn" onclick="startTest()">Test starten</button>
+    <button class="btn" onclick="startTest()">Test starten</button>
   </div>
 
   <div class="container" id="quizScreen" style="display:none;">
     <div class="timer" id="timer">10:00</div>
-    <div id="progress" style="text-align:center; font-size:1.3em; margin-bottom:15px;"></div>
     <div id="question" class="question"></div>
     <div id="options" class="options"></div>
   </div>
@@ -53,60 +75,47 @@
       <div id="evaluation" class="evaluation"></div>
       <div id="datetime" class="datetime"></div>
     </div>
-    <button class="start-btn" onclick="restartTest()">Neuer Test</button>
+    <button class="btn" onclick="restartTest()">Neuer Test</button>
+    <button class="btn end-btn" onclick="endExercise()">Ende und zurück</button>
   </div>
 
-  <!-- Nút Ende und zurück -->
-  <button class="end-btn" onclick="endExercise()">Ende und zurück</button>
-
-  <style>
-    .end-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 1em;
-      cursor: pointer;
-      z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .end-btn:hover { background: #dc2626; }
-  </style>
-
   <script>
-    // === TỪ VỰNG Lektion 02 (copy từ wortlist) ===
+    let userName = "";
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timerInterval;
+    let timeLeft = 600;
+
+    // Từ vựng Lektion 02
     const vocabulary = [
       { de: "die Lage", vi: "vị trí, địa điểm" },
-      { de: "fröhlich", vi: "vui vẻ, rực rỡ, tươi sáng" },
+      { de: "fröhlich", vi: "vui vẻ, rực rỡ" },
       { de: "der Einbrecher", vi: "kẻ đột nhập" },
       { de: "die Einbrecherin", vi: "kẻ đột nhập (nữ)" },
-      { de: "zuletzt", vi: "lần cuối cùng, gần đây nhất" },
-      { de: "fliehen", vi: "chạy trốn, trốn thoát" },
+      { de: "zuletzt", vi: "lần cuối cùng" },
+      { de: "fliehen", vi: "chạy trốn" },
       { de: "der Bart", vi: "bộ râu" },
       { de: "der Turnschuh", vi: "giày thể thao" },
-      { de: "die Aufschrift", vi: "dòng chữ, chữ in trên áo" },
+      { de: "die Aufschrift", vi: "dòng chữ trên áo" },
       { de: "die Kripo", vi: "cảnh sát hình sự" },
       { de: "aufmerksam", vi: "chú ý, cẩn thận" },
-      { de: "anlassen", vi: "để bật (đèn, thiết bị)" },
-      { de: "verdächtig", vi: "đáng nghi, khả nghi" },
-      { de: "die Tafel", vi: "bảng (đen/trắng), bảng thông báo" },
-      { de: "wegräumen", vi: "dọn đi, cất đi" },
-      { de: "das Dachgeschoss", vi: "tầng áp mái, gác mái" },
+      { de: "anlassen", vi: "để bật" },
+      { de: "verdächtig", vi: "đáng nghi" },
+      { de: "die Tafel", vi: "bảng" },
+      { de: "wegräumen", vi: "dọn đi" },
+      { de: "das Dachgeschoss", vi: "tầng áp mái" },
       { de: "der Dieb", vi: "tên trộm" },
       { de: "die Diebin", vi: "kẻ trộm (nữ)" },
-      { de: "die Beschreibung", vi: "sự mô tả, lời tả" },
+      { de: "die Beschreibung", vi: "mô tả" },
       { de: "die Klamotten", vi: "quần áo (thân mật)" },
-      { de: "beobachten", vi: "quan sát, theo dõi" },
+      { de: "beobachten", vi: "quan sát" },
       { de: "das Missverständnis", vi: "sự hiểu lầm" },
-      { de: "stehlen", vi: "ăn cắp, trộm" },
+      { de: "stehlen", vi: "ăn cắp" },
       { de: "der Briefträger", vi: "người đưa thư" },
       { de: "die Briefträgerin", vi: "người đưa thư (nữ)" },
       { de: "aufessen", vi: "ăn hết" },
-      { de: "die Rückmeldung", vi: "phản hồi, thông báo lại" },
+      { de: "die Rückmeldung", vi: "phản hồi" },
       { de: "aufhängen", vi: "treo lên" },
       { de: "die Monatskarte", vi: "vé tháng" },
       { de: "sich bedanken", vi: "cảm ơn" },
@@ -114,25 +123,18 @@
       { de: "die Anbieterin", vi: "nhà cung cấp (nữ)" },
       { de: "wegen", vi: "vì, do" },
       { de: "kontaktieren", vi: "liên hệ" },
-      { de: "abschließen", vi: "ký kết (hợp đồng)" },
-      { de: "der Einzug", vi: "ngày dọn vào nhà" },
+      { de: "abschließen", vi: "ký kết" },
+      { de: "der Einzug", vi: "ngày dọn vào" },
       { de: "die Kopie", vi: "bản sao" },
       { de: "der Reisepass", vi: "hộ chiếu" },
-      { de: "der Personalausweis", vi: "chứng minh thư / thẻ căn cước" },
+      { de: "der Personalausweis", vi: "chứng minh thư" },
       { de: "klingen", vi: "nghe có vẻ" },
       { de: "mehrmals", vi: "nhiều lần" },
-      { de: "die Hotline", vi: "đường dây nóng / tổng đài hỗ trợ" },
-      { de: "die Abrechnung", vi: "hóa đơn, bảng kê" },
-      { de: "der Kundendienst", vi: "bộ phận chăm sóc khách hàng" },
-      { de: "kündigen", vi: "hủy hợp đồng, từ chức" }
+      { de: "die Hotline", vi: "tổng đài hỗ trợ" },
+      { de: "die Abrechnung", vi: "hóa đơn" },
+      { de: "der Kundendienst", vi: "chăm sóc khách hàng" },
+      { de: "kündigen", vi: "hủy hợp đồng" }
     ];
-
-    let userName = "";
-    let questions = [];
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let timerInterval;
-    let timeLeft = 600;
 
     function startTest() {
       userName = document.getElementById("userName").value.trim();
@@ -154,11 +156,8 @@
         timeLeft--;
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        const timerDisplay = document.getElementById("timer");
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-        if (timeLeft <= 120) timerDisplay.classList.add("low");
-
+        document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        if (timeLeft <= 120) document.getElementById("timer").classList.add("low");
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           showResult(true);
@@ -167,69 +166,82 @@
     }
 
     function generateQuestions() {
-      questions = [];
-      const used = new Set();
-
-      // 8 câu Đức → Việt
-      while (questions.length < 8) {
-        const randIndex = Math.floor(Math.random() * vocabulary.length);
-        const item = vocabulary[randIndex];
-        if (used.has(item.de)) continue;
-        used.add(item.de);
-
-        let options = [item.vi];
-        while (options.length < 4) {
-          const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].vi;
-          if (!options.includes(randOpt)) options.push(randOpt);
-        }
-        options.sort(() => Math.random() - 0.5);
-        questions.push({
-          type: "de-to-vi",
-          question: item.de,
-          correct: item.vi,
-          options: options
-        });
-      }
-
-      // 8 câu Việt → Đức
-      while (questions.length < 16) {
-        const randIndex = Math.floor(Math.random() * vocabulary.length);
-        const item = vocabulary[randIndex];
-        if (used.has(item.de)) continue;
-        used.add(item.de);
-
-        let options = [item.de];
-        while (options.length < 4) {
-          const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].de;
-          if (!options.includes(randOpt)) options.push(randOpt);
-        }
-        options.sort(() => Math.random() - 0.5);
-        questions.push({
-          type: "vi-to-de",
-          question: item.vi,
-          correct: item.de,
-          options: options
-        });
-      }
-
-      // Giữ nguyên bankGrammar và bankLogic từ Lektion 01 (vì là template chung)
-      const bankGrammar = [ /* giữ nguyên như source bạn gửi */ ];
-      const bankLogic = [ /* giữ nguyên như source bạn gửi */ ];
-
-      const shuffledGrammar = [...bankGrammar].sort(() => Math.random() - 0.5);
-      questions = questions.concat(shuffledGrammar.slice(0, 7));
-
-      const shuffledLogic = [...bankLogic].sort(() => Math.random() - 0.5);
-      questions = questions.concat(shuffledLogic.slice(0, 7));
-
-      questions = questions.sort(() => Math.random() - 0.5);
+      questions = vocabulary.sort(() => 0.5 - Math.random()).slice(0, 10).map(item => ({
+        question: `Was bedeutet "${item.de}"?`,
+        correct: item.vi,
+        options: [item.vi, ...getRandomWrong(item.vi, 3)]
+      }));
     }
 
-    // Các hàm còn lại giữ nguyên từ source Lektion 01
-    function showQuestion() { /* copy nguyên từ source */ }
-    function selectAnswer(selected, correct, div) { /* copy nguyên */ }
-    function showResult(timeUp = false) { /* copy nguyên */ }
-    function restartTest() { location.reload(); }
+    function getRandomWrong(correct, count) {
+      const wrong = [];
+      while (wrong.length < count) {
+        const rand = vocabulary[Math.floor(Math.random() * vocabulary.length)].vi;
+        if (rand !== correct && !wrong.includes(rand)) wrong.push(rand);
+      }
+      return wrong;
+    }
+
+    function showQuestion() {
+      if (currentQuestionIndex >= questions.length) {
+        showResult();
+        return;
+      }
+
+      const q = questions[currentQuestionIndex];
+      document.getElementById("question").textContent = q.question;
+      document.getElementById("options").innerHTML = "";
+      q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = opt;
+        div.onclick = () => selectAnswer(opt, q.correct, div);
+        document.getElementById("options").appendChild(div);
+      });
+    }
+
+    function selectAnswer(selected, correct, div) {
+      document.querySelectorAll(".option").forEach(o => o.onclick = null);
+      if (selected === correct) {
+        div.classList.add("correct");
+        score++;
+      } else {
+        div.classList.add("wrong");
+        document.querySelectorAll(".option").forEach(o => {
+          if (o.textContent === correct) o.classList.add("correct");
+        });
+      }
+      currentQuestionIndex++;
+      setTimeout(showQuestion, 1500);
+    }
+
+    function showResult(timeUp = false) {
+      clearInterval(timerInterval);
+      document.getElementById("quizScreen").style.display = "none";
+      document.getElementById("resultScreen").style.display = "block";
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById("userNameResult").textContent = userName;
+      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
+
+      let evaluation = "";
+      if (timeUp) evaluation = "Zeit abgelaufen!";
+      else if (score >= 9) evaluation = "Ausgezeichnet!";
+      else if (score >= 7) evaluation = "Sehr gut!";
+      else if (score >= 5) evaluation = "Gut!";
+      else evaluation = "Weiter üben!";
+
+      document.getElementById("evaluation").textContent = evaluation;
+      document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
+    }
+
+    function restartTest() {
+      location.reload();
+    }
+
     function endExercise() {
       if (confirm("Möchtest du die Übung wirklich beenden und zurück zu den Übungen gehen?")) {
         window.location.href = "uebung.html";
@@ -237,6 +249,5 @@
     }
   </script>
 
-  <button class="end-btn" onclick="endExercise()">Ende und zurück</button>
 </body>
 </html>
