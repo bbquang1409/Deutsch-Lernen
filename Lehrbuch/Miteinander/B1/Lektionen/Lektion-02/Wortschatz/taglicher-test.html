@@ -26,6 +26,8 @@
     .end-btn { 
       background:#64748b; 
       opacity:0.88; 
+      margin:20px auto; 
+      display:block; 
     }
     .end-btn:hover { opacity:1; background:#475569; }
     .timer { text-align:center; font-size:1.8em; font-weight:bold; margin:10px 0; color:#1e40af; }
@@ -62,6 +64,7 @@
     <div class="progress" id="progress">Câu 1 / 30</div>
     <div id="question" class="question"></div>
     <div id="options" class="options"></div>
+    <button class="end-btn" onclick="endExercise()">Ende und zurück</button>
   </div>
 
   <div class="container" id="resultScreen" style="display:none;">
@@ -83,7 +86,7 @@
     let timerInterval;
     let timeLeft = 600;
 
-    // Database từ vựng Lektion 02 (nghĩa đơn giản)
+    // Database từ vựng (nghĩa đơn giản)
     const vocabDB = [
       { de: "die Lage", vi: "vị trí" },
       { de: "fröhlich", vi: "vui vẻ" },
@@ -144,7 +147,7 @@
       { question: "Artikel und Plural von 'Rückmeldung'?", correct: "die, Rückmeldungen", options: ["die, Rückmeldungen", "der, Rückmeldungen", "das, Rückmeldungen", "den, Rückmeldungen"] }
     ];
 
-    // Logic + synonym/antonym (8 câu, tư duy thực tế hơn)
+    // Logic + synonym/antonym (8 câu, tư duy cao hơn)
     const logicDB = [
       { question: "Warum lässt man das Licht an, wenn man abends ausgeht?", correct: "Um Einbrecher abzuschrecken", options: ["Um Einbrecher abzuschrecken", "Um Strom zu sparen", "Um die Nachbarn zu ärgern", "Um das Haus hell zu machen"] },
       { question: "Welches Wort ist ein Synonym von 'verdächtig'?", correct: "suspekt", options: ["suspekt", "vertrauenswürdig", "harmlos", "sicher"] },
@@ -186,8 +189,8 @@
       questions = [];
       const used = new Set();
 
-      // 8 câu Đức → Việt (random)
-      while (questions.length < 8) {
+      // 7 Đức → Việt (random)
+      while (questions.length < 7) {
         const item = vocabDB[Math.floor(Math.random() * vocabDB.length)];
         if (used.has(item.de)) continue;
         used.add(item.de);
@@ -200,8 +203,8 @@
         questions.push({question: `Was bedeutet "${item.de}"?`, correct: item.vi, options: opts});
       }
 
-      // 8 câu Việt → Đức (random)
-      while (questions.length < 16) {
+      // 7 Việt → Đức (random)
+      while (questions.length < 14) {
         const item = vocabDB[Math.floor(Math.random() * vocabDB.length)];
         if (used.has(item.de)) continue;
         used.add(item.de);
@@ -214,11 +217,11 @@
         questions.push({question: `Wie heißt "${item.vi}" auf Deutsch?`, correct: item.de, options: opts});
       }
 
-      // Thêm 7 câu ngữ pháp (shuffle)
+      // 8 ngữ pháp (shuffle)
       const grammar = [...grammarDB].sort(() => Math.random() - 0.5);
       questions = questions.concat(grammar);
 
-      // Thêm 7 câu logic + synonym/antonym (shuffle)
+      // 8 logic + synonym/antonym (shuffle)
       const logic = [...logicDB].sort(() => Math.random() - 0.5);
       questions = questions.concat(logic);
 
