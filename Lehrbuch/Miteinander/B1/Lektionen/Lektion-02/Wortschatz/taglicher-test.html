@@ -25,19 +25,17 @@
     .score { font-size:3em; font-weight:bold; margin:15px 0; }
     .evaluation { font-size:1.6em; margin:20px 0; }
     .datetime { color:#666; margin-top:30px; font-size:1.2em; }
-
-    /* Nút Ende und zurück - nhạt hơn, nằm giữa */
-    .end-btn {
-      background:#64748b;
-      color:white;
-      border:none;
-      padding:12px 30px;
-      font-size:1.1em;
-      border-radius:10px;
-      cursor:pointer;
-      margin:30px auto;
-      display:block;
-      opacity:0.88;
+    .end-btn { 
+      background:#64748b; 
+      color:white; 
+      border:none; 
+      padding:12px 30px; 
+      font-size:1.1em; 
+      border-radius:10px; 
+      cursor:pointer; 
+      margin:30px auto; 
+      display:block; 
+      opacity:0.88; 
     }
     .end-btn:hover { opacity:1; background:#475569; }
   </style>
@@ -73,6 +71,13 @@
   </div>
 
   <script>
+    let userName = "";
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timerInterval;
+    let timeLeft = 600;
+
     // Từ vựng Lektion 02
     const vocabulary = [
       { de: "die Lage", vi: "vị trí, địa điểm" },
@@ -122,13 +127,6 @@
       { de: "kündigen", vi: "hủy hợp đồng" }
     ];
 
-    let userName = "";
-    let questions = [];
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let timerInterval;
-    let timeLeft = 600;
-
     function startTest() {
       userName = document.getElementById("userName").value.trim();
       if (!userName) {
@@ -164,8 +162,8 @@
       questions = [];
       const used = new Set();
 
-      // 8 câu Đức → Việt
-      while (questions.length < 8) {
+      // 10 câu Đức → Việt
+      while (questions.length < 10) {
         const randIndex = Math.floor(Math.random() * vocabulary.length);
         const item = vocabulary[randIndex];
         if (used.has(item.de)) continue;
@@ -177,11 +175,11 @@
           if (!options.includes(randOpt)) options.push(randOpt);
         }
         options.sort(() => Math.random() - 0.5);
-        questions.push({ type: "de-to-vi", question: item.de, correct: item.vi, options: options });
+        questions.push({ question: item.de, correct: item.vi, options });
       }
 
-      // 8 câu Việt → Đức
-      while (questions.length < 16) {
+      // 10 câu Việt → Đức
+      while (questions.length < 20) {
         const randIndex = Math.floor(Math.random() * vocabulary.length);
         const item = vocabulary[randIndex];
         if (used.has(item.de)) continue;
@@ -193,12 +191,95 @@
           if (!options.includes(randOpt)) options.push(randOpt);
         }
         options.sort(() => Math.random() - 0.5);
-        questions.push({ type: "vi-to-de", question: item.vi, correct: item.de, options: options });
+        questions.push({ question: item.vi, correct: item.de, options });
       }
 
-      // 7 câu ngữ pháp (Artikel + Plural, Partizip)
+      // 5 câu ngữ pháp (Artikel, Plural, Partizip)
       const bankGrammar = [
-        { q: "Artikel und Plural von 'Lage'?", a: "die, Lagen", options: ["der, Lagen", "die, Lagen", "das, Lagen", "den, Lagen"] },
-        { q: "Artikel und Plural von 'Einbrecher'?", a: "der, Einbrecher", options: ["die, Einbrecher", "der, Einbrecher", "das, Einbrecher", "den, Einbrecher"] },
-        { q: "Artikel und Plural von 'Aufschrift'?", a: "die, Aufschriften", options: ["der, Aufschriften", "die, Aufschriften", "das, Aufschriften", "den, Aufschriften"] },
-        { q: "Artikel und
+        { question: "Artikel und Plural von 'Lage'?", correct: "die, Lagen", options: ["die, Lagen", "der, Lagen", "das, Lagen", "den, Lagen"] },
+        { question: "Artikel und Plural von 'Einbrecher'?", correct: "der, Einbrecher", options: ["der, Einbrecher", "die, Einbrecher", "das, Einbrecher", "den, Einbrecher"] },
+        { question: "Artikel und Plural von 'Aufschrift'?", correct: "die, Aufschriften", options: ["die, Aufschriften", "der, Aufschriften", "das, Aufschriften", "den, Aufschriften"] },
+        { question: "Partizip Perfekt von 'fliehen'?", correct: "geflohen", options: ["geflohen", "fliehen", "floh", "flieh"] },
+        { question: "Partizip Perfekt von 'wegräumen'?", correct: "weggeräumt", options: ["weggeräumt", "wegräumen", "räumte weg", "räumen"] }
+      ];
+      questions = questions.concat(bankGrammar.sort(() => Math.random() - 0.5));
+
+      // 5 câu logic
+      const bankLogic = [
+        { question: "Was bedeutet 'Einbrecher unterwegs'?", correct: "Kẻ đột nhập đang hoạt động", options: ["Kẻ đột nhập đang hoạt động", "Người đưa thư đang đến", "Cảnh sát đang tuần tra", "Người thuê mới đang dọn vào"] },
+        { question: "Warum soll man das Licht anlassen?", correct: "Để phòng ngừa trộm", options: ["Để phòng ngừa trộm", "Để tiết kiệm điện", "Để làm đẹp nhà", "Để ngủ ngon"] },
+        { question: "Was passt mit 'Superheld'?", correct: "Aufschrift auf dem Pulli", options: ["Aufschrift auf dem Pulli", "Tên của cảnh sát", "Tên của nạn nhân", "Tên của chủ nhà"] },
+        { question: "Was soll man tun wenn man verdächtige Person sieht?", correct: "Sofort die Polizei informieren", options: ["Sofort die Polizei informieren", "Chụp ảnh rồi đăng Facebook", "Chạy theo bắt", "Không làm gì"] },
+        { question: "Wo wurde der Einbrecher zuletzt gesehen?", correct: "in der Karlstraße", options: ["in der Karlstraße", "im Dachgeschoss", "im Keller", "auf der Straße"] }
+      ];
+      questions = questions.concat(bankLogic.sort(() => Math.random() - 0.5));
+
+      questions = questions.sort(() => Math.random() - 0.5);
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestionIndex];
+      document.getElementById("question").textContent = q.question;
+      document.getElementById("options").innerHTML = "";
+
+      q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = opt;
+        div.onclick = () => selectAnswer(opt, q.correct, div);
+        document.getElementById("options").appendChild(div);
+      });
+    }
+
+    function selectAnswer(selected, correct, div) {
+      document.querySelectorAll(".option").forEach(o => o.onclick = null);
+      if (selected === correct) {
+        div.classList.add("correct");
+        score++;
+      } else {
+        div.classList.add("wrong");
+        document.querySelectorAll(".option").forEach(o => {
+          if (o.textContent === correct) o.classList.add("correct");
+        });
+      }
+      currentQuestionIndex++;
+      setTimeout(() => {
+        if (currentQuestionIndex < questions.length) showQuestion();
+        else showResult();
+      }, 1500);
+    }
+
+    function showResult(timeUp = false) {
+      clearInterval(timerInterval);
+      document.getElementById("quizScreen").style.display = "none";
+      document.getElementById("resultScreen").style.display = "block";
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById("userNameResult").textContent = userName;
+      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
+
+      let evaluation = timeUp ? "Zeit abgelaufen!" : 
+                       score >= 25 ? "Ausgezeichnet!" : 
+                       score >= 20 ? "Sehr gut!" : 
+                       score >= 15 ? "Gut!" : "Weiter üben!";
+
+      document.getElementById("evaluation").textContent = evaluation;
+      document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
+    }
+
+    function restartTest() {
+      location.reload();
+    }
+
+    function endExercise() {
+      if (confirm("Möchtest du die Übung wirklich beenden und zurück zu den Übungen gehen?")) {
+        window.location.href = "uebung.html";
+      }
+    }
+  </script>
+
+</body>
+</html>
