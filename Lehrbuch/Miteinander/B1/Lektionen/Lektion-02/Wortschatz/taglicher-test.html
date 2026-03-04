@@ -10,30 +10,7 @@
     .container { max-width:900px; margin:0 auto; background:white; border-radius:16px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
     .name-input { margin:30px auto; max-width:400px; }
     .name-input input { width:100%; padding:14px; font-size:1.3em; border:2px solid #3b82f6; border-radius:10px; text-align:center; }
-    .btn { 
-      background:#1e40af; 
-      color:white; 
-      border:none; 
-      padding:14px 40px; 
-      font-size:1.3em; 
-      border-radius:10px; 
-      margin:20px auto; 
-      display:block; 
-      cursor:pointer; 
-      opacity: 0.95; 
-      transition: opacity 0.2s, background 0.2s; 
-    }
-    .btn:hover { opacity:1; background:#2563eb; }
-    .back-btn { 
-      background:#6b7280; /* nhạt hơn, xám xanh */
-      opacity: 0.85; 
-    }
-    .back-btn:hover { opacity:1; background:#4b5563; }
-    .end-btn { 
-      background:#dc2626; 
-      opacity: 0.9; 
-    }
-    .end-btn:hover { opacity:1; background:#b91c1c; }
+    .start-btn { background:#1e40af; color:white; border:none; padding:14px 40px; font-size:1.3em; border-radius:10px; margin:20px auto; display:block; cursor:pointer; }
     .timer { text-align:center; font-size:1.8em; font-weight:bold; margin:10px 0; color:#1e40af; }
     .timer.low { color:#ef4444; }
     .question { font-size:1.4em; font-weight:bold; margin:25px 0; text-align:center; }
@@ -48,6 +25,21 @@
     .score { font-size:3em; font-weight:bold; margin:15px 0; }
     .evaluation { font-size:1.6em; margin:20px 0; }
     .datetime { color:#666; margin-top:30px; font-size:1.2em; }
+
+    /* Nút Ende und zurück - nhạt hơn, nằm giữa */
+    .end-btn {
+      background:#64748b;
+      color:white;
+      border:none;
+      padding:12px 30px;
+      font-size:1.1em;
+      border-radius:10px;
+      cursor:pointer;
+      margin:30px auto;
+      display:block;
+      opacity:0.88;
+    }
+    .end-btn:hover { opacity:1; background:#475569; }
   </style>
 </head>
 <body>
@@ -59,11 +51,12 @@
     <div class="name-input">
       <input type="text" id="userName" placeholder="Ihr Name" autocomplete="off">
     </div>
-    <button class="btn" onclick="startTest()">Test starten</button>
+    <button class="start-btn" onclick="startTest()">Test starten</button>
   </div>
 
   <div class="container" id="quizScreen" style="display:none;">
     <div class="timer" id="timer">10:00</div>
+    <div id="progress" style="text-align:center; font-size:1.3em; margin-bottom:15px;"></div>
     <div id="question" class="question"></div>
     <div id="options" class="options"></div>
   </div>
@@ -75,18 +68,11 @@
       <div id="evaluation" class="evaluation"></div>
       <div id="datetime" class="datetime"></div>
     </div>
-    <button class="btn" onclick="restartTest()">Neuer Test</button>
-    <button class="btn end-btn" onclick="endExercise()">Ende und zurück</button>
+    <button class="start-btn" onclick="restartTest()">Neuer Test</button>
+    <button class="end-btn" onclick="endExercise()">Ende und zurück</button>
   </div>
 
   <script>
-    let userName = "";
-    let questions = [];
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let timerInterval;
-    let timeLeft = 600;
-
     // Từ vựng Lektion 02
     const vocabulary = [
       { de: "die Lage", vi: "vị trí, địa điểm" },
@@ -136,6 +122,13 @@
       { de: "kündigen", vi: "hủy hợp đồng" }
     ];
 
+    let userName = "";
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timerInterval;
+    let timeLeft = 600;
+
     function startTest() {
       userName = document.getElementById("userName").value.trim();
       if (!userName) {
@@ -156,8 +149,10 @@
         timeLeft--;
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById("timer").textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
         if (timeLeft <= 120) document.getElementById("timer").classList.add("low");
+
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           showResult(true);
@@ -166,88 +161,44 @@
     }
 
     function generateQuestions() {
-      questions = vocabulary.sort(() => 0.5 - Math.random()).slice(0, 10).map(item => ({
-        question: `Was bedeutet "${item.de}"?`,
-        correct: item.vi,
-        options: [item.vi, ...getRandomWrong(item.vi, 3)]
-      }));
-    }
+      questions = [];
+      const used = new Set();
 
-    function getRandomWrong(correct, count) {
-      const wrong = [];
-      while (wrong.length < count) {
-        const rand = vocabulary[Math.floor(Math.random() * vocabulary.length)].vi;
-        if (rand !== correct && !wrong.includes(rand)) wrong.push(rand);
-      }
-      return wrong;
-    }
+      // 8 câu Đức → Việt
+      while (questions.length < 8) {
+        const randIndex = Math.floor(Math.random() * vocabulary.length);
+        const item = vocabulary[randIndex];
+        if (used.has(item.de)) continue;
+        used.add(item.de);
 
-    function showQuestion() {
-      if (currentQuestionIndex >= questions.length) {
-        showResult();
-        return;
+        let options = [item.vi];
+        while (options.length < 4) {
+          const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].vi;
+          if (!options.includes(randOpt)) options.push(randOpt);
+        }
+        options.sort(() => Math.random() - 0.5);
+        questions.push({ type: "de-to-vi", question: item.de, correct: item.vi, options: options });
       }
 
-      const q = questions[currentQuestionIndex];
-      document.getElementById("question").textContent = q.question;
-      document.getElementById("options").innerHTML = "";
-      q.options.forEach(opt => {
-        const div = document.createElement("div");
-        div.className = "option";
-        div.textContent = opt;
-        div.onclick = () => selectAnswer(opt, q.correct, div);
-        document.getElementById("options").appendChild(div);
-      });
-    }
+      // 8 câu Việt → Đức
+      while (questions.length < 16) {
+        const randIndex = Math.floor(Math.random() * vocabulary.length);
+        const item = vocabulary[randIndex];
+        if (used.has(item.de)) continue;
+        used.add(item.de);
 
-    function selectAnswer(selected, correct, div) {
-      document.querySelectorAll(".option").forEach(o => o.onclick = null);
-      if (selected === correct) {
-        div.classList.add("correct");
-        score++;
-      } else {
-        div.classList.add("wrong");
-        document.querySelectorAll(".option").forEach(o => {
-          if (o.textContent === correct) o.classList.add("correct");
-        });
+        let options = [item.de];
+        while (options.length < 4) {
+          const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].de;
+          if (!options.includes(randOpt)) options.push(randOpt);
+        }
+        options.sort(() => Math.random() - 0.5);
+        questions.push({ type: "vi-to-de", question: item.vi, correct: item.de, options: options });
       }
-      currentQuestionIndex++;
-      setTimeout(showQuestion, 1500);
-    }
 
-    function showResult(timeUp = false) {
-      clearInterval(timerInterval);
-      document.getElementById("quizScreen").style.display = "none";
-      document.getElementById("resultScreen").style.display = "block";
-
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-
-      document.getElementById("userNameResult").textContent = userName;
-      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
-
-      let evaluation = "";
-      if (timeUp) evaluation = "Zeit abgelaufen!";
-      else if (score >= 9) evaluation = "Ausgezeichnet!";
-      else if (score >= 7) evaluation = "Sehr gut!";
-      else if (score >= 5) evaluation = "Gut!";
-      else evaluation = "Weiter üben!";
-
-      document.getElementById("evaluation").textContent = evaluation;
-      document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
-    }
-
-    function restartTest() {
-      location.reload();
-    }
-
-    function endExercise() {
-      if (confirm("Möchtest du die Übung wirklich beenden und zurück zu den Übungen gehen?")) {
-        window.location.href = "uebung.html";
-      }
-    }
-  </script>
-
-</body>
-</html>
+      // 7 câu ngữ pháp (Artikel + Plural, Partizip)
+      const bankGrammar = [
+        { q: "Artikel und Plural von 'Lage'?", a: "die, Lagen", options: ["der, Lagen", "die, Lagen", "das, Lagen", "den, Lagen"] },
+        { q: "Artikel und Plural von 'Einbrecher'?", a: "der, Einbrecher", options: ["die, Einbrecher", "der, Einbrecher", "das, Einbrecher", "den, Einbrecher"] },
+        { q: "Artikel und Plural von 'Aufschrift'?", a: "die, Aufschriften", options: ["der, Aufschriften", "die, Aufschriften", "das, Aufschriften", "den, Aufschriften"] },
+        { q: "Artikel und
