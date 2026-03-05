@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Übung 3 – Sätze ordnen</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; padding:20px; line-height:1.7; }
+    h1 { color:#1e40af; text-align:center; margin:30px 0; }
+    .sentence { margin:30px 0; padding:20px; background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .words { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:20px 0; }
+    .word { background:#eff6ff; padding:12px 20px; border-radius:8px; cursor:move; font-size:1.1em; }
+    .drop-zone { min-height:60px; border:2px dashed #3b82f6; border-radius:8px; margin:20px 0; padding:10px; }
+    .check-btn { background:#10b981; color:white; padding:12px 25px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; margin:20px auto; display:block; }
+    .feedback { text-align:center; font-weight:bold; font-size:1.2em; margin:15px 0; }
+    .back-btn { background:#6b7280; color:white; padding:12px 30px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; margin:30px auto; display:block; width:fit-content; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+  <h1>Übung 3 – Sätze ordnen</h1>
+
+  <div class="sentence">
+    <p>Sắp xếp các từ thành câu đúng:</p>
+    <div class="words" id="words1">
+      <div class="word" draggable="true">Hoa</div>
+      <div class="word" draggable="true">möchte</div>
+      <div class="word" draggable="true">selbstständig</div>
+      <div class="word" draggable="true">werden</div>
+      <div class="word" draggable="true">und</div>
+      <div class="word" draggable="true">ein</div>
+      <div class="word" draggable="true">Kaffee-Mobil</div>
+      <div class="word" draggable="true">eröffnen</div>
+    </div>
+    <div class="drop-zone" id="drop1"></div>
+  </div>
+
+  <!-- Thêm 2 câu nữa nếu muốn dài hơn -->
+
+  <button class="check-btn" onclick="checkOrder()">Prüfen</button>
+  <div class="feedback" id="feedback"></div>
+
+  <a href="uebung.html" class="back-btn">Zurück zu Übungen</a>
+
+  <script>
+    const correctOrder1 = ["Hoa", "möchte", "selbstständig", "werden", "und", "ein", "Kaffee-Mobil", "eröffnen"];
+
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text", ev.target.textContent); }
+    function drop(ev) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text");
+      ev.target.appendChild(document.createTextNode(data + " "));
+    }
+
+    document.querySelectorAll('.word').forEach(word => {
+      word.addEventListener('dragstart', drag);
+    });
+    document.getElementById('drop1').addEventListener('drop', drop);
+    document.getElementById('drop1').addEventListener('dragover', allowDrop);
+
+    function checkOrder() {
+      const dropped = document.getElementById('drop1').textContent.trim().split(' ');
+      const correct = correctOrder1.join(' ');
+      const user = dropped.join(' ');
+      if (user === correct) {
+        document.getElementById('feedback').textContent = "Richtig! Sehr gut!";
+        document.getElementById('feedback').style.color = '#065f46';
+      } else {
+        document.getElementById('feedback').textContent = `Falsch! Đáp án đúng: ${correct}`;
+        document.getElementById('feedback').style.color = '#991b1b';
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Täglicher Vokabeltest – Lektion 03</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; min-height:100vh; padding:15px; }
+    h1 { color:#1e40af; text-align:center; margin:20px 0; font-size:1.8em; }
+    .container { max-width:900px; margin:0 auto; background:white; border-radius:16px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1); position:relative; }
+    .name-input { margin:30px auto; max-width:400px; }
+    .name-input input { width:100%; padding:14px; font-size:1.3em; border:2px solid #3b82f6; border-radius:10px; text-align:center; }
+    .start-btn { background:#1e40af; color:white; border:none; padding:14px 40px; font-size:1.3em; border-radius:10px; margin:20px auto; display:block; cursor:pointer; }
+    .timer { text-align:center; font-size:1.8em; font-weight:bold; margin:10px 0; color:#1e40af; }
+    .timer.low { color:#ef4444; }
+    .question { font-size:1.4em; font-weight:bold; margin:25px 0; text-align:center; }
+    .options { display:flex; flex-direction:column; gap:12px; }
+    .option { background:#eff6ff; padding:16px; border-radius:10px; cursor:pointer; font-size:1.2em; transition:all 0.2s; }
+    .option:hover { background:#bfdbfe; }
+    .option.selected { background:#3b82f6; color:white; }
+    .option.correct { background:#10b981; color:white; }
+    .option.wrong { background:#ef4444; color:white; }
+    .result { text-align:center; margin:40px 0; }
+    .name-result { font-size:2.8em; font-weight:bold; color:#1e40af; margin:20px 0; }
+    .score { font-size:3em; font-weight:bold; margin:15px 0; }
+    .evaluation { font-size:1.6em; margin:20px 0; }
+    .datetime { color:#666; margin-top:30px; font-size:1.2em; }
+    .end-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .end-btn:hover { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+  <h1>Täglicher Vokabeltest – Lektion 03</h1>
+
+  <div class="container" id="startScreen">
+    <h2>Wie heißen Sie?</h2>
+    <div class="name-input">
+      <input type="text" id="userName" placeholder="Ihr Name" autocomplete="off">
+    </div>
+    <button class="start-btn" onclick="startTest()">Test starten</button>
+  </div>
+
+  <div class="container" id="quizScreen" style="display:none;">
+    <button class="end-btn" onclick="endTest()">Ende und zurück</button>
+    <div class="timer" id="timer">10:00</div>
+    <div id="progress" style="text-align:center; font-size:1.3em; margin-bottom:15px;"></div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+  </div>
+
+  <div class="container" id="resultScreen" style="display:none;">
+    <div class="result">
+      <div id="userNameResult" class="name-result"></div>
+      <div id="scoreResult" class="score"></div>
+      <div id="evaluation" class="evaluation"></div>
+      <div id="datetime" class="datetime"></div>
+    </div>
+    <button class="start-btn" onclick="restartTest()">Neuer Test</button>
+  </div>
+
+  <script>
+    // Bank 1: Đức → Việt (30 câu cho Lektion 03)
+    const bankDeToVi = [
+      { question: "die Berufsberatung, -en", correct: "tư vấn nghề nghiệp", options: ["tư vấn nghề nghiệp", "tư vấn học tập", "tư vấn du học", "tư vấn sức khỏe"] },
+      { question: "die Buchhandlung, -en", correct: "hiệu sách", options: ["hiệu sách", "hiệu thuốc", "hiệu bánh", "hiệu quần áo"] },
+      { question: "die Festanstellung, -en", correct: "việc làm chính thức", options: ["việc làm chính thức", "việc làm thời vụ", "việc làm tự do", "việc làm bán thời gian"] },
+      { question: "die Arbeitserfahrung, -en", correct: "kinh nghiệm làm việc", options: ["kinh nghiệm làm việc", "kinh nghiệm học tập", "kinh nghiệm sống", "kinh nghiệm du lịch"] },
+      { question: "der Schulabschluss, -e", correct: "bằng tốt nghiệp phổ thông", options: ["bằng tốt nghiệp phổ thông", "bằng đại học", "bằng nghề", "bằng lái xe"] },
+      { question: "offiziell", correct: "chính thức", options: ["chính thức", "không chính thức", "bí mật", "cá nhân"] },
+      { question: "das System, -e", correct: "hệ thống", options: ["hệ thống", "máy móc", "phương pháp", "công cụ"] },
+      { question: "anerkennen (hat anerkannt)", correct: "công nhận", options: ["công nhận", "phủ nhận", "bỏ qua", "chấp nhận"] },
+      { question: "sich weiterbilden (hat sich weitergebildet)", correct: "học thêm, nâng cao", options: ["học thêm, nâng cao", "học lại", "học cơ bản", "nghỉ học"] },
+      { question: "die Selbstständigkeit (nur Sg.)", correct: "tự kinh doanh", options: ["tự kinh doanh", "làm thuê", "học nghề", "tìm việc"] },
+      { question: "die Messe, -n", correct: "hội chợ", options: ["hội chợ", "hội nghị", "buổi họp", "lễ hội"] },
+      { question: "sondern", correct: "mà (phủ định và bổ sung)", options: ["mà (phủ định và bổ sung)", "và", "hoặc", "nhưng"] },
+      { question: "der Vortrag, -e", correct: "bài thuyết trình", options: ["bài thuyết trình", "bài hát", "bài thơ", "bài báo"] },
+      { question: "der Handwerker, - / die Handwerkerin, -nen", correct: "thợ thủ công", options: ["thợ thủ công", "nhân viên văn phòng", "giáo viên", "bác sĩ"] },
+      { question: "der Unternehmer, - / die Unternehmerin, -nen", correct: "doanh nhân", options: ["doanh nhân", "nhân viên", "học sinh", "người lao động"] },
+      { question: "erfolgreich", correct: "thành công", options: ["thành công", "thất bại", "bình thường", "khó khăn"] },
+      { question: "die Kenntnis, -se", correct: "kiến thức", options: ["kiến thức", "kỹ năng", "trải nghiệm", "bí quyết"] },
+      { question: "erforderlich", correct: "cần thiết", options: ["cần thiết", "không cần", "tùy chọn", "tùy ý"] },
+      { question: "die Unterstützung (Sg.)", correct: "sự hỗ trợ", options: ["sự hỗ trợ", "sự phản đối", "sự cản trở", "sự giúp đỡ"] },
+      { question: "sowohl ... als auch ...", correct: "cả ... lẫn ...", options: ["cả ... lẫn ...", "chỉ ...", "hoặc ...", "không ... cũng không ..."] },
+      { question: "der Snack, -s", correct: "đồ ăn nhẹ", options: ["đồ ăn nhẹ", "bữa chính", "đồ uống", "tráng miệng"] },
+      { question: "die Homepage, -s", correct: "trang chủ website", options: ["trang chủ website", "trang cá nhân", "trang mạng xã hội", "trang tin tức"] },
+      { question: "(sich) überlegen (hat sich überlegt)", correct: "cân nhắc, suy nghĩ", options: ["cân nhắc, suy nghĩ", "quyết định nhanh", "bỏ qua", "chấp nhận"] },
+      { question: "quer", correct: "ngang (chuyển ngành)", options: ["ngang (chuyển ngành)", "dọc", "thẳng", "ngược"] },
+      { question: "das Gericht, -e", correct: "món ăn", options: ["món ăn", "tòa án", "phòng ăn", "bếp"] },
+      { question: "öfter", correct: "thường xuyên hơn", options: ["thường xuyên hơn", "ít hơn", "hiếm khi", "không bao giờ"] },
+      { question: "etwa", correct: "khoảng (ước lượng)", options: ["khoảng (ước lượng)", "chính xác", "hơn", "ít hơn"] },
+      { question: "die Versicherung, -en", correct: "bảo hiểm", options: ["bảo hiểm", "tiết kiệm", "đầu tư", "vay"] },
+      { question: "weder ... noch ...", correct: "không ... cũng không ...", options: ["không ... cũng không ...", "cả ... lẫn ...", "hoặc ... hoặc ...", "chỉ ..."] },
+      { question: "sich lohnen (hat sich gelohnt)", correct: "đáng giá", options: ["đáng giá", "không đáng", "lãng phí", "tốn kém"] }
+    ];
+
+    // Bank 2: Việt → Đức (30 câu)
+    const bankViToDe = bankDeToVi.map(item => ({
+      question: item.correct,
+      correct: item.question,
+      options: item.options.map(opt => bankDeToVi.find(i => i.correct === opt)?.question || opt)
+    }));
+
+    // Bank 3: Ngữ pháp (30 câu, dựa trên chủ đề Lektion 03)
+    const bankGrammar = [
+      { q: "Artikel und Plural von 'Berufsberatung'?", a: "die, Berufsberatungen", options: ["der, Berufsberatungen", "die, Berufsberatungen", "das, Berufsberatungen", "den, Berufsberatungen"] },
+      { q: "Artikel und Plural von 'Buchhandlung'?", a: "die, Buchhandlungen", options: ["der, Buchhandlungen", "die, Buchhandlungen", "das, Buchhandlungen", "den, Buchhandlungen"] },
+      { q: "Artikel und Plural von 'Festanstellung'?", a: "die, Festanstellungen", options: ["der, Festanstellungen", "die, Festanstellungen", "das, Festanstellungen", "den, Festanstellungen"] },
+      { q: "Partizip Perfekt von 'anstellen'?", a: "angestellt", options: ["angestellt", "anstellen", "stellte an", "anstellend"] },
+      { q: "Artikel und Plural von 'Arbeitserfahrung'?", a: "die, Arbeitserfahrungen", options: ["der, Arbeitserfahrungen", "die, Arbeitserfahrungen", "das, Arbeitserfahrungen", "den, Arbeitserfahrungen"] },
+      { q: "Artikel und Plural von 'Schulabschluss'?", a: "der, Schulabschlüsse", options: ["der, Schulabschlüsse", "die, Schulabschlüsse", "das, Schulabschlüsse", "den, Schulabschlüsse"] },
+      { q: "Partizip Perfekt von 'anerkennen'?", a: "anerkannt", options: ["anerkannt", "anerkennen", "erkannte an", "anerkanntend"] },
+      { q: "Artikel und Plural von 'System'?", a: "das, Systeme", options: ["der, Systeme", "die, Systeme", "das, Systeme", "den, Systeme"] },
+      { q: "Partizip Perfekt von 'weiterbilden' (sich)?", a: "weitergebildet", options: ["weitergebildet", "weiterbilden", "bildete weiter", "weiterbildend"] },
+      { q: "Artikel und Plural von 'Selbstständigkeit'?", a: "die, Selbstständigkeiten", options: ["der, Selbstständigkeiten", "die, Selbstständigkeiten", "das, Selbstständigkeiten", "den, Selbstständigkeiten"] },
+      { q: "Artikel und Plural von 'Messe'?", a: "die, Messen", options: ["der, Messen", "die, Messen", "das, Messen", "den, Messen"] },
+      { q: "Artikel und Plural von 'Vortrag'?", a: "der, Vorträge", options: ["der, Vorträge", "die, Vorträge", "das, Vorträge", "den, Vorträge"] },
+      { q: "Artikel und Plural von 'Handwerker'?", a: "der, Handwerker", options: ["der, Handwerker", "die, Handwerker", "das, Handwerker", "den, Handwerker"] },
+      { q: "Artikel und Plural von 'Unternehmer'?", a: "der, Unternehmer", options: ["der, Unternehmer", "die, Unternehmer", "das, Unternehmer", "den, Unternehmer"] },
+      { q: "Partizip Perfekt von 'überlegen' (sich)?", a: "überlegt", options: ["überlegt", "überlegen", "überlegte", "überlegend"] },
+      { q: "Artikel und Plural von 'Gericht'?", a: "das, Gerichte", options: ["der, Gerichte", "die, Gerichte", "das, Gerichte", "den, Gerichte"] },
+      { q: "Artikel und Plural von 'Versicherung'?", a: "die, Versicherungen", options: ["der, Versicherungen", "die, Versicherungen", "das, Versicherungen", "den, Versicherungen"] },
+      { q: "Partizip Perfekt von 'lohnen' (sich)?", a: "gelohnt", options: ["gelohnt", "lohnen", "lohnte", "lohnend"] },
+      { q: "Artikel und Plural von 'Speisekarte'?", a: "die, Speisekarten", options: ["der, Speisekarten", "die, Speisekarten", "das, Speisekarten", "den, Speisekarten"] },
+      { q: "Partizip Perfekt von 'surfen'?", a: "gesurft", options: ["gesurft", "surfen", "surfte", "surfend"] },
+      { q: "Artikel und Plural von 'Snack'?", a: "der, Snacks", options: ["der, Snacks", "die, Snacks", "das, Snacks", "den, Snacks"] },
+      { q: "Artikel und Plural von 'Homepage'?", a: "die, Homepages", options: ["der, Homepages", "die, Homepages", "das, Homepages", "den, Homepages"] },
+      { q: "Partizip Perfekt von 'probieren'?", a: "probiert", options: ["probiert", "probieren", "probierte", "probierend"] },
+      { q: "Artikel und Plural von 'Unterstützung'?", a: "die, Unterstützungen", options: ["der, Unterstützungen", "die, Unterstützungen", "das, Unterstützungen", "den, Unterstützungen"] },
+      { q: "Artikel und Plural von 'Kenntnis'?", a: "die, Kenntnisse", options: ["der, Kenntnisse", "die, Kenntnisse", "das, Kenntnisse", "den, Kenntnisse"] },
+      { q: "Partizip Perfekt von 'erfordern'?", a: "erfordert", options: ["erfordert", "erfordern", "erforderte", "erfordernd"] },
+      { q: "Artikel und Plural von 'Vortrag'?", a: "der, Vorträge", options: ["der, Vorträge", "die, Vorträge", "das, Vorträge", "den, Vorträge"] },
+      { q: "Partizip Perfekt von 'anerkennen'?", a: "anerkannt", options: ["anerkannt", "anerkennen", "erkannte an", "anerkanntend"] },
+      { q: "Artikel und Plural von 'Messe'?", a: "die, Messen", options: ["der, Messen", "die, Messen", "das, Messen", "den, Messen"] },
+      { q: "Partizip Perfekt von 'überlegen'?", a: "überlegt", options: ["überlegt", "überlegen", "überlegte", "überlegend"] }
+    ];
+
+    // Bank 4: Logic / synonym / gegenteil (30 câu)
+    const bankLogic = [
+      { q: "Wo kann Hoa Informationen über Berufe bekommen?", a: "Berufsberatung", options: ["Berufsberatung", "Supermarkt", "Krankenhaus", "Schule"] },
+      { q: "Was ist das Gegenteil von 'befristet'?", a: "unbefristet", options: ["unbefristet", "befristet", "kurz", "lang"] },
+      { q: "Synonym von 'Festanstellung'?", a: "Dauerstelle", options: ["Dauerstelle", "Zeitarbeit", "Probezeit", "Praktikum"] },
+      { q: "Was bedeutet 'Arbeitserfahrung'?", a: "Berufserfahrung", options: ["Berufserfahrung", "Schulerfahrung", "Lebenserfahrung", "Urlaubserfahrung"] },
+      { q: "Was ist das Gegenteil von 'offiziell'?", a: "inoffiziell", options: ["inoffiziell", "offiziell", "formell", "förmlich"] },
+      { q: "Synonym von 'anerkennen'?", a: "bestätigen", options: ["bestätigen", "ablehnen", "ignorieren", "vergessen"] },
+      { q: "Was macht man, um bessere Chancen zu haben?", a: "sich weiterbilden", options: ["sich weiterbilden", "aufhören zu lernen", "nur arbeiten", "nur schlafen"] },
+      { q: "Was ist das Gegenteil von 'angestellt'?", a: "selbstständig", options: ["selbstständig", "angestellt", "fest angestellt", "teilzeit"] },
+      { q: "Synonym von 'Selbstständigkeit'?", a: "Unabhängigkeit", options: ["Unabhängigkeit", "Abhängigkeit", "Angestelltenverhältnis", "Arbeitslosigkeit"] },
+      { q: "Wo kann man Vorträge über Firmengründung hören?", a: "Messe", options: ["Messe", "Kino", "Supermarkt", "Krankenhaus"] },
+      { q: "Was ist das Gegenteil von 'sowohl ... als auch'?", a: "weder ... noch ...", options: ["weder ... noch ...", "sowohl ... als auch", "oder", "und"] },
+      { q: "Synonym von 'Unternehmer'?", a: "Gründer", options: ["Gründer", "Angestellter", "Arbeiter", "Student"] },
+      { q: "Was ist das Gegenteil von 'erfolgreich'?", a: "erfolglos", options: ["erfolglos", "erfolgreich", "reich", "arm"] },
+      { q: "Synonym von 'Kenntnisse'?", a: "Wissen", options: ["Wissen", "Unwissenheit", "Gefühl", "Meinung"] },
+      { q: "Was bedeutet 'erforderlich'?", a: "notwendig", options: ["notwendig", "optional", "unwichtig", "verboten"] },
+      { q: "Was ist das Gegenteil von 'Unterstützung'?", a: "Ablehnung", options: ["Ablehnung", "Unterstützung", "Hilfe", "Förderung"] },
+      { q: "Synonym von 'Snack'?", a: "Imbiss", options: ["Imbiss", "Hauptgericht", "Dessert", "Getränk"] },
+      { q: "Was braucht man für ein Geschäft online?", a: "Homepage", options: ["Homepage", "Telefonbuch", "Briefkasten", "Ladenlokal"] },
+      { q: "Was bedeutet 'sich überlegen'?", a: "nachdenken", options: ["nachdenken", "sofort entscheiden", "vergessen", "ablehnen"] },
+      { q: "Was ist ein Quereinsteiger?", a: "jemand, der aus einem anderen Bereich kommt", options: ["jemand, der aus einem anderen Bereich kommt", "jemand mit langer Ausbildung", "jemand ohne Erfahrung", "jemand mit Studium"] },
+      { q: "Was ist das Gegenteil von 'quer' (im Beruf)?", a: "gerade (im gleichen Bereich)", options: ["gerade (im gleichen Bereich)", "quer", "seitlich", "rückwärts"] },
+      { q: "Synonym von 'Gericht'?", a: "Speise", options: ["Speise", "Teller", "Restaurant", "Küche"] },
+      { q: "Was bedeutet 'öfter'?", a: "häufiger", options: ["häufiger", "seltener", "nie", "immer"] },
+      { q: "Synonym von 'etwa'?", a: "ungefähr", options: ["ungefähr", "genau", "viel", "wenig"] },
+      { q: "Was ist das Gegenteil von 'Versicherung'?", a: "keine Absicherung", options: ["keine Absicherung", "Versicherung", "Sparen", "Investieren"] },
+      { q: "Was bedeutet 'weder ... noch ...'?", a: "weder das eine noch das andere", options: ["weder das eine noch das andere", "beides", "nur eins", "vielleicht"] },
+      { q: "Was ist das Gegenteil von 'sich lohnen'?", a: "sich nicht lohnen", options: ["sich nicht lohnen", "sich lohnen", "sich ärgern", "sich freuen"] },
+      { q: "Synonym von 'fein'?", a: "lecker", options: ["lecker", "schlecht", "groß", "klein"] },
+      { q: "Was bedeutet 'probieren'?", a: "kosten", options: ["kosten", "ablehnen", "wegwerfen", "kaufen"] },
+      { q: "Was ist das Gegenteil von 'Speisekarte'?", a: "keine Auswahl", options: ["keine Auswahl", "Speisekarte", "Rechnung", "Tisch"] }
+    ];
+
+    let userName = "";
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timerInterval;
+    let timeLeft = 600;
+
+    function startTest() {
+      userName = document.getElementById("userName").value.trim();
+      if (!userName) {
+        alert("Bitte geben Sie Ihren Namen ein.");
+        return;
+      }
+
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("quizScreen").style.display = "block";
+
+      generateQuestions();
+      startTimer();
+      showQuestion();
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+        if (timeLeft <= 120) document.getElementById("timer").classList.add("low");
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showResult(true);
+        }
+      }, 1000);
+    }
+
+    function endTest() {
+      if (confirm("Möchtest du den Test wirklich beenden und zurück zu den Übungen gehen?")) {
+        clearInterval(timerInterval);
+        window.location.href = "../Übungen/uebung.html";
+      }
+    }
+
+    function generateQuestions() {
+      questions = [];
+
+      // 8 câu Đức → Việt
+      const shuffledDeVi = [...bankDeToVi].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledDeVi.slice(0, 8));
+
+      // 8 câu Việt → Đức
+      const shuffledViDe = [...bankViToDe].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledViDe.slice(0, 8));
+
+      // 7 câu ngữ pháp
+      const shuffledGrammar = [...bankGrammar].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledGrammar.slice(0, 7));
+
+      // 7 câu logic / synonym / gegenteil
+      const shuffledLogic = [...bankLogic].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledLogic.slice(0, 7));
+
+      // Trộn toàn bộ
+      questions = questions.sort(() => Math.random() - 0.5);
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestionIndex];
+      document.getElementById("progress").textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+
+      const questionDiv = document.getElementById("question");
+      questionDiv.innerHTML = q.type === "de-to-vi" 
+        ? `Was bedeutet <strong>"${q.question}"</strong>?`
+        : q.type === "vi-to-de" 
+          ? `Wie heißt <strong>"${q.question}"</strong> auf Deutsch?`
+          : `${q.q}`;
+
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = opt;
+        div.onclick = () => selectAnswer(opt, q.a || q.correct, div);
+        optionsDiv.appendChild(div);
+      });
+    }
+
+    function selectAnswer(selected, correct, div) {
+      const options = div.parentElement.children;
+      for (let opt of options) {
+        opt.onclick = null;
+        if (opt.textContent === correct) opt.classList.add("correct");
+        if (opt.textContent === selected && selected !== correct) opt.classList.add("wrong");
+      }
+
+      if (selected === correct) score++;
+
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          showQuestion();
+        } else {
+          showResult();
+        }
+      }, 800);
+    }
+
+    function showResult(timeUp = false) {
+      clearInterval(timerInterval);
+      document.getElementById("quizScreen").style.display = "none";
+      const resultScreen = document.getElementById("resultScreen");
+      resultScreen.style.display = "block";
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById("userNameResult").textContent = userName;
+      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
+
+      let evaluation = "";
+      if (timeUp) evaluation = "Zeit abgelaufen! " + (score >= 20 ? "Noch gut!" : "Weiter üben!");
+      else if (score >= 25) evaluation = "Ausgezeichnet! Sehr gut gemacht!";
+      else if (score >= 20) evaluation = "Sehr gut!";
+      else if (score >= 15) evaluation = "Gut!";
+      else if (score >= 10) evaluation = "Nicht schlecht, aber weiter üben.";
+      else evaluation = "Weiter üben! Du schaffst das.";
+
+      document.getElementById("evaluation").textContent = evaluation;
+      document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
+    }
+
+    function restartTest() {
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>

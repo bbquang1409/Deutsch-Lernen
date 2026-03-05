@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Übung 2 – Multiple Choice</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; padding:20px; line-height:1.7; }
+    h1 { color:#1e40af; text-align:center; margin:30px 0; }
+    .question { margin:25px 0; font-size:1.2em; }
+    .options { display:flex; flex-direction:column; gap:12px; }
+    .option { background:#eff6ff; padding:15px; border-radius:8px; cursor:pointer; text-align:center; }
+    .option.selected { background:#3b82f6; color:white; }
+    .check-btn { background:#10b981; color:white; padding:12px 25px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; margin:20px auto; display:block; }
+    .feedback { text-align:center; font-weight:bold; font-size:1.2em; margin:15px 0; }
+    .back-btn { background:#6b7280; color:white; padding:12px 30px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; margin:30px auto; display:block; width:fit-content; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+  <h1>Übung 2 – Multiple Choice</h1>
+
+  <div class="question">
+    1. Was bedeutet "Selbstständigkeit"?
+    <div class="options">
+      <div class="option" data-correct="true">Tự kinh doanh</div>
+      <div class="option">Làm thuê</div>
+      <div class="option">Học nghề</div>
+      <div class="option">Tìm việc</div>
+    </div>
+  </div>
+
+  <div class="question">
+    2. Was ist "Quereinsteiger"?
+    <div class="options">
+      <div class="option">Người chuyển ngành</div>
+      <div class="option" data-correct="true">Người có bằng cấp chính quy</div>
+      <div class="option">Người mới bắt đầu</div>
+      <div class="option">Người thất nghiệp</div>
+    </div>
+  </div>
+
+  <!-- Thêm 3–4 câu nữa nếu muốn dài hơn -->
+
+  <button class="check-btn" onclick="checkAnswers()">Prüfen</button>
+  <div class="feedback" id="feedback"></div>
+
+  <a href="uebung.html" class="back-btn">Zurück zu Übungen</a>
+
+  <script>
+    let score = 0;
+    function checkAnswers() {
+      score = 0;
+      document.querySelectorAll('.question').forEach(q => {
+        const selected = q.querySelector('.option.selected');
+        if (selected && selected.dataset.correct === "true") score++;
+        q.querySelectorAll('.option').forEach(opt => {
+          opt.onclick = null;
+          if (opt.dataset.correct === "true") opt.style.background = '#10b981';
+          else if (opt.classList.contains('selected')) opt.style.background = '#ef4444';
+        });
+      });
+      document.getElementById('feedback').textContent = `Du hast ${score} von ${document.querySelectorAll('.question').length} richtig!`;
+      document.getElementById('feedback').style.color = score === document.querySelectorAll('.question').length ? '#065f46' : '#991b1b';
+    }
+
+    document.querySelectorAll('.option').forEach(opt => {
+      opt.onclick = () => {
+        const siblings = opt.parentElement.querySelectorAll('.option');
+        siblings.forEach(s => s.classList.remove('selected'));
+        opt.classList.add('selected');
+      };
+    });
+  </script>
+
+</body>
+</html>
