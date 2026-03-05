@@ -7,32 +7,12 @@
   <style>
     body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; min-height:100vh; padding:15px; }
     h1 { color:#1e40af; text-align:center; margin:20px 0; font-size:1.8em; }
-    .container { max-width:900px; margin:0 auto; background:white; border-radius:16px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+    .container { max-width:900px; margin:0 auto; background:white; border-radius:16px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1); position:relative; }
     .name-input { margin:30px auto; max-width:400px; }
     .name-input input { width:100%; padding:14px; font-size:1.3em; border:2px solid #3b82f6; border-radius:10px; text-align:center; }
-    .btn { 
-      background:#1e40af; 
-      color:white; 
-      border:none; 
-      padding:14px 40px; 
-      font-size:1.2em; 
-      border-radius:10px; 
-      cursor:pointer; 
-      margin:25px auto; 
-      display:block; 
-      opacity:0.95; 
-    }
-    .btn:hover { opacity:1; background:#2563eb; }
-    .end-btn { 
-      background:#64748b; 
-      opacity:0.88; 
-      margin:20px auto; 
-      display:block; 
-    }
-    .end-btn:hover { opacity:1; background:#475569; }
+    .start-btn { background:#1e40af; color:white; border:none; padding:14px 40px; font-size:1.3em; border-radius:10px; margin:20px auto; display:block; cursor:pointer; }
     .timer { text-align:center; font-size:1.8em; font-weight:bold; margin:10px 0; color:#1e40af; }
     .timer.low { color:#ef4444; }
-    .progress { text-align:center; font-size:1.3em; margin:10px 0; color:#64748b; font-weight:bold; }
     .question { font-size:1.4em; font-weight:bold; margin:25px 0; text-align:center; }
     .options { display:flex; flex-direction:column; gap:12px; }
     .option { background:#eff6ff; padding:16px; border-radius:10px; cursor:pointer; font-size:1.2em; transition:all 0.2s; }
@@ -45,6 +25,21 @@
     .score { font-size:3em; font-weight:bold; margin:15px 0; }
     .evaluation { font-size:1.6em; margin:20px 0; }
     .datetime { color:#666; margin-top:30px; font-size:1.2em; }
+    .end-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .end-btn:hover { background: #dc2626; }
   </style>
 </head>
 <body>
@@ -56,15 +51,15 @@
     <div class="name-input">
       <input type="text" id="userName" placeholder="Ihr Name" autocomplete="off">
     </div>
-    <button class="btn" onclick="startTest()">Test starten</button>
+    <button class="start-btn" onclick="startTest()">Test starten</button>
   </div>
 
   <div class="container" id="quizScreen" style="display:none;">
+    <button class="end-btn" onclick="endTest()">Ende und zurück</button>
     <div class="timer" id="timer">10:00</div>
-    <div class="progress" id="progress">Câu 1 / 30</div>
+    <div id="progress" style="text-align:center; font-size:1.3em; margin-bottom:15px;"></div>
     <div id="question" class="question"></div>
     <div id="options" class="options"></div>
-    <button class="end-btn" onclick="endExercise()">Ende und zurück</button>
   </div>
 
   <div class="container" id="resultScreen" style="display:none;">
@@ -74,90 +69,124 @@
       <div id="evaluation" class="evaluation"></div>
       <div id="datetime" class="datetime"></div>
     </div>
-    <button class="btn" onclick="restartTest()">Neuer Test</button>
-    <button class="end-btn" onclick="endExercise()">Ende und zurück</button>
+    <button class="start-btn" onclick="restartTest()">Neuer Test</button>
   </div>
 
   <script>
+    // Bank 1: Đức → Việt (30 câu cho Lektion 02)
+    const bankDeToVi = [
+      { question: "Freizeit", correct: "thời gian rảnh", options: ["thời gian rảnh", "thời gian làm việc", "thời gian học", "thời gian ngủ"] },
+      { question: "Hobby", correct: "sở thích", options: ["sở thích", "công việc", "nghĩa vụ", "trách nhiệm"] },
+      { question: "Sport", correct: "thể thao", options: ["thể thao", "âm nhạc", "đọc sách", "xem phim"] },
+      { question: "Musik hören", correct: "nghe nhạc", options: ["nghe nhạc", "chơi nhạc", "hát", "nhảy múa"] },
+      { question: "Film sehen", correct: "xem phim", options: ["xem phim", "đọc sách", "chơi game", "nghe radio"] },
+      { question: "Buch lesen", correct: "đọc sách", options: ["đọc sách", "viết sách", "mua sách", "bán sách"] },
+      { question: "Reisen", correct: "du lịch", options: ["du lịch", "ở nhà", "làm việc", "học tập"] },
+      { question: "Urlaub", correct: "kỳ nghỉ", options: ["kỳ nghỉ", "làm việc", "học hành", "bận rộn"] },
+      { question: "Wetter", correct: "thời tiết", options: ["thời tiết", "khí hậu", "mùa", "nhiệt độ"] },
+      { question: "Jahreszeit", correct: "mùa", options: ["mùa", "ngày", "tuần", "tháng"] },
+      { question: "Stadt", correct: "thành phố", options: ["thành phố", "làng quê", "núi", "biển"] },
+      { question: "Land", correct: "nông thôn", options: ["nông thôn", "thành phố", "biển", "núi"] },
+      { question: "Familie", correct: "gia đình", options: ["gia đình", "bạn bè", "đồng nghiệp", "hàng xóm"] },
+      { question: "Freunde", correct: "bạn bè", options: ["bạn bè", "gia đình", "đồng nghiệp", "người lạ"] },
+      { question: "Wohnung", correct: "căn hộ", options: ["căn hộ", "nhà riêng", "phòng trọ", "khách sạn"] },
+      { question: "Wochenende", correct: "cuối tuần", options: ["cuối tuần", "ngày thường", "buổi tối", "buổi sáng"] },
+      { question: "Kino", correct: "rạp chiếu phim", options: ["rạp chiếu phim", "nhà hát", "công viên", "sân vận động"] },
+      { question: "Serie", correct: "phim bộ", options: ["phim bộ", "phim lẻ", "phim hoạt hình", "phim tài liệu"] },
+      { question: "Internet", correct: "mạng internet", options: ["mạng internet", "điện thoại", "máy tính", "tivi"] },
+      { question: "Handy", correct: "điện thoại di động", options: ["điện thoại di động", "máy tính bảng", "laptop", "đồng hồ"] },
+      { question: "Treffen", correct: "gặp gỡ", options: ["gặp gỡ", "chia tay", "cãi nhau", "tránh mặt"] },
+      { question: "Ausgehen", correct: "ra ngoài", options: ["ra ngoài", "ở nhà", "ngủ", "làm việc"] },
+      { question: "Tanzen", correct: "nhảy múa", options: ["nhảy múa", "hát", "chơi nhạc", "vẽ tranh"] },
+      { question: "Kochen", correct: "nấu ăn", options: ["nấu ăn", "ăn ngoài", "gọi đồ ăn", "đói bụng"] },
+      { question: "Schlafen", correct: "ngủ", options: ["ngủ", "thức", "làm việc", "học"] },
+      { question: "Lernen", correct: "học", options: ["học", "chơi", "nghỉ", "ngủ"] },
+      { question: "Arbeiten", correct: "làm việc", options: ["làm việc", "nghỉ", "chơi", "học"] },
+      { question: "Einkaufen", correct: "mua sắm", options: ["mua sắm", "bán hàng", "trả hàng", "quà tặng"] },
+      { question: "Spazieren gehen", correct: "đi dạo", options: ["đi dạo", "chạy bộ", "đi xe đạp", "đi bộ nhanh"] },
+      { question: "Musik machen", correct: "chơi nhạc", options: ["chơi nhạc", "nghe nhạc", "hát", "nhảy"] }
+    ];
+
+    // Bank 2: Việt → Đức (30 câu)
+    const bankViToDe = bankDeToVi.map(item => ({
+      question: item.correct,
+      correct: item.question,
+      options: item.options.map(opt => bankDeToVi.find(i => i.correct === opt)?.question || opt)
+    }));
+
+    // Bank 3: Ngữ pháp (30 câu)
+    const bankGrammar = [
+      { q: "Artikel und Plural von 'Freizeit'?", a: "die, Freizeiten", options: ["der, Freizeiten", "die, Freizeiten", "das, Freizeiten", "den, Freizeiten"] },
+      { q: "Artikel und Plural von 'Hobby'?", a: "das, Hobbys", options: ["der, Hobbys", "die, Hobbys", "das, Hobbys", "den, Hobbys"] },
+      { q: "Artikel und Plural von 'Sport'?", a: "der, Sportarten", options: ["der, Sportarten", "die, Sportarten", "das, Sportarten", "den, Sportarten"] },
+      { q: "Partizip Perfekt von 'hören'?", a: "gehört", options: ["gehört", "hören", "hörte", "hörend"] },
+      { q: "Artikel und Plural von 'Film'?", a: "der, Filme", options: ["der, Filme", "die, Filme", "das, Filme", "den, Filme"] },
+      { q: "Artikel und Plural von 'Buch'?", a: "das, Bücher", options: ["der, Bücher", "die, Bücher", "das, Bücher", "den, Bücher"] },
+      { q: "Partizip Perfekt von 'lesen'?", a: "gelesen", options: ["gelesen", "lesen", "las", "lesend"] },
+      { q: "Artikel und Plural von 'Reise'?", a: "die, Reisen", options: ["der, Reisen", "die, Reisen", "das, Reisen", "den, Reisen"] },
+      { q: "Artikel und Plural von 'Urlaub'?", a: "der, Urlaube", options: ["der, Urlaube", "die, Urlaube", "das, Urlaube", "den, Urlaube"] },
+      { q: "Artikel und Plural von 'Wetter'?", a: "das, Wetter", options: ["der, Wetter", "die, Wetter", "das, Wetter", "den, Wetter"] },
+      { q: "Artikel und Plural von 'Jahreszeit'?", a: "die, Jahreszeiten", options: ["der, Jahreszeiten", "die, Jahreszeiten", "das, Jahreszeiten", "den, Jahreszeiten"] },
+      { q: "Artikel und Plural von 'Stadt'?", a: "die, Städte", options: ["der, Städte", "die, Städte", "das, Städte", "den, Städte"] },
+      { q: "Artikel und Plural von 'Land'?", a: "das, Länder", options: ["der, Länder", "die, Länder", "das, Länder", "den, Länder"] },
+      { q: "Artikel und Plural von 'Familie'?", a: "die, Familien", options: ["der, Familien", "die, Familien", "das, Familien", "den, Familien"] },
+      { q: "Artikel und Plural von 'Freund'?", a: "der, Freunde", options: ["der, Freunde", "die, Freunde", "das, Freunde", "den, Freunde"] },
+      { q: "Artikel und Plural von 'Wohnung'?", a: "die, Wohnungen", options: ["der, Wohnungen", "die, Wohnungen", "das, Wohnungen", "den, Wohnungen"] },
+      { q: "Artikel und Plural von 'Wochenende'?", a: "das, Wochenenden", options: ["der, Wochenenden", "die, Wochenenden", "das, Wochenenden", "den, Wochenenden"] },
+      { q: "Artikel und Plural von 'Kino'?", a: "das, Kinos", options: ["der, Kinos", "die, Kinos", "das, Kinos", "den, Kinos"] },
+      { q: "Artikel und Plural von 'Serie'?", a: "die, Serien", options: ["der, Serien", "die, Serien", "das, Serien", "den, Serien"] },
+      { q: "Artikel und Plural von 'Internet'?", a: "das, Internet", options: ["der, Internet", "die, Internet", "das, Internet", "den, Internet"] },
+      { q: "Artikel und Plural von 'Handy'?", a: "das, Handys", options: ["der, Handys", "die, Handys", "das, Handys", "den, Handys"] },
+      { q: "Partizip Perfekt von 'treffen'?", a: "getroffen", options: ["getroffen", "treffen", "traf", "treffend"] },
+      { q: "Partizip Perfekt von 'ausgehen'?", a: "ausgegangen", options: ["ausgegangen", "ausgehen", "ausging", "ausgehend"] },
+      { q: "Partizip Perfekt von 'tanzen'?", a: "getanzt", options: ["getanzt", "tanzen", "tanzte", "tanzend"] },
+      { q: "Partizip Perfekt von 'kochen'?", a: "gekocht", options: ["gekocht", "kochen", "kochte", "kochend"] },
+      { q: "Partizip Perfekt von 'schlafen'?", a: "geschlafen", options: ["geschlafen", "schlafen", "schlief", "schlafend"] },
+      { q: "Partizip Perfekt von 'lernen'?", a: "gelernt", options: ["gelernt", "lernen", "lernte", "lernend"] },
+      { q: "Partizip Perfekt von 'arbeiten'?", a: "gearbeitet", options: ["gearbeitet", "arbeiten", "arbeitete", "arbeitend"] },
+      { q: "Partizip Perfekt von 'einkaufen'?", a: "eingekauft", options: ["eingekauft", "einkaufen", "kaufte ein", "einkaufend"] },
+      { q: "Partizip Perfekt von 'spazieren gehen'?", a: "spazieren gegangen", options: ["spazieren gegangen", "spazieren gehen", "ging spazieren", "spazierend"] }
+    ];
+
+    // Bank 4: Logic / synonym / gegenteil (30 câu)
+    const bankLogic = [
+      { q: "Was macht man am Wochenende oft?", a: "Freizeit haben", options: ["Freizeit haben", "arbeiten", "lernen", "schlafen"] },
+      { q: "Was ist das Gegenteil von 'langweilig'?", a: "interessant", options: ["interessant", "langweilig", "schwierig", "einfach"] },
+      { q: "Synonym von 'entspannt'?", a: "ruhig", options: ["ruhig", "gestresst", "nervös", "aufgeregt"] },
+      { q: "Was macht man, wenn man Freunde trifft?", a: "ausgehen", options: ["ausgehen", "zu Hause bleiben", "arbeiten", "lernen"] },
+      { q: "Was ist das Gegenteil von 'früh aufstehen'?", a: "spät aufstehen", options: ["spät aufstehen", "früh aufstehen", "pünktlich aufstehen", "nie aufstehen"] },
+      { q: "Synonym von 'Hobby'?", a: "Lieblingsbeschäftigung", options: ["Lieblingsbeschäftigung", "Pflicht", "Arbeit", "Aufgabe"] },
+      { q: "Was ist eine gute Freizeitaktivität bei gutem Wetter?", a: "spazieren gehen", options: ["spazieren gehen", "im Bett bleiben", "fernsehen", "arbeiten"] },
+      { q: "Was ist das Gegenteil von 'viel Zeit haben'?", a: "wenig Zeit haben", options: ["wenig Zeit haben", "viel Zeit haben", "genug Zeit haben", "keine Zeit haben"] },
+      { q: "Synonym von 'Musik hören'?", a: "Musik genießen", options: ["Musik genießen", "Musik machen", "Musik spielen", "Musik lernen"] },
+      { q: "Was macht man oft am Abend?", a: "Film sehen", options: ["Film sehen", "früh schlafen", "arbeiten", "lernen"] },
+      { q: "Was ist das Gegenteil von 'allein sein'?", a: "mit Freunden sein", options: ["mit Freunden sein", "allein sein", "mit Familie sein", "mit Kollegen sein"] },
+      { q: "Synonym von 'Reise'?", a: "Ausflug", options: ["Ausflug", "Arbeit", "Schule", "Krankenhaus"] },
+      { q: "Was ist eine typische Tätigkeit im Urlaub?", a: "entspannen", options: ["entspannen", "arbeiten", "lernen", "stressen"] },
+      { q: "Was ist das Gegenteil von 'schlechtes Wetter'?", a: "gutes Wetter", options: ["gutes Wetter", "schlechtes Wetter", "kaltes Wetter", "heißes Wetter"] },
+      { q: "Synonym von 'Stadtleben'?", a: "urbanes Leben", options: ["urbanes Leben", "Landleben", "Dorfleben", "Bergleben"] },
+      { q: "Was macht man mit der Familie am Wochenende?", a: "zusammen sein", options: ["zusammen sein", "allein sein", "arbeiten", "lernen"] },
+      { q: "Was ist das Gegenteil von 'viel Freizeit'?", a: "wenig Freizeit", options: ["wenig Freizeit", "viel Freizeit", "genug Freizeit", "keine Freizeit"] },
+      { q: "Synonym von 'tanzen'?", a: "sich bewegen", options: ["sich bewegen", "sitzen", "stehen", "liegen"] },
+      { q: "Was ist eine beliebte Freizeitbeschäftigung?", a: "kochen", options: ["kochen", "arbeiten", "lernen", "schlafen"] },
+      { q: "Was ist das Gegenteil von 'aktiv sein'?", a: "passiv sein", options: ["passiv sein", "aktiv sein", "sportlich sein", "fit sein"] },
+      { q: "Synonym von 'Internet nutzen'?", a: "online gehen", options: ["online gehen", "offline gehen", "telefonieren", "schreiben"] },
+      { q: "Was macht man oft mit dem Handy?", a: "Musik hören", options: ["Musik hören", "schlafen", "essen", "trinken"] },
+      { q: "Was ist das Gegenteil von 'zu Hause bleiben'?", a: "ausgehen", options: ["ausgehen", "zu Hause bleiben", "schlafen", "arbeiten"] },
+      { q: "Synonym von 'Treffen'?", a: "sich sehen", options: ["sich sehen", "sich trennen", "sich streiten", "sich vermeiden"] },
+      { q: "Was ist eine gute Möglichkeit, um fit zu bleiben?", a: "Sport machen", options: ["Sport machen", "viel essen", "viel schlafen", "viel fernsehen"] },
+      { q: "Was ist das Gegenteil von 'ruhig'?", a: "laut", options: ["laut", "ruhig", "leise", "still"] },
+      { q: "Synonym von 'Wochenende'?", a: "Samstag und Sonntag", options: ["Samstag und Sonntag", "Montag bis Freitag", "werktags", "feiertags"] },
+      { q: "Was macht man bei schlechtem Wetter?", a: "zu Hause bleiben", options: ["zu Hause bleiben", "spazieren gehen", "Sport machen", "reisen"] },
+      { q: "Was ist das Gegenteil von 'viel Freizeit'?", a: "wenig Freizeit", options: ["wenig Freizeit", "viel Freizeit", "genug Freizeit", "keine Freizeit"] }
+    ];
+
     let userName = "";
     let questions = [];
     let currentQuestionIndex = 0;
     let score = 0;
     let timerInterval;
     let timeLeft = 600;
-
-    // Database từ vựng (nghĩa đơn giản)
-    const vocabDB = [
-      { de: "die Lage", vi: "vị trí" },
-      { de: "fröhlich", vi: "vui vẻ" },
-      { de: "der Einbrecher", vi: "kẻ đột nhập" },
-      { de: "die Einbrecherin", vi: "kẻ đột nhập" },
-      { de: "zuletzt", vi: "lần cuối" },
-      { de: "fliehen", vi: "chạy trốn" },
-      { de: "der Bart", vi: "bộ râu" },
-      { de: "der Turnschuh", vi: "giày thể thao" },
-      { de: "die Aufschrift", vi: "dòng chữ" },
-      { de: "die Kripo", vi: "cảnh sát hình sự" },
-      { de: "aufmerksam", vi: "chú ý" },
-      { de: "anlassen", vi: "để bật" },
-      { de: "verdächtig", vi: "đáng nghi" },
-      { de: "die Tafel", vi: "bảng" },
-      { de: "wegräumen", vi: "dọn đi" },
-      { de: "das Dachgeschoss", vi: "tầng áp mái" },
-      { de: "der Dieb", vi: "tên trộm" },
-      { de: "die Diebin", vi: "tên trộm" },
-      { de: "die Beschreibung", vi: "mô tả" },
-      { de: "die Klamotten", vi: "quần áo" },
-      { de: "beobachten", vi: "quan sát" },
-      { de: "das Missverständnis", vi: "sự hiểu lầm" },
-      { de: "stehlen", vi: "ăn cắp" },
-      { de: "der Briefträger", vi: "người đưa thư" },
-      { de: "die Briefträgerin", vi: "người đưa thư" },
-      { de: "aufessen", vi: "ăn hết" },
-      { de: "die Rückmeldung", vi: "phản hồi" },
-      { de: "aufhängen", vi: "treo lên" },
-      { de: "die Monatskarte", vi: "vé tháng" },
-      { de: "sich bedanken", vi: "cảm ơn" },
-      { de: "der Anbieter", vi: "nhà cung cấp" },
-      { de: "die Anbieterin", vi: "nhà cung cấp" },
-      { de: "wegen", vi: "vì" },
-      { de: "kontaktieren", vi: "liên hệ" },
-      { de: "abschließen", vi: "ký kết" },
-      { de: "der Einzug", vi: "ngày dọn vào" },
-      { de: "die Kopie", vi: "bản sao" },
-      { de: "der Reisepass", vi: "hộ chiếu" },
-      { de: "der Personalausweis", vi: "chứng minh thư" },
-      { de: "klingen", vi: "nghe có vẻ" },
-      { de: "mehrmals", vi: "nhiều lần" },
-      { de: "die Hotline", vi: "tổng đài hỗ trợ" },
-      { de: "die Abrechnung", vi: "hóa đơn" },
-      { de: "der Kundendienst", vi: "chăm sóc khách hàng" },
-      { de: "kündigen", vi: "hủy hợp đồng" }
-    ];
-
-    // Ngữ pháp (8 câu cố định)
-    const grammarDB = [
-      { question: "Artikel und Plural von 'Lage'?", correct: "die, Lagen", options: ["die, Lagen", "der, Lagen", "das, Lagen", "den, Lagen"] },
-      { question: "Artikel und Plural von 'Einbrecher'?", correct: "der, Einbrecher", options: ["der, Einbrecher", "die, Einbrecher", "das, Einbrecher", "den, Einbrecher"] },
-      { question: "Artikel und Plural von 'Aufschrift'?", correct: "die, Aufschriften", options: ["die, Aufschriften", "der, Aufschriften", "das, Aufschriften", "den, Aufschriften"] },
-      { question: "Artikel und Plural von 'Dachgeschoss'?", correct: "das, Dachgeschosse", options: ["das, Dachgeschosse", "die, Dachgeschosse", "der, Dachgeschosse", "den, Dachgeschosse"] },
-      { question: "Partizip Perfekt von 'fliehen'?", correct: "geflohen", options: ["geflohen", "fliehen", "floh", "flieh"] },
-      { question: "Partizip Perfekt von 'wegräumen'?", correct: "weggeräumt", options: ["weggeräumt", "wegräumen", "räumte weg", "räumen"] },
-      { question: "Artikel und Plural von 'Missverständnis'?", correct: "das, Missverständnisse", options: ["das, Missverständnisse", "die, Missverständnisse", "der, Missverständnisse", "den, Missverständnisse"] },
-      { question: "Artikel und Plural von 'Rückmeldung'?", correct: "die, Rückmeldungen", options: ["die, Rückmeldungen", "der, Rückmeldungen", "das, Rückmeldungen", "den, Rückmeldungen"] }
-    ];
-
-    // Logic + synonym/antonym (8 câu, tư duy cao hơn)
-    const logicDB = [
-      { question: "Warum lässt man das Licht an, wenn man abends ausgeht?", correct: "Um Einbrecher abzuschrecken", options: ["Um Einbrecher abzuschrecken", "Um Strom zu sparen", "Um die Nachbarn zu ärgern", "Um das Haus hell zu machen"] },
-      { question: "Welches Wort ist ein Synonym von 'verdächtig'?", correct: "suspekt", options: ["suspekt", "vertrauenswürdig", "harmlos", "sicher"] },
-      { question: "Welches Wort ist ein Antonym von 'fröhlich'?", correct: "traurig", options: ["traurig", "lustig", "glücklich", "heiter"] },
-      { question: "Was ist das Beste, wenn man eine verdächtige Person sieht?", correct: "Sofort die Polizei rufen und beobachten", options: ["Sofort die Polizei rufen und beobachten", "Selbst verfolgen", "Foto machen und teilen", "Ignorieren"] },
-      { question: "Warum passt die Beschreibung 'Bart, Jeans, Turnschuhe, schwarzer Kapuzenpulli mit Superheld'?", correct: "Weil das die Kleidung des gesuchten Einbrechers ist", options: ["Weil das die Kleidung des gesuchten Einbrechers ist", "Weil das der neue Mieter ist", "Weil das der Briefträger ist", "Weil das der Vermieter ist"] },
-      { question: "Was bedeutet 'Einbrecher unterwegs' am besten?", correct: "Der Einbrecher ist noch auf freiem Fuß", options: ["Der Einbrecher ist noch auf freiem Fuß", "Der Einbrecher ist im Gefängnis", "Der Einbrecher ist im Urlaub", "Der Einbrecher ist der Nachbar"] },
-      { question: "Wenn jemand sagt 'Das ist ein Missverständnis', was ist die beste Reaktion?", correct: "Die Situation ruhig erklären", options: ["Die Situation ruhig erklären", "Laut werden", "Weggehen", "Die Polizei rufen"] },
-      { question: "Warum soll man verdächtige Personen nicht selbst ansprechen?", correct: "Weil es gefährlich sein kann", options: ["Weil es gefährlich sein kann", "Weil man Zeit sparen will", "Weil man höflich sein soll", "Weil die Polizei zu langsam ist"] }
-    ];
 
     function startTest() {
       userName = document.getElementById("userName").value.trim();
@@ -177,112 +206,121 @@
     function startTimer() {
       timerInterval = setInterval(() => {
         timeLeft--;
-        const m = Math.floor(timeLeft / 60);
-        const s = timeLeft % 60;
-        document.getElementById("timer").textContent = `${m}:${s.toString().padStart(2,'0')}`;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
         if (timeLeft <= 120) document.getElementById("timer").classList.add("low");
-        if (timeLeft <= 0) { clearInterval(timerInterval); showResult(true); }
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showResult(true);
+        }
       }, 1000);
+    }
+
+    function endTest() {
+      if (confirm("Möchtest du den Test wirklich beenden und zurück zu den Übungen gehen?")) {
+        clearInterval(timerInterval);
+        window.location.href = "../Übungen/uebung.html";
+      }
     }
 
     function generateQuestions() {
       questions = [];
-      const used = new Set();
 
-      // 7 Đức → Việt (random)
-      while (questions.length < 7) {
-        const item = vocabDB[Math.floor(Math.random() * vocabDB.length)];
-        if (used.has(item.de)) continue;
-        used.add(item.de);
-        let opts = [item.vi];
-        while (opts.length < 4) {
-          const r = vocabDB[Math.floor(Math.random() * vocabDB.length)].vi;
-          if (r !== item.vi && !opts.includes(r)) opts.push(r);
-        }
-        opts.sort(() => Math.random() - 0.5);
-        questions.push({question: `Was bedeutet "${item.de}"?`, correct: item.vi, options: opts});
-      }
+      // 8 câu Đức → Việt
+      const shuffledDeVi = [...bankDeToVi].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledDeVi.slice(0, 8));
 
-      // 7 Việt → Đức (random)
-      while (questions.length < 14) {
-        const item = vocabDB[Math.floor(Math.random() * vocabDB.length)];
-        if (used.has(item.de)) continue;
-        used.add(item.de);
-        let opts = [item.de];
-        while (opts.length < 4) {
-          const r = vocabDB[Math.floor(Math.random() * vocabDB.length)].de;
-          if (r !== item.de && !opts.includes(r)) opts.push(r);
-        }
-        opts.sort(() => Math.random() - 0.5);
-        questions.push({question: `Wie heißt "${item.vi}" auf Deutsch?`, correct: item.de, options: opts});
-      }
+      // 8 câu Việt → Đức
+      const shuffledViDe = [...bankViToDe].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledViDe.slice(0, 8));
 
-      // 8 ngữ pháp (shuffle)
-      const grammar = [...grammarDB].sort(() => Math.random() - 0.5);
-      questions = questions.concat(grammar);
+      // 7 câu ngữ pháp
+      const shuffledGrammar = [...bankGrammar].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledGrammar.slice(0, 7));
 
-      // 8 logic + synonym/antonym (shuffle)
-      const logic = [...logicDB].sort(() => Math.random() - 0.5);
-      questions = questions.concat(logic);
+      // 7 câu logic / synonym / gegenteil
+      const shuffledLogic = [...bankLogic].sort(() => Math.random() - 0.5);
+      questions = questions.concat(shuffledLogic.slice(0, 7));
 
-      // Mix toàn bộ 30 câu
+      // Trộn toàn bộ
       questions = questions.sort(() => Math.random() - 0.5);
     }
 
     function showQuestion() {
-      document.getElementById("progress").textContent = `Câu ${currentQuestionIndex + 1} / 30`;
       const q = questions[currentQuestionIndex];
-      document.getElementById("question").textContent = q.question;
-      const optsDiv = document.getElementById("options");
-      optsDiv.innerHTML = "";
+      document.getElementById("progress").textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+
+      const questionDiv = document.getElementById("question");
+      questionDiv.innerHTML = q.type === "de-to-vi" 
+        ? `Was bedeutet <strong>"${q.question}"</strong>?`
+        : q.type === "vi-to-de" 
+          ? `Wie heißt <strong>"${q.question}"</strong> auf Deutsch?`
+          : `${q.q}`;
+
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
       q.options.forEach(opt => {
         const div = document.createElement("div");
         div.className = "option";
         div.textContent = opt;
-        div.onclick = () => selectAnswer(opt, q.correct, div);
-        optsDiv.appendChild(div);
+        div.onclick = () => selectAnswer(opt, q.a || q.correct, div);
+        optionsDiv.appendChild(div);
       });
     }
 
     function selectAnswer(selected, correct, div) {
-      document.querySelectorAll(".option").forEach(o => o.onclick = null);
-      if (selected === correct) {
-        div.classList.add("correct");
-        score++;
-      } else {
-        div.classList.add("wrong");
-        document.querySelectorAll(".option").forEach(o => {
-          if (o.textContent === correct) o.classList.add("correct");
-        });
+      const options = div.parentElement.children;
+      for (let opt of options) {
+        opt.onclick = null;
+        if (opt.textContent === correct) opt.classList.add("correct");
+        if (opt.textContent === selected && selected !== correct) opt.classList.add("wrong");
       }
-      currentQuestionIndex++;
-      setTimeout(() => currentQuestionIndex < questions.length ? showQuestion() : showResult(), 1400);
+
+      if (selected === correct) score++;
+
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          showQuestion();
+        } else {
+          showResult();
+        }
+      }, 800);
     }
 
     function showResult(timeUp = false) {
       clearInterval(timerInterval);
       document.getElementById("quizScreen").style.display = "none";
-      document.getElementById("resultScreen").style.display = "block";
+      const resultScreen = document.getElementById("resultScreen");
+      resultScreen.style.display = "block";
 
       const now = new Date();
       const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
       document.getElementById("userNameResult").textContent = userName;
-      document.getElementById("scoreResult").textContent = `${score} / 30`;
+      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
 
-      let ev = timeUp ? "Zeit abgelaufen!" : score >= 26 ? "Ausgezeichnet!" : score >= 22 ? "Sehr gut!" : score >= 18 ? "Gut!" : "Weiter üben!";
-      document.getElementById("evaluation").textContent = ev;
+      let evaluation = "";
+      if (timeUp) evaluation = "Zeit abgelaufen! " + (score >= 20 ? "Noch gut!" : "Weiter üben!");
+      else if (score >= 25) evaluation = "Ausgezeichnet! Sehr gut gemacht!";
+      else if (score >= 20) evaluation = "Sehr gut!";
+      else if (score >= 15) evaluation = "Gut!";
+      else if (score >= 10) evaluation = "Nicht schlecht, aber weiter üben.";
+      else evaluation = "Weiter üben! Du schaffst das.";
+
+      document.getElementById("evaluation").textContent = evaluation;
       document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
     }
 
-    function restartTest() { location.reload(); }
-
-    function endExercise() {
-      if (confirm("Möchtest du die Übung wirklich beenden und zurück zu den Übungen gehen?")) {
-        window.location.href = "uebung.html";
-      }
+    function restartTest() {
+      location.reload();
     }
   </script>
+
 </body>
 </html>
