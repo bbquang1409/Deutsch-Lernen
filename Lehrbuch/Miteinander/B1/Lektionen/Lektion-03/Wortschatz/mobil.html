@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobil Lernen – Lektion 03</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#333; min-height:100vh; padding:15px; }
+    h1 { color:#1e40af; text-align:center; margin:20px 0; font-size:1.8em; }
+    .mode-buttons { text-align:center; margin:20px 0; }
+    .mode-btn { background:#1e40af; color:white; border:none; padding:12px 25px; margin:10px; border-radius:8px; font-size:1.1em; cursor:pointer; }
+    .mode-btn.active { background:#059669; }
+    .learn-container, .test-container { display:none; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin:20px auto; max-width:600px; }
+    .learn-container.active, .test-container.active { display:block; }
+    .word-card { text-align:center; margin:30px 0; padding:30px; background:#f0f4f8; border-radius:12px; }
+    .de { font-size:2em; font-weight:bold; color:#1e40af; margin-bottom:15px; }
+    .vi { font-size:1.4em; color:#059669; margin-bottom:20px; }
+    .nav-buttons { display:flex; justify-content:center; gap:20px; margin:20px 0; }
+    .nav-btn { background:#6b7280; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:1.1em; }
+    .nav-btn:disabled { background:#ccc; cursor:not-allowed; }
+    .test-question { font-size:1.3em; font-weight:bold; margin:20px 0; text-align:center; }
+    .test-options { display:flex; flex-direction:column; gap:12px; }
+    .test-option { background:#eff6ff; padding:15px; border-radius:10px; cursor:pointer; text-align:center; font-size:1.2em; }
+    .test-option.correct { background:#10b981; color:white; }
+    .test-option.wrong { background:#ef4444; color:white; }
+    .test-score { text-align:center; font-size:1.5em; margin:20px 0; font-weight:bold; }
+    .back-btn { background:#6b7280; color:white; padding:12px 30px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; margin:30px auto; display:block; width:fit-content; text-decoration:none; }
+    .back-btn:hover { background:#4b5563; }
+  </style>
+</head>
+<body>
+
+  <h1>Mobil Lernen – Lektion 03</h1>
+
+  <div class="mode-buttons">
+    <button class="mode-btn active" onclick="showMode('learn')">Vokabeln Lernen</button>
+    <button class="mode-btn" onclick="showMode('test')">Zufalltest</button>
+  </div>
+
+  <!-- Chế độ Học từ vựng -->
+  <div id="learnContainer" class="learn-container active">
+    <div class="word-card">
+      <div class="de" id="learnDe"></div>
+      <div class="vi" id="learnVi"></div>
+      <button onclick="playTTS()" class="nav-btn"><i class="fas fa-volume-up"></i> Nghe</button>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="prevWord()">Vorheriges</button>
+      <button class="nav-btn" onclick="nextWord()">Nächstes</button>
+    </div>
+  </div>
+
+  <!-- Chế độ Zufalltest -->
+  <div id="testContainer" class="test-container">
+    <div class="test-question" id="testQuestion"></div>
+    <div class="test-options" id="testOptions"></div>
+    <div class="test-score" id="testScore">Punktzahl: 0 / 0</div>
+    <button class="nav-btn" onclick="nextTestQuestion()">Weiter</button>
+  </div>
+
+  <a href="index.html" class="back-btn">Zurück zu Wortschatz</a>
+
+  <script>
+    // Danh sách từ vựng (từ wortlist.html)
+    const vocabulary = [
+      { de: "die Berufsberatung, -en", vi: "tư vấn nghề nghiệp" },
+      { de: "die Buchhandlung, -en", vi: "hiệu sách" },
+      { de: "die Festanstellung, -en", vi: "việc làm chính thức (không thời hạn)" },
+      { de: "die Arbeitserfahrung, -en", vi: "kinh nghiệm làm việc" },
+      { de: "der Schulabschluss, -e", vi: "bằng tốt nghiệp phổ thông" },
+      { de: "offiziell", vi: "chính thức" },
+      { de: "das System, -e", vi: "hệ thống" },
+      { de: "anerkennen (hat anerkannt)", vi: "công nhận" },
+      { de: "sich weiterbilden (hat sich weitergebildet)", vi: "học thêm, đào tạo nâng cao" },
+      { de: "deutsch", vi: "tiếng Đức" },
+      { de: "die Selbstständigkeit (nur Sg.)", vi: "tự kinh doanh, làm chủ" },
+      { de: "die Messe, -n", vi: "hội chợ" },
+      { de: "sondern", vi: "mà (phủ định và bổ sung)" },
+      { de: "der Vortrag, -e", vi: "bài thuyết trình" },
+      { de: "der Handwerker, - / die Handwerkerin, -nen", vi: "thợ thủ công / nữ thợ thủ công" },
+      { de: "der Unternehmer, - / die Unternehmerin, -nen", vi: "doanh nhân / nữ doanh nhân" },
+      { de: "erfolgreich", vi: "thành công" },
+      { de: "die Kenntnis, -se", vi: "kiến thức" },
+      { de: "erforderlich", vi: "cần thiết" },
+      { de: "die Unterstützung (Sg.)", vi: "sự hỗ trợ" },
+      { de: "sowohl ... als auch ...", vi: "cả ... lẫn ..." },
+      { de: "der Snack, -s", vi: "đồ ăn nhẹ" },
+      { de: "die Homepage, -s", vi: "trang chủ (website)" },
+      { de: "(sich) überlegen (hat sich überlegt)", vi: "suy nghĩ, cân nhắc" },
+      { de: "quer", vi: "ngang (chuyển ngành)" },
+      { de: "das Gericht, -e", vi: "món ăn" },
+      { de: "öfter", vi: "thường xuyên hơn" },
+      { de: "etwa", vi: "khoảng (ước lượng)" },
+      { de: "die Versicherung, -en", vi: "bảo hiểm" },
+      { de: "weder ... noch ...", vi: "không ... cũng không ..." },
+      { de: "sich lohnen (hat sich gelohnt)", vi: "đáng giá, có lợi" },
+      { de: "fein", vi: "tinh tế, ngon" },
+      { de: "probieren (hat probiert)", vi: "thử" },
+      { de: "die Speisekarte, -n", vi: "thực đơn" },
+      { de: "surfen (ist/hat gesurft)", vi: "lướt sóng / lướt web" },
+      { de: "griechisch", vi: "tiếng Hy Lạp" }
+    ];
+
+    let currentIndex = 0;
+    let testScore = 0;
+    let testTotal = 0;
+    let germanVoice = null;
+
+    // Tải giọng nói tiếng Đức
+    function loadVoices() {
+      const voices = speechSynthesis.getVoices();
+      germanVoice = voices.find(voice => voice.lang === 'de-DE') || voices.find(voice => voice.lang.startsWith('de'));
+    }
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function playTTS(text) {
+      if (!('speechSynthesis' in window) || !germanVoice) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = germanVoice;
+      utterance.lang = 'de-DE';
+      utterance.rate = 0.9;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    function showMode(mode) {
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('learnContainer').classList.toggle('active', mode === 'learn');
+      document.getElementById('testContainer').classList.toggle('active', mode === 'test');
+
+      if (mode === 'learn') showWord(currentIndex);
+      if (mode === 'test') startTestMode();
+    }
+
+    function showWord(index) {
+      const word = vocabulary[index];
+      document.getElementById('learnDe').textContent = word.de;
+      document.getElementById('learnVi').textContent = word.vi;
+      currentIndex = index;
+    }
+
+    function nextWord() {
+      currentIndex = (currentIndex + 1) % vocabulary.length;
+      showWord(currentIndex);
+    }
+
+    function prevWord() {
+      currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length;
+      showWord(currentIndex);
+    }
+
+    function startTestMode() {
+      testScore = 0;
+      testTotal = 0;
+      document.getElementById('testScore').textContent = `Punktzahl: 0 / 0`;
+      nextTestQuestion();
+    }
+
+    function nextTestQuestion() {
+      const randomWord = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+      const correct = randomWord.de;
+      let options = [correct];
+      while (options.length < 4) {
+        const randOpt = vocabulary[Math.floor(Math.random() * vocabulary.length)].de;
+        if (!options.includes(randOpt)) options.push(randOpt);
+      }
+      options.sort(() => Math.random() - 0.5);
+
+      document.getElementById('testQuestion').textContent = `Was bedeutet "${randomWord.vi}" auf Deutsch?`;
+      const optionsDiv = document.getElementById('testOptions');
+      optionsDiv.innerHTML = "";
+      options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "test-option";
+        div.textContent = opt;
+        div.onclick = () => {
+          if (opt === correct) {
+            testScore++;
+            div.classList.add("correct");
+          } else {
+            div.classList.add("wrong");
+          }
+          testTotal++;
+          document.getElementById('testScore').textContent = `Punktzahl: ${testScore} / ${testTotal}`;
+          setTimeout(nextTestQuestion, 1200);
+        };
+        optionsDiv.appendChild(div);
+      });
+    }
+
+    // Khởi động
+    showWord(0);
+  </script>
+
+</body>
+</html>
