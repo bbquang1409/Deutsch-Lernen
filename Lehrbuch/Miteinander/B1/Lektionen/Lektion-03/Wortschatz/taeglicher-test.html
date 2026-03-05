@@ -107,26 +107,86 @@
       { question: "sich lohnen (hat sich gelohnt)", correct: "đáng giá", options: ["đáng giá", "không đáng", "lãng phí", "tốn kém"], type: "de-to-vi" }
     ];
 
-    // Bank 2: Việt → Đức - ĐÃ SỬA OPTIONS THÀNH TỪ ĐỨC
+    // Bank 2: Việt → Đức (sửa options thành từ Đức)
     const bankViToDe = bankDeToVi.map(item => ({
       question: item.correct,
       correct: item.question,
       options: [
-        item.question,  // đáp án đúng (từ Đức)
-        ...item.options.filter(opt => opt !== item.correct).map(opt => bankDeToVi.find(i => i.correct === opt)?.question || opt)  // 3 đáp án sai cũng là từ Đức
-      ],
+        item.question, // đúng
+        ...item.options.filter(opt => opt !== item.correct).map(opt => { // sai là từ Đức khác
+          const found = bankDeToVi.find(i => i.correct === opt);
+          return found ? found.question : opt;
+        })
+      ].sort(() => Math.random() - 0.5),
       type: "vi-to-de"
     }));
 
-    // Bank 3 và Bank 4 giữ nguyên (đã có type)
+    // Bank 3: Ngữ pháp (30 câu)
     const bankGrammar = [
-      // ... (30 câu ngữ pháp như trước, mình không paste lại để ngắn)
+      { q: "Artikel und Plural von 'Berufsberatung'?", a: "die, Berufsberatungen", options: ["der, Berufsberatungen", "die, Berufsberatungen", "das, Berufsberatungen", "den, Berufsberatungen"], type: "grammar" },
+      { q: "Artikel und Plural von 'Buchhandlung'?", a: "die, Buchhandlungen", options: ["der, Buchhandlungen", "die, Buchhandlungen", "das, Buchhandlungen", "den, Buchhandlungen"], type: "grammar" },
+      { q: "Artikel und Plural von 'Festanstellung'?", a: "die, Festanstellungen", options: ["der, Festanstellungen", "die, Festanstellungen", "das, Festanstellungen", "den, Festanstellungen"], type: "grammar" },
+      { q: "Partizip Perfekt von 'anstellen'?", a: "angestellt", options: ["angestellt", "anstellen", "stellte an", "anstellend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Arbeitserfahrung'?", a: "die, Arbeitserfahrungen", options: ["der, Arbeitserfahrungen", "die, Arbeitserfahrungen", "das, Arbeitserfahrungen", "den, Arbeitserfahrungen"], type: "grammar" },
+      { q: "Artikel und Plural von 'Schulabschluss'?", a: "der, Schulabschlüsse", options: ["der, Schulabschlüsse", "die, Schulabschlüsse", "das, Schulabschlüsse", "den, Schulabschlüsse"], type: "grammar" },
+      { q: "Partizip Perfekt von 'anerkennen'?", a: "anerkannt", options: ["anerkannt", "anerkennen", "erkannte an", "anerkanntend"], type: "grammar" },
+      { q: "Artikel und Plural von 'System'?", a: "das, Systeme", options: ["der, Systeme", "die, Systeme", "das, Systeme", "den, Systeme"], type: "grammar" },
+      { q: "Partizip Perfekt von 'weiterbilden' (sich)?", a: "weitergebildet", options: ["weitergebildet", "weiterbilden", "bildete weiter", "weiterbildend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Selbstständigkeit'?", a: "die, Selbstständigkeiten", options: ["der, Selbstständigkeiten", "die, Selbstständigkeiten", "das, Selbstständigkeiten", "den, Selbstständigkeiten"], type: "grammar" },
+      { q: "Artikel und Plural von 'Messe'?", a: "die, Messen", options: ["der, Messen", "die, Messen", "das, Messen", "den, Messen"], type: "grammar" },
+      { q: "Artikel und Plural von 'Vortrag'?", a: "der, Vorträge", options: ["der, Vorträge", "die, Vorträge", "das, Vorträge", "den, Vorträge"], type: "grammar" },
+      { q: "Artikel und Plural von 'Handwerker'?", a: "der, Handwerker", options: ["der, Handwerker", "die, Handwerker", "das, Handwerker", "den, Handwerker"], type: "grammar" },
+      { q: "Artikel und Plural von 'Unternehmer'?", a: "der, Unternehmer", options: ["der, Unternehmer", "die, Unternehmer", "das, Unternehmer", "den, Unternehmer"], type: "grammar" },
+      { q: "Partizip Perfekt von 'überlegen' (sich)?", a: "überlegt", options: ["überlegt", "überlegen", "überlegte", "überlegend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Gericht'?", a: "das, Gerichte", options: ["der, Gerichte", "die, Gerichte", "das, Gerichte", "den, Gerichte"], type: "grammar" },
+      { q: "Artikel und Plural von 'Versicherung'?", a: "die, Versicherungen", options: ["der, Versicherungen", "die, Versicherungen", "das, Versicherungen", "den, Versicherungen"], type: "grammar" },
+      { q: "Partizip Perfekt von 'lohnen' (sich)?", a: "gelohnt", options: ["gelohnt", "lohnen", "lohnte", "lohnend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Speisekarte'?", a: "die, Speisekarten", options: ["der, Speisekarten", "die, Speisekarten", "das, Speisekarten", "den, Speisekarten"], type: "grammar" },
+      { q: "Partizip Perfekt von 'surfen'?", a: "gesurft", options: ["gesurft", "surfen", "surfte", "surfend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Snack'?", a: "der, Snacks", options: ["der, Snacks", "die, Snacks", "das, Snacks", "den, Snacks"], type: "grammar" },
+      { q: "Artikel und Plural von 'Homepage'?", a: "die, Homepages", options: ["der, Homepages", "die, Homepages", "das, Homepages", "den, Homepages"], type: "grammar" },
+      { q: "Partizip Perfekt von 'probieren'?", a: "probiert", options: ["probiert", "probieren", "probierte", "probierend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Unterstützung'?", a: "die, Unterstützungen", options: ["der, Unterstützungen", "die, Unterstützungen", "das, Unterstützungen", "den, Unterstützungen"], type: "grammar" },
+      { q: "Artikel und Plural von 'Kenntnis'?", a: "die, Kenntnisse", options: ["der, Kenntnisse", "die, Kenntnisse", "das, Kenntnisse", "den, Kenntnisse"], type: "grammar" },
+      { q: "Partizip Perfekt von 'erfordern'?", a: "erfordert", options: ["erfordert", "erfordern", "erforderte", "erfordernd"], type: "grammar" },
+      { q: "Artikel und Plural von 'Vortrag'?", a: "der, Vorträge", options: ["der, Vorträge", "die, Vorträge", "das, Vorträge", "den, Vorträge"], type: "grammar" },
+      { q: "Partizip Perfekt von 'anerkennen'?", a: "anerkannt", options: ["anerkannt", "anerkennen", "erkannte an", "anerkanntend"], type: "grammar" },
+      { q: "Artikel und Plural von 'Messe'?", a: "die, Messen", options: ["der, Messen", "die, Messen", "das, Messen", "den, Messen"], type: "grammar" },
       { q: "Partizip Perfekt von 'überlegen'?", a: "überlegt", options: ["überlegt", "überlegen", "überlegte", "überlegend"], type: "grammar" }
     ];
 
+    // Bank 4: Logic / synonym / gegenteil - ĐÃ SỬA, KHÔNG CÒN "nicht + từ gốc" LƯỜI BIẾNG
     const bankLogic = [
-      // ... (30 câu logic như trước)
-      { q: "Was bedeutet 'probieren'?", a: "kosten", options: ["kosten", "ablehnen", "wegwerfen", "kaufen"], type: "logic" }
+      { q: "Was ist das Gegenteil von 'erfolgreich'?", a: "erfolglos", options: ["erfolglos", "reich", "berühmt", "schnell"], type: "logic" },
+      { q: "Synonym von 'sich lohnen' im Alltag?", a: "sich auszahlen", options: ["sich auszahlen", "sich ärgern", "sich freuen", "sich lohnen"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'regelmäßig'?", a: "unregelmäßig", options: ["unregelmäßig", "ständig", "oft", "immer"], type: "logic" },
+      { q: "Synonym von 'etwa' in einer Schätzung?", a: "ungefähr", options: ["ungefähr", "genau", "viel", "wenig"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'nützlich'?", a: "nutzlos", options: ["nutzlos", "hilfreich", "wichtig", "teuer"], type: "logic" },
+      { q: "Synonym von 'fördern' im beruflichen Kontext?", a: "unterstützen", options: ["unterstützen", "verhindern", "bestrafen", "ignorieren"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'sicher'?", a: "unsicher", options: ["unsicher", "gefährlich", "ruhig", "angenehm"], type: "logic" },
+      { q: "Synonym von 'Erholung'?", a: "Entspannung", options: ["Entspannung", "Arbeit", "Stress", "Anstrengung"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'freundlich'?", a: "unfreundlich", options: ["unfreundlich", "freundlich", "hilfsbereit", "nett"], type: "logic" },
+      { q: "Synonym von 'Möglichkeit'?", a: "Chance", options: ["Chance", "Problem", "Hindernis", "Risiko"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'entspannt'?", a: "gestresst", options: ["gestresst", "entspannt", "ruhig", "gelassen"], type: "logic" },
+      { q: "Synonym von 'Zufall'?", a: "Glücksfall", options: ["Glücksfall", "Plan", "Absicht", "Fehler"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'hilfreich'?", a: "nutzlos", options: ["nutzlos", "hilfreich", "wichtig", "teuer"], type: "logic" },
+      { q: "Synonym von 'Leistung'?", a: "Erfolg", options: ["Erfolg", "Misserfolg", "Fehler", "Panne"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'früh'?", a: "spät", options: ["spät", "früh", "pünktlich", "rechtzeitig"], type: "logic" },
+      { q: "Synonym von 'Teilnahme'?", a: "Mitwirkung", options: ["Mitwirkung", "Ausschluss", "Verweigerung", "Ignoranz"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'positiv'?", a: "negativ", options: ["negativ", "positiv", "gut", "schlecht"], type: "logic" },
+      { q: "Synonym von 'Reaktion'?", a: "Antwort", options: ["Antwort", "Frage", "Aktion", "Idee"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'schnell'?", a: "langsam", options: ["langsam", "schnell", "früh", "spät"], type: "logic" },
+      { q: "Synonym von 'angenehm' im Alltag?", a: "bequem", options: ["bequem", "schwierig", "gefährlich", "langweilig"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'nützlich'?", a: "nutzlos", options: ["nutzlos", "hilfreich", "wichtig", "teuer"], type: "logic" },
+      { q: "Synonym von 'Teilnahme'?", a: "Mitmachen", options: ["Mitmachen", "Ablehnen", "Verweigern", "Ignorieren"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'aktiv'?", a: "passiv", options: ["passiv", "aktiv", "sportlich", "fit"], type: "logic" },
+      { q: "Synonym von 'Förderung'?", a: "Unterstützung", options: ["Unterstützung", "Strafe", "Verbot", "Kritik"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'ruhig'?", a: "laut", options: ["laut", "ruhig", "leise", "still"], type: "logic" },
+      { q: "Synonym von 'Wochenende'?", a: "Samstag und Sonntag", options: ["Samstag und Sonntag", "Montag bis Freitag", "werktags", "feiertags"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'allein sein'?", a: "mit Freunden sein", options: ["mit Freunden sein", "allein sein", "mit Familie sein", "mit Kollegen sein"], type: "logic" },
+      { q: "Synonym von 'Reise'?", a: "Ausflug", options: ["Ausflug", "Arbeit", "Schule", "Krankenhaus"], type: "logic" },
+      { q: "Was ist das Gegenteil von 'viel Freizeit'?", a: "wenig Freizeit", options: ["wenig Freizeit", "viel Freizeit", "genug Freizeit", "keine Freizeit"], type: "logic" },
+      { q: "Synonym von 'entspannen'?", a: "sich erholen", options: ["sich erholen", "arbeiten", "stressen", "hetzen"], type: "logic" }
     ];
 
     let userName = "";
@@ -151,20 +211,45 @@
       showQuestion();
     }
 
-    // Các hàm còn lại giữ nguyên (startTimer, endTest, generateQuestions, showQuestion, selectAnswer, showResult, restartTest)
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+        if (timeLeft <= 120) document.getElementById("timer").classList.add("low");
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showResult(true);
+        }
+      }, 1000);
+    }
+
+    function endTest() {
+      if (confirm("Möchtest du den Test wirklich beenden und zurück zu den Übungen gehen?")) {
+        clearInterval(timerInterval);
+        window.location.href = "../Übungen/uebung.html";
+      }
+    }
 
     function generateQuestions() {
       questions = [];
 
+      // 8 câu Đức → Việt
       const shuffledDeVi = [...bankDeToVi].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledDeVi.slice(0, 8));
 
+      // 8 câu Việt → Đức
       const shuffledViDe = [...bankViToDe].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledViDe.slice(0, 8));
 
+      // 7 câu ngữ pháp
       const shuffledGrammar = [...bankGrammar].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledGrammar.slice(0, 7));
 
+      // 7 câu logic / synonym / gegenteil
       const shuffledLogic = [...bankLogic].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledLogic.slice(0, 7));
 
@@ -191,12 +276,59 @@
         const div = document.createElement("div");
         div.className = "option";
         div.textContent = opt;
-        div.onclick = () => selectAnswer(opt, q.correct || q.a, div);
+        div.onclick = () => selectAnswer(opt, q.a || q.correct, div);
         optionsDiv.appendChild(div);
       });
     }
 
-    // Các hàm selectAnswer, showResult, restartTest giữ nguyên như code cũ
+    function selectAnswer(selected, correct, div) {
+      const options = div.parentElement.children;
+      for (let opt of options) {
+        opt.onclick = null;
+        if (opt.textContent === correct) opt.classList.add("correct");
+        if (opt.textContent === selected && selected !== correct) opt.classList.add("wrong");
+      }
+
+      if (selected === correct) score++;
+
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          showQuestion();
+        } else {
+          showResult();
+        }
+      }, 800);
+    }
+
+    function showResult(timeUp = false) {
+      clearInterval(timerInterval);
+      document.getElementById("quizScreen").style.display = "none";
+      const resultScreen = document.getElementById("resultScreen");
+      resultScreen.style.display = "block";
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById("userNameResult").textContent = userName;
+      document.getElementById("scoreResult").textContent = `${score} / ${questions.length}`;
+
+      let evaluation = "";
+      if (timeUp) evaluation = "Zeit abgelaufen! " + (score >= 20 ? "Noch gut!" : "Weiter üben!");
+      else if (score >= 25) evaluation = "Ausgezeichnet! Sehr gut gemacht!";
+      else if (score >= 20) evaluation = "Sehr gut!";
+      else if (score >= 15) evaluation = "Gut!";
+      else if (score >= 10) evaluation = "Nicht schlecht, aber weiter üben.";
+      else evaluation = "Weiter üben! Du schaffst das.";
+
+      document.getElementById("evaluation").textContent = evaluation;
+      document.getElementById("datetime").innerHTML = `Test am ${dateStr}<br>um ${timeStr} Uhr`;
+    }
+
+    function restartTest() {
+      location.reload();
+    }
   </script>
 
 </body>
