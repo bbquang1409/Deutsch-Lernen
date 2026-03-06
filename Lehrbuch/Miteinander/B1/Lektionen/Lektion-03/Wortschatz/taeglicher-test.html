@@ -73,7 +73,6 @@
   </div>
 
   <script>
-    // Bank 1: Đức → Việt (30 câu)
     const bankDeToVi = [
       { question: "die Berufsberatung, -en", correct: "tư vấn nghề nghiệp", options: ["tư vấn nghề nghiệp", "tư vấn học tập", "tư vấn du học", "tư vấn sức khỏe"], type: "de-to-vi" },
       { question: "die Buchhandlung, -en", correct: "hiệu sách", options: ["hiệu sách", "hiệu thuốc", "hiệu bánh", "hiệu quần áo"], type: "de-to-vi" },
@@ -107,21 +106,22 @@
       { question: "sich lohnen (hat sich gelohnt)", correct: "đáng giá", options: ["đáng giá", "không đáng", "lãng phí", "tốn kém"], type: "de-to-vi" }
     ];
 
-    // Bank 2: Việt → Đức (sửa options thành từ Đức)
-    const bankViToDe = bankDeToVi.map(item => ({
-      question: item.correct,
-      correct: item.question,
-      options: [
-        item.question, // đúng
-        ...item.options.filter(opt => opt !== item.correct).map(opt => { // sai là từ Đức khác
-          const found = bankDeToVi.find(i => i.correct === opt);
-          return found ? found.question : opt;
-        })
-      ].sort(() => Math.random() - 0.5),
-      type: "vi-to-de"
-    }));
+    const bankViToDe = bankDeToVi.map(item => {
+      const allGermanWords = bankDeToVi.map(i => i.question);
+      let options = [item.question]; // đúng
+      while (options.length < 4) {
+        const rand = allGermanWords[Math.floor(Math.random() * allGermanWords.length)];
+        if (!options.includes(rand)) options.push(rand);
+      }
+      options = options.sort(() => Math.random() - 0.5);
+      return {
+        question: item.correct,
+        correct: item.question,
+        options,
+        type: "vi-to-de"
+      };
+    });
 
-    // Bank 3: Ngữ pháp (30 câu)
     const bankGrammar = [
       { q: "Artikel und Plural von 'Berufsberatung'?", a: "die, Berufsberatungen", options: ["der, Berufsberatungen", "die, Berufsberatungen", "das, Berufsberatungen", "den, Berufsberatungen"], type: "grammar" },
       { q: "Artikel und Plural von 'Buchhandlung'?", a: "die, Buchhandlungen", options: ["der, Buchhandlungen", "die, Buchhandlungen", "das, Buchhandlungen", "den, Buchhandlungen"], type: "grammar" },
@@ -155,7 +155,6 @@
       { q: "Partizip Perfekt von 'überlegen'?", a: "überlegt", options: ["überlegt", "überlegen", "überlegte", "überlegend"], type: "grammar" }
     ];
 
-    // Bank 4: Logic / synonym / gegenteil - ĐÃ SỬA, KHÔNG CÒN "nicht + từ gốc" LƯỜI BIẾNG
     const bankLogic = [
       { q: "Was ist das Gegenteil von 'erfolgreich'?", a: "erfolglos", options: ["erfolglos", "reich", "berühmt", "schnell"], type: "logic" },
       { q: "Synonym von 'sich lohnen' im Alltag?", a: "sich auszahlen", options: ["sich auszahlen", "sich ärgern", "sich freuen", "sich lohnen"], type: "logic" },
@@ -237,19 +236,15 @@
     function generateQuestions() {
       questions = [];
 
-      // 8 câu Đức → Việt
       const shuffledDeVi = [...bankDeToVi].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledDeVi.slice(0, 8));
 
-      // 8 câu Việt → Đức
       const shuffledViDe = [...bankViToDe].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledViDe.slice(0, 8));
 
-      // 7 câu ngữ pháp
       const shuffledGrammar = [...bankGrammar].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledGrammar.slice(0, 7));
 
-      // 7 câu logic / synonym / gegenteil
       const shuffledLogic = [...bankLogic].sort(() => Math.random() - 0.5);
       questions = questions.concat(shuffledLogic.slice(0, 7));
 
