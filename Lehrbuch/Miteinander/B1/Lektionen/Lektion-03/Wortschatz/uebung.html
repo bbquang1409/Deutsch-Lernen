@@ -1,83 +1,945 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lektion 03 – Übungen</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Übung – Lektion 03</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    body { 
-      font-family: system-ui, sans-serif; 
-      margin:0; 
-      background:#f8f9fa; 
-      color:#333; 
-      text-align:center; 
-      padding:20px; 
+    :root {
+      --bg:#eef4fb; --card:#fff; --ink:#1e3a5f; --muted:#5b7a99; --border:#c5d8ee;
+      --teal:#2563eb; --teal-lt:#dbeafe;
+      --amber:#0ea5e9; --amber-lt:#e0f2fe;
+      --rose:#e11d48; --rose-lt:#ffe4e6;
+      --green:#16a34a; --green-lt:#dcfce7;
+      --sky:#2563eb; --sky-lt:#dbeafe;
+      --violet:#1d4ed8; --violet-lt:#dbeafe;
+      --blue:#2563eb; --blue-lt:#dbeafe;
+      --r:16px; --sh:0 2px 16px rgba(37,99,235,0.10);
     }
-    h1 { 
-      color:#1e40af; 
-      margin:30px 0 10px 0; 
-      font-size:2em; 
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:80px;}
+
+    header{background:#1e3a5f;color:#fff;padding:32px 20px 28px;position:relative;overflow:hidden;}
+    header .deco{position:absolute;inset:0;
+      background:radial-gradient(ellipse at 80% -20%,#3b82f6 0%,transparent 55%),
+                 radial-gradient(ellipse at -10% 120%,#0ea5e9 0%,transparent 50%);opacity:.45;}
+    header .inner{position:relative;max-width:640px;margin:0 auto;}
+    .hd-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#93c5fd;margin-bottom:8px;}
+    header h1{font-family:'DM Serif Display',serif;font-size:30px;line-height:1.15;margin-bottom:6px;}
+    header p{font-size:13px;color:rgba(255,255,255,.6);}
+
+    .tab-wrap{background:var(--card);box-shadow:0 2px 0 var(--border);position:sticky;top:0;z-index:200;}
+    .tabs{max-width:640px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{flex-shrink:0;padding:14px 18px;font-size:13px;font-weight:600;color:var(--muted);
+      border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+    .tab.active{color:#2563eb;border-bottom-color:#2563eb;}
+    .tab.done{color:var(--green);}
+
+    .nav-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 0;max-width:640px;margin:0 auto;}
+    .nav-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 16px;
+      font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:border-color .2s;}
+    .nav-btn:hover{border-color:#2563eb;color:#2563eb;}
+    .nav-btn:disabled{opacity:.3;pointer-events:none;}
+    .nav-dot-wrap{display:flex;gap:6px;}
+    .nav-dot{width:8px;height:8px;border-radius:99px;background:var(--border);transition:all .2s;}
+    .nav-dot.active{background:#2563eb;width:20px;}
+    .nav-dot.done{background:var(--green);}
+
+    main{max-width:640px;margin:0 auto;padding:20px 16px;}
+    .section{display:none;flex-direction:column;gap:18px;animation:fadeUp .3s ease;}
+    .section.active{display:flex;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+    .card-head{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .card-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .card-title{font-size:15px;font-weight:700;flex:1;}
+    .card-pts{font-size:11px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:99px;background:#1e3a5f;color:#fff;}
+    .card-body{padding:18px;display:flex;flex-direction:column;gap:14px;}
+    .instr{font-size:13px;color:var(--muted);font-style:italic;line-height:1.6;}
+
+    .t-vok  .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-mat  .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-luc  .card-icon{background:#fee2e2;color:#dc2626;}
+    .t-def  .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-mc   .card-icon{background:#dbeafe;color:#2563eb;}
+
+    .inp{width:100%;border:2px solid var(--border);border-radius:10px;padding:10px 14px;
+      font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--ink);background:#fafafa;
+      outline:none;transition:border-color .2s,background .2s;}
+    .inp:focus{border-color:#2563eb;background:#fff;}
+    .inp.ok{border-color:var(--green)!important;background:var(--green-lt)!important;color:var(--green)!important;}
+    .inp.no{border-color:var(--rose)!important;background:var(--rose-lt)!important;color:var(--rose)!important;}
+
+    .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .witem{display:flex;flex-direction:column;gap:4px;}
+    .wlabel{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.3px;line-height:1.4;}
+
+    .fill-row{background:#f8f8fb;border-radius:10px;padding:12px 14px;
+      display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;line-height:2;}
+    .blank{border:none;border-bottom:2.5px solid var(--teal);background:transparent;
+      font-size:14px;font-family:'DM Sans',sans-serif;font-weight:700;color:#2563eb;
+      outline:none;min-width:130px;max-width:200px;padding:2px 4px;text-align:center;}
+    .blank.ok{border-color:var(--green)!important;color:var(--green)!important;}
+    .blank.no{border-color:var(--rose)!important;color:var(--rose)!important;}
+
+    .sel{width:100%;border:2px solid var(--border);border-radius:10px;padding:10px 36px 10px 12px;
+      font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;color:var(--ink);background:#fafafa;
+      outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237c7c92' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 14px center;}
+    .sel:focus{border-color:#2563eb;}
+    .sel.ok{border-color:var(--green)!important;background-color:var(--green-lt)!important;}
+    .sel.no{border-color:var(--rose)!important;background-color:var(--rose-lt)!important;}
+
+    .match-grid{display:flex;flex-direction:column;gap:8px;}
+    .match-row{display:flex;align-items:center;gap:8px;}
+    .match-de{flex:1;background:#dbeafe;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;
+      color:#1d4ed8;border:2px solid #bfdbfe;line-height:1.4;}
+    .match-arr{font-size:14px;color:var(--muted);flex-shrink:0;}
+    .match-sel{flex:1;}
+
+    /* DEFINITION */
+    .def-item{background:#f8f8fb;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+    .def-tag{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+      color:#1d4ed8;background:#dbeafe;display:inline-block;padding:3px 10px;border-radius:99px;width:fit-content;}
+    .def-text{font-size:14px;line-height:1.7;color:#1e3a5f;
+      border-left:3px solid #2563eb;padding-left:12px;font-style:italic;}
+    .def-input-row{display:flex;gap:8px;align-items:center;}
+    .def-art{width:64px;flex-shrink:0;border:2px solid var(--border);border-radius:8px;padding:10px 8px;
+      font-size:14px;font-family:'DM Sans',sans-serif;font-weight:700;text-align:center;
+      background:#fafafa;outline:none;transition:border-color .2s,background .2s;color:var(--ink);}
+    .def-art:focus{border-color:#2563eb;background:#fff;}
+    .def-art.ok{border-color:var(--green)!important;background:var(--green-lt)!important;color:var(--green)!important;}
+    .def-art.no{border-color:var(--rose)!important;background:var(--rose-lt)!important;color:var(--rose)!important;}
+    .def-word{flex:1;}
+
+    /* MC */
+    .mc-item{background:#f8f8fb;border-radius:10px;padding:12px 14px;margin-bottom:4px;}
+    .mc-prompt{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--sky);}
+    .mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .mc-opt{background:#fff;border:2px solid var(--border);border-radius:10px;padding:9px 12px;
+      font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;
+      text-align:left;transition:all .15s;color:var(--ink);line-height:1.4;}
+    .mc-opt:hover{border-color:var(--sky);}
+    .mc-opt.ok{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+    .mc-opt.no{background:var(--rose-lt)!important;border-color:var(--rose)!important;color:var(--rose)!important;pointer-events:none;}
+    .mc-opt.reveal{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+    .mc-opt.locked{pointer-events:none;opacity:.55;}
+
+    /* TAB CHECK BTN */
+    .btn-check-tab{
+      background:#2563eb;color:#fff;border:none;border-radius:10px;padding:12px 20px;
+      font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+      transition:all .15s;box-shadow:0 3px 10px rgba(217,119,6,.3);align-self:stretch;
     }
-    .back-link { 
-      color:#1e40af; 
-      font-size:1.1em; 
-      margin:10px 0 40px 0; 
-      display:block; 
-      text-decoration:none; 
+    .btn-check-tab:hover{opacity:.9;transform:translateY(-1px);}
+    .btn-check-tab:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none;}
+
+    /* TAB RESULT */
+    .tab-result{
+      display:none;
+      background:linear-gradient(135deg,#1d4ed8,#2563eb);
+      color:#fff;border-radius:12px;padding:16px 18px;
+      align-items:center;gap:14px;
     }
-    .back-link:hover { text-decoration:underline; }
-    .grid { 
-      display:grid; 
-      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); 
-      gap:30px; 
-      max-width:900px; 
-      margin:0 auto; 
+    .tab-result.show{display:flex;}
+    .tab-res-emoji{font-size:32px;flex-shrink:0;}
+    .tab-res-score{font-family:'DM Serif Display',serif;font-size:28px;line-height:1;}
+    .tab-res-msg{font-size:13px;opacity:.85;margin-top:3px;}
+
+    /* ANSWER PANEL */
+    .answer-panel{
+      display:none;background:var(--ink);border-radius:12px;padding:18px;
     }
-    .card { 
-      background:white; 
-      border-radius:16px; 
-      padding:30px 20px; 
-      box-shadow:0 4px 12px rgba(0,0,0,0.1); 
-      transition:transform 0.2s; 
-      cursor:pointer; 
-      text-decoration:none; 
-      color:#333; 
-    }
-    .card:hover { transform:scale(1.05); }
-    .icon { 
-      font-size:4em; 
-      color:#1e40af; 
-      margin-bottom:20px; 
-    }
-    .title { 
-      font-size:1.4em; 
-      font-weight:bold; 
-      color:#1e40af; 
-    }
+    .answer-panel.show{display:block;animation:fadeUp .3s ease;}
+    .ans-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+      color:#60a5fa;margin-bottom:14px;}
+    .ans-row{display:flex;gap:10px;align-items:flex-start;
+      padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+    .ans-row:last-child{border-bottom:none;}
+    .ans-num{font-size:11px;color:#64748b;font-weight:700;min-width:20px;padding-top:2px;flex-shrink:0;}
+    .ans-de{font-size:13px;font-weight:700;color:#e2e8f0;line-height:1.4;}
+    .ans-art{font-size:11px;color:#2563eb;font-weight:700;margin-left:6px;
+      background:rgba(37,99,235,.15);padding:1px 6px;border-radius:4px;}
+    .ans-vi{font-size:12px;color:#60a5fa;margin-top:3px;}
+    .ans-ex{font-size:12px;color:#64748b;font-style:italic;margin-top:4px;line-height:1.5;}
+
+    /* GLOBAL RESULT */
+    .result{display:none;text-align:center;background:var(--card);border-radius:var(--r);
+      box-shadow:var(--sh);padding:28px 20px;max-width:640px;margin:16px auto 0;}
+    .result.show{display:block;animation:fadeUp .3s ease;}
+    .result-emoji{font-size:52px;margin-bottom:12px;}
+    .result-score{font-family:'DM Serif Display',serif;font-size:42px;color:#2563eb;margin-bottom:6px;}
+    .result-msg{font-size:15px;color:var(--muted);margin-bottom:18px;}
+    .score-strip{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+    .score-chip{background:#dbeafe;color:#1d4ed8;border-radius:10px;padding:10px 14px;
+      font-size:13px;font-weight:700;text-align:center;cursor:pointer;transition:transform .15s;}
+    .score-chip:hover{transform:scale(1.06);}
+
+    .btn-row{display:flex;gap:10px;padding:0 16px;max-width:640px;margin:14px auto 0;}
+    .btn{flex:1;padding:14px;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;
+      font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s;}
+    .btn:active{transform:scale(.97);}
+    .btn-primary{background:#2563eb;color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.35);}
+    .btn-ghost{background:#fff;color:var(--muted);border:2px solid var(--border);}
+
+    /* COMBO */
+    .combo-divider{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+      color:#1d4ed8;background:#dbeafe;padding:6px 14px;border-radius:8px;margin:4px 0;width:fit-content;}
+
+    /* DIALOG matching */
+    .t-dialog .card-icon{background:#dbeafe;color:#1d4ed8;}
+    .dialog-grid{display:flex;flex-direction:column;gap:8px;}
+    .dialog-row{display:flex;align-items:center;gap:8px;}
+    .dialog-left{flex:1;background:#eff6ff;border-radius:10px;padding:9px 12px;font-size:13px;
+      font-weight:600;color:#1d4ed8;border:2px solid #bfdbfe;line-height:1.4;}
+    .dialog-arr{font-size:14px;color:var(--muted);flex-shrink:0;}
+    .dialog-sel{flex:1;}
+
+    /* ANAGRAM */
+    .t-anagram .card-icon{background:#dbeafe;color:#1d4ed8;}
+    .anagram-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .anagram-item{display:flex;flex-direction:column;gap:6px;background:#eff6ff;border-radius:10px;padding:12px;}
+    .anagram-scrambled{font-size:18px;font-weight:800;letter-spacing:3px;color:#1d4ed8;
+      font-family:'DM Serif Display',serif;text-align:center;}
+    .anagram-inputs{display:flex;gap:6px;}
+    .anagram-art{width:52px;flex-shrink:0;border:2px solid #bfdbfe;border-radius:8px;padding:7px 6px;
+      font-size:13px;font-family:'DM Sans',sans-serif;font-weight:700;text-align:center;
+      background:white;outline:none;transition:border-color .2s;color:var(--ink);}
+    .anagram-art:focus{border-color:#2563eb;}
+    .anagram-art.ok{border-color:var(--green)!important;background:var(--green-lt)!important;color:var(--green)!important;}
+    .anagram-art.no{border-color:var(--rose)!important;background:var(--rose-lt)!important;color:var(--rose)!important;}
+    .anagram-word{flex:1;}
+
+    /* WORDBANK */
+    .t-bank .card-icon{background:#dbeafe;color:#1d4ed8;}
+    .wordbank-pool{background:#eff6ff;border:2px dashed #93c5fd;border-radius:12px;
+      padding:12px;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+    .wb-chip{background:white;border:2px solid #93c5fd;border-radius:99px;
+      padding:5px 14px;font-size:13px;font-weight:700;color:#1d4ed8;
+      cursor:pointer;transition:all .15s;user-select:none;}
+    .wb-chip:hover{background:#dbeafe;}
+    .wb-chip.used{opacity:.3;text-decoration:line-through;pointer-events:none;}
+    .wb-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+      color:#1d4ed8;width:100%;margin-bottom:2px;}
+    .wb-fill-row{background:#f8f8fb;border-radius:10px;padding:10px 14px;font-size:14px;line-height:2;}
   </style>
 </head>
 <body>
 
-  <h1>Lektion 03 – Übungen</h1>
-  <a href="../index.html" class="back-link">← Zurück zu Lektion 03</a>
-
-  <div class="grid">
-    <a href="uebung-01.html" class="card">
-      <div class="icon"><i class="fas fa-pen-to-square"></i></div>
-      <div class="title">Übung 1</div>
-    </a>
-
-    <a href="uebung-02.html" class="card">
-      <div class="icon"><i class="fas fa-list-check"></i></div>
-      <div class="title">Übung 2</div>
-    </a>
-
-    <a href="uebung-03.html" class="card">
-      <div class="icon"><i class="fas fa-sort-amount-down"></i></div>
-      <div class="title">Übung 3</div>
-    </a>
+<header>
+  <div class="deco"></div>
+  <div class="inner">
+    <div class="hd-tag">Miteinander! B1.1</div>
+    <h1>Lektion 03<br><em style="font-style:italic;opacity:.8;font-size:.8em">Traumjob gesucht!</em></h1>
+    <p>Vokabelübungen – Beruf &amp; Selbstständigkeit</p>
   </div>
+</header>
 
+<div class="tab-wrap"><div class="tabs" id="tabBar"></div></div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Zurück</button>
+  <div class="nav-dot-wrap" id="navDots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Weiter →</button>
+</div>
+
+<main id="mainArea"></main>
+
+<div class="btn-row">
+  <button class="btn btn-ghost" onclick="resetAll()">↺ Neu starten</button>
+  <button class="btn btn-primary" onclick="checkAllTabs()">✓ Alle auswerten</button>
+</div>
+
+<div class="result" id="resultPanel">
+  <div class="result-emoji" id="rEmoji"></div>
+  <div class="result-score" id="rScore"></div>
+  <div class="result-msg" id="rMsg"></div>
+  <div class="score-strip" id="rStrip"></div>
+</div>
+<div style="height:30px;"></div>
+
+<script>
+/* ============================================================
+   WORD DATABASE – Lektion 03
+   ============================================================ */
+const WORDS = [
+  { de:"die Berufsberatung, -en",  vi:"tư vấn nghề nghiệp",       base:"Berufsberatung", art:"die", ex:"Hoa könnte zur Berufsberatung gehen und sich informieren.", def:"Eine Person oder Stelle, die bei der Wahl des Berufs hilft und informiert." },
+  { de:"die Buchhandlung, -en",    vi:"hiệu sách",                 base:"Buchhandlung",   art:"die", ex:"Hoa könnte als Verkäuferin in einer Buchhandlung arbeiten.", def:"Ein Geschäft, in dem man Bücher kaufen kann." },
+  { de:"die Festanstellung, -en",  vi:"việc làm chính thức",       base:"Festanstellung", art:"die", ex:"Fest angestellt sein bedeutet, dass man eine unbefristete Stelle hat.", def:"Ein dauerhaftes Arbeitsverhältnis ohne zeitliche Begrenzung." },
+  { de:"die Arbeitserfahrung, -en",vi:"kinh nghiệm làm việc",      base:"Arbeitserfahrung",art:"die",ex:"Hoa hat schon Arbeitserfahrung in Deutschland.", def:"Wissen und Fähigkeiten, die man durch Berufstätigkeit gesammelt hat." },
+  { de:"der Schulabschluss, -e",   vi:"bằng tốt nghiệp phổ thông",base:"Schulabschluss",  art:"der", ex:"Haben Sie einen Schulabschluss und eine abgeschlossene Ausbildung?", def:"Ein offizielles Zeugnis, das man am Ende der Schulzeit bekommt." },
+  { de:"offiziell",                vi:"chính thức",                base:"offiziell",       art:null,  ex:"Nein, einen offiziellen Berufsabschluss habe ich leider nicht.", def:"Von einer Behörde oder Institution anerkannt und bestätigt." },
+  { de:"das System, -e",           vi:"hệ thống",                  base:"System",         art:"das", ex:"Eine Ausbildung nach dem Ausbildungssystem hier habe ich nicht.", def:"Eine geordnete Gruppe von Regeln, Methoden oder Einrichtungen." },
+  { de:"anerkennen",               vi:"công nhận",                 base:"anerkennen",     art:null,  ex:"Vielleicht können Sie Ihren Abschluss hier anerkennen lassen.", def:"Etwas als gültig oder gleichwertig akzeptieren, z.B. einen ausländischen Abschluss." },
+  { de:"sich weiterbilden",        vi:"học thêm, đào tạo nâng cao",base:"weitergebildet", art:null,  ex:"Haben Sie sich weitergebildet?", def:"Neue Kenntnisse und Fähigkeiten durch Kurse oder Seminare erwerben." },
+  { de:"die Selbstständigkeit",    vi:"tự kinh doanh, làm chủ",   base:"Selbstständigkeit",art:"die",ex:"Der Berater gibt Hoa Informationen zum Thema Selbstständigkeit.", def:"Die Situation, wenn man sein eigenes Unternehmen hat und nicht angestellt ist." },
+  { de:"die Messe, -n",            vi:"hội chợ",                   base:"Messe",          art:"die", ex:"Der Berater empfiehlt, zur Gründermesse zu gehen.", def:"Eine große Veranstaltung, bei der Firmen ihre Produkte oder Dienstleistungen vorstellen." },
+  { de:"sondern",                  vi:"mà (phủ định và bổ sung)",  base:"sondern",        art:null,  ex:"Sie möchte nicht fest angestellt sein, sondern sich selbstständig machen.", def:"Eine Konjunktion nach einer Verneinung, die eine Alternative einführt." },
+  { de:"der Vortrag, -e",          vi:"bài thuyết trình",          base:"Vortrag",        art:"der", ex:"Bei der Gründermesse kann man Vorträge hören.", def:"Eine mündliche Präsentation vor einem Publikum zu einem bestimmten Thema." },
+  { de:"der Handwerker, -",        vi:"thợ thủ công",              base:"Handwerker",     art:"der", ex:"Sie sucht eine Stelle als Handwerkerin.", def:"Jemand, der mit den Händen arbeitet, z.B. als Schreiner, Elektriker oder Maurer." },
+  { de:"der Unternehmer, -",       vi:"doanh nhân",                base:"Unternehmer",    art:"der", ex:"Unternehmerin Elif Aydin zeigt, wie man erfolgreich eine Firma gründet.", def:"Eine Person, die ein eigenes Unternehmen besitzt und leitet." },
+  { de:"erfolgreich",              vi:"thành công",                base:"erfolgreich",    art:null,  ex:"Wie erfolgreich eine eigene Firma gründen.", def:"Gute Ergebnisse erzielen und seine Ziele erreichen." },
+  { de:"die Kenntnis, -se",        vi:"kiến thức",                 base:"Kenntnis",       art:"die", ex:"Sogar ohne Programmierkenntnisse kann man eine Webseite erstellen.", def:"Wissen oder Fähigkeiten in einem bestimmten Bereich." },
+  { de:"erforderlich",             vi:"cần thiết",                 base:"erforderlich",   art:null,  ex:"Anmeldung erforderlich!", def:"Notwendig; man braucht es unbedingt." },
+  { de:"die Unterstützung",        vi:"sự hỗ trợ",                 base:"Unterstützung",  art:"die", ex:"Wo Sie sich Unterstützung holen können.", def:"Hilfe, die jemand von einer anderen Person oder Institution bekommt.", alts:["Hilfe","Förderung","Unterstützung"] },
+  { de:"sowohl ... als auch",      vi:"cả ... lẫn ...",            base:"sowohl",         art:null,  ex:"Sowohl für den Service als auch für den Aufbau der Stände.", def:"Eine Konjunktion, die zwei Dinge verbindet und sagt, dass beide zutreffen." },
+  { de:"die Homepage, -s",         vi:"trang chủ (website)",       base:"Homepage",       art:"die", ex:"Sie brauchen eine Homepage für Ihr Geschäft.", def:"Die Hauptseite einer Website im Internet." },
+  { de:"(sich) überlegen",         vi:"suy nghĩ, cân nhắc",        base:"überlegt",       art:null,  ex:"Er überlegt, noch einmal zu studieren.", def:"Etwas sorgfältig bedenken, bevor man eine Entscheidung trifft." },
+  { de:"das Gericht, -e",          vi:"món ăn",                    base:"Gericht",        art:"das", ex:"Bei uns gibt es nicht nur vietnamesische, sondern auch internationale Gerichte.", def:"Ein Essen, das zubereitet und serviert wird; ein Gang in einem Menü.", alts:["Gericht","Speise","Essen","Mahlzeit"] },
+  { de:"die Versicherung, -en",    vi:"bảo hiểm",                  base:"Versicherung",   art:"die", ex:"Ich musste mich um die Versicherungen kümmern.", def:"Ein Vertrag, der finanzielle Sicherheit bei Krankheit, Unfall oder anderen Risiken bietet." },
+  { de:"weder ... noch",           vi:"không ... cũng không ...",  base:"weder",          art:null,  ex:"Manchmal hatte ich weder zum Kochen noch zum Essen Zeit.", def:"Eine Konjunktion, die zwei Dinge verneint; keine der beiden Optionen trifft zu." },
+  { de:"sich lohnen",              vi:"đáng giá, có lợi",          base:"gelohnt",        art:null,  ex:"Es hat sich gelohnt: Anfang März habe ich mein Kaffee-Mobil eröffnet.", def:"Etwas ist es wert; der Aufwand wird durch das Ergebnis gerechtfertigt." },
+  { de:"die Speisekarte, -n",      vi:"thực đơn",                  base:"Speisekarte",    art:"die", ex:"Wie viele Gerichte sollten auf der Speisekarte stehen?", def:"Eine Liste aller Gerichte und Getränke, die in einem Restaurant angeboten werden." },
+  { de:"probieren",                vi:"thử",                       base:"probieren",      art:null,  ex:"Wer gern Süßes isst, sollte auch den Kuchen probieren.", def:"Etwas zum ersten Mal kosten oder ausprobieren, um zu sehen, wie es ist." },
+  { de:"öfter",                    vi:"thường xuyên hơn",          base:"öfter",          art:null,  ex:"Meine Freunde haben öfter gesagt: Du solltest das Kochen wieder zum Beruf machen.", def:"Häufiger als normal; mehr als einmal, aber nicht immer." },
+  { de:"etwa",                     vi:"khoảng (ước lượng)",         base:"etwa",           art:null,  ex:"Der Weg war lang (etwa ein halbes Jahr) und nicht einfach.", def:"Ungefähr; man weiß die genaue Zahl nicht, aber man schätzt sie." },
+];
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function pick(arr,n){return shuffle(arr).slice(0,n);}
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+function esc2(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\\'");}
+
+/* ============================================================
+   EXERCISE GENERATORS
+   ============================================================ */
+function genDeVi(){
+  const words=pick(WORDS,8);
+  return {type:'de-vi',title:'Deutsch → Việt',icon:'🇩🇪',color:'t-vok',pts:8,
+    instr:'Was bedeuten die Wörter auf Vietnamesisch? Schreiben Sie die Bedeutung.',
+    items:words.map((w,i)=>({id:`dv${i}`,prompt:w.de,answer:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex}))};
+}
+
+function genFill(){
+  const eligible=WORDS.filter(w=>{
+    const key=w.base.replace(/\.\.\./g,'').trim().split(' ')[0];
+    return w.ex.toLowerCase().includes(key.toLowerCase());
+  });
+  const words=pick(eligible,8);
+  return {type:'fill',title:'Lückentext',icon:'📝',color:'t-luc',pts:8,
+    instr:'Ergänzen Sie die fehlenden Wörter im Satz. Der Hinweis hilft Ihnen.',
+    items:words.map((w,i)=>{
+      const key=w.base.replace(/\.\.\./g,'').trim().split(' ')[0];
+      const rx=new RegExp(key,'i');
+      const m=w.ex.match(rx);
+      const shown=m?w.ex.replace(m[0],'___'):w.ex;
+      return {id:`fi${i}`,sentence:shown,answer:m?m[0]:key,hint:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex};
+    })};
+}
+
+function genMatch(){
+  const words=pick(WORDS,8);
+  const shuffledVi=shuffle(words.map(w=>w.vi));
+  return {type:'match',title:'Zuordnung DE → VI',icon:'🔗',color:'t-mat',pts:8,
+    instr:'Ordnen Sie die deutschen Wörter den vietnamesischen Bedeutungen zu.',
+    items:words.map((w,i)=>({id:`ma${i}`,de:w.de,answer:w.vi,vi:w.vi,art:w.art,ex:w.ex})),
+    options:shuffledVi};
+}
+
+// EXERCISE E: German definition → guess word (Deutsch–Deutsch)
+function genDef(){
+  const nouns=WORDS.filter(w=>w.art && w.def);
+  const words=pick(nouns,8);
+  return {type:'def',title:'Was ist das Wort?',icon:'\u{1F9E9}',color:'t-def',pts:8,
+    instr:'Lesen Sie die deutsche Erkl\u00e4rung und schreiben Sie Artikel + Wort. Tipp: Der erste Buchstabe ist angegeben!',
+    items:words.map((w,i)=>({
+      id:'df'+i, def:w.def, answer:w.base, art:w.art,
+      de:w.de, vi:w.vi, ex:w.ex,
+      hint1: w.base[0].toUpperCase()+'___',
+      alts: w.alts || [w.base],
+    }))};
+}
+
+function genMC(){
+  const words=pick(WORDS,8);
+  const allVi=WORDS.map(w=>w.vi);
+  return {type:'mc',title:'Multiple Choice',icon:'🎯',color:'t-mc',pts:8,
+    instr:'Wählen Sie die richtige vietnamesische Bedeutung.',
+    items:words.map((w,i)=>{
+      const dist=shuffle(allVi.filter(v=>v!==w.vi)).slice(0,3);
+      return {id:`mc${i}`,de:w.de,answer:w.vi,options:shuffle([w.vi,...dist]),vi:w.vi,art:w.art,ex:w.ex};
+    })};
+}
+
+function genViDe(){
+  // 8 câu DE→VI thuần (không combo)
+  const words=pick(WORDS,8);
+  return {type:'de-vi2',title:'Bedeutung erklären',icon:'✍️',color:'t-vok',pts:8,
+    instr:'Schreiben Sie die vietnamesische Bedeutung. Die Beispielzeile hilft Ihnen.',
+    items:words.map((w,i)=>({id:'vd'+i,prompt:w.de,answer:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex}))};
+}
+
+
+// F: Dialog-Verbindung (Satz-Matching DE–DE)
+const DIALOG_PAIRS = [
+  {left:"Können Sie mir helfen?",            right:"Ja, natürlich. Was brauchen Sie?"},
+  {left:"Das ist wirklich nett von Ihnen.",  right:"Gern geschehen!"},
+  {left:"Das halte ich für keine gute Idee.",right:"Warum denken Sie das?"},
+  {left:"Lass mich das erledigen.",          right:"Das wäre super, danke!"},
+  {left:"Das geht schon.",                   right:"Kein Problem!"},
+  {left:"Das sehe ich auch so.",             right:"Gut, dann sind wir einer Meinung."},
+  {left:"Du könntest vielleicht recht haben.",right:"Ich bin froh, dass du das siehst."},
+  {left:"Das ist ein Missverständnis.",      right:"Oh, das tut mir leid. Was meinten Sie?"},
+  {left:"Soll ich Ihnen helfen?",            right:"Ja, bitte! Das wäre toll."},
+  {left:"Das halte ich für richtig.",        right:"Dann machen wir es so."},
+  {left:"Vielleicht probierst du es mal.",   right:"Gute Idee, ich versuche es."},
+  {left:"Ich finde das sehr verdächtig.",    right:"Wirklich? Warum denn?"},
+  {left:"Das lohnt sich wirklich.",          right:"Dann mache ich es sofort."},
+  {left:"Wir treffen uns am selben Ort.",    right:"Super, bis dann!"},
+  {left:"Das ist kein Grund zur Sorge.",     right:"Danke, das beruhigt mich."},
+  {left:"Ich schlage vor, das zu probieren.",right:"Ja, das klingt gut."},
+  {left:"Ich verstehe das nicht ganz.",      right:"Ich erkläre es Ihnen gerne."},
+  {left:"Das Wetter ist heute schön.",       right:"Ja, perfekt für einen Spaziergang!"},
+  {left:"Wann fangen wir an?",               right:"Am besten sofort!"},
+  {left:"Haben Sie noch Fragen?",            right:"Nein, alles klar. Danke!"},
+];
+function genDialog(){
+  const pairs=pick(DIALOG_PAIRS,8);
+  const rights=shuffle(pairs.map(p=>p.right));
+  return {type:'dialog',title:'Dialog verbinden',icon:'💬',color:'t-dialog',pts:8,
+    instr:'Verbinden Sie die linken Aussagen mit den passenden Antworten rechts.',
+    items:pairs.map((p,i)=>({id:'dl'+i,left:p.left,answer:p.right})),
+    options:rights};
+}
+
+// G: Anagramm – Buchstaben neu ordnen → Wort + Artikel
+function scramble(w){
+  const a=w.split('');
+  // ensure scrambled differs from original
+  let s;
+  let tries=0;
+  do { s=shuffle([...a]).join(''); tries++; } while(s===w && tries<20);
+  return s;
+}
+function genAnagram(){
+  const eligible=WORDS.filter(w=>w.art && w.base.length>=4 && !w.base.includes(' '));
+  const words=pick(eligible,8);
+  return {type:'anagram',title:'Anagramm',icon:'🔡',color:'t-anagram',pts:8,
+    instr:'Bringen Sie die Buchstaben in die richtige Reihenfolge und schreiben Sie das Wort mit Artikel.',
+    items:words.map((w,i)=>({
+      id:'ag'+i,
+      scrambled: scramble(w.base).toUpperCase(),
+      answer:w.base,
+      art:w.art,
+      de:w.de, vi:w.vi, ex:w.ex
+    }))};
+}
+
+// H: Wortbank – Lückentext mit Auswahlwörtern
+function genWordBank(){
+  const eligible=WORDS.filter(w=>{
+    const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
+    return w.ex.toLowerCase().includes(key.toLowerCase()) && w.base.length>3;
+  });
+  const words=pick(eligible,8);
+  const answers=words.map(w=>{
+    const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
+    const rx=new RegExp(key,'i');
+    const m=w.ex.match(rx);
+    return m?m[0]:key;
+  });
+  // shuffle word bank display
+  const bank=shuffle([...answers]);
+  return {type:'wordbank',title:'Wortbank – Lücken füllen',icon:'🏦',color:'t-bank',pts:8,
+    instr:'Wählen Sie das richtige Wort aus der Wortbank und füllen Sie die Lücke.',
+    bank,
+    items:words.map((w,i)=>{
+      const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
+      const rx=new RegExp(key,'i');
+      const m=w.ex.match(rx);
+      const ans=m?m[0]:key;
+      const shown=m?w.ex.replace(m[0],'___'):w.ex;
+      return {id:'wb'+i,sentence:shown,answer:ans,hint:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex};
+    })};
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let exercises=[];
+let currentTab=0;
+const mcState={};
+const tabChecked={};
+
+function buildExercises(){
+  exercises=shuffle([genDeVi(),genViDe(),genDef(),genMC(),genDialog(),genAnagram(),genFill()]);
+  exercises.forEach((ex,i)=>{ex.label=String.fromCharCode(65+i);ex.idx=i;});
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  buildExercises();
+  Object.keys(mcState).forEach(k=>delete mcState[k]);
+  Object.keys(tabChecked).forEach(k=>delete tabChecked[k]);
+  renderTabs();renderDots();renderAll();showTab(0);
+  document.getElementById('resultPanel').classList.remove('show');
+}
+
+function renderTabs(){
+  document.getElementById('tabBar').innerHTML=exercises.map((ex,i)=>`
+    <button class="tab${i===0?' active':''}" id="tab${i}" onclick="showTab(${i})">
+      ${ex.icon} ${ex.label}
+    </button>`).join('');
+}
+function renderDots(){
+  document.getElementById('navDots').innerHTML=exercises.map((_,i)=>`
+    <div class="nav-dot${i===0?' active':''}" id="dot${i}"></div>`).join('');
+}
+function renderAll(){
+  document.getElementById('mainArea').innerHTML=exercises.map((ex,i)=>renderSection(ex,i)).join('');
+}
+
+function renderSection(ex,idx){
+  let body='';
+  if(ex.type==='de-vi') body=renderDeVi(ex);
+  if(ex.type==='fill')  body=renderFill(ex);
+  if(ex.type==='match') body=renderMatch(ex);
+  if(ex.type==='def')   body=renderDef(ex);
+  if(ex.type==='mc')    body=renderMC(ex);
+  if(ex.type==='vi-de') body=renderViDe(ex);
+  if(ex.type==='combo')   body=renderCombo(ex);
+  if(ex.type==='de-vi2')  body=renderDeVi(ex);
+  if(ex.type==='dialog')  body=renderDialog(ex);
+  if(ex.type==='anagram') body=renderAnagram(ex);
+  if(ex.type==='wordbank') body=renderWordBank(ex);
+  return `
+  <div class="section${idx===0?' active':''}" id="sec${idx}">
+    <div class="card ${ex.color}">
+      <div class="card-head">
+        <div class="card-icon">${ex.icon}</div>
+        <div class="card-title">${ex.label}. ${ex.title}</div>
+        <div class="card-pts">/ ${ex.pts}</div>
+      </div>
+      <div class="card-body">
+        <div class="instr">${ex.instr}</div>
+        ${body}
+        <button class="btn-check-tab" id="checkbtn${idx}" onclick="checkTab(${idx})">
+          ✓ Auswerten &amp; Lösungen zeigen
+        </button>
+        <div class="tab-result" id="tabres${idx}"></div>
+        <div class="answer-panel" id="anspanel${idx}"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDeVi(ex){
+  return `<div class="wgrid">${ex.items.map(it=>`
+    <div class="witem">
+      <div class="wlabel">${it.prompt}</div>
+      ${it.ex?`<div style="font-size:10px;color:#60a5fa;font-style:italic;line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${it.ex}</div>`:''}
+      <input class="inp" id="${it.id}" type="text" placeholder="Nghĩa tiếng Việt …" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    </div>`).join('')}</div>`;
+}
+
+function renderFill(ex){
+  return ex.items.map(it=>`
+    <div class="fill-row">
+      <span style="font-size:11px;color:var(--rose);font-weight:700;width:100%;">💡 ${it.hint}</span>
+      <div style="width:100%;font-size:14px;margin-top:2px;">
+        ${it.sentence.replace('___',`<input class="blank" id="${it.id}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" style="min-width:140px;"/>`)}
+      </div>
+    </div>`).join('');
+}
+
+function renderMatch(ex){
+  const optHtml=`<option value="">— wählen —</option>`
+    +ex.options.map(o=>`<option value="${esc(o)}">${o}</option>`).join('');
+  return `<div class="match-grid">${ex.items.map(it=>`
+    <div class="match-row">
+      <div class="match-de">${it.de}</div>
+      <div class="match-arr">→</div>
+      <div class="match-sel"><select class="sel" id="${it.id}">${optHtml}</select></div>
+    </div>`).join('')}</div>`;
+}
+
+function renderDef(ex){
+  return ex.items.map(it=>`
+    <div class="def-item">
+      <div class="def-tag">🧩 Definition</div>
+      <div class="def-text">${it.def}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--violet);margin-top:2px;">
+        💡 Tipp: Das Wort beginnt mit „<span style="font-size:15px;">${it.answer[0].toUpperCase()}</span>"
+      </div>
+      <div class="def-input-row">
+        <input class="def-art" id="${it.id}_art" type="text" placeholder="die/das/der" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <input class="inp def-word" id="${it.id}_word" type="text" placeholder="${it.answer[0].toUpperCase()}…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>`).join('');
+}
+
+function renderMC(ex){
+  return ex.items.map(it=>`
+    <div class="mc-item">
+      <div class="mc-prompt">${it.de}</div>
+      <div class="mc-opts" id="opts_${it.id}">
+        ${it.options.map((o,j)=>`
+          <button class="mc-opt" id="opt_${it.id}_${j}"
+            onclick="mcPick('${it.id}',${j},'${esc2(o)}','${esc2(it.answer)}')"
+          >${o}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderViDe(ex){
+  return `<div class="wgrid">${ex.items.map(it=>`
+    <div class="witem">
+      <div class="wlabel">${it.prompt}</div>
+      <input class="inp" id="${it.id}" type="text" placeholder="Artikel + Wort …" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    </div>`).join('')}</div>`;
+}
+
+
+function renderCombo(ex){
+  const deviItems=ex.items.filter(it=>it.mode==='de-vi');
+  const videItems=ex.items.filter(it=>it.mode==='vi-de');
+  return `
+    <div class="combo-divider">🇩🇪 Deutsch → Việt</div>
+    <div class="wgrid">${deviItems.map(it=>`
+      <div class="witem">
+        <div class="wlabel">${it.prompt}</div>
+        <input class="inp" id="${it.id}" type="text" placeholder="${it.placeholder}" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>`).join('')}</div>
+    <div class="combo-divider" style="margin-top:8px;">✍️ Việt → Deutsch</div>
+    <div class="wgrid">${videItems.map(it=>`
+      <div class="witem">
+        <div class="wlabel">${it.prompt}</div>
+        <input class="inp" id="${it.id}" type="text" placeholder="${it.placeholder}" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>`).join('')}</div>`;
+}
+
+function renderDialog(ex){
+  const optHtml=`<option value="">— wählen —</option>`
+    +ex.options.map(o=>`<option value="${esc(o)}">${o}</option>`).join('');
+  return `<div class="dialog-grid">${ex.items.map(it=>`
+    <div class="dialog-row">
+      <div class="dialog-left">${it.left}</div>
+      <div class="dialog-arr">→</div>
+      <div class="dialog-sel"><select class="sel" id="${it.id}">${optHtml}</select></div>
+    </div>`).join('')}</div>`;
+}
+
+function renderAnagram(ex){
+  return `<div class="anagram-grid">${ex.items.map(it=>`
+    <div class="anagram-item">
+      <div class="anagram-scrambled">${it.scrambled}</div>
+      <div class="anagram-inputs">
+        <input class="anagram-art" id="${it.id}_art" type="text" placeholder="Art." autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <input class="inp anagram-word" id="${it.id}_word" type="text" placeholder="Wort …" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderWordBank(ex){
+  const bankHtml=`<div class="wb-label">📦 Wortbank – wählen Sie:</div>`
+    +ex.bank.map(w=>`<div class="wb-chip" id="wbc_${w}" onclick="wbChipClick(this,'${w.replace(/'/g,"\\'")}')"> ${w}</div>`).join('');
+  const sentHtml=ex.items.map(it=>`
+    <div class="wb-fill-row">
+      <span style="font-size:11px;color:var(--teal);font-weight:700;">💡 ${it.hint}</span><br>
+      ${it.sentence.replace('___',`<input class="blank" id="${it.id}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" style="min-width:130px;" oninput="wbSyncBank()"/>`)}
+    </div>`).join('');
+  return `<div class="wordbank-pool">${bankHtml}</div>${sentHtml}`;
+}
+/* ============================================================
+   MC LIVE INTERACTION
+   ============================================================ */
+function mcPick(id,j,chosen,answer){
+  if(mcState[id]) return;
+  mcState[id]=chosen;
+  document.querySelectorAll(`#opts_${id} .mc-opt`).forEach((btn,k)=>{
+    const val=btn.textContent.trim();
+    if(val===answer) btn.classList.add(tabChecked[getTabIdxForId(id)]!==undefined?'reveal':'ok');
+    else if(k===j && chosen!==answer) btn.classList.add('no');
+    else btn.classList.add('locked');
+  });
+}
+function getTabIdxForId(id){
+  return exercises.findIndex(ex=>ex.items&&ex.items.some(it=>it.id===id));
+}
+
+/* ============================================================
+   PER-TAB CHECK
+   ============================================================ */
+function checkTab(idx){
+  const ex=exercises[idx];
+  if(tabChecked[idx]!==undefined) return; // already checked
+  let pts=0;
+
+  if(ex.type==='de-vi'||ex.type==='vi-de'||ex.type==='de-vi2'){
+    ex.items.forEach(it=>{
+      const inp=document.getElementById(it.id);
+      if(!inp) return;
+      const val=inp.value.trim();
+      if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer)||norm(val).split(',')[0]===norm(it.answer.split(',')[0]);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='fill'){
+    ex.items.forEach(it=>{
+      const inp=document.getElementById(it.id);
+      if(!inp) return;
+      const val=inp.value.trim();
+      if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='match'){
+    ex.items.forEach(it=>{
+      const sel=document.getElementById(it.id);
+      if(!sel) return;
+      const val=sel.value;
+      if(!val){sel.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      sel.classList.toggle('ok',ok);sel.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='def'){
+    ex.items.forEach(it=>{
+      const artEl=document.getElementById(it.id+'_art');
+      const wordEl=document.getElementById(it.id+'_word');
+      if(!artEl||!wordEl) return;
+      const wordVal=wordEl.value.trim();
+      const artVal=artEl.value.trim();
+      if(!wordVal) return;
+      // accept main answer OR any synonym in alts[]
+      const accepted=(it.alts||[it.answer]).map(a=>norm(a));
+      const wordOk=accepted.includes(norm(wordVal));
+      // for art: if they got a synonym right, check its correct article
+      const artOk=norm(artVal)===norm(it.art)||norm(artVal)==='die'||norm(artVal)==='das'||norm(artVal)==='der'
+        ? norm(artVal)===norm(it.art) : false;
+      wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
+      artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      // 1 pt for correct word (generous: word alone counts if art missing)
+      if(wordOk) pts+=1;
+    });
+  }
+  if(ex.type==='mc'){
+    ex.items.forEach(it=>{
+      const chosen=mcState[it.id];
+      if(!chosen){
+        // reveal correct answer if not picked
+        document.querySelectorAll(`#opts_${it.id} .mc-opt`).forEach(btn=>{
+          if(btn.textContent.trim()===it.answer) btn.classList.add('reveal');
+          else btn.classList.add('locked');
+        });
+      } else if(norm(chosen)===norm(it.answer)) pts++;
+    });
+  }
+
+
+  if(ex.type==='combo'){
+    ex.items.forEach(it=>{
+      const inp=document.getElementById(it.id);
+      if(!inp) return;
+      const val=inp.value.trim();
+      if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer)||norm(val).split(',')[0]===norm(it.answer.split(',')[0]);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='dialog'){
+    ex.items.forEach(it=>{
+      const sel=document.getElementById(it.id);
+      if(!sel) return;
+      const val=sel.value;
+      if(!val){sel.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      sel.classList.toggle('ok',ok);sel.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='anagram'){
+    ex.items.forEach(it=>{
+      const artEl=document.getElementById(it.id+'_art');
+      const wordEl=document.getElementById(it.id+'_word');
+      if(!wordEl) return;
+      const wordVal=wordEl.value.trim();
+      if(!wordVal) return;
+      const wordOk=norm(wordVal)===norm(it.answer);
+      wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
+      if(artEl){
+        const artOk=norm(artEl.value.trim())===norm(it.art);
+        artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      }
+      if(wordOk) pts++;
+    });
+  }
+  if(ex.type==='wordbank'){
+    ex.items.forEach(it=>{
+      const inp=document.getElementById(it.id);
+      if(!inp) return;
+      const val=inp.value.trim();
+      if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  tabChecked[idx]=pts;
+
+  // result bar
+  const pct=pts/ex.pts;
+  const emoji=pct>=.8?'🌟':pct>=.5?'👍':'💪';
+  const msg=pct>=.8?'Ausgezeichnet!':pct>=.5?'Gut gemacht! Schauen Sie die Lösungen an.':'Weiter üben! Schauen Sie die Lösungen an.';
+  const resEl=document.getElementById(`tabres${idx}`);
+  resEl.innerHTML=`
+    <div class="tab-res-emoji">${emoji}</div>
+    <div>
+      <div class="tab-res-score">${pts} / ${ex.pts} Punkte</div>
+      <div class="tab-res-msg">${msg}</div>
+    </div>`;
+  resEl.classList.add('show');
+
+  // answer panel
+  const ansEl=document.getElementById(`anspanel${idx}`);
+  ansEl.innerHTML=`
+    <div class="ans-title">✅ Lösungen – ${ex.label}. ${ex.title}</div>
+    ${ex.items.map((it,k)=>{
+      if(ex.type==='dialog') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.left}</div>
+            <div class="ans-vi">→ ${it.answer}</div>
+          </div>
+        </div>`;
+      if(ex.type==='anagram') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.scrambled} → <strong>${it.art} ${it.answer}</strong></div>
+            <div class="ans-vi">${it.vi}</div>
+            <div class="ans-ex">${it.ex}</div>
+          </div>
+        </div>`;
+      if(ex.type==='wordbank') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.ex}</div>
+            <div class="ans-vi">→ Lückenwort: <strong>${it.answer}</strong> (${it.vi})</div>
+          </div>
+        </div>`;
+      return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">
+              ${it.de||it.prompt||''}
+              ${it.art?`<span class="ans-art">${it.art}</span>`:''}
+            </div>
+            <div class="ans-vi">${it.vi||it.answer||''}</div>
+            <div class="ans-ex">${it.ex||''}</div>
+          </div>
+        </div>`;
+    }).join('')}`;
+  ansEl.classList.add('show');
+
+  // mark tab done
+  const tabEl=document.getElementById(`tab${idx}`);
+  if(tabEl) tabEl.classList.add('done');
+  const dotEl=document.getElementById(`dot${idx}`);
+  if(dotEl) dotEl.classList.add('done');
+
+  // disable button
+  const btn=document.getElementById(`checkbtn${idx}`);
+  if(btn){btn.disabled=true;btn.textContent='✓ Ausgewertet';}
+}
+
+/* ============================================================
+   CHECK ALL
+   ============================================================ */
+function checkAllTabs(){
+  exercises.forEach((_,i)=>{if(tabChecked[i]===undefined) checkTab(i);});
+  let total=0,max=0;
+  exercises.forEach((ex,i)=>{total+=(tabChecked[i]??0);max+=ex.pts;});
+
+  const panel=document.getElementById('resultPanel');
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  const pct=total/max;
+  document.getElementById('rEmoji').textContent=pct>=.8?'🏆':pct>=.5?'😊':'📚';
+  document.getElementById('rScore').textContent=total+' / '+max+' Punkte';
+  document.getElementById('rMsg').textContent=pct>=.8?'Ausgezeichnet! Weiter so!':pct>=.5?'Gut gemacht! Üben Sie weiter.':'Kein Problem – nochmal versuchen!';
+  document.getElementById('rStrip').innerHTML=exercises.map((ex,i)=>`
+    <div class="score-chip" onclick="showTab(${i})" title="Klicken zum Anzeigen">
+      ${ex.icon} ${ex.label}<br>${tabChecked[i]??0} / ${ex.pts}
+    </div>`).join('');
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showTab(i){
+  currentTab=i;
+  document.querySelectorAll('.section').forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.querySelectorAll('.tab').forEach((t,k)=>{
+    const wasDone=t.classList.contains('done');
+    t.classList.toggle('active',k===i);
+    if(wasDone) t.classList.add('done');
+  });
+  document.querySelectorAll('.nav-dot').forEach((d,k)=>{
+    const wasDone=d.classList.contains('done');
+    d.classList.toggle('active',k===i);
+    if(wasDone) d.classList.add('done');
+  });
+  document.getElementById('prevBtn').disabled=i===0;
+  document.getElementById('nextBtn').disabled=i===exercises.length-1;
+}
+function navigate(dir){
+  showTab(Math.max(0,Math.min(exercises.length-1,currentTab+dir)));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+/* word bank chip click */
+function wbChipClick(chip, word){
+  // find first empty input
+  const inputs = document.querySelectorAll('.blank[id^="wb"]');
+  for(const inp of inputs){
+    if(!inp.value){
+      inp.value = word;
+      chip.classList.add('used');
+      return;
+    }
+  }
+}
+function wbSyncBank(){
+  // re-enable chips whose word is no longer in any input
+  document.querySelectorAll('.wb-chip').forEach(chip=>{
+    const w=chip.textContent.trim();
+    const used=[...document.querySelectorAll('.blank[id^="wb"]')].some(inp=>inp.value.trim()===w);
+    chip.classList.toggle('used',used);
+  });
+}
+/* ============================================================
+   RESET
+   ============================================================ */
+function resetAll(){
+  Object.keys(mcState).forEach(k=>delete mcState[k]);
+  Object.keys(tabChecked).forEach(k=>delete tabChecked[k]);
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render();
+</script>
 </body>
 </html>
