@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Mobil Lernen – Lektion 04</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;
+  --border:#c5d8ee;--blue:#2563eb;--blt:#dbeafe;--bdk:#1d4ed8;
+  --green:#16a34a;--glt:#dcfce7;
+  --red:#dc2626;--rlt:#fee2e2;
+  --gold:#d97706;--golt:#fef3c7;
+  --sh:0 4px 24px rgba(37,99,235,.12);
+  --shl:0 8px 40px rgba(37,99,235,.18);
+  --r:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+.hdr{background:#1e3a5f;padding:16px 20px 14px;position:relative;overflow:hidden;flex-shrink:0;}
+.hdr::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 90% -10%,#3b82f6 0%,transparent 55%),
+             radial-gradient(ellipse at -10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+.hdr-inner{position:relative;max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.hdr-text .tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:2px;}
+.hdr-text h1{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;line-height:1.2;}
+.hdr-text p{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+.hdr-back{background:rgba(255,255,255,.12);border:none;border-radius:10px;color:#93c5fd;
+  font-size:12px;font-weight:600;padding:7px 12px;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+.mode-wrap{background:var(--card);border-bottom:2px solid var(--border);padding:10px 16px;flex-shrink:0;}
+.mode-inner{max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mode-btn{border:2px solid var(--border);background:var(--bg);border-radius:14px;
+  padding:9px 8px;text-align:center;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;}
+.mode-btn.active{border-color:var(--blue);background:var(--blt);}
+.mode-icon{font-size:20px;margin-bottom:2px;}
+.mode-title{font-size:12px;font-weight:700;color:var(--ink);}
+.mode-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.mode-btn.active .mode-title{color:var(--bdk);}
+#modeScreen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;gap:16px;}
+.mode-card{width:100%;max-width:400px;background:var(--card);border:2px solid var(--border);border-radius:var(--r);
+  padding:22px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:18px;box-shadow:var(--sh);}
+.mode-card:hover{border-color:var(--blue);box-shadow:var(--shl);}
+.mc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.mc-icon.a{background:var(--blt);}
+.mc-icon.b{background:var(--glt);}
+.mc-title{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:3px;}
+.mc-sub{font-size:12px;color:var(--muted);}
+.mode-divider{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+#quizScreen{flex:1;display:none;flex-direction:column;}
+#quizScreen.show{display:flex;}
+.prog-wrap{background:var(--card);border-bottom:2px solid var(--border);padding:10px 16px;flex-shrink:0;}
+.prog-inner{max-width:480px;margin:0 auto;display:flex;align-items:center;gap:10px;}
+.prog-bg{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:99px;
+  transition:width .4s cubic-bezier(.4,0,.2,1);width:0%;}
+.prog-txt{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;}
+.prog-ok{font-size:12px;font-weight:700;color:var(--green);min-width:32px;text-align:right;}
+.qcontent{flex:1;max-width:480px;width:100%;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.qcard{background:var(--card);border-radius:var(--r);box-shadow:var(--shl);padding:22px 18px 18px;
+  text-align:center;position:relative;overflow:hidden;}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--blue),#60a5fa);}
+.qcard-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;}
+.qcard-word{font-family:'DM Serif Display',serif;font-size:24px;color:var(--ink);
+  line-height:1.3;margin-bottom:5px;}
+.qcard-detail{font-size:12px;color:var(--blue);font-weight:600;min-height:17px;margin-bottom:4px;}
+.qcard-ex{font-size:12px;color:var(--muted);font-style:italic;line-height:1.6;
+  background:var(--bg);border-radius:10px;padding:8px 12px;margin-top:8px;text-align:left;}
+.read-badge{display:inline-flex;align-items:center;gap:5px;background:var(--blt);
+  border-radius:99px;padding:3px 11px;font-size:10px;font-weight:700;color:var(--bdk);
+  margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;
+  opacity:0;transition:opacity .3s;}
+.read-badge.show{opacity:1;}
+.rdot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.options{display:flex;flex-direction:column;gap:9px;}
+.opt{background:var(--card);border:2px solid var(--border);border-radius:14px;
+  padding:13px 16px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;
+  color:var(--ink);cursor:pointer;text-align:left;transition:all .15s;
+  display:flex;align-items:center;gap:11px;width:100%;}
+.opt:active{transform:scale(.98);}
+.opt:hover:not(:disabled):not(.off){border-color:var(--blue);background:var(--blt);}
+.ol{width:26px;height:26px;border-radius:8px;background:var(--bg);display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;color:var(--muted);flex-shrink:0;transition:all .15s;}
+.opt:hover:not(:disabled):not(.off) .ol{background:var(--blue);color:#fff;}
+.opt.correct{border-color:var(--green)!important;background:var(--glt)!important;color:var(--green)!important;}
+.opt.correct .ol{background:var(--green)!important;color:#fff!important;}
+.opt.wrong{border-color:var(--red)!important;background:var(--rlt)!important;color:var(--red)!important;animation:shk .35s ease;}
+.opt.wrong .ol{background:var(--red)!important;color:#fff!important;}
+.opt.off{opacity:.38;pointer-events:none;}
+.opt:disabled{cursor:default;}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.feedback{border-radius:14px;padding:12px 16px;text-align:center;display:none;animation:fUp .2s ease;}
+.feedback.show{display:block;}
+.feedback.ok{background:var(--glt);border:2px solid var(--green);color:var(--green);}
+.feedback.retry{background:var(--golt);border:2px solid var(--gold);color:var(--gold);}
+.fb-em{font-size:22px;margin-bottom:3px;}
+.fb-tx{font-size:14px;font-weight:700;}
+@keyframes fUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+#resultScreen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;}
+#resultScreen.show{display:flex;}
+.res-card{width:100%;max-width:400px;background:var(--card);border-radius:var(--r);
+  box-shadow:var(--shl);padding:36px 24px;text-align:center;}
+.res-em{font-size:56px;margin-bottom:10px;}
+.res-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--ink);margin-bottom:5px;}
+.res-pct{font-size:54px;font-weight:900;color:var(--blue);margin:6px 0;}
+.res-msg{font-size:14px;color:var(--muted);margin-bottom:20px;}
+.res-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.rstat{background:var(--bg);border-radius:14px;padding:14px 10px;}
+.rstat-val{font-size:26px;font-weight:800;}
+.rstat-lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+.rstat.g .rstat-val{color:var(--green);}
+.rstat.r .rstat-val{color:var(--red);}
+.btnp{width:100%;background:var(--blue);color:#fff;border:none;border-radius:14px;
+  padding:15px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.35);margin-bottom:10px;transition:all .15s;}
+.btnp:active{transform:scale(.98);}
+.btns{width:100%;background:transparent;border:2px solid var(--border);border-radius:14px;
+  padding:13px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;
+  color:var(--muted);cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-text">
+      <div class="tag">Miteinander! B1.1</div>
+      <h1>Lektion 04 – Vokabeln</h1>
+      <p>Mobil ohne Auto?</p>
+    </div>
+    <a class="hdr-back" href="index.html">← Zurück</a>
+  </div>
+</div>
+
+<div id="modeScreen">
+  <div class="mode-card" onclick="startFull()">
+    <div class="mc-icon a">📚</div>
+    <div>
+      <div class="mc-title">Vokabeln lernen</div>
+      <div class="mc-sub">Alle Wörter • Ohne Ende</div>
+    </div>
+  </div>
+  <div class="mode-divider">oder</div>
+  <div class="mode-card" onclick="startRandom()">
+    <div class="mc-icon b">🎲</div>
+    <div>
+      <div class="mc-title">Wortschatztest</div>
+      <div class="mc-sub">10 zufällige Wörter • Mit Score</div>
+    </div>
+  </div>
+</div>
+
+<div id="quizScreen">
+  <div class="prog-wrap" id="progWrap" style="display:none">
+    <div class="prog-inner">
+      <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-txt" id="progTxt">0 / 10</div>
+      <div class="prog-ok" id="progOk"></div>
+    </div>
+  </div>
+  <div class="qcontent">
+    <div class="qcard" id="qcard">
+      <div class="qcard-label" id="qLabel"></div>
+      <div class="read-badge" id="readBadge"><div class="rdot"></div>Wird vorgelesen …</div>
+      <div class="qcard-word" id="qWord"></div>
+      <div class="qcard-detail" id="qDetail"></div>
+      <div class="qcard-ex" id="qEx"></div>
+    </div>
+    <div class="options" id="optWrap"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-em" id="fbEm"></div>
+      <div class="fb-tx" id="fbTx"></div>
+    </div>
+  </div>
+</div>
+
+<div id="resultScreen">
+  <div class="res-card">
+    <div class="res-em" id="resEm"></div>
+    <div class="res-title">Fertig!</div>
+    <div class="res-pct" id="resPct"></div>
+    <div class="res-msg" id="resMsg"></div>
+    <div class="res-stats">
+      <div class="rstat g"><div class="rstat-val" id="resOk"></div><div class="rstat-lbl">Richtig ✓</div></div>
+      <div class="rstat r"><div class="rstat-val" id="resWr"></div><div class="rstat-lbl">Falsch ✗</div></div>
+    </div>
+    <button class="btnp" onclick="startRandom()">↺ Neuer Test</button>
+    <button class="btns" onclick="backToMenu()">← Zurück zum Menü</button>
+  </div>
+</div>
+
+<script>
+const W=[
+  {de:"das Fahrzeug, -e",vi:"phương tiện giao thông",art:"das",base:"Fahrzeug",pl:"Fahrzeuge",type:"noun",ex:"Brauchen wir ein eigenes Fahrzeug?"},
+  {de:"sich leisten",vi:"có khả năng chi trả, sắm được",art:null,base:"sich leisten",pl:null,type:"verb",conj:"leistete sich · hat sich geleistet",ex:"Können wir uns ein neues Auto finanziell leisten?"},
+  {de:"transportieren",vi:"vận chuyển",art:null,base:"transportieren",pl:null,type:"verb",conj:"transportierte · hat transportiert",ex:"Wie kann man den Kinderwagen transportieren?"},
+  {de:"der Sitz, -e",vi:"ghế ngồi",art:"der",base:"Sitz",pl:"Sitze",type:"noun",ex:"Der Kindersitz ist zu groß."},
+  {de:"der Motor, -en",vi:"động cơ",art:"der",base:"Motor",pl:"Motoren",type:"noun",ex:"Es hat einen Motor, deshalb ist es leicht zu fahren."},
+  {de:"entweder … oder …",vi:"hoặc … hoặc …",art:null,base:"entweder … oder …",pl:null,type:"konj",ex:"Wir können uns entweder eine größere Wohnung oder ein neues Auto leisten."},
+  {de:"die Autobahn, -en",vi:"đường cao tốc",art:"die",base:"Autobahn",pl:"Autobahnen",type:"noun",ex:"Wir können entweder die Autobahn nehmen oder über die Landstraße fahren."},
+  {de:"das E-Bike, -s",vi:"xe đạp điện",art:"das",base:"E-Bike",pl:"E-Bikes",type:"noun",ex:"Wir können entweder in den Urlaub fahren oder uns E-Bikes anschaffen."},
+  {de:"sich anschaffen",vi:"sắm, mua sắm (cho bản thân)",art:null,base:"sich anschaffen",pl:null,type:"verb",conj:"schaffte sich an · hat sich angeschafft",ex:"Wir können uns E-Bikes anschaffen."},
+  {de:"unterstützen",vi:"hỗ trợ, ủng hộ",art:null,base:"unterstützen",pl:null,type:"verb",conj:"unterstützte · hat unterstützt",ex:"Die Stadt baut moderne Wohnungen, um junge Familien zu unterstützen."},
+  {de:"fördern",vi:"thúc đẩy, tài trợ, hỗ trợ",art:null,base:"fördern",pl:null,type:"verb",conj:"förderte · hat gefördert",ex:"Wir fördern das Projekt finanziell, damit Sie bezahlbaren Wohnraum finden."},
+  {de:"damit",vi:"để (mục đích), vì vậy",art:null,base:"damit",pl:null,type:"konj",ex:"Wir fördern das Projekt, damit Sie bezahlbaren Wohnraum finden."},
+  {de:"verzichten",vi:"từ bỏ, không dùng (+ auf + Akk.)",art:null,base:"verzichten",pl:null,type:"verb",conj:"verzichtete · hat verzichtet",ex:"Wer hier wohnen will, muss auf ein eigenes Auto verzichten."},
+  {de:"der Schutz (Sg.)",vi:"sự bảo vệ",art:"der",base:"Schutz",pl:null,type:"noun",ex:"Wir wollen etwas für den Klimaschutz tun."},
+  {de:"die Mobilität (Sg.)",vi:"tính di động, khả năng di chuyển",art:"die",base:"Mobilität",pl:null,type:"noun",ex:"Mobilität auch ohne eigenes Auto ermöglichen."},
+  {de:"die Qualität (Sg.)",vi:"chất lượng",art:"die",base:"Qualität",pl:null,type:"noun",ex:"… und die Lebensqualität verbessern."},
+  {de:"(sich) verbessern",vi:"cải thiện, tốt lên",art:null,base:"verbessern",pl:null,type:"verb",conj:"verbesserte · hat verbessert",ex:"… und die Lebensqualität verbessern."},
+  {de:"die Maßnahme, -n",vi:"biện pháp",art:"die",base:"Maßnahme",pl:"Maßnahmen",type:"noun",ex:"Maßnahmen: Wir reduzieren die Anzahl der Autos."},
+  {de:"reduzieren",vi:"giảm thiểu, cắt giảm",art:null,base:"reduzieren",pl:null,type:"verb",conj:"reduzierte · hat reduziert",ex:"Wir reduzieren die Anzahl der Autos."},
+  {de:"die Anzahl (Sg.)",vi:"số lượng",art:"die",base:"Anzahl",pl:null,type:"noun",ex:"Wir reduzieren die Anzahl der Autos."},
+  {de:"die Fläche, -n",vi:"diện tích, bề mặt",art:"die",base:"Fläche",pl:"Flächen",type:"noun",ex:"… planen attraktive Grünflächen mit Bäumen und Bänken."},
+  {de:"die Bank, -¨e",vi:"ghế băng (ngoài trời); ngân hàng",art:"die",base:"Bank",pl:"Bänke",type:"noun",ex:"… mit Bäumen und Bänken."},
+  {de:"wachsen",vi:"mọc, phát triển, lớn lên",art:null,base:"wachsen",pl:null,type:"verb",conj:"wuchs · ist gewachsen",ex:"Mein Gemüse wächst gut."},
+  {de:"die Stimmung, -en",vi:"tâm trạng, bầu không khí",art:"die",base:"Stimmung",pl:"Stimmungen",type:"noun",ex:"Die Stimmung im Haus ist gut."},
+  {de:"gießen",vi:"tưới (cây), đổ (nước)",art:null,base:"gießen",pl:null,type:"verb",conj:"goss · hat gegossen",ex:"Damit dein Gemüse gut wächst, solltest du es regelmäßig gießen."},
+  {de:"die Generation, -en",vi:"thế hệ",art:"die",base:"Generation",pl:"Generationen",type:"noun",ex:"Die Generationen leben zusammen."},
+  {de:"die Klimaanlage, -n",vi:"máy điều hòa không khí",art:"die",base:"Klimaanlage",pl:"Klimaanlagen",type:"noun",ex:"Wir verzichten auf Klimaanlagen."},
+  {de:"pflanzen",vi:"trồng (cây)",art:null,base:"pflanzen",pl:null,type:"verb",conj:"pflanzte · hat gepflanzt",ex:"Wir pflanzen neue Bäume."},
+  {de:"schützen",vi:"bảo vệ",art:null,base:"schützen",pl:null,type:"verb",conj:"schützte · hat geschützt",ex:"Wir sparen Energie und schützen die Umwelt."},
+  {de:"gegenseitig",vi:"lẫn nhau, tương hỗ",art:null,base:"gegenseitig",pl:null,type:"adj",ex:"Alt und Jung können sich gegenseitig unterstützen."},
+  {de:"bauen",vi:"xây dựng, chế tạo",art:null,base:"bauen",pl:null,type:"verb",conj:"baute · hat gebaut",ex:"Wir können zusammen Möbel bauen."},
+  {de:"kritisch",vi:"phê phán, nghiêm túc, đáng lo ngại",art:null,base:"kritisch",pl:null,type:"adj",ex:"Aber manche Aktionen sehe ich schon ein bisschen kritisch."},
+  {de:"wütend",vi:"tức giận",art:null,base:"wütend",pl:null,type:"adj",ex:"Vielleicht ist er wütend."},
+  {de:"sowieso",vi:"dù sao thì, đằng nào cũng",art:null,base:"sowieso",pl:null,type:"adv",ex:"Er überlegt sowieso, ob sie ihr altes Auto behalten sollen."},
+  {de:"behalten",vi:"giữ lại",art:null,base:"behalten",pl:null,type:"verb",conj:"behielt · hat behalten",ex:"… ob sie ihr altes Auto behalten sollen."},
+  {de:"ewig",vi:"mãi mãi, lâu vô cùng",art:null,base:"ewig",pl:null,type:"adj",ex:"Doris findet, dass die Fahrt mit dem Zug ewig dauert."},
+  {de:"die Geschwindigkeit, -en",vi:"tốc độ",art:"die",base:"Geschwindigkeit",pl:"Geschwindigkeiten",type:"noun",ex:"Für Samir ist Geschwindigkeit nicht so wichtig."},
+  {de:"der Umweltschutz (Sg.)",vi:"bảo vệ môi trường",art:"der",base:"Umweltschutz",pl:null,type:"noun",ex:"Unsere Klasse geht für den Umweltschutz und fürs Klima auf die Straße."},
+  {de:"die Alternative, -n",vi:"giải pháp thay thế, lựa chọn khác",art:"die",base:"Alternative",pl:"Alternativen",type:"noun",ex:"Da wäre das Fahrrad doch eine gute Alternative."},
+  {de:"die Entfernung, -en",vi:"khoảng cách",art:"die",base:"Entfernung",pl:"Entfernungen",type:"noun",ex:"Ludmilla sagt, dass in Neuberg die Entfernungen zum Supermarkt nicht groß sind."},
+  {de:"wieso",vi:"tại sao, vì sao",art:null,base:"wieso",pl:null,type:"adv",ex:"Wieso fahren wir mit dem Auto?"},
+  {de:"umsonst",vi:"miễn phí; vô ích",art:null,base:"umsonst",pl:null,type:"adv",ex:"Öffentliche Verkehrsmittel sollten für alle umsonst sein."},
+  {de:"die Zulassung, -en",vi:"giấy phép đăng ký (xe)",art:"die",base:"Zulassung",pl:"Zulassungen",type:"noun",ex:"Wenn Sie ein Auto kaufen, müssen Sie sich um seine Zulassung kümmern."},
+  {de:"das Kraftfahrzeug, -e",vi:"xe cơ giới",art:"das",base:"Kraftfahrzeug",pl:"Kraftfahrzeuge",type:"noun",ex:"Jedes Kraftfahrzeug hat einen Motor."},
+  {de:"der Ersatz (Sg.)",vi:"sự thay thế, vật thay thế",art:"der",base:"Ersatz",pl:null,type:"noun",ex:"Sie wollen einen Ersatz beantragen."},
+  {de:"die Bescheinigung, -en",vi:"giấy chứng nhận",art:"die",base:"Bescheinigung",pl:"Bescheinigungen",type:"noun",ex:"Wenn Sie ein Kraftfahrzeug kaufen, bekommen Sie verschiedene Bescheinigungen."},
+  {de:"die Meldung, -en",vi:"việc đăng ký, thông báo chính thức",art:"die",base:"Meldung",pl:"Meldungen",type:"noun",ex:"Meldung und Verkauf eines Kraftfahrzeugs."},
+  {de:"das Kennzeichen, –",vi:"biển số xe",art:"das",base:"Kennzeichen",pl:"Kennzeichen",type:"noun",ex:"Ohne Kfz-Kennzeichen darf kein Auto auf der Straße fahren."},
+  {de:"die Behörde, -n",vi:"cơ quan nhà nước, sở ban ngành",art:"die",base:"Behörde",pl:"Behörden",type:"noun",ex:"Samir hört eine telefonische Ansage von einer Behörde."},
+  {de:"außerhalb",vi:"bên ngoài (+ Gen.)",art:null,base:"außerhalb",pl:null,type:"prep",ex:"Die Stimme sagt, dass er außerhalb der Servicezeiten anruft."},
+  {de:"innerhalb",vi:"bên trong, trong vòng (+ Gen.)",art:null,base:"innerhalb",pl:null,type:"prep",ex:"innerhalb der Servicezeiten: zwischen 8 und 17 Uhr."},
+  {de:"das Amt, -¨er",vi:"cơ quan công quyền",art:"das",base:"Amt",pl:"Ämter",type:"noun",ex:"Man kann sich erkundigen, bei welchem Amt man einen Antrag abgeben kann."},
+  {de:"der Einwohner, –",vi:"cư dân, người dân địa phương",art:"der",base:"Einwohner",pl:"Einwohner",type:"noun",ex:"Zum Einwohnermeldeamt muss man gehen, wenn man eine Wohnung anmelden möchte."},
+  {de:"das Jugendamt, -¨er",vi:"sở thanh thiếu niên",art:"das",base:"Jugendamt",pl:"Jugendämter",type:"noun",ex:"Das Jugendamt hat die Aufgabe, Kinder zu schützen."},
+  {de:"das Sozialamt, -¨er",vi:"sở trợ cấp xã hội",art:"das",base:"Sozialamt",pl:"Sozialämter",type:"noun",ex:"Menschen mit wenig Geld bekommen Unterstützung vom Sozialamt."},
+  {de:"das Standesamt, -¨er",vi:"phòng hộ tịch",art:"das",base:"Standesamt",pl:"Standesämter",type:"noun",ex:"Auf dem Standesamt bekommt man Bescheinigungen, z. B., wenn man heiratet."},
+  {de:"das Wohnungsamt, -¨er",vi:"sở nhà ở",art:"das",base:"Wohnungsamt",pl:"Wohnungsämter",type:"noun",ex:"Beim Wohnungsamt können Einwohner Hilfe bekommen bei Fragen zur Miete."},
+  {de:"sowie",vi:"cũng như, và cả",art:null,base:"sowie",pl:null,type:"konj",ex:"… sowie Probleme mit dem Vermieter haben."},
+  {de:"sich erkundigen",vi:"hỏi thăm, tìm hiểu thông tin",art:null,base:"sich erkundigen",pl:null,type:"verb",conj:"erkundigte sich · hat sich erkundigt",ex:"Man kann sich erkundigen, wie man ein Auto abmeldet."},
+  {de:"sich abmelden",vi:"hủy đăng ký, khai báo rút",art:null,base:"sich abmelden",pl:null,type:"verb",conj:"meldete sich ab · hat sich abgemeldet",ex:"Man kann ein Auto auf dem Amt oder online abmelden."},
+  {de:"gelten",vi:"có hiệu lực, được áp dụng",art:null,base:"gelten",pl:null,type:"verb",conj:"galt · hat gegolten",ex:"Ein Parkausweis gilt für ein bestimmtes Kfz-Kennzeichen."},
+  {de:"wiederholen",vi:"nhắc lại, lặp lại",art:null,base:"wiederholen",pl:null,type:"verb",conj:"wiederholte · hat wiederholt",ex:"Könnten Sie das bitte wiederholen?"},
+  {de:"die Verzeihung (Sg.)",vi:"sự tha thứ; Verzeihung! = Xin lỗi!",art:"die",base:"Verzeihung",pl:null,type:"noun",ex:"Verzeihung, das habe ich nicht verstanden."},
+  {de:"das Dokument, -e",vi:"tài liệu, giấy tờ",art:"das",base:"Dokument",pl:"Dokumente",type:"noun",ex:"Mit diesem Dokument darf ein Pkw oder Motorrad auf der Straße fahren."},
+  {de:"der Pkw, -s",vi:"xe ô tô con",art:"der",base:"Pkw",pl:"Pkws",type:"noun",ex:"Mit diesem Dokument darf ein Pkw auf einer öffentlichen Straße fahren."},
+  {de:"das Motorrad, -¨er",vi:"xe máy, mô tô",art:"das",base:"Motorrad",pl:"Motorräder",type:"noun",ex:"Mit diesem Dokument darf ein Motorrad auf der Straße fahren."},
+  {de:"die Bestätigung, -en",vi:"sự xác nhận, giấy xác nhận",art:"die",base:"Bestätigung",pl:"Bestätigungen",type:"noun",ex:"Ich brauche Ihre Meldebestätigung."},
+  {de:"die Erlaubnis (Sg.)",vi:"sự cho phép, giấy phép",art:"die",base:"Erlaubnis",pl:null,type:"noun",ex:"Haben Sie überhaupt die Erlaubnis, ein Motorrad zu fahren?"},
+  {de:"fällig",vi:"đến hạn, phải trả",art:null,base:"fällig",pl:null,type:"adj",ex:"… die Gebühr für Ihren Parkausweis, fällig zum 21.05.20…."},
+  {de:"feststellen",vi:"xác định, phát hiện, nhận thấy",art:null,base:"feststellen",pl:null,type:"verb",conj:"stellte fest · hat festgestellt",ex:"Wir konnten den Eingang der Gebühr nicht feststellen."},
+  {de:"einschließlich",vi:"bao gồm (cả), kể cả (+ Gen.)",art:null,base:"einschließlich",pl:null,type:"prep",ex:"Bitte überweisen Sie den Gesamtbetrag, einschließlich dieser Mahngebühr."},
+  {de:"die Mahnung, -en",vi:"thư nhắc nợ, giấy đòi tiền",art:"die",base:"Mahnung",pl:"Mahnungen",type:"noun",ex:"Bitte überweisen Sie innerhalb einer Woche nach Erhalt dieser Mahnung."},
+  {de:"berücksichtigen",vi:"xem xét, tính đến",art:null,base:"berücksichtigen",pl:null,type:"verb",conj:"berücksichtigte · hat berücksichtigt",ex:"Zahlungseingänge wurden bis zum 14.06. berücksichtigt."},
+  {de:"zwar",vi:"đúng là (zwar … aber = tuy … nhưng)",art:null,base:"zwar",pl:null,type:"adv",ex:"Wir haben zwar kein Auto mehr, wer soll den Parkausweis bezahlen?"},
+  {de:"verlängern",vi:"gia hạn, kéo dài",art:null,base:"verlängern",pl:null,type:"verb",conj:"verlängerte · hat verlängert",ex:"Der Parkausweis wird nicht automatisch verlängert."},
+  {de:"jedenfalls",vi:"dù sao, ít nhất là",art:null,base:"jedenfalls",pl:null,type:"adv",ex:"Jedenfalls hab ich das so verstanden …"},
+  {de:"der Beamte / die Beamtin",vi:"công chức, nhân viên nhà nước",art:"der",base:"Beamte",pl:"Beamten",type:"noun",ex:"Er spricht mit einer Beamtin / einem Beamten."},
+  {de:"ergänzen",vi:"bổ sung, thêm vào",art:null,base:"ergänzen",pl:null,type:"verb",conj:"ergänzte · hat ergänzt",ex:"Vielleicht noch ergänzen …"},
+  {de:"missverstehen",vi:"hiểu lầm, hiểu sai",art:null,base:"missverstehen",pl:null,type:"verb",conj:"missverstand · hat missverstanden",ex:"Vielleicht habe ich das missverstanden?"},
+];
+
+const $=id=>document.getElementById(id);
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;};
+const pick=(a,n)=>shuf(a).slice(0,n);
+
+function buildSpeak(w){
+  if(w.type==='noun'&&w.art) return `${w.art} ${w.base}${w.pl?`, die ${w.pl}`:''}`;
+  if(w.type==='verb'&&w.conj) return `${w.base} – ${w.conj}`;
+  return w.base;
+}
+function buildDetail(w){
+  if(w.type==='noun'&&w.art) return `${w.art} ${w.base}${w.pl?`, die ${w.pl}`:' (kein Plural)'}`;
+  if(w.type==='verb'&&w.conj) return w.conj;
+  const lb={adj:'Adjektiv',adv:'Adverb',konj:'Konjunktion',prep:'Präposition'};
+  return lb[w.type]||'';
+}
+const esc=s=>s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+let voices=[];
+function loadV(){voices=speechSynthesis.getVoices();}
+if(window.speechSynthesis){speechSynthesis.onvoiceschanged=loadV;loadV();}
+function speak(text,cb){
+  if(!window.speechSynthesis){cb&&cb();return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='de-DE';u.rate=0.85;
+  const dv=voices.find(v=>v.lang.startsWith('de')&&!v.name.includes('Google'))||voices.find(v=>v.lang.startsWith('de'));
+  if(dv)u.voice=dv;
+  $('readBadge').classList.add('show');
+  u.onend=u.onerror=()=>{$('readBadge').classList.remove('show');cb&&cb();};
+  setTimeout(()=>speechSynthesis.speak(u),80);
+}
+
+let mode='',queue=[],idx=0,score=0,answered=0,firstTry=true;
+
+function showScreen(name){
+  $('modeScreen').style.display=name==='mode'?'':'none';
+  $('quizScreen').style.display=name==='quiz'?'flex':'none';
+  $('resultScreen').classList.toggle('show',name==='result');
+}
+function backToMenu(){speechSynthesis.cancel();showScreen('mode');}
+
+function startFull(){
+  mode='full';queue=shuf([...W]);idx=0;
+  $('progWrap').style.display='none';
+  showScreen('quiz');showQ();
+}
+function startRandom(){
+  mode='random';queue=pick(W,10);idx=0;score=0;answered=0;
+  $('progWrap').style.display='';
+  $('progFill').style.width='0%';
+  $('progTxt').textContent='1 / 10';
+  $('progOk').textContent='';
+  showScreen('quiz');showQ();
+}
+
+function showQ(){
+  firstTry=true;
+  const w=queue[idx];
+  if(mode==='random'){
+    $('qLabel').textContent=`Frage ${idx+1} von 10`;
+    $('progFill').style.width=(idx/10*100)+'%';
+    $('progTxt').textContent=`${idx+1} / 10`;
+  }else{
+    $('qLabel').textContent=`Wort ${idx+1} von ${queue.length}`;
+  }
+  $('qWord').textContent=w.de;
+  $('qDetail').textContent=buildDetail(w);
+  $('qEx').textContent=`„${w.ex}"`;
+  $('readBadge').classList.remove('show');
+  const c=$('qcard');c.style.animation='none';c.offsetHeight;c.style.animation='';
+  const dist=pick(W.filter(x=>x.vi!==w.vi),3);
+  const opts=shuf([w,...dist]);
+  const L=['A','B','C','D'];
+  $('optWrap').innerHTML=opts.map((o,i)=>`
+    <button class="opt" id="op${i}" onclick="choose(${i},'${esc(o.vi)}','${esc(w.vi)}')">
+      <div class="ol">${L[i]}</div><span>${o.vi}</span>
+    </button>`).join('');
+  $('feedback').className='feedback';
+}
+
+function choose(i,chosen,correctVi){
+  const isOk=chosen===correctVi;
+  const w=queue[idx];
+  if(isOk){
+    for(let k=0;k<4;k++){
+      const b=$('op'+k);if(!b)continue;
+      b.disabled=true;
+      if(b.querySelector('span').textContent===correctVi)b.classList.add('correct');
+      else b.classList.add('off');
+    }
+    if(mode==='random'&&firstTry){score++;$('progOk').textContent=`✓ ${score}`;}
+    showFb('ok',firstTry?['🎉','✨','🌟','👏','💪'][0|Math.random()*5]:'✅',
+      firstTry?'Richtig! Sehr gut!':'Richtig – nächstes Mal direkt!');
+    speak(buildSpeak(w),()=>setTimeout(adv,800));
+  }else{
+    $('op'+i).classList.add('wrong');
+    $('op'+i).disabled=true;
+    firstTry=false;
+    showFb('retry','💡','Noch einmal bitte!');
+    setTimeout(()=>$('feedback').className='feedback',1800);
+  }
+}
+function showFb(cls,em,tx){
+  $('feedback').className='feedback show '+cls;
+  $('fbEm').textContent=em;$('fbTx').textContent=tx;
+}
+function adv(){
+  if(mode==='random'){answered++;if(answered>=10){showResult();return;}idx++;}
+  else idx=(idx+1)%queue.length;
+  showQ();
+}
+function showResult(){
+  const wr=10-score,pct=score*10;
+  $('resOk').textContent=score;$('resWr').textContent=wr;$('resPct').textContent=pct+'%';
+  let em,msg,spk;
+  if(score>=8){em='🏆';msg='Ausgezeichnet! Weiter so!';spk='Gratuliere! Sehr gut!';}
+  else if(score>=5){em='😊';msg='Gut gemacht! Weiter üben.';spk='Gut gemacht!';}
+  else{em='📚';msg='Kein Problem – nochmal versuchen!';spk='Versuche es nochmal!';}
+  $('resEm').textContent=em;$('resMsg').textContent=msg;
+  showScreen('result');
+  setTimeout(()=>speak(spk),800);
+}
+</script>
+</body>
+</html>

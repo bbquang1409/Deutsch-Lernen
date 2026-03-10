@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Täglicher Test – Lektion 04</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;
+  --border:#c5d8ee;--blue:#2563eb;--blt:#dbeafe;--bdk:#1d4ed8;
+  --green:#16a34a;--glt:#dcfce7;
+  --red:#dc2626;--rlt:#fee2e2;
+  --gold:#d97706;--golt:#fef3c7;
+  --sh:0 4px 24px rgba(37,99,235,.12);
+  --shl:0 8px 40px rgba(37,99,235,.18);
+  --r:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+
+/* HEADER */
+.hdr{background:#1e3a5f;padding:16px 20px 14px;position:relative;overflow:hidden;flex-shrink:0;}
+.hdr::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 90% -10%,#3b82f6 0%,transparent 55%),
+             radial-gradient(ellipse at -10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+.hdr-inner{position:relative;max-width:520px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.hdr-text .tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:2px;}
+.hdr-text h1{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;line-height:1.2;}
+.hdr-text p{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+.hdr-back{background:rgba(255,255,255,.12);border:none;border-radius:10px;color:#93c5fd;
+  font-size:12px;font-weight:600;padding:7px 12px;text-decoration:none;white-space:nowrap;}
+
+/* SCREENS */
+.screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;}
+.screen.show{display:flex;}
+
+/* START SCREEN */
+.start-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shl);padding:36px 28px;
+  width:100%;max-width:400px;text-align:center;}
+.start-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--ink);margin-bottom:8px;}
+.start-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.start-badges{display:flex;justify-content:center;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.badge{background:var(--bg);border:1px solid var(--border);border-radius:99px;
+  padding:5px 14px;font-size:12px;font-weight:700;color:var(--muted);}
+.name-wrap{margin-bottom:20px;}
+.name-wrap label{display:block;font-size:12px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;text-align:left;}
+.name-input{width:100%;padding:13px 16px;font-family:'Outfit',sans-serif;font-size:16px;
+  border:2px solid var(--border);border-radius:12px;background:var(--bg);color:var(--ink);
+  outline:none;text-align:center;}
+.name-input:focus{border-color:var(--blue);}
+.btn-start{width:100%;background:var(--blue);color:#fff;border:none;border-radius:14px;
+  padding:16px;font-family:'Outfit',sans-serif;font-size:17px;font-weight:800;cursor:pointer;
+  box-shadow:0 4px 14px rgba(37,99,235,.35);}
+.btn-start:active{transform:scale(.98);}
+
+/* QUIZ */
+#quizScreen{flex:1;display:none;flex-direction:column;}
+#quizScreen.show{display:flex;}
+
+/* TIMER + PROGRESS */
+.quiz-top{background:var(--card);border-bottom:2px solid var(--border);padding:10px 16px;flex-shrink:0;}
+.quiz-top-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+.timer{font-size:18px;font-weight:900;color:var(--blue);font-variant-numeric:tabular-nums;
+  background:var(--blt);border-radius:10px;padding:5px 14px;flex-shrink:0;}
+.timer.low{color:var(--red);background:var(--rlt);}
+.prog-bg{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:99px;
+  transition:width .4s ease;}
+.prog-txt{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;}
+.btn-end{background:var(--rlt);border:2px solid var(--red);color:var(--red);border-radius:10px;
+  padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:'Outfit',sans-serif;}
+
+/* QUESTION */
+.qcontent{flex:1;max-width:520px;width:100%;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.qcard{background:var(--card);border-radius:var(--r);box-shadow:var(--shl);padding:22px 20px 18px;
+  position:relative;overflow:hidden;}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--blue),#60a5fa);}
+.q-type{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px;}
+.q-text{font-size:17px;font-weight:700;color:var(--ink);line-height:1.4;text-align:center;}
+.q-text strong{color:var(--blue);}
+.options{display:flex;flex-direction:column;gap:9px;}
+.opt{background:var(--card);border:2px solid var(--border);border-radius:14px;
+  padding:13px 16px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;
+  color:var(--ink);cursor:pointer;text-align:left;transition:all .15s;
+  display:flex;align-items:center;gap:11px;width:100%;}
+.opt:hover:not(:disabled){border-color:var(--blue);background:var(--blt);}
+.ol{width:26px;height:26px;border-radius:8px;background:var(--bg);display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;color:var(--muted);flex-shrink:0;}
+.opt:hover:not(:disabled) .ol{background:var(--blue);color:#fff;}
+.opt.correct{border-color:var(--green)!important;background:var(--glt)!important;color:var(--green)!important;}
+.opt.correct .ol{background:var(--green)!important;color:#fff!important;}
+.opt.wrong{border-color:var(--red)!important;background:var(--rlt)!important;color:var(--red)!important;}
+.opt.wrong .ol{background:var(--red)!important;color:#fff!important;}
+.opt:disabled{cursor:default;opacity:.7;}
+.score-live{text-align:center;font-size:14px;font-weight:700;color:var(--green);}
+
+/* RESULT */
+.result-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shl);padding:36px 24px;
+  width:100%;max-width:420px;text-align:center;}
+.res-name{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);margin-bottom:6px;}
+.res-score{font-size:56px;font-weight:900;color:var(--blue);margin:8px 0;}
+.res-eval{font-size:16px;font-weight:700;margin-bottom:6px;}
+.res-eval.good{color:var(--green);}
+.res-eval.med{color:var(--gold);}
+.res-eval.bad{color:var(--red);}
+.res-date{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.8;}
+.res-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px;}
+.rstat{background:var(--bg);border-radius:14px;padding:12px 8px;text-align:center;}
+.rstat-val{font-size:22px;font-weight:800;color:var(--blue);}
+.rstat-lbl{font-size:10px;color:var(--muted);font-weight:600;margin-top:2px;}
+.btn-row{display:flex;flex-direction:column;gap:10px;}
+.btnp{width:100%;background:var(--blue);color:#fff;border:none;border-radius:14px;
+  padding:15px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.35);}
+.btnp:active{transform:scale(.98);}
+.btns{width:100%;background:transparent;border:2px solid var(--border);border-radius:14px;
+  padding:13px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;
+  color:var(--muted);cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-text">
+      <div class="tag">Miteinander! B1.1</div>
+      <h1>Täglicher Test – Lektion 04</h1>
+      <p>Mobil ohne Auto?</p>
+    </div>
+    <a class="hdr-back" href="index.html">← Zurück</a>
+  </div>
+</div>
+
+<!-- START -->
+<div class="screen show" id="startScreen">
+  <div class="start-card">
+    <div class="start-title">Täglicher Vokabeltest</div>
+    <div class="start-sub">30 Fragen aus 4 Kategorien<br>DE↔VI · Grammatik · Synonyme</div>
+    <div class="start-badges">
+      <div class="badge">⏱ 10 Minuten</div>
+      <div class="badge">📝 30 Fragen</div>
+      <div class="badge">🎯 Lektion 04</div>
+    </div>
+    <div class="name-wrap">
+      <label>Ihr Name</label>
+      <input class="name-input" type="text" id="userName" placeholder="Name eingeben …" autocomplete="off">
+    </div>
+    <button class="btn-start" onclick="startTest()">Test starten →</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quizScreen">
+  <div class="quiz-top">
+    <div class="quiz-top-inner">
+      <div class="timer" id="timer">10:00</div>
+      <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <div class="prog-txt" id="progTxt">1 / 30</div>
+      <button class="btn-end" onclick="confirmEnd()">Ende</button>
+    </div>
+  </div>
+  <div class="qcontent">
+    <div class="qcard" id="qcard">
+      <div class="q-type" id="qType"></div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div class="options" id="optWrap"></div>
+    <div class="score-live" id="scoreLive"></div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="resultScreen">
+  <div class="result-card">
+    <div class="res-name" id="resName"></div>
+    <div class="res-score" id="resScore"></div>
+    <div class="res-eval" id="resEval"></div>
+    <div class="res-date" id="resDate"></div>
+    <div class="res-stats">
+      <div class="rstat"><div class="rstat-val" id="statTotal"></div><div class="rstat-lbl">Gesamt</div></div>
+      <div class="rstat"><div class="rstat-val" id="statOk" style="color:var(--green)"></div><div class="rstat-lbl">Richtig ✓</div></div>
+      <div class="rstat"><div class="rstat-val" id="statWr" style="color:var(--red)"></div><div class="rstat-lbl">Falsch ✗</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btnp" onclick="restartTest()">↺ Neuer Test</button>
+      <button class="btns" onclick="window.location.href='index.html'">← Zurück zur Übersicht</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── WORD BASE ── */
+const VOCAB = [
+  {de:"das Fahrzeug, -e", vi:"phương tiện giao thông"},
+  {de:"sich leisten", vi:"có khả năng chi trả"},
+  {de:"transportieren", vi:"vận chuyển"},
+  {de:"der Sitz, -e", vi:"ghế ngồi"},
+  {de:"der Motor, -en", vi:"động cơ"},
+  {de:"entweder … oder …", vi:"hoặc … hoặc …"},
+  {de:"die Autobahn, -en", vi:"đường cao tốc"},
+  {de:"das E-Bike, -s", vi:"xe đạp điện"},
+  {de:"sich anschaffen", vi:"sắm, mua sắm cho bản thân"},
+  {de:"unterstützen", vi:"hỗ trợ, ủng hộ"},
+  {de:"fördern", vi:"thúc đẩy, tài trợ"},
+  {de:"damit", vi:"để (mục đích)"},
+  {de:"verzichten", vi:"từ bỏ, không dùng"},
+  {de:"der Schutz", vi:"sự bảo vệ"},
+  {de:"die Mobilität", vi:"khả năng di chuyển"},
+  {de:"die Qualität", vi:"chất lượng"},
+  {de:"die Maßnahme, -n", vi:"biện pháp"},
+  {de:"reduzieren", vi:"giảm thiểu, cắt giảm"},
+  {de:"die Anzahl", vi:"số lượng"},
+  {de:"die Fläche, -n", vi:"diện tích, bề mặt"},
+  {de:"wachsen", vi:"mọc, phát triển"},
+  {de:"die Stimmung, -en", vi:"tâm trạng, bầu không khí"},
+  {de:"gießen", vi:"tưới cây, đổ nước"},
+  {de:"die Generation, -en", vi:"thế hệ"},
+  {de:"die Klimaanlage, -n", vi:"máy điều hòa"},
+  {de:"pflanzen", vi:"trồng cây"},
+  {de:"schützen", vi:"bảo vệ"},
+  {de:"gegenseitig", vi:"lẫn nhau, tương hỗ"},
+  {de:"bauen", vi:"xây dựng"},
+  {de:"kritisch", vi:"phê phán, đáng lo ngại"},
+  {de:"wütend", vi:"tức giận"},
+  {de:"sowieso", vi:"dù sao thì, đằng nào cũng"},
+  {de:"behalten", vi:"giữ lại"},
+  {de:"ewig", vi:"mãi mãi, lâu vô cùng"},
+  {de:"die Geschwindigkeit, -en", vi:"tốc độ"},
+  {de:"der Umweltschutz", vi:"bảo vệ môi trường"},
+  {de:"die Alternative, -n", vi:"giải pháp thay thế"},
+  {de:"die Entfernung, -en", vi:"khoảng cách"},
+  {de:"wieso", vi:"tại sao, vì sao"},
+  {de:"umsonst", vi:"miễn phí; vô ích"},
+  {de:"die Zulassung, -en", vi:"giấy phép đăng ký xe"},
+  {de:"das Kraftfahrzeug, -e", vi:"xe cơ giới"},
+  {de:"der Ersatz", vi:"sự thay thế"},
+  {de:"die Bescheinigung, -en", vi:"giấy chứng nhận"},
+  {de:"die Meldung, -en", vi:"việc đăng ký, thông báo"},
+  {de:"das Kennzeichen, –", vi:"biển số xe"},
+  {de:"die Behörde, -n", vi:"cơ quan nhà nước"},
+  {de:"außerhalb", vi:"bên ngoài (+ Gen.)"},
+  {de:"innerhalb", vi:"bên trong, trong vòng (+ Gen.)"},
+  {de:"das Amt, -¨er", vi:"cơ quan công quyền"},
+  {de:"der Einwohner", vi:"cư dân, người dân"},
+  {de:"das Jugendamt, -¨er", vi:"sở thanh thiếu niên"},
+  {de:"das Sozialamt, -¨er", vi:"sở trợ cấp xã hội"},
+  {de:"das Standesamt, -¨er", vi:"phòng hộ tịch"},
+  {de:"das Wohnungsamt, -¨er", vi:"sở nhà ở"},
+  {de:"sowie", vi:"cũng như, và cả"},
+  {de:"sich erkundigen", vi:"hỏi thăm, tìm hiểu"},
+  {de:"sich abmelden", vi:"hủy đăng ký, khai báo rút"},
+  {de:"gelten", vi:"có hiệu lực"},
+  {de:"wiederholen", vi:"nhắc lại, lặp lại"},
+  {de:"die Verzeihung", vi:"sự tha thứ; Xin lỗi!"},
+  {de:"das Dokument, -e", vi:"tài liệu, giấy tờ"},
+  {de:"der Pkw, -s", vi:"xe ô tô con"},
+  {de:"das Motorrad, -¨er", vi:"xe máy, mô tô"},
+  {de:"die Bestätigung, -en", vi:"giấy xác nhận"},
+  {de:"die Erlaubnis", vi:"sự cho phép, giấy phép"},
+  {de:"fällig", vi:"đến hạn, phải trả"},
+  {de:"feststellen", vi:"xác định, phát hiện"},
+  {de:"einschließlich", vi:"bao gồm cả (+ Gen.)"},
+  {de:"die Mahnung, -en", vi:"thư nhắc nợ"},
+  {de:"berücksichtigen", vi:"xem xét, tính đến"},
+  {de:"zwar", vi:"đúng là (zwar … aber = tuy … nhưng)"},
+  {de:"verlängern", vi:"gia hạn, kéo dài"},
+  {de:"jedenfalls", vi:"dù sao, ít nhất là"},
+  {de:"der Beamte / die Beamtin", vi:"công chức nhà nước"},
+  {de:"ergänzen", vi:"bổ sung, thêm vào"},
+  {de:"missverstehen", vi:"hiểu lầm, hiểu sai"},
+];
+
+/* ── GRAMMAR BANK – Lektion 04 spezifisch ── */
+const GRAMMAR = [
+  {q:"Artikel und Plural von 'Fahrzeug'?", a:"das, Fahrzeuge", opts:["das, Fahrzeuge","der, Fahrzeuge","die, Fahrzeuge","den, Fahrzeugen"]},
+  {q:"Partizip Perfekt von 'sich leisten'?", a:"hat sich geleistet", opts:["hat sich geleistet","hat geleistet","ist geleistet","hat geleidet"]},
+  {q:"Partizip Perfekt von 'transportieren'?", a:"hat transportiert", opts:["hat transportiert","ist transportiert","hat transportieren","hat transportierten"]},
+  {q:"Artikel und Plural von 'Motor'?", a:"der, Motoren", opts:["der, Motoren","das, Motoren","die, Motoren","der, Motors"]},
+  {q:"Artikel und Plural von 'Autobahn'?", a:"die, Autobahnen", opts:["die, Autobahnen","der, Autobahnen","das, Autobahnen","den, Autobahnen"]},
+  {q:"Partizip Perfekt von 'sich anschaffen'?", a:"hat sich angeschafft", opts:["hat sich angeschafft","hat angeschafft","ist angeschafft","hat sich geschafft"]},
+  {q:"Partizip Perfekt von 'verzichten'?", a:"hat verzichtet", opts:["hat verzichtet","ist verzichtet","hat verzichten","hat gezichtet"]},
+  {q:"Artikel und Plural von 'Maßnahme'?", a:"die, Maßnahmen", opts:["die, Maßnahmen","der, Maßnahmen","das, Maßnahmen","den, Maßnahmen"]},
+  {q:"Partizip Perfekt von 'wachsen'?", a:"ist gewachsen", opts:["ist gewachsen","hat gewachsen","ist wachsen","hat wächst"]},
+  {q:"Partizip Perfekt von 'gießen'?", a:"hat gegossen", opts:["hat gegossen","ist gegossen","hat gießt","hat gegoßen"]},
+  {q:"Artikel und Plural von 'Generation'?", a:"die, Generationen", opts:["die, Generationen","der, Generationen","das, Generationen","den, Generationen"]},
+  {q:"Partizip Perfekt von 'bauen'?", a:"hat gebaut", opts:["hat gebaut","ist gebaut","hat bauen","hat baut"]},
+  {q:"Artikel und Plural von 'Geschwindigkeit'?", a:"die, Geschwindigkeiten", opts:["die, Geschwindigkeiten","der, Geschwindigkeiten","das, Geschwindigkeiten","den, Geschwindigkeiten"]},
+  {q:"Artikel und Plural von 'Alternative'?", a:"die, Alternativen", opts:["die, Alternativen","der, Alternativen","das, Alternativen","den, Alternativen"]},
+  {q:"Artikel und Plural von 'Zulassung'?", a:"die, Zulassungen", opts:["die, Zulassungen","der, Zulassungen","das, Zulassungen","den, Zulassungen"]},
+  {q:"Artikel und Plural von 'Kraftfahrzeug'?", a:"das, Kraftfahrzeuge", opts:["das, Kraftfahrzeuge","der, Kraftfahrzeuge","die, Kraftfahrzeuge","den, Kraftfahrzeugen"]},
+  {q:"Artikel und Plural von 'Bescheinigung'?", a:"die, Bescheinigungen", opts:["die, Bescheinigungen","der, Bescheinigungen","das, Bescheinigungen","den, Bescheinigungen"]},
+  {q:"Artikel und Plural von 'Behörde'?", a:"die, Behörden", opts:["die, Behörden","der, Behörden","das, Behörden","den, Behörden"]},
+  {q:"Artikel und Plural von 'Amt'?", a:"das, Ämter", opts:["das, Ämter","der, Ämter","die, Ämter","den, Ämtern"]},
+  {q:"Partizip Perfekt von 'sich erkundigen'?", a:"hat sich erkundigt", opts:["hat sich erkundigt","ist erkundigt","hat erkundigt","hat sich erkundet"]},
+  {q:"Partizip Perfekt von 'sich abmelden'?", a:"hat sich abgemeldet", opts:["hat sich abgemeldet","ist abgemeldet","hat abgemeldet","hat sich gemeldet"]},
+  {q:"Partizip Perfekt von 'gelten'?", a:"hat gegolten", opts:["hat gegolten","ist gegolten","hat gegülten","hat galt"]},
+  {q:"Artikel und Plural von 'Mahnung'?", a:"die, Mahnungen", opts:["die, Mahnungen","der, Mahnungen","das, Mahnungen","den, Mahnungen"]},
+  {q:"Partizip Perfekt von 'verlängern'?", a:"hat verlängert", opts:["hat verlängert","ist verlängert","hat verlängt","hat verlängen"]},
+  {q:"Partizip Perfekt von 'feststellen'?", a:"hat festgestellt", opts:["hat festgestellt","ist festgestellt","hat gestellt","hat feststellt"]},
+  {q:"Partizip Perfekt von 'berücksichtigen'?", a:"hat berücksichtigt", opts:["hat berücksichtigt","ist berücksichtigt","hat berücksichtet","hat beachtet"]},
+  {q:"Artikel und Plural von 'Motorrad'?", a:"das, Motorräder", opts:["das, Motorräder","der, Motorräder","die, Motorräder","den, Motorrädern"]},
+  {q:"Partizip Perfekt von 'missverstehen'?", a:"hat missverstanden", opts:["hat missverstanden","ist missverstanden","hat missverstehen","hat verstanden"]},
+  {q:"Artikel und Plural von 'Dokument'?", a:"das, Dokumente", opts:["das, Dokumente","der, Dokumente","die, Dokumente","den, Dokumenten"]},
+  {q:"Partizip Perfekt von 'behalten'?", a:"hat behalten", opts:["hat behalten","ist behalten","hat behält","hat gehalten"]},
+];
+
+/* ── SYNONYME/ANTONYME – Lektion 04 spezifisch ── */
+const LOGIC = [
+  {q:"Synonym von 'wieso'?", a:"warum", opts:["warum","obwohl","damit","sondern"]},
+  {q:"Synonym von 'umsonst'?", a:"kostenlos", opts:["kostenlos","teuer","nötig","fällig"]},
+  {q:"Synonym von 'sowieso'?", a:"ohnehin", opts:["ohnehin","trotzdem","obwohl","dennoch"]},
+  {q:"Synonym von 'gegenseitig'?", a:"wechselseitig", opts:["wechselseitig","einseitig","einzeln","zufällig"]},
+  {q:"Synonym von 'jedenfalls'?", a:"auf jeden Fall", opts:["auf jeden Fall","vielleicht","manchmal","selten"]},
+  {q:"Synonym von 'sich erkundigen'?", a:"nachfragen", opts:["nachfragen","antworten","schweigen","erklären"]},
+  {q:"Gegenteil von 'außerhalb'?", a:"innerhalb", opts:["innerhalb","oberhalb","unterhalb","seitlich"]},
+  {q:"Synonym von 'die Entfernung'?", a:"der Abstand", opts:["der Abstand","die Nähe","der Umweg","die Richtung"]},
+  {q:"Gegenteil von 'beschleunigen'?", a:"bremsen", opts:["bremsen","parken","starten","tanken"]},
+  {q:"Synonym von 'das Fahrzeug'?", a:"das Verkehrsmittel", opts:["das Verkehrsmittel","der Weg","die Haltestelle","das Ticket"]},
+  {q:"Gegenteil von 'erlaubt'?", a:"verboten", opts:["verboten","erlaubt","kostenlos","gültig"]},
+  {q:"Synonym von 'die Behörde'?", a:"das Amt", opts:["das Amt","die Schule","die Firma","das Hotel"]},
+  {q:"Synonym von 'wütend'?", a:"zornig", opts:["zornig","fröhlich","ruhig","müde"]},
+  {q:"Synonym von 'berücksichtigen'?", a:"beachten", opts:["beachten","ignorieren","vergessen","ablehnen"]},
+  {q:"Gegenteil von 'verlängern'?", a:"verkürzen", opts:["verkürzen","verbessern","vergrößern","verdoppeln"]},
+  {q:"Was bedeutet 'entweder … oder' grammatisch?", a:"Alternative Konjunktion", opts:["Alternative Konjunktion","Konzessive Konjunktion","Kausale Konjunktion","Temporale Konjunktion"]},
+  {q:"Was bedeutet 'zwar … aber'?", a:"tuy … nhưng (Einschränkung)", opts:["tuy … nhưng (Einschränkung)","và … và","hoặc … hoặc","cả … lẫn"]},
+  {q:"Synonym von 'kritisch' (= bedenklich)?", a:"problematisch", opts:["problematisch","positiv","einfach","normal"]},
+  {q:"Synonym von 'die Bescheinigung'?", a:"der Nachweis", opts:["der Nachweis","die Frage","die Meinung","der Wunsch"]},
+  {q:"Gegenteil von 'gelten' (=in Kraft sein)?", a:"ungültig sein", opts:["ungültig sein","verlängert werden","anerkannt werden","bezahlt werden"]},
+];
+
+/* ── STATE ── */
+let userName='', questions=[], qIdx=0, score=0, timerInterval, timeLeft=600;
+
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
+function pick(a,n){return shuf(a).slice(0,n);}
+const $=id=>document.getElementById(id);
+
+/* ── START ── */
+function startTest(){
+  userName=$('userName').value.trim();
+  if(!userName){$('userName').focus();$('userName').style.borderColor='var(--red)';return;}
+  $('startScreen').classList.remove('show');
+  $('quizScreen').style.display='flex';
+  buildQuestions();
+  startTimer();
+  showQ();
+}
+
+function buildQuestions(){
+  // 8 DE→VI + 7 VI→DE + 8 Grammar + 7 Logic = 30
+  const allVocab=shuf([...VOCAB]);
+  const deVi=allVocab.slice(0,8).map(v=>({
+    type:'DE → VI',
+    text:`Was bedeutet <strong>„${v.de}"</strong>?`,
+    correct:v.vi,
+    opts:shuf([v.vi,...pick(VOCAB.filter(x=>x.vi!==v.vi),3).map(x=>x.vi)])
+  }));
+  const viDe=allVocab.slice(8,15).map(v=>({
+    type:'VI → DE',
+    text:`Wie heißt <strong>„${v.vi}"</strong> auf Deutsch?`,
+    correct:v.de,
+    opts:shuf([v.de,...pick(VOCAB.filter(x=>x.de!==v.de),3).map(x=>x.de)])
+  }));
+  const gram=pick(GRAMMAR,8).map(g=>({
+    type:'Grammatik',
+    text:g.q,
+    correct:g.a,
+    opts:shuf([...g.opts])
+  }));
+  const logic=pick(LOGIC,7).map(l=>({
+    type:'Synonyme & Antonyme',
+    text:l.q,
+    correct:l.a,
+    opts:shuf([...l.opts])
+  }));
+  questions=shuf([...deVi,...viDe,...gram,...logic]);
+}
+
+/* ── TIMER ── */
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    const m=0|timeLeft/60, s=timeLeft%60;
+    $('timer').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(timeLeft<=120)$('timer').classList.add('low');
+    if(timeLeft<=0){clearInterval(timerInterval);showResult(true);}
+  },1000);
+}
+
+/* ── QUESTION ── */
+function showQ(){
+  const q=questions[qIdx];
+  const tot=questions.length;
+  $('progFill').style.width=(qIdx/tot*100)+'%';
+  $('progTxt').textContent=`${qIdx+1} / ${tot}`;
+  $('qType').textContent=q.type;
+  $('qText').innerHTML=q.text;
+  $('scoreLive').textContent=score>0?`✓ ${score} Richtig`:'';
+  const L=['A','B','C','D'];
+  $('optWrap').innerHTML=q.opts.map((o,i)=>`
+    <button class="opt" id="qo${i}" onclick="answer('${esc(o)}','${esc(q.correct)}')">
+      <div class="ol">${L[i]}</div><span>${o}</span>
+    </button>`).join('');
+}
+const esc=s=>s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+/* ── ANSWER – no retry, advance after 800ms ── */
+function answer(chosen, correct){
+  // disable all
+  for(let k=0;k<4;k++){const b=$('qo'+k);if(b)b.disabled=true;}
+  const isOk=chosen===correct;
+  if(isOk) score++;
+  // mark options
+  for(let k=0;k<4;k++){
+    const b=$('qo'+k);if(!b)continue;
+    const txt=b.querySelector('span').textContent;
+    if(txt===correct)b.classList.add('correct');
+    else if(txt===chosen&&!isOk)b.classList.add('wrong');
+  }
+  $('scoreLive').textContent=score>0?`✓ ${score} Richtig`:'';
+  setTimeout(()=>{
+    qIdx++;
+    if(qIdx<questions.length) showQ();
+    else showResult();
+  },800);
+}
+
+/* ── CONFIRM END ── */
+function confirmEnd(){
+  if(confirm('Test wirklich beenden?')){
+    clearInterval(timerInterval);
+    showResult();
+  }
+}
+
+/* ── RESULT ── */
+function showResult(timeUp=false){
+  clearInterval(timerInterval);
+  $('quizScreen').style.display='none';
+  const rs=$('resultScreen');rs.classList.add('show');
+  const tot=questions.length, wr=tot-score;
+  const pct=Math.round(score/tot*100);
+  const now=new Date();
+  const ds=now.toLocaleDateString('de-DE',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const ts=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+
+  $('resName').textContent=userName;
+  $('resScore').textContent=`${score} / ${tot}`;
+  $('statTotal').textContent=tot;
+  $('statOk').textContent=score;
+  $('statWr').textContent=wr;
+  $('resDate').innerHTML=`Test am ${ds}<br>um ${ts} Uhr${timeUp?' · Zeit abgelaufen!':''}`;
+
+  let evalTxt, evalCls;
+  if(pct>=83){evalTxt='🏆 Ausgezeichnet! Sehr gut gemacht!';evalCls='good';}
+  else if(pct>=67){evalTxt='👍 Sehr gut!';evalCls='good';}
+  else if(pct>=50){evalTxt='😊 Gut! Weiter so.';evalCls='med';}
+  else if(pct>=33){evalTxt='📚 Nicht schlecht – weiter üben!';evalCls='med';}
+  else{evalTxt='💪 Weiter üben! Du schaffst das.';evalCls='bad';}
+  $('resEval').textContent=evalTxt;
+  $('resEval').className='res-eval '+evalCls;
+}
+
+/* ── RESTART ── */
+function restartTest(){
+  clearInterval(timerInterval);
+  timeLeft=600;score=0;qIdx=0;
+  $('timer').textContent='10:00';
+  $('timer').classList.remove('low');
+  $('resultScreen').classList.remove('show');
+  $('userName').value='';
+  $('userName').style.borderColor='';
+  $('startScreen').classList.add('show');
+}
+</script>
+</body>
+</html>

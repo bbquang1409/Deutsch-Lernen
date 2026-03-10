@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Übungen – Lektion 04</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;
+  --border:#c5d8ee;--teal:#2563eb;--blt:#dbeafe;
+  --green:#16a34a;--glt:#dcfce7;
+  --red:#dc2626;--rlt:#fee2e2;
+  --gold:#d97706;--golt:#fef3c7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* HEADER */
+.hdr{background:#1e3a5f;padding:0;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 90% 0%,#3b82f6 0%,transparent 60%),
+             radial-gradient(ellipse at 0% 100%,#0ea5e9 0%,transparent 55%);opacity:.5;}
+.hdr-inner{position:relative;max-width:700px;margin:0 auto;padding:18px 20px;}
+.hdr-tag{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#93c5fd;margin-bottom:4px;}
+.hdr h1{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;margin-bottom:2px;}
+.hdr p{font-size:12px;color:rgba(255,255,255,.5);}
+
+/* STUDENT BAR */
+.student-bar{display:none;}
+.student-bar.show{display:block;position:sticky;top:0;z-index:300;box-shadow:0 3px 12px rgba(37,99,235,.15);}
+.student-card{background:#fff;border-bottom:3px solid #2563eb;padding:10px 20px 8px;text-align:center;}
+.sb-avatar{width:34px;height:34px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;font-size:14px;margin:0 auto 5px;box-shadow:0 3px 8px rgba(37,99,235,.3);}
+.sb-name{font-family:'DM Serif Display',serif;font-size:17px;font-weight:700;color:#1e3a5f;margin-bottom:3px;}
+.sb-divider{width:30px;height:2px;background:#dbeafe;border-radius:99px;margin:0 auto 5px;}
+.sb-meta{font-size:11px;color:#5b7a99;line-height:1.7;}
+.sb-timer-wrap{display:inline-flex;align-items:center;gap:6px;background:#eef4fb;border:2px solid #dbeafe;border-radius:99px;padding:4px 14px;margin-top:7px;}
+.sb-timer-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5b7a99;}
+.sb-timer{font-size:16px;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums;letter-spacing:1px;}
+
+/* MODAL */
+#nameModal{position:fixed;inset:0;background:rgba(15,30,60,.65);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-box{background:#fff;border-radius:20px;padding:36px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(37,99,235,.25);}
+.modal-emoji{font-size:44px;margin-bottom:12px;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:22px;color:#1e3a5f;margin-bottom:6px;}
+.modal-sub{font-size:13px;color:#5b7a99;margin-bottom:20px;line-height:1.6;}
+.modal-input{width:100%;padding:13px 16px;font-size:16px;font-family:'DM Sans',sans-serif;
+  border:2px solid #c5d8ee;border-radius:12px;background:#eef4fb;color:#1e3a5f;outline:none;
+  text-align:center;margin-bottom:14px;}
+.modal-input:focus{border-color:#2563eb;}
+.modal-btn{width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;padding:14px;
+  font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;
+  box-shadow:0 4px 14px rgba(37,99,235,.35);}
+
+/* PAGE CONTENT */
+#pageContent{display:none;}
+#pageContent.visible{display:block;}
+
+/* TABS */
+.tab-wrap{background:var(--card);box-shadow:0 2px 0 var(--border);position:sticky;top:0;z-index:200;}
+.tabs{display:flex;overflow-x:auto;max-width:700px;margin:0 auto;padding:0 12px;gap:4px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:12px 14px;font-size:12px;font-weight:700;color:var(--muted);
+  border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;transition:all .2s;}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+.tab-nav{display:flex;justify-content:center;gap:10px;padding:10px 16px;max-width:700px;margin:0 auto;}
+.tab-nav-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:7px 16px;
+  font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.tab-nav-btn:hover{border-color:var(--teal);color:var(--teal);}
+
+/* MAIN */
+main{max-width:700px;margin:0 auto;padding:16px;}
+
+/* EXERCISE CARD */
+.ex-card{background:var(--card);border-radius:16px;box-shadow:0 4px 20px rgba(37,99,235,.1);
+  padding:20px;margin-bottom:14px;}
+.ex-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--ink);margin-bottom:4px;}
+.ex-inst{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.item{margin:12px 0;display:flex;flex-direction:column;gap:6px;}
+.item-de{font-weight:700;color:var(--ink);font-size:15px;}
+.item-ex{font-size:12px;color:var(--muted);font-style:italic;}
+.inp{width:100%;border:2px solid var(--border);border-radius:10px;padding:10px 14px;
+  font-size:15px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);outline:none;}
+.inp:focus{border-color:var(--teal);}
+.inp.ok{border-color:var(--green);background:var(--glt);color:var(--green);}
+.inp.no{border-color:var(--red);background:var(--rlt);color:var(--red);}
+
+/* MC options */
+.mc-opts{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.mc-opt{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:11px 14px;
+  font-size:14px;font-weight:600;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;
+  transition:all .15s;color:var(--ink);}
+.mc-opt:hover:not(:disabled){border-color:var(--teal);background:var(--blt);}
+.mc-opt.ok{border-color:var(--green)!important;background:var(--glt)!important;color:var(--green)!important;}
+.mc-opt.no{border-color:var(--red)!important;background:var(--rlt)!important;color:var(--red)!important;}
+.mc-opt:disabled{cursor:default;}
+
+/* DIALOG */
+.dialog-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;}
+@media(max-width:480px){.dialog-pair{grid-template-columns:1fr;}}
+.d-left{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink);}
+.d-sel{width:100%;border:2px solid var(--border);border-radius:10px;padding:10px 12px;
+  font-size:13px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);outline:none;}
+.d-sel.ok{border-color:var(--green);background:var(--glt);color:var(--green);}
+.d-sel.no{border-color:var(--red);background:var(--rlt);color:var(--red);}
+
+/* ANAGRAM */
+.anagram-word{font-size:20px;font-weight:800;color:var(--teal);letter-spacing:4px;text-align:center;
+  background:var(--blt);border-radius:10px;padding:10px;margin-bottom:10px;}
+.anagram-inp-row{display:flex;gap:8px;}
+.art-inp{width:70px;border:2px solid var(--border);border-radius:10px;padding:10px 8px;
+  font-size:15px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);
+  outline:none;text-align:center;}
+.art-inp.ok{border-color:var(--green);background:var(--glt);color:var(--green);}
+.art-inp.no{border-color:var(--red);background:var(--rlt);color:var(--red);}
+.word-inp{flex:1;border:2px solid var(--border);border-radius:10px;padding:10px 14px;
+  font-size:15px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);outline:none;}
+.word-inp.ok{border-color:var(--green);background:var(--glt);color:var(--green);}
+.word-inp.no{border-color:var(--red);background:var(--rlt);color:var(--red);}
+
+/* FILL */
+.fill-sent{font-size:14px;line-height:2;color:var(--ink);}
+.gap{display:inline-block;border-bottom:2px solid var(--teal);min-width:80px;margin:0 4px;padding:0 4px;
+  font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:transparent;color:var(--ink);}
+.gap.ok{border-color:var(--green);color:var(--green);}
+.gap.no{border-color:var(--red);color:var(--red);}
+
+/* BUTTONS */
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:0 16px 16px;max-width:700px;margin:0 auto;}
+.btn-check{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:13px 24px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-reset{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 24px;
+  font-size:14px;font-weight:700;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;}
+.btn-all{background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px 24px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.back-row{text-align:center;padding:8px 0 28px;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:var(--card);
+  border:2px solid var(--border);border-radius:12px;padding:12px 22px;
+  font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;font-family:'DM Sans',sans-serif;}
+
+/* RESULT BAR */
+.result-bar{display:none;border-radius:12px;padding:14px 18px;margin:12px 0;text-align:center;font-weight:700;}
+.result-bar.show{display:block;}
+.result-bar.ok{background:var(--glt);color:var(--green);border:2px solid var(--green);}
+.result-bar.med{background:var(--golt);color:var(--gold);border:2px solid var(--gold);}
+.result-bar.bad{background:var(--rlt);color:var(--red);border:2px solid var(--red);}
+
+/* ANSWERS */
+.answers{display:none;margin-top:12px;}
+.answers.show{display:block;}
+.ans-item{padding:7px 12px;border-radius:8px;font-size:13px;margin:4px 0;
+  background:var(--bg);border-left:4px solid var(--border);}
+.ans-item.ok-ans{border-left-color:var(--green);}
+.ans-item.no-ans{border-left-color:var(--red);}
+.ans-correct{color:var(--green);font-weight:700;}
+
+/* SUMMARY CARD */
+#summaryCard{display:none;background:var(--card);border-radius:16px;
+  box-shadow:0 8px 40px rgba(37,99,235,.18);padding:28px 24px;margin:16px;text-align:center;}
+#summaryCard.show{display:block;}
+.sum-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);margin-bottom:4px;}
+.sum-name{font-size:20px;font-weight:800;color:var(--teal);margin:8px 0;}
+.sum-score{font-size:48px;font-weight:900;color:var(--teal);margin:6px 0;}
+.sum-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+.sum-table th{background:var(--bg);color:var(--muted);padding:8px;font-weight:700;}
+.sum-table td{padding:8px;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<!-- NAME MODAL -->
+<div id="nameModal">
+  <div class="modal-box">
+    <div class="modal-emoji">🚗</div>
+    <div class="modal-title">Übungen – Lektion 04</div>
+    <div class="modal-sub">Mobil ohne Auto?<br>Bitte geben Sie Ihren Namen ein, um zu beginnen.</div>
+    <input class="modal-input" id="modalName" type="text" placeholder="Ihr Name …" autocomplete="off"
+      onkeydown="if(event.key==='Enter')startExercise()"/>
+    <button class="modal-btn" onclick="startExercise()">Los geht's! →</button>
+  </div>
+</div>
+
+<!-- STUDENT BAR -->
+<div class="student-bar" id="studentBar">
+  <div class="student-card">
+    <div class="sb-avatar">👤</div>
+    <div class="sb-name" id="sbName"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-meta" id="sbMeta"></div>
+    <div class="sb-timer-wrap">
+      <span class="sb-timer-label">Zeit</span>
+      <span class="sb-timer" id="sbTimer">00:00</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div id="pageContent">
+  <div class="hdr">
+    <div class="hdr-inner">
+      <div class="hdr-tag">Miteinander! B1.1</div>
+      <h1>Lektion 04 – Übungen</h1>
+      <p>Mobil ohne Auto? – Interaktive Vokabelübungen</p>
+    </div>
+  </div>
+
+  <div class="tab-wrap"><div class="tabs" id="tabBar"></div></div>
+  <div class="tab-nav">
+    <button class="tab-nav-btn" onclick="prevTab()">← Zurück</button>
+    <button class="tab-nav-btn" onclick="nextTab()">Weiter →</button>
+  </div>
+
+  <main id="mainArea"></main>
+
+  <div class="btn-row">
+    <button class="btn-reset" onclick="resetAll()">↺ Neu starten</button>
+    <button class="btn-all" onclick="checkAllTabs()">✓ Alle auswerten</button>
+  </div>
+  <div id="resultPanel"></div>
+  <div id="summaryCard">
+    <div class="sum-title">Ergebnis</div>
+    <div class="sum-name" id="sumName"></div>
+    <div class="sum-score" id="sumScore"></div>
+    <table class="sum-table">
+      <thead><tr><th>Übung</th><th>Punkte</th><th>Zeit</th></tr></thead>
+      <tbody id="sumTableBody"></tbody>
+    </table>
+    <div id="sumTimestamp" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
+  </div>
+  <div class="back-row">
+    <a class="back-btn" href="index.html">← Ende &amp; Zurück zur Übersicht</a>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   WORD DATA – Lektion 04
+═══════════════════════════════════════════ */
+const WORDS=[
+  {de:"das Fahrzeug, -e",vi:"phương tiện giao thông",base:"Fahrzeug",art:"das",
+   ex:"Brauchen wir ein eigenes Fahrzeug?",
+   def:"Ein Transportmittel, das sich bewegt – z. B. Auto, Fahrrad, Bus."},
+  {de:"sich leisten",vi:"có khả năng chi trả",base:"leisten",art:null,
+   ex:"Können wir uns ein neues Auto finanziell leisten?",
+   def:"Genug Geld haben, um etwas zu kaufen oder zu bezahlen."},
+  {de:"transportieren",vi:"vận chuyển",base:"transportieren",art:null,
+   ex:"Wie kann man den Kinderwagen transportieren?",
+   def:"Etwas oder jemanden von A nach B bringen."},
+  {de:"der Motor, -en",vi:"động cơ",base:"Motor",art:"der",
+   ex:"Es hat einen Motor, deshalb ist es leicht zu fahren.",
+   def:"Das Maschinenteil, das ein Fahrzeug antreibt."},
+  {de:"die Autobahn, -en",vi:"đường cao tốc",base:"Autobahn",art:"die",
+   ex:"Wir können entweder die Autobahn nehmen oder über die Landstraße fahren.",
+   def:"Eine Schnellstraße für Kraftfahrzeuge mit mehreren Spuren."},
+  {de:"das E-Bike, -s",vi:"xe đạp điện",base:"E-Bike",art:"das",
+   ex:"Wir können uns E-Bikes anschaffen.",
+   def:"Ein Fahrrad mit elektrischem Antriebsmotor."},
+  {de:"verzichten",vi:"từ bỏ, không dùng",base:"verzichten",art:null,
+   ex:"Wer hier wohnen will, muss auf ein eigenes Auto verzichten.",
+   def:"Auf etwas absichtlich verzichten, es nicht nutzen oder haben wollen."},
+  {de:"die Maßnahme, -n",vi:"biện pháp",base:"Maßnahme",art:"die",
+   ex:"Maßnahmen: Wir reduzieren die Anzahl der Autos.",
+   def:"Eine geplante Handlung, um ein Ziel zu erreichen oder ein Problem zu lösen."},
+  {de:"die Generation, -en",vi:"thế hệ",base:"Generation",art:"die",
+   ex:"Die Generationen leben zusammen.",
+   def:"Alle Menschen, die ungefähr zur gleichen Zeit geboren wurden."},
+  {de:"gegenseitig",vi:"lẫn nhau, tương hỗ",base:"gegenseitig",art:null,
+   ex:"Alt und Jung können sich gegenseitig unterstützen.",
+   def:"Beide Seiten tun etwas für die andere Seite – wechselseitig."},
+  {de:"die Geschwindigkeit, -en",vi:"tốc độ",base:"Geschwindigkeit",art:"die",
+   ex:"Für Samir ist Geschwindigkeit nicht so wichtig.",
+   def:"Wie schnell sich jemand oder etwas bewegt."},
+  {de:"der Umweltschutz (Sg.)",vi:"bảo vệ môi trường",base:"Umweltschutz",art:"der",
+   ex:"Unsere Klasse geht für den Umweltschutz auf die Straße.",
+   def:"Maßnahmen zum Schutz der natürlichen Umwelt vor Schäden."},
+  {de:"die Alternative, -n",vi:"giải pháp thay thế",base:"Alternative",art:"die",
+   ex:"Da wäre das Fahrrad doch eine gute Alternative.",
+   def:"Eine andere Möglichkeit oder Option als die übliche."},
+  {de:"die Entfernung, -en",vi:"khoảng cách",base:"Entfernung",art:"die",
+   ex:"In Neuberg sind die Entfernungen zum Supermarkt nicht groß.",
+   def:"Der Abstand zwischen zwei Orten oder Punkten."},
+  {de:"umsonst",vi:"miễn phí; vô ích",base:"umsonst",art:null,
+   ex:"Öffentliche Verkehrsmittel sollten für alle umsonst sein.",
+   def:"Kostenlos, ohne Bezahlung; oder: ohne Erfolg."},
+  {de:"die Zulassung, -en",vi:"giấy phép đăng ký xe",base:"Zulassung",art:"die",
+   ex:"Wenn Sie ein Auto kaufen, müssen Sie sich um seine Zulassung kümmern.",
+   def:"Die offizielle Erlaubnis, ein Fahrzeug im Straßenverkehr zu benutzen."},
+  {de:"das Kennzeichen, –",vi:"biển số xe",base:"Kennzeichen",art:"das",
+   ex:"Ohne Kfz-Kennzeichen darf kein Auto auf der Straße fahren.",
+   def:"Das Nummernschild eines Fahrzeugs mit Buchstaben und Zahlen."},
+  {de:"die Behörde, -n",vi:"cơ quan nhà nước",base:"Behörde",art:"die",
+   ex:"Samir hört eine telefonische Ansage von einer Behörde.",
+   def:"Eine staatliche Institution, die Verwaltungsaufgaben erledigt."},
+  {de:"das Amt, -¨er",vi:"cơ quan công quyền",base:"Amt",art:"das",
+   ex:"Man kann sich erkundigen, bei welchem Amt man einen Antrag abgeben kann.",
+   def:"Eine Verwaltungsbehörde, bei der man offizielle Angelegenheiten erledigt.",
+   alts:["Amt","Behörde","Dienststelle"]},
+  {de:"die Mahnung, -en",vi:"thư nhắc nợ",base:"Mahnung",art:"die",
+   ex:"Bitte überweisen Sie den Betrag innerhalb einer Woche nach Erhalt dieser Mahnung.",
+   def:"Ein Brief, der an eine unbezahlte Rechnung oder Schuld erinnert."},
+  {de:"gelten",vi:"có hiệu lực",base:"gelten",art:null,
+   ex:"Ein Parkausweis gilt für ein bestimmtes Kfz-Kennzeichen.",
+   def:"Offiziell anerkannt und wirksam sein; gültig sein."},
+  {de:"verlängern",vi:"gia hạn, kéo dài",base:"verlängern",art:null,
+   ex:"Der Parkausweis wird nicht automatisch verlängert.",
+   def:"Die Gültigkeitsdauer von etwas auf einen späteren Zeitpunkt ausdehnen."},
+  {de:"die Erlaubnis (Sg.)",vi:"sự cho phép, giấy phép",base:"Erlaubnis",art:"die",
+   ex:"Haben Sie überhaupt die Erlaubnis, ein Motorrad zu fahren?",
+   def:"Die offizielle Genehmigung, etwas zu tun."},
+  {de:"missverstehen",vi:"hiểu lầm, hiểu sai",base:"missverstehen",art:null,
+   ex:"Vielleicht habe ich das missverstanden?",
+   def:"Etwas falsch interpretieren oder falsch verstehen."},
+  {de:"feststellen",vi:"xác định, phát hiện",base:"feststellen",art:null,
+   ex:"Wir konnten den Eingang der Gebühr nicht feststellen.",
+   def:"Etwas herausfinden, erkennen oder bemerken."},
+  {de:"berücksichtigen",vi:"xem xét, tính đến",base:"berücksichtigen",art:null,
+   ex:"Zahlungseingänge wurden bis zum 14.06. berücksichtigt.",
+   def:"Etwas in seinen Überlegungen oder Entscheidungen einbeziehen."},
+  {de:"außerhalb",vi:"bên ngoài (+ Gen.)",base:"außerhalb",art:null,
+   ex:"Die Stimme sagt, dass er außerhalb der Servicezeiten anruft.",
+   def:"Nicht innerhalb eines bestimmten Bereichs oder Zeitraums."},
+  {de:"innerhalb",vi:"bên trong, trong vòng",base:"innerhalb",art:null,
+   ex:"innerhalb der Servicezeiten: zwischen 8 und 17 Uhr.",
+   def:"Im Innern eines Bereichs; innerhalb eines Zeitraums."},
+  {de:"jedenfalls",vi:"dù sao, ít nhất là",base:"jedenfalls",art:null,
+   ex:"Jedenfalls hab ich das so verstanden …",
+   def:"Auf jeden Fall; ungeachtet anderer Umstände."},
+  {de:"zwar",vi:"đúng là (zwar … aber)",base:"zwar",art:null,
+   ex:"Wir haben zwar kein Auto mehr, wer soll den Parkausweis bezahlen?",
+   def:"Leitet eine Einschränkung ein; zwar … aber = tuy … nhưng."},
+];
+
+/* ═══════════════════════════════════════════
+   EXERCISE BUILDER
+═══════════════════════════════════════════ */
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
+function pick(a,n){return shuf(a).slice(0,n);}
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ');}
+function normVI(s){return s.trim().toLowerCase().replace(/\(.*?\)/g,'').replace(/[,;.!?]/g,'').replace(/\s+/g,' ').trim();}
+function checkVI(inp,word){
+  const alts=[word.vi,...(word.vi_alts||[])];
+  const i=normVI(inp);
+  return alts.some(c=>{
+    const cn=normVI(c);
+    if(i===cn)return true;
+    const parts=cn.split(',').map(p=>p.trim()).filter(p=>p.length>2);
+    return parts.some(p=>i===p||p.split(' ').every(w=>w.length>2&&i.includes(w)));
+  });
+}
+
+const LETTERS=['A','B','C','D'];
+function buildMC(items){
+  return items.map((w,i)=>{
+    const distractors=pick(WORDS.filter(x=>x.vi!==w.vi),3);
+    const opts=shuf([w,...distractors]);
+    return {id:`mc${i}`,word:w,opts};
+  });
+}
+
+/* ═══════════════════════════════════════════
+   EXERCISES  (7 types, randomly assigned A–G)
+═══════════════════════════════════════════ */
+let exercises=[];
+function buildExercises(){
+  const pool=shuf([...WORDS]);
+  const types=[
+    {type:'de-vi',   label:'🇩🇪 Deutsch → Vietnamesisch', items:pool.slice(0,8)},
+    {type:'de-vi2',  label:'✍️ Bedeutung erklären (DE→VI)', items:pool.slice(8,16)},
+    {type:'def',     label:'🧩 Was ist das Wort?',          items:pool.slice(16,24)},
+    {type:'mc',      label:'🎯 Multiple Choice',            items:buildMC(pool.slice(0,8))},
+    {type:'dialog',  label:'💬 Dialog verbinden',           items:buildDialogPairs()},
+    {type:'anagram', label:'🔡 Anagramm',                   items:pool.filter(w=>w.art).slice(0,8)},
+    {type:'fill',    label:'📝 Lückentext',                 items:pool.slice(0,8)},
+  ];
+  exercises=shuf(types).map((t,i)=>({...t,label:`${String.fromCharCode(65+i)} · ${t.label}`}));
+}
+
+function buildDialogPairs(){
+  const pairs=[
+    {left:"Brauchen wir wirklich ein eigenes Auto?",right:"Wir können uns entweder ein E-Bike anschaffen oder die öffentlichen Verkehrsmittel nutzen."},
+    {left:"Darf mein Auto ohne Kennzeichen fahren?",right:"Nein, ohne Kfz-Kennzeichen darf kein Auto auf der Straße fahren."},
+    {left:"Was muss ich tun, wenn ich ein Auto kaufe?",right:"Sie müssen sich um die Zulassung kümmern."},
+    {left:"Könnten Sie das bitte wiederholen?",right:"Verzeihung, das habe ich nicht verstanden."},
+    {left:"Hat der Parkausweis noch Gültigkeit?",right:"Ein Parkausweis gilt für ein bestimmtes Kfz-Kennzeichen."},
+    {left:"Wieso soll ich eine Mahnung bezahlen?",right:"Wir konnten den Eingang der Gebühr nicht feststellen."},
+    {left:"Kann man das Auto auch online abmelden?",right:"Ja, man kann sich erkundigen und ein Auto online abmelden."},
+    {left:"Was ist das Jugendamt?",right:"Das Jugendamt hat die Aufgabe, Kinder zu schützen und Eltern zu unterstützen."},
+  ];
+  return shuf(pairs).slice(0,6);
+}
+
+/* ═══════════════════════════════════════════
+   TIMER & SESSION
+═══════════════════════════════════════════ */
+let studentName='',sessionStart,globalSeconds=0,globalTimerInterval;
+let tabStartTime={},tabDuration={},tabChecked={};
+let currentTab=0;
+
+function startExercise(){
+  const n=document.getElementById('modalName').value.trim();
+  if(!n){document.getElementById('modalName').focus();return;}
+  studentName=n;
+  sessionStart=new Date();
+  buildExercises();
+
+  document.getElementById('nameModal').style.display='none';
+  document.getElementById('studentBar').classList.add('show');
+  document.getElementById('pageContent').classList.add('visible');
+
+  // Student bar
+  document.getElementById('sbName').textContent=studentName;
+  const d=sessionStart;
+  document.getElementById('sbMeta').textContent=
+    `${d.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short',year:'numeric'})} · ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;
+
+  globalTimerInterval=setInterval(()=>{
+    globalSeconds++;
+    const m=String(0|globalSeconds/60).padStart(2,'0');
+    const s=String(globalSeconds%60).padStart(2,'0');
+    document.getElementById('sbTimer').textContent=`${m}:${s}`;
+  },1000);
+
+  buildTabs();
+  render(0);
+}
+
+function buildTabs(){
+  const bar=document.getElementById('tabBar');
+  bar.innerHTML=exercises.map((ex,i)=>`
+    <button class="tab${i===0?' active':''}" id="tab${i}" onclick="showTab(${i})">${ex.label}</button>
+  `).join('');
+}
+
+function showTab(i){
+  // record time on old tab
+  if(tabStartTime[currentTab]!==undefined){
+    tabDuration[currentTab]=(tabDuration[currentTab]||0)+
+      Math.round((Date.now()-tabStartTime[currentTab])/1000);
+  }
+  currentTab=i;
+  tabStartTime[i]=Date.now();
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  render(i);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function prevTab(){if(currentTab>0)showTab(currentTab-1);}
+function nextTab(){if(currentTab<exercises.length-1)showTab(currentTab+1);}
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function render(i){
+  tabStartTime[i]=Date.now();
+  const ex=exercises[i];
+  let html='';
+  switch(ex.type){
+    case 'de-vi':   html=renderDeVi(ex,i);   break;
+    case 'de-vi2':  html=renderDeVi2(ex,i);  break;
+    case 'def':     html=renderDef(ex,i);    break;
+    case 'mc':      html=renderMC(ex,i);     break;
+    case 'dialog':  html=renderDialog(ex,i); break;
+    case 'anagram': html=renderAnagram(ex,i);break;
+    case 'fill':    html=renderFill(ex,i);   break;
+  }
+  document.getElementById('mainArea').innerHTML=
+    html+`<div class="btn-row" style="padding-left:0;padding-right:0;">
+      <button class="btn-check" onclick="checkTab(${i})">✓ Auswerten &amp; Lösungen anzeigen</button>
+    </div>
+    <div class="result-bar" id="res${i}"></div>
+    <div class="answers" id="ans${i}"></div>`;
+}
+
+function renderDeVi(ex,idx){
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Schreiben Sie die vietnamesische Bedeutung. / Viết nghĩa tiếng Việt.</div>
+    ${ex.items.map((w,j)=>`
+    <div class="item">
+      <div class="item-de">${w.de}</div>
+      <div class="item-ex">💡 ${w.ex}</div>
+      <input class="inp" id="dv${idx}_${j}" placeholder="Tiếng Việt …" autocomplete="off">
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderDeVi2(ex,idx){
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Was bedeutet das Wort? Erklären Sie auf Vietnamesisch. / Giải thích nghĩa bằng tiếng Việt.</div>
+    ${ex.items.map((w,j)=>`
+    <div class="item">
+      <div class="item-de">${w.de}</div>
+      <div class="item-ex">📖 ${w.def}</div>
+      <input class="inp" id="dv2${idx}_${j}" placeholder="Nghĩa tiếng Việt …" autocomplete="off">
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderDef(ex,idx){
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Lesen Sie die Definition und schreiben Sie das Wort (ohne Artikel). / Đọc định nghĩa và viết từ vào ô.</div>
+    ${ex.items.map((w,j)=>`
+    <div class="item">
+      <div class="item-ex">📖 ${w.def}</div>
+      <input class="inp" id="def${idx}_${j}" placeholder="Das Wort …" autocomplete="off">
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderMC(ex,idx){
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Wählen Sie die richtige vietnamesische Bedeutung. / Chọn nghĩa tiếng Việt đúng.</div>
+    ${ex.items.map((m,j)=>`
+    <div class="item">
+      <div class="item-de">${m.word.de}</div>
+      <div class="mc-opts" id="mc_${idx}_${j}">
+        ${m.opts.map((o,k)=>`
+        <button class="mc-opt" id="mc${idx}_${j}_${k}"
+          onclick="mcChoose(${idx},${j},${k},'${m.word.vi.replace(/'/g,"\\'")}')">
+          ${LETTERS[k]}. ${o.vi}
+        </button>`).join('')}
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+let mcAnswers={};
+function mcChoose(tabIdx,itemIdx,optIdx,correctVi){
+  const key=`${tabIdx}_${itemIdx}`;
+  if(mcAnswers[key]!==undefined)return;
+  mcAnswers[key]=optIdx;
+  const chosen=exercises[tabIdx].items[itemIdx].opts[optIdx].vi;
+  const container=document.getElementById(`mc_${tabIdx}_${itemIdx}`);
+  container.querySelectorAll('.mc-opt').forEach((btn,k)=>{
+    btn.disabled=true;
+    const bvi=exercises[tabIdx].items[itemIdx].opts[k].vi;
+    if(bvi===correctVi)btn.classList.add('ok');
+    else if(k===optIdx&&bvi!==correctVi)btn.classList.add('no');
+  });
+}
+
+function renderDialog(ex,idx){
+  const rights=shuf(ex.items.map(p=>p.right));
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Verbinden Sie die Aussagen mit den passenden Antworten. / Nối câu với câu trả lời phù hợp.</div>
+    ${ex.items.map((p,j)=>`
+    <div class="dialog-pair">
+      <div class="d-left">💬 ${p.left}</div>
+      <select class="d-sel" id="dial${idx}_${j}">
+        <option value="">– Auswählen –</option>
+        ${rights.map(r=>`<option value="${r.replace(/"/g,'&quot;')}">${r}</option>`).join('')}
+      </select>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderAnagram(ex,idx){
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Ordnen Sie die Buchstaben und schreiben Sie Artikel + Wort. / Sắp xếp các chữ cái và viết mạo từ + từ.</div>
+    ${ex.items.map((w,j)=>{
+      const scrambled=shuf(w.base.split('')).join('').toUpperCase();
+      return`
+      <div class="item">
+        <div class="anagram-word">${scrambled}</div>
+        <div class="item-ex">💡 ${w.vi}</div>
+        <div class="anagram-inp-row">
+          <input class="art-inp" id="art${idx}_${j}" placeholder="Artikel" autocomplete="off">
+          <input class="word-inp" id="wrd${idx}_${j}" placeholder="Wort" autocomplete="off">
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderFill(ex,idx){
+  return`<div class="ex-card">
+    <div class="ex-title">${ex.label}</div>
+    <div class="ex-inst">Ergänzen Sie die Lücken mit den passenden Wörtern. / Điền từ thích hợp vào chỗ trống.</div>
+    ${ex.items.map((w,j)=>{
+      const filled=w.ex.replace(w.base,`<input class="gap" id="fill${idx}_${j}" size="${w.base.length+2}" autocomplete="off">`);
+      return`<div class="fill-sent">${filled} <span style="font-size:11px;color:var(--muted)">(${w.vi})</span></div>`;
+    }).join('<br>')}
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   CHECK
+═══════════════════════════════════════════ */
+function checkTab(idx){
+  if(tabDuration[idx]===undefined)tabDuration[idx]=0;
+  if(tabStartTime[idx]!==undefined){
+    tabDuration[idx]+=Math.round((Date.now()-tabStartTime[idx])/1000);
+    tabStartTime[idx]=undefined;
+  }
+  tabChecked[idx]=true;
+
+  const ex=exercises[idx];
+  let pts=0,max=ex.type==='dialog'?ex.items.length:ex.items.length;
+  const ansHtml=[];
+
+  if(ex.type==='de-vi'||ex.type==='de-vi2'){
+    ex.items.forEach((w,j)=>{
+      const id=ex.type==='de-vi'?`dv${idx}_${j}`:`dv2${idx}_${j}`;
+      const inp=document.getElementById(id);if(!inp)return;
+      const val=inp.value.trim();if(!val){inp.classList.remove('ok','no');return;}
+      const ok=checkVI(val,w);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok)pts++;
+      if(!ok)ansHtml.push(`<div class="ans-item no-ans">❌ ${w.de} → <span class="ans-correct">${w.vi}</span></div>`);
+    });
+  }
+  else if(ex.type==='def'){
+    ex.items.forEach((w,j)=>{
+      const inp=document.getElementById(`def${idx}_${j}`);if(!inp)return;
+      const val=inp.value.trim();if(!val){inp.classList.remove('ok','no');return;}
+      const correctWords=[w.base,...(w.alts||[])];
+      const ok=correctWords.some(c=>norm(val)===norm(c));
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok)pts++;
+      if(!ok)ansHtml.push(`<div class="ans-item no-ans">❌ → <span class="ans-correct">${w.base}</span></div>`);
+    });
+  }
+  else if(ex.type==='mc'){
+    ex.items.forEach((m,j)=>{
+      const container=document.getElementById(`mc_${idx}_${j}`);
+      if(!container)return;
+      // check if already answered
+      const chosen=container.querySelector('.ok');
+      if(chosen){pts++;}
+      else{
+        // mark correct anyway
+        container.querySelectorAll('.mc-opt').forEach(btn=>{
+          btn.disabled=true;
+          if(btn.textContent.trim().includes(m.word.vi.split(',')[0].trim())){btn.classList.add('ok');}
+        });
+        ansHtml.push(`<div class="ans-item no-ans">❌ ${m.word.de} → <span class="ans-correct">${m.word.vi}</span></div>`);
+      }
+    });
+    max=ex.items.length;
+  }
+  else if(ex.type==='dialog'){
+    ex.items.forEach((p,j)=>{
+      const sel=document.getElementById(`dial${idx}_${j}`);if(!sel)return;
+      const val=sel.value;if(!val)return;
+      const ok=norm(val)===norm(p.right);
+      sel.classList.toggle('ok',ok);sel.classList.toggle('no',!ok);
+      if(ok)pts++;
+      if(!ok)ansHtml.push(`<div class="ans-item no-ans">❌ ${p.left.substring(0,40)}… → <span class="ans-correct">${p.right.substring(0,60)}…</span></div>`);
+    });
+  }
+  else if(ex.type==='anagram'){
+    ex.items.forEach((w,j)=>{
+      const artInp=document.getElementById(`art${idx}_${j}`);
+      const wrdInp=document.getElementById(`wrd${idx}_${j}`);
+      if(!artInp||!wrdInp)return;
+      const artVal=artInp.value.trim().toLowerCase();
+      const wrdVal=wrdInp.value.trim().toLowerCase();
+      const artOk=w.art&&artVal===w.art.toLowerCase();
+      const wrdOk=norm(wrdVal)===norm(w.base);
+      artInp.classList.toggle('ok',artOk);artInp.classList.toggle('no',!artOk&&artVal!=='');
+      wrdInp.classList.toggle('ok',wrdOk);wrdInp.classList.toggle('no',!wrdOk&&wrdVal!=='');
+      if(wrdOk)pts++; // word is the point
+      if(!wrdOk)ansHtml.push(`<div class="ans-item no-ans">❌ → <span class="ans-correct">${w.art||''} ${w.base}</span></div>`);
+    });
+  }
+  else if(ex.type==='fill'){
+    ex.items.forEach((w,j)=>{
+      const inp=document.getElementById(`fill${idx}_${j}`);if(!inp)return;
+      const val=inp.value.trim();if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(w.base);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok)pts++;
+      if(!ok)ansHtml.push(`<div class="ans-item no-ans">❌ → <span class="ans-correct">${w.base}</span></div>`);
+    });
+  }
+
+  // show result bar
+  const rb=document.getElementById(`res${idx}`);
+  const pct=Math.round(pts/max*100);
+  rb.classList.add('show');
+  rb.className='result-bar show '+(pct>=75?'ok':pct>=50?'med':'bad');
+  rb.textContent=`✓ ${pts} / ${max} Punkte (${pct}%)`;
+
+  // show answers
+  const ab=document.getElementById(`ans${idx}`);
+  ab.innerHTML=ansHtml.length?ansHtml.join(''):`<div class="ans-item ok-ans">✅ Alles richtig!</div>`;
+  ab.classList.add('show');
+}
+
+function checkAllTabs(){
+  clearInterval(globalTimerInterval);
+  // check all unchecked tabs
+  for(let i=0;i<exercises.length;i++){
+    if(!tabChecked[i]){showTab(i);checkTab(i);}
+  }
+
+  let totalPts=0,totalMax=0;
+  const rows=exercises.map((ex,i)=>{
+    const rb=document.getElementById(`res${i}`);
+    let pts=0,max=ex.items.length;
+    if(rb){const m=rb.textContent.match(/(\d+)\s*\/\s*(\d+)/);if(m){pts=+m[1];max=+m[2];}}
+    totalPts+=pts;totalMax+=max;
+    const sec=tabDuration[i]||0;
+    const t=`${String(0|sec/60).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
+    return`<tr><td>${ex.label}</td><td><strong>${pts}/${max}</strong></td><td>${t}</td></tr>`;
+  });
+
+  const endTime=new Date();
+  const elapsed=globalSeconds;
+  const em=String(0|elapsed/60).padStart(2,'0')+':'+String(elapsed%60).padStart(2,'0');
+
+  document.getElementById('sumName').textContent=studentName;
+  const pct=Math.round(totalPts/totalMax*100);
+  document.getElementById('sumScore').textContent=`${totalPts} / ${totalMax} (${pct}%)`;
+  document.getElementById('sumTableBody').innerHTML=rows.join('');
+  document.getElementById('sumTimestamp').innerHTML=
+    `Beginn: ${sessionStart.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · `+
+    `Ende: ${endTime.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · `+
+    `Gesamtzeit: ${em}`;
+  document.getElementById('summaryCard').classList.add('show');
+  document.getElementById('summaryCard').scrollIntoView({behavior:'smooth'});
+}
+
+function resetAll(){
+  clearInterval(globalTimerInterval);
+  location.reload();
+}
+</script>
+</body>
+</html>
