@@ -466,96 +466,93 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
 function esc2(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 
 /* ============================================================
-   EXERCISE GENERATORS
+   EXERCISE GENERATORS – alle DE→DE (kein Vietnamesisch)
+   A: Definition → Wort      (Nomen mit Artikel)
+   B: Lückentext             (Wort im Beispielsatz ergänzen)
+   C: Multiple Choice DE     (deutsche Definition wählen)
+   D: Anagramm               (Buchstaben ordnen + Artikel)
+   E: Dialog verbinden       (DE Frage ↔ DE Antwort)
+   F: Wortbank               (Wort aus Pool in Lücke einsetzen)
+   G: Artikel-Trainer        (Hinweis = Beispielsatz, Artikel + Wort eingeben)
    ============================================================ */
-function genDeVi(){
-  const words=pick(WORDS,8);
-  return {type:'de-vi',title:'Deutsch → Việt',icon:'🇩🇪',color:'t-vok',pts:8,
-    instr:'Was bedeuten die Wörter auf Vietnamesisch? Schreiben Sie die vietnamesische Bedeutung.',
-    items:words.map((w,i)=>({id:`dv${i}`,prompt:w.de,answer:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex,vi_alts:w.vi_alts}))};
+
+/* A – Definition → Wort */
+function genDef(){
+  const pool=WORDS.filter(w=>w.def);
+  const words=pick(pool,8);
+  return {type:'def',title:'Was ist das Wort?',icon:'🧩',color:'t-def',pts:8,
+    instr:'Lesen Sie die deutsche Erklärung und schreiben Sie Artikel + Wort. Der erste Buchstabe hilft!',
+    items:words.map((w,i)=>({
+      id:'df'+i, def:w.def, answer:w.base, art:w.art,
+      de:w.de, vi:w.vi, ex:w.ex,
+      hint1: w.base[0].toUpperCase()+'___',
+    }))};
 }
-function genViDe(){
-  const words=pick(WORDS,8);
-  return {type:'de-vi2',title:'Bedeutung erklären',icon:'✍️',color:'t-vok',pts:8,
-    instr:'Schreiben Sie die vietnamesische Bedeutung. Der Beispielsatz hilft Ihnen.',
-    items:words.map((w,i)=>({id:'vd'+i,prompt:w.de,answer:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex,vi_alts:w.vi_alts}))};
-}
+
+/* B – Lückentext */
 function genFill(){
   const eligible=WORDS.filter(w=>{
     const key=w.base.replace(/\.\.\./g,'').trim().split(' ')[0];
-    return w.ex.toLowerCase().includes(key.toLowerCase());
+    return w.ex.toLowerCase().includes(key.toLowerCase()) && key.length>3;
   });
   const words=pick(eligible,8);
   return {type:'fill',title:'Lückentext',icon:'📝',color:'t-luc',pts:8,
-    instr:'Ergänzen Sie die fehlenden Wörter im Satz. Der Hinweis hilft Ihnen.',
+    instr:'Welches Wort fehlt im Satz? Schreiben Sie das passende Wort in die Lücke.',
     items:words.map((w,i)=>{
       const key=w.base.replace(/\.\.\./g,'').trim().split(' ')[0];
       const rx=new RegExp(key,'i');
       const m=w.ex.match(rx);
       const shown=m?w.ex.replace(m[0],'___'):w.ex;
-      return {id:`fi${i}`,sentence:shown,answer:m?m[0]:key,hint:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex};
+      return {id:`fi${i}`,sentence:shown,answer:m?m[0]:key,hint:'',de:w.de,vi:w.vi,art:w.art,ex:w.ex};
     })};
 }
-function genMatch(){
-  const words=pick(WORDS,8);
-  const shuffledVi=shuffle(words.map(w=>w.vi));
-  return {type:'match',title:'Zuordnung DE → VI',icon:'🔗',color:'t-mat',pts:8,
-    instr:'Ordnen Sie die deutschen Wörter den vietnamesischen Bedeutungen zu.',
-    items:words.map((w,i)=>({id:`ma${i}`,de:w.de,answer:w.vi,vi:w.vi,art:w.art,ex:w.ex})),
-    options:shuffledVi};
+
+/* C – Multiple Choice mit deutschen Definitionen */
+function genMCDef(){
+  const pool=WORDS.filter(w=>w.def);
+  const words=pick(pool,8);
+  return {type:'mcdef',title:'Welche Definition passt?',icon:'🎯',color:'t-mc',pts:8,
+    instr:'Welche deutsche Erklärung passt zum Wort? Wählen Sie die richtige Definition.',
+    items:words.map((w,i)=>{
+      const dist=shuffle(pool.filter(x=>x.base!==w.base)).slice(0,3);
+      return {id:`cd${i}`,de:w.de,answer:w.def,options:shuffle([w.def,...dist.map(x=>x.def)]),art:w.art,ex:w.ex,vi:w.vi};
+    })};
 }
-function genDef(){
-  const nouns=WORDS.filter(w=>w.art && w.def);
-  const words=pick(nouns,8);
-  return {type:'def',title:'Was ist das Wort?',icon:'🧩',color:'t-def',pts:8,
-    instr:'Lesen Sie die deutsche Erklärung und schreiben Sie Artikel + Wort. Tipp: Der erste Buchstabe ist angegeben!',
+
+/* D – Anagramm */
+function scramble(w){
+  const a=w.split('');let s;let tries=0;
+  do{s=shuffle([...a]).join('');tries++;}while(s===w&&tries<20);
+  return s;
+}
+function genAnagram(){
+  const eligible=WORDS.filter(w=>w.base.length>=4&&!w.base.includes(' '));
+  const words=pick(eligible,8);
+  return {type:'anagram',title:'Anagramm',icon:'🔡',color:'t-anagram',pts:8,
+    instr:'Ordnen Sie die Buchstaben zum richtigen Wort. Schreiben Sie Artikel + Wort.',
     items:words.map((w,i)=>({
-      id:'df'+i, def:w.def, answer:w.base, art:w.art,
-      de:w.de, vi:w.vi, ex:w.ex,
-      hint1: w.base[0].toUpperCase()+'___',
-      alts: w.alts || [w.base],
+      id:'ag'+i,
+      scrambled:scramble(w.base).toUpperCase(),
+      answer:w.base,art:w.art,
+      de:w.de,vi:w.vi,ex:w.ex
     }))};
 }
-function genMC(){
-  const words=pick(WORDS,8);
-  const allVi=WORDS.map(w=>w.vi);
-  return {type:'mc',title:'Multiple Choice',icon:'🎯',color:'t-mc',pts:8,
-    instr:'Wählen Sie die richtige vietnamesische Bedeutung.',
-    items:words.map((w,i)=>{
-      const dist=shuffle(allVi.filter(v=>v!==w.vi)).slice(0,3);
-      return {id:`mc${i}`,de:w.de,answer:w.vi,options:shuffle([w.vi,...dist]),vi:w.vi,art:w.art,ex:w.ex};
-    })};
-}
+
+/* E – Dialog verbinden (DE↔DE) */
 function genDialog(){
   const pairs=pick(DIALOG_PAIRS,8);
   const rights=shuffle(pairs.map(p=>p.right));
   return {type:'dialog',title:'Dialog verbinden',icon:'💬',color:'t-dialog',pts:8,
-    instr:'Verbinden Sie die linken Aussagen mit den passenden Antworten rechts.',
+    instr:'Welche Antwort passt zur Frage? Verbinden Sie die Aussagen auf Deutsch.',
     items:pairs.map((p,i)=>({id:'dl'+i,left:p.left,answer:p.right})),
     options:rights};
 }
-function scramble(w){
-  const a=w.split('');
-  let s; let tries=0;
-  do { s=shuffle([...a]).join(''); tries++; } while(s===w && tries<20);
-  return s;
-}
-function genAnagram(){
-  const eligible=WORDS.filter(w=>w.art && w.base.length>=4 && !w.base.includes(' '));
-  const words=pick(eligible,8);
-  return {type:'anagram',title:'Anagramm',icon:'🔡',color:'t-anagram',pts:8,
-    instr:'Bringen Sie die Buchstaben in die richtige Reihenfolge und schreiben Sie das Wort mit Artikel.',
-    items:words.map((w,i)=>({
-      id:'ag'+i,
-      scrambled: scramble(w.base).toUpperCase(),
-      answer:w.base, art:w.art,
-      de:w.de, vi:w.vi, ex:w.ex
-    }))};
-}
+
+/* F – Wortbank */
 function genWordBank(){
   const eligible=WORDS.filter(w=>{
     const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
-    return w.ex.toLowerCase().includes(key.toLowerCase()) && w.base.length>3;
+    return w.ex.toLowerCase().includes(key.toLowerCase())&&key.length>3;
   });
   const words=pick(eligible,8);
   const answers=words.map(w=>{
@@ -566,7 +563,7 @@ function genWordBank(){
   });
   const bank=shuffle([...answers]);
   return {type:'wordbank',title:'Wortbank – Lücken füllen',icon:'🏦',color:'t-bank',pts:8,
-    instr:'Wählen Sie das richtige Wort aus der Wortbank und füllen Sie die Lücke.',
+    instr:'Wählen Sie das passende Wort aus der Wortbank und füllen Sie die Lücke im Satz.',
     bank,
     items:words.map((w,i)=>{
       const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
@@ -574,8 +571,22 @@ function genWordBank(){
       const m=w.ex.match(rx);
       const ans=m?m[0]:key;
       const shown=m?w.ex.replace(m[0],'___'):w.ex;
-      return {id:'wb'+i,sentence:shown,answer:ans,hint:w.vi,de:w.de,vi:w.vi,art:w.art,ex:w.ex};
+      return {id:'wb'+i,sentence:shown,answer:ans,hint:'',de:w.de,vi:w.vi,art:w.art,ex:w.ex};
     })};
+}
+
+/* G – Artikel-Trainer: Satz als Hinweis, Artikel + Wort eingeben */
+function genArtikel(){
+  const pool=WORDS.filter(w=>w.art);
+  const words=pick(pool,8);
+  return {type:'artikel',title:'Artikel-Trainer',icon:'🏷️',color:'t-def',pts:8,
+    instr:'Lesen Sie den Beispielsatz und schreiben Sie den richtigen Artikel (der/die/das) + Wort.',
+    items:words.map((w,i)=>({
+      id:'ar'+i,
+      ex:w.ex,
+      answer:w.base, art:w.art,
+      de:w.de, vi:w.vi
+    }))};
 }
 
 /* ── STATE ── */
@@ -628,7 +639,7 @@ const mcState={};
 const tabChecked={};
 
 function buildExercises(){
-  exercises=shuffle([genDeVi(),genViDe(),genDef(),genMC(),genDialog(),genAnagram(),genWordBank()]);
+  exercises=shuffle([genDef(),genFill(),genMCDef(),genAnagram(),genDialog(),genWordBank(),genArtikel()]);
   exercises.forEach((ex,i)=>{ex.label=String.fromCharCode(65+i);ex.idx=i;});
 }
 
@@ -656,14 +667,13 @@ function renderAll(){
 
 function renderSection(ex,idx){
   let body='';
-  if(ex.type==='de-vi'||ex.type==='de-vi2') body=renderDeVi(ex);
   if(ex.type==='fill')    body=renderFill(ex);
-  if(ex.type==='match')   body=renderMatch(ex);
   if(ex.type==='def')     body=renderDef(ex);
-  if(ex.type==='mc')      body=renderMC(ex);
+  if(ex.type==='mcdef')   body=renderMCDef(ex);
   if(ex.type==='dialog')  body=renderDialog(ex);
   if(ex.type==='anagram') body=renderAnagram(ex);
   if(ex.type==='wordbank')body=renderWordBank(ex);
+  if(ex.type==='artikel') body=renderArtikel(ex);
   return `
   <div class="section${idx===0?' active':''}" id="sec${idx}">
     <div class="card ${ex.color}">
@@ -685,34 +695,13 @@ function renderSection(ex,idx){
   </div>`;
 }
 
-function renderDeVi(ex){
-  return `<div class="wgrid">${ex.items.map(it=>`
-    <div class="witem">
-      <div class="wlabel">${it.prompt}</div>
-      ${it.ex?`<div style="font-size:10px;color:#60a5fa;font-style:italic;line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${it.ex}</div>`:''}
-      <input class="inp" id="${it.id}" type="text" placeholder="Vietnamesische Bedeutung …" autocomplete="off" autocorrect="off" spellcheck="false"/>
-    </div>`).join('')}</div>`;
-}
-
 function renderFill(ex){
   return ex.items.map(it=>`
     <div class="fill-row">
-      <span style="font-size:11px;color:var(--rose);font-weight:700;width:100%;">💡 Bedeutung: ${it.hint}</span>
       <div style="width:100%;font-size:14px;margin-top:2px;">
         ${it.sentence.replace('___',`<input class="blank" id="${it.id}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" style="min-width:140px;"/>`)}
       </div>
     </div>`).join('');
-}
-
-function renderMatch(ex){
-  const optHtml=`<option value="">— wählen —</option>`
-    +ex.options.map(o=>`<option value="${esc(o)}">${o}</option>`).join('');
-  return `<div class="match-grid">${ex.items.map(it=>`
-    <div class="match-row">
-      <div class="match-de">${it.de}</div>
-      <div class="match-arr">→</div>
-      <div class="match-sel"><select class="sel" id="${it.id}">${optHtml}</select></div>
-    </div>`).join('')}</div>`;
 }
 
 function renderDef(ex){
@@ -724,16 +713,16 @@ function renderDef(ex){
         💡 Tipp: Das Wort beginnt mit „<span style="font-size:15px;">${it.answer[0].toUpperCase()}</span>"
       </div>
       <div class="def-input-row">
-        <input class="def-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        ${it.art?`<input class="def-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>`:''}
         <input class="inp def-word" id="${it.id}_word" type="text" placeholder="${it.answer[0].toUpperCase()}…" autocomplete="off" autocorrect="off" spellcheck="false"/>
       </div>
     </div>`).join('');
 }
 
-function renderMC(ex){
+function renderMCDef(ex){
   return ex.items.map(it=>`
     <div class="mc-item">
-      <div class="mc-prompt">${it.de}</div>
+      <div class="mc-prompt">${it.art?it.art+' ':''}<strong>${it.de}</strong></div>
       <div class="mc-opts" id="opts_${it.id}">
         ${it.options.map((o,j)=>`
           <button class="mc-opt" id="opt_${it.id}_${j}"
@@ -758,22 +747,34 @@ function renderAnagram(ex){
   return `<div class="anagram-grid">${ex.items.map(it=>`
     <div class="anagram-item">
       <div class="anagram-scrambled">${it.scrambled}</div>
+      <div style="font-size:11px;color:#60a5fa;font-style:italic;text-align:center;margin-bottom:4px;">${it.ex}</div>
       <div class="anagram-inputs">
-        <input class="anagram-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        ${it.art?`<input class="anagram-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>`:''}
         <input class="inp anagram-word" id="${it.id}_word" type="text" placeholder="Wort …" autocomplete="off" autocorrect="off" spellcheck="false"/>
       </div>
     </div>`).join('')}</div>`;
 }
 
 function renderWordBank(ex){
-  const bankHtml=`<div class="wb-label">📦 Wortbank – wählen Sie das passende Wort:</div>`
+  const bankHtml=`<div class="wb-label">📦 Wortbank:</div>`
     +ex.bank.map(w=>`<div class="wb-chip" id="wbc_${w}" onclick="wbChipClick(this,'${w.replace(/'/g,"\\'")}')"> ${w}</div>`).join('');
   const sentHtml=ex.items.map(it=>`
     <div class="wb-fill-row">
-      <span style="font-size:11px;color:#2563eb;font-weight:700;">💡 Bedeutung: ${it.hint}</span><br>
       ${it.sentence.replace('___',`<input class="blank" id="${it.id}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" style="min-width:130px;" oninput="wbSyncBank()"/>`)}
     </div>`).join('');
   return `<div class="wordbank-pool">${bankHtml}</div>${sentHtml}`;
+}
+
+function renderArtikel(ex){
+  return ex.items.map(it=>`
+    <div class="def-item">
+      <div class="def-tag">🏷️ Artikel-Trainer</div>
+      <div class="def-text">${it.ex}</div>
+      <div class="def-input-row">
+        <input class="def-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <input class="inp def-word" id="${it.id}_word" type="text" placeholder="Wort …" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>`).join('');
 }
 
 /* ── MC LIVE ── */
@@ -797,17 +798,6 @@ function checkTab(idx){
   if(tabChecked[idx]!==undefined) return;
   let pts=0;
 
-  if(ex.type==='de-vi'||ex.type==='de-vi2'){
-    ex.items.forEach(it=>{
-      const inp=document.getElementById(it.id);
-      if(!inp) return;
-      const val=inp.value.trim();
-      if(!val){inp.classList.remove('ok','no');return;}
-      const ok=checkVI(val,it);
-      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
-      if(ok) pts++;
-    });
-  }
   if(ex.type==='fill'){
     ex.items.forEach(it=>{
       const inp=document.getElementById(it.id);
@@ -819,34 +809,23 @@ function checkTab(idx){
       if(ok) pts++;
     });
   }
-  if(ex.type==='match'){
-    ex.items.forEach(it=>{
-      const sel=document.getElementById(it.id);
-      if(!sel) return;
-      const val=sel.value;
-      if(!val){sel.classList.remove('ok','no');return;}
-      const ok=norm(val)===norm(it.answer);
-      sel.classList.toggle('ok',ok);sel.classList.toggle('no',!ok);
-      if(ok) pts++;
-    });
-  }
   if(ex.type==='def'){
     ex.items.forEach(it=>{
-      const artEl=document.getElementById(it.id+'_art');
+      const artEl=it.art?document.getElementById(it.id+'_art'):null;
       const wordEl=document.getElementById(it.id+'_word');
-      if(!artEl||!wordEl) return;
+      if(!wordEl) return;
       const wordVal=wordEl.value.trim();
-      const artVal=artEl.value.trim();
       if(!wordVal) return;
-      const accepted=(it.alts||[it.answer]).map(a=>norm(a));
-      const wordOk=accepted.includes(norm(wordVal));
-      const artOk=norm(artVal)===norm(it.art);
+      const wordOk=norm(wordVal)===norm(it.answer);
       wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
-      artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
-      if(wordOk) pts+=1;
+      if(artEl){
+        const artOk=norm(artEl.value.trim())===norm(it.art);
+        artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      }
+      if(wordOk) pts++;
     });
   }
-  if(ex.type==='mc'){
+  if(ex.type==='mcdef'){
     ex.items.forEach(it=>{
       const chosen=mcState[it.id];
       if(!chosen){
@@ -870,7 +849,7 @@ function checkTab(idx){
   }
   if(ex.type==='anagram'){
     ex.items.forEach(it=>{
-      const artEl=document.getElementById(it.id+'_art');
+      const artEl=it.art?document.getElementById(it.id+'_art'):null;
       const wordEl=document.getElementById(it.id+'_word');
       if(!wordEl) return;
       const wordVal=wordEl.value.trim();
@@ -893,6 +872,20 @@ function checkTab(idx){
       const ok=norm(val)===norm(it.answer);
       inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
       if(ok) pts++;
+    });
+  }
+  if(ex.type==='artikel'){
+    ex.items.forEach(it=>{
+      const artEl=document.getElementById(it.id+'_art');
+      const wordEl=document.getElementById(it.id+'_word');
+      if(!artEl||!wordEl) return;
+      const wordVal=wordEl.value.trim();
+      if(!wordVal) return;
+      const wordOk=norm(wordVal)===norm(it.answer);
+      const artOk=norm(artEl.value.trim())===norm(it.art);
+      wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
+      artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      if(wordOk) pts++;
     });
   }
 
@@ -930,8 +923,7 @@ function checkTab(idx){
         <div class="ans-row">
           <div class="ans-num">${k+1}.</div>
           <div>
-            <div class="ans-de">${it.scrambled} → <strong>${it.art} ${it.answer}</strong></div>
-            <div class="ans-vi">${it.vi}</div>
+            <div class="ans-de">${it.scrambled} → <strong>${it.art?it.art+' ':''}${it.answer}</strong></div>
             <div class="ans-ex">${it.ex}</div>
           </div>
         </div>`;
@@ -940,7 +932,24 @@ function checkTab(idx){
           <div class="ans-num">${k+1}.</div>
           <div>
             <div class="ans-de">${it.ex}</div>
-            <div class="ans-vi">→ Lückenwort: <strong>${it.answer}</strong> (${it.vi})</div>
+            <div class="ans-vi">→ Lückenwort: <strong>${it.answer}</strong></div>
+          </div>
+        </div>`;
+      if(ex.type==='mcdef') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.art?it.art+' ':''}${it.de}</div>
+            <div class="ans-vi">✔ ${it.answer}</div>
+            <div class="ans-ex">${it.ex}</div>
+          </div>
+        </div>`;
+      if(ex.type==='artikel') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de"><strong>${it.art} ${it.answer}</strong></div>
+            <div class="ans-ex">${it.ex}</div>
           </div>
         </div>`;
       return `
@@ -948,10 +957,9 @@ function checkTab(idx){
           <div class="ans-num">${k+1}.</div>
           <div>
             <div class="ans-de">
-              ${it.de||it.prompt||''}
-              ${it.art?`<span class="ans-art">${it.art}</span>`:''}
+              ${it.art?`<span class="ans-art">${it.art}</span> `:''}${it.de||it.prompt||it.answer||''}
             </div>
-            <div class="ans-vi">${it.vi||it.answer||''}</div>
+            <div class="ans-vi">${it.def||''}</div>
             <div class="ans-ex">${it.ex||''}</div>
           </div>
         </div>`;
