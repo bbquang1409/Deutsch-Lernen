@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mobil Lernen – Lektion 05</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;color:#fff;padding:28px 20px 24px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),
+             radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+
+/* mode selector */
+.mode-wrap{max-width:440px;margin:24px auto 0;padding:0 16px;display:flex;gap:10px;}
+.mode-btn{flex:1;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--card);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.mode-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+/* flashcard */
+.fc-wrap{max-width:440px;margin:0 auto;padding:20px 16px;}
+.fc-progress{background:var(--border);border-radius:99px;height:6px;margin-bottom:6px;}
+.fc-progress-bar{background:var(--blue);height:6px;border-radius:99px;transition:width .4s;}
+.fc-counter{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;}
+.fc-card{background:var(--card);border-radius:20px;box-shadow:0 4px 24px rgba(37,99,235,.13);
+  padding:36px 24px;text-align:center;min-height:230px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform .1s;
+  border:2px solid var(--border);}
+.fc-card:active{transform:scale(.98);}
+.fc-art{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-lt);
+  padding:4px 12px;border-radius:99px;}
+.fc-de{font-family:'DM Serif Display',serif;font-size:30px;color:var(--ink);line-height:1.2;}
+.fc-vi{font-size:20px;color:var(--muted);display:none;}
+.fc-ex{font-size:13px;color:#64748b;font-style:italic;display:none;line-height:1.5;max-width:320px;}
+.fc-tap{font-size:13px;color:#94a3b8;margin-top:4px;}
+.fc-card.flipped .fc-vi{display:block;}
+.fc-card.flipped .fc-ex{display:block;}
+.fc-card.flipped .fc-tap{display:none;}
+.tts-btn{background:var(--blue-lt);border:none;border-radius:99px;width:44px;height:44px;
+  cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto;transition:background .15s;flex-shrink:0;}
+.tts-btn:hover{background:#bfdbfe;}
+.fc-btns{display:flex;gap:12px;margin-top:16px;}
+.fc-btn{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .1s;}
+.fc-btn:active{transform:scale(.97);}
+.fc-btn-wrong{background:var(--rose-lt);color:var(--rose);}
+.fc-btn-ok{background:var(--green-lt);color:var(--green);}
+.hint{text-align:center;font-size:13px;color:var(--muted);margin-top:12px;}
+
+/* score screen */
+.score-screen{display:none;max-width:440px;margin:40px auto;padding:0 16px;text-align:center;}
+.score-screen.show{display:block;}
+.score-emoji{font-size:56px;margin-bottom:12px;}
+.score-big{font-family:'DM Serif Display',serif;font-size:48px;color:var(--blue);}
+.score-msg{font-size:16px;color:var(--muted);margin:8px 0 24px;}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 32px;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin:6px;}
+.btn-back{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:14px;
+  padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  text-decoration:none;display:inline-block;margin:6px;}
+
+/* main hidden/shown */
+.main-hidden{display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 05 · MOBIL LERNEN</div>
+    <h1>Zofia – Vielfalt in Neuberg</h1>
+    <p id="modeLabel">Alle Vokabeln lernen</p>
+  </div>
+</header>
+
+<div class="mode-wrap">
+  <button class="mode-btn active" id="btnLearn" onclick="setMode('learn')">📚 Vokabeln lernen</button>
+  <button class="mode-btn" id="btnTest" onclick="setMode('test')">🎯 Wortschatztest</button>
+</div>
+
+<div class="fc-wrap" id="fcWrap">
+  <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+  <div class="fc-counter" id="fcCounter">1 / —</div>
+  <div class="fc-card" id="fcCard" onclick="flipCard()">
+    <button class="tts-btn" id="ttsBtn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
+    <div class="fc-art" id="fcArt"></div>
+    <div class="fc-de" id="fcDe">Lade…</div>
+    <div class="fc-vi" id="fcVi"></div>
+    <div class="fc-ex" id="fcEx"></div>
+    <div class="fc-tap" id="fcTap">Tippen zum Umdrehen</div>
+  </div>
+  <div class="fc-btns main-hidden" id="fcBtns">
+    <button class="fc-btn fc-btn-wrong" onclick="answer(false)">✗ Nochmal</button>
+    <button class="fc-btn fc-btn-ok" onclick="answer(true)">✓ Gewusst</button>
+  </div>
+  <div class="hint" id="fcHint"></div>
+</div>
+
+<div class="score-screen" id="scoreScreen">
+  <div class="score-emoji" id="scoreEmoji">⭐</div>
+  <div class="score-big" id="scoreBig"></div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <button class="btn-restart" onclick="restartTest()">🔄 Nochmal</button>
+  <a href="index.html" class="btn-back">← Zurück</a>
+</div>
+
+<script>
+const WORDS = [
+  {de:"der Bürgermeister",art:"der",vi:"thị trưởng",ex:"Wenn man Fragen hat, kann man der Bürgermeisterin eine E-Mail schicken."},
+  {de:"die Rede",art:"die",vi:"bài diễn văn / bài phát biểu",ex:"Die Bürgermeisterin hält eine Rede."},
+  {de:"das Plakat",art:"das",vi:"tờ áp phích / poster",ex:"Die Bürger:innen haben ein Plakat gestaltet."},
+  {de:"ankündigen",art:"",vi:"thông báo trước / báo trước",ex:"Sie kündigt eine Veranstaltung an."},
+  {de:"die Staatsangehörigkeit",art:"die",vi:"quốc tịch",ex:"Der Briefträger hat die türkische Staatsangehörigkeit."},
+  {de:"die Fähigkeit",art:"die",vi:"khả năng / năng lực",ex:"Da sind alle die Menschen, die unterschiedliche Fähigkeiten haben."},
+  {de:"blind",art:"",vi:"mù / khiếm thị",ex:"Bei uns im Haus wohnt ein blinder Mann."},
+  {de:"die Bibliothek",art:"die",vi:"thư viện",ex:"Die Gesprächsrunde findet in der Stadtbibliothek statt."},
+  {de:"betreuen",art:"",vi:"chăm sóc / phụ trách",ex:"Zofia betreut die Themenwoche mit zwei Kollegen."},
+  {de:"die Präsentation",art:"die",vi:"bài thuyết trình",ex:"Wir möchten gern bei der Posterpräsentation mitmachen."},
+  {de:"der Gegenstand",art:"der",vi:"đồ vật / vật thể",ex:"Zu uns kommen Menschen, die kaputte Gegenstände nicht wegwerfen wollen."},
+  {de:"wegwerfen",art:"",vi:"vứt bỏ",ex:"Zu uns kommen Menschen, die kaputte Gegenstände nicht wegwerfen wollen."},
+  {de:"der Stecker",art:"der",vi:"phích cắm điện",ex:"Ich denke, sie reparieren zum Beispiel Stecker."},
+  {de:"die Handtasche",art:"die",vi:"túi xách tay",ex:"Ja, und vielleicht auch Handtaschen?"},
+  {de:"das Mobiltelefon",art:"das",vi:"điện thoại di động",ex:"Ich habe ein kaputtes Mobiltelefon."},
+  {de:"die Bremse",art:"die",vi:"phanh xe",ex:"Könnt ihr die Fahrradbremse reparieren?"},
+  {de:"der Monitor",art:"der",vi:"màn hình máy tính",ex:"Ich bringe einen Monitor und eine Tastatur ins Reparaturcafé."},
+  {de:"die Tastatur",art:"die",vi:"bàn phím",ex:"Ich bringe einen Monitor und eine Tastatur ins Reparaturcafé."},
+  {de:"die Fernbedienung",art:"die",vi:"điều khiển từ xa",ex:"Das ist die Fernbedienung, die nicht mehr funktioniert."},
+  {de:"das Festnetz",art:"das",vi:"điện thoại cố định",ex:"Das Reparaturcafé repariert auch Festnetztelefone."},
+  {de:"das Mountainbike",art:"das",vi:"xe đạp leo núi",ex:"Das Reparaturcafé repariert auch Mountainbikes."},
+  {de:"die Klingel",art:"die",vi:"chuông xe đạp / chuông cửa",ex:"Das Reparaturcafé repariert auch Fahrradklingeln."},
+  {de:"der Motorroller",art:"der",vi:"xe tay ga",ex:"Das Reparaturcafé repariert auch Motorroller."},
+  {de:"der Rechner",art:"der",vi:"máy tính (PC)",ex:"Das Reparaturcafé repariert aber keine Rechner."},
+  {de:"kleben",art:"",vi:"dán / dính",ex:"Nazan klebt Bilder auf das Poster."},
+  {de:"die Überschrift",art:"die",vi:"tiêu đề / đầu đề",ex:"Heinz gestaltet die Überschrift für das Poster."},
+  {de:"der Experte",art:"der",vi:"chuyên gia",ex:"Außerdem ist er unser Experte für Elektrogeräte."},
+  {de:"die Zeichnung",art:"die",vi:"bản vẽ / hình vẽ",ex:"Die Zeichnungen sind echt lustig!"},
+  {de:"schütteln",art:"",vi:"lắc / bắt tay lắc",ex:"Die Sache mit dem Händeschütteln."},
+  {de:"der Blick",art:"der",vi:"cái nhìn / ánh mắt",ex:"Aber deine Blicke mag ich am meisten!"},
+  {de:"der Humor",art:"der",vi:"khiếu hài hước",ex:"Ich mag den Humor an dir."},
+  {de:"die Schrift",art:"die",vi:"chữ viết / kiểu chữ",ex:"Die Schrift ist schön."},
+  {de:"sich gewöhnen",art:"",vi:"quen với / làm quen",ex:"Ich musste mich daran gewöhnen."},
+  {de:"die Uniform",art:"die",vi:"đồng phục",ex:"Die Kinder haben keine Schuluniform."},
+  {de:"individuell",art:"",vi:"cá nhân / riêng lẻ",ex:"Jede/Jeder hat eine individuelle Geschichte."},
+  {de:"der Faktor",art:"der",vi:"yếu tố / nhân tố",ex:"Das wird von verschiedenen Faktoren bestimmt."},
+  {de:"bestimmen",art:"",vi:"quyết định / xác định",ex:"Das wird von verschiedenen Faktoren bestimmt."},
+  {de:"zusammenleben",art:"",vi:"sống cùng nhau / chung sống",ex:"Die anderen Menschen, die mit uns zusammenleben."},
+  {de:"ebenso",art:"",vi:"cũng vậy / tương tự",ex:"Ebenso wie die Bücher, die wir lesen."},
+  {de:"nachholen",art:"",vi:"bù lại / làm bù",ex:"Wir haben die Veranstaltung nachgeholt."},
+  {de:"völlig",art:"",vi:"hoàn toàn / tuyệt đối",ex:"Tomas findet es völlig okay."},
+  {de:"sodass",art:"",vi:"do đó / vì vậy mà",ex:"Es war sehr kalt, sodass wir nicht lange draußen bleiben konnten."},
+];
+
+let mode='learn';
+let queue=[];
+let current=0;
+let flipped=false;
+let correct=0;
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('btnLearn').classList.toggle('active',m==='learn');
+  document.getElementById('btnTest').classList.toggle('active',m==='test');
+  document.getElementById('modeLabel').textContent = m==='learn'?'Alle Vokabeln lernen':'Wortschatztest – 10 Karten';
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('fcWrap').style.display='block';
+  initDeck();
+}
+
+function initDeck(){
+  queue = mode==='learn' ? shuffle(WORDS) : shuffle(WORDS).slice(0,10);
+  current=0; correct=0; flipped=false;
+  updateCard();
+}
+
+function updateCard(){
+  if(current>=queue.length){ endSession(); return; }
+  const w=queue[current];
+  flipped=false;
+  const card=document.getElementById('fcCard');
+  card.classList.remove('flipped');
+  document.getElementById('fcArt').textContent=w.art||'';
+  document.getElementById('fcArt').style.display=w.art?'inline-block':'none';
+  document.getElementById('fcDe').textContent=w.de;
+  document.getElementById('fcVi').textContent=w.vi;
+  document.getElementById('fcEx').textContent=w.ex||'';
+  document.getElementById('fcTap').style.display='block';
+  document.getElementById('fcBtns').classList.toggle('main-hidden', mode==='learn');
+  const pct=Math.round(current/queue.length*100);
+  document.getElementById('fcBar').style.width=pct+'%';
+  document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
+  document.getElementById('fcHint').textContent='';
+  // auto TTS
+  setTimeout(()=>speakCurrent(),300);
+}
+
+function flipCard(){
+  if(flipped) return;
+  flipped=true;
+  document.getElementById('fcCard').classList.add('flipped');
+  if(mode==='learn'){
+    document.getElementById('fcBtns').classList.remove('main-hidden');
+  }
+}
+
+function speakCurrent(){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(queue[current].de);
+  u.lang='de-DE'; u.rate=0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function answer(ok){
+  if(ok){
+    correct++;
+    current++;
+    updateCard();
+  } else {
+    // put back near end
+    const w=queue.splice(current,1)[0];
+    const pos=Math.min(current+3, queue.length);
+    queue.splice(pos,0,w);
+    updateCard();
+  }
+}
+
+function endSession(){
+  document.getElementById('fcWrap').style.display='none';
+  const screen=document.getElementById('scoreScreen');
+  screen.classList.add('show');
+  if(mode==='learn'){
+    document.getElementById('scoreEmoji').textContent='🎉';
+    document.getElementById('scoreBig').textContent='Fertig!';
+    document.getElementById('scoreMsg').textContent='Sie haben alle '+WORDS.length+' Vokabeln durchgelernt.';
+  } else {
+    const pct=Math.round(correct/10*100);
+    document.getElementById('scoreEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';
+    document.getElementById('scoreBig').textContent=correct+'/10 ('+pct+'%)';
+    document.getElementById('scoreMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';
+  }
+}
+
+function restartTest(){ setMode(mode); }
+
+// init
+initDeck();
+</script>
+</body>
+</html>

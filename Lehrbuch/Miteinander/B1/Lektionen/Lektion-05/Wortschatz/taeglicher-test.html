@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Täglicher Test – Lektion 05</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;color:#fff;padding:28px 20px 22px;text-align:center;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),
+             radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+
+/* timer bar */
+.timer-bar-wrap{background:var(--card);border-bottom:1px solid var(--border);padding:10px 20px;}
+.timer-row{max-width:500px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;}
+.timer-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.timer-display{font-size:22px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;}
+.timer-display.warn{color:var(--rose);}
+.progress-bar{background:var(--border);border-radius:99px;height:5px;margin-top:6px;}
+.progress-fill{background:var(--blue);height:5px;border-radius:99px;transition:width 1s linear;}
+
+/* questions */
+.q-wrap{max-width:500px;margin:0 auto;padding:20px 16px;}
+.q-card{background:var(--card);border-radius:16px;box-shadow:0 2px 12px rgba(37,99,235,.08);
+  padding:20px;margin-bottom:16px;border:2px solid var(--border);}
+.q-num{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+.q-text{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:14px;line-height:1.5;}
+.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.q-opt{background:#fafafa;border:2px solid var(--border);border-radius:10px;padding:10px 12px;
+  font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;text-align:left;
+  transition:all .15s;color:var(--ink);line-height:1.4;}
+.q-opt:hover:not(:disabled){border-color:var(--blue);background:var(--blue-lt);}
+.q-opt.ok{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+.q-opt.no{background:var(--rose-lt)!important;border-color:var(--rose)!important;color:var(--rose)!important;pointer-events:none;}
+.q-opt.reveal{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+.q-opt.locked{pointer-events:none;opacity:.5;}
+
+/* result */
+.result{display:none;max-width:500px;margin:30px auto;padding:0 16px;}
+.result.show{display:block;}
+.res-card{background:var(--card);border-radius:20px;padding:32px 24px;text-align:center;box-shadow:0 4px 20px rgba(37,99,235,.12);}
+.res-emoji{font-size:52px;margin-bottom:12px;}
+.res-score{font-family:'DM Serif Display',serif;font-size:44px;color:var(--blue);margin-bottom:6px;}
+.res-msg{font-size:16px;color:var(--muted);margin-bottom:20px;}
+.res-student{font-size:15px;font-weight:700;color:var(--ink);background:var(--blue-lt);
+  border-radius:12px;padding:10px 16px;margin-bottom:20px;}
+.btn-back{display:inline-block;background:var(--blue);color:#fff;border:none;border-radius:12px;
+  padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  text-decoration:none;margin:6px;}
+.btn-retry{display:inline-block;background:var(--card);color:var(--ink);border:2px solid var(--border);
+  border-radius:12px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;text-decoration:none;margin:6px;}
+
+/* name modal */
+.modal{position:fixed;inset:0;background:rgba(15,30,60,.7);z-index:999;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal.hidden{display:none;}
+.modal-box{background:#fff;border-radius:20px;padding:36px 28px;width:min(92vw,380px);text-align:center;}
+.modal-logo{font-size:44px;margin-bottom:10px;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.modal-inp{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 14px;
+  font-size:16px;font-family:'DM Sans',sans-serif;font-weight:600;color:var(--ink);
+  outline:none;text-align:center;margin-bottom:14px;}
+.modal-inp:focus{border-color:var(--blue);}
+.modal-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;
+  padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.modal-btn:disabled{opacity:.4;}
+</style>
+</head>
+<body>
+
+<!-- Name modal -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-logo">⏱</div>
+    <div class="modal-title">Täglicher Test</div>
+    <div class="modal-sub">Lektion 05 · 30 Fragen · 10 Minuten<br>Geben Sie Ihren Namen ein.</div>
+    <input class="modal-inp" id="nameInp" type="text" placeholder="Ihr Name…" maxlength="40">
+    <button class="modal-btn" id="nameBtn" disabled onclick="startTest()">Starten ▶</button>
+  </div>
+</div>
+
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 05 · TÄGLICHER TEST</div>
+    <h1>Zofia – Vielfalt in Neuberg</h1>
+    <p>30 Fragen · 10 Minuten</p>
+  </div>
+</header>
+
+<div class="timer-bar-wrap" id="timerBar">
+  <div class="timer-row">
+    <span class="timer-label">Zeit</span>
+    <span class="timer-display" id="timerDisplay">10:00</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="timerFill" style="width:100%"></div></div>
+</div>
+
+<div class="q-wrap" id="qWrap"></div>
+
+<div class="result" id="result">
+  <div class="res-card">
+    <div class="res-emoji" id="resEmoji">⭐</div>
+    <div class="res-score" id="resScore"></div>
+    <div class="res-msg" id="resMsg"></div>
+    <div class="res-student" id="resStudent"></div>
+    <a href="index.html" class="btn-back">← Zurück zur Übersicht</a>
+    <a href="taeglicher-test.html" class="btn-retry">🔄 Nochmal</a>
+  </div>
+</div>
+
+<script>
+const ALL_WORDS = [
+  {de:"der Bürgermeister",art:"der",vi:"thị trưởng"},
+  {de:"die Rede",art:"die",vi:"bài diễn văn / bài phát biểu"},
+  {de:"das Plakat",art:"das",vi:"tờ áp phích / poster"},
+  {de:"ankündigen",art:"",vi:"thông báo trước / báo trước"},
+  {de:"die Staatsangehörigkeit",art:"die",vi:"quốc tịch"},
+  {de:"die Fähigkeit",art:"die",vi:"khả năng / năng lực"},
+  {de:"blind",art:"",vi:"mù / khiếm thị"},
+  {de:"die Bibliothek",art:"die",vi:"thư viện"},
+  {de:"betreuen",art:"",vi:"chăm sóc / phụ trách"},
+  {de:"die Präsentation",art:"die",vi:"bài thuyết trình"},
+  {de:"der Gegenstand",art:"der",vi:"đồ vật / vật thể"},
+  {de:"wegwerfen",art:"",vi:"vứt bỏ"},
+  {de:"der Stecker",art:"der",vi:"phích cắm điện"},
+  {de:"die Handtasche",art:"die",vi:"túi xách tay"},
+  {de:"das Mobiltelefon",art:"das",vi:"điện thoại di động"},
+  {de:"die Bremse",art:"die",vi:"phanh xe"},
+  {de:"der Monitor",art:"der",vi:"màn hình máy tính"},
+  {de:"die Tastatur",art:"die",vi:"bàn phím"},
+  {de:"die Fernbedienung",art:"die",vi:"điều khiển từ xa"},
+  {de:"das Festnetz",art:"das",vi:"điện thoại cố định"},
+  {de:"das Mountainbike",art:"das",vi:"xe đạp leo núi"},
+  {de:"die Klingel",art:"die",vi:"chuông xe đạp / chuông cửa"},
+  {de:"der Motorroller",art:"der",vi:"xe tay ga"},
+  {de:"der Rechner",art:"der",vi:"máy tính (PC)"},
+  {de:"kleben",art:"",vi:"dán / dính"},
+  {de:"die Überschrift",art:"die",vi:"tiêu đề / đầu đề"},
+  {de:"der Experte",art:"der",vi:"chuyên gia"},
+  {de:"die Zeichnung",art:"die",vi:"bản vẽ / hình vẽ"},
+  {de:"schütteln",art:"",vi:"lắc / bắt tay lắc"},
+  {de:"der Blick",art:"der",vi:"cái nhìn / ánh mắt"},
+  {de:"der Humor",art:"der",vi:"khiếu hài hước"},
+  {de:"die Schrift",art:"die",vi:"chữ viết / kiểu chữ"},
+  {de:"sich gewöhnen",art:"",vi:"quen với / làm quen"},
+  {de:"die Uniform",art:"die",vi:"đồng phục"},
+  {de:"individuell",art:"",vi:"cá nhân / riêng lẻ"},
+  {de:"der Faktor",art:"der",vi:"yếu tố / nhân tố"},
+  {de:"bestimmen",art:"",vi:"quyết định / xác định"},
+  {de:"zusammenleben",art:"",vi:"sống cùng nhau / chung sống"},
+  {de:"ebenso",art:"",vi:"cũng vậy / tương tự"},
+  {de:"nachholen",art:"",vi:"bù lại / làm bù"},
+  {de:"völlig",art:"",vi:"hoàn toàn / tuyệt đối"},
+  {de:"sodass",art:"",vi:"do đó / vì vậy mà"},
+];
+
+let studentName='';
+let score=0;
+let answered=0;
+let timerInterval=null;
+let secondsLeft=600;
+const TOTAL=30;
+
+document.getElementById('nameInp').addEventListener('input',function(){
+  document.getElementById('nameBtn').disabled=this.value.trim().length<2;
+});
+document.getElementById('nameInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&this.value.trim().length>=2) startTest();
+});
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function startTest(){
+  studentName=document.getElementById('nameInp').value.trim();
+  document.getElementById('modal').classList.add('hidden');
+  buildQuestions();
+  startTimer();
+}
+
+function buildQuestions(){
+  const words=shuffle(ALL_WORDS).slice(0,TOTAL);
+  const wrap=document.getElementById('qWrap');
+  wrap.innerHTML='';
+  words.forEach((w,i)=>{
+    const wrong=shuffle(ALL_WORDS.filter(x=>x.de!==w.de)).slice(0,3);
+    const opts=shuffle([w,...wrong]);
+    const card=document.createElement('div'); card.className='q-card';
+    const num=document.createElement('div'); num.className='q-num'; num.textContent='Frage '+(i+1)+' / '+TOTAL;
+    const txt=document.createElement('div'); txt.className='q-text';
+    txt.textContent='Was bedeutet: '+(w.art?w.art+' ':'')+w.de+' ?';
+    const grid=document.createElement('div'); grid.className='q-opts';
+    let done=false;
+    opts.forEach(o=>{
+      const btn=document.createElement('button'); btn.className='q-opt'; btn.textContent=o.vi;
+      btn.onclick=()=>{
+        if(done) return; done=true;
+        const ok=(o.de===w.de);
+        btn.classList.add(ok?'ok':'no');
+        [...grid.children].forEach(b=>{
+          if(b!==btn){ b.classList.add(b.textContent===w.vi?'reveal':'locked'); }
+        });
+        if(ok) score++;
+        answered++;
+        if(answered===TOTAL) endTest();
+      };
+      grid.appendChild(btn);
+    });
+    card.append(num,txt,grid);
+    wrap.appendChild(card);
+  });
+}
+
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    secondsLeft--;
+    const m=Math.floor(secondsLeft/60);
+    const s=secondsLeft%60;
+    const disp=document.getElementById('timerDisplay');
+    disp.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    disp.classList.toggle('warn',secondsLeft<=60);
+    document.getElementById('timerFill').style.width=(secondsLeft/600*100)+'%';
+    if(secondsLeft<=0){ clearInterval(timerInterval); endTest(); }
+  },1000);
+}
+
+function endTest(){
+  clearInterval(timerInterval);
+  document.getElementById('qWrap').style.display='none';
+  document.getElementById('timerBar').style.display='none';
+  const pct=Math.round(score/TOTAL*100);
+  document.getElementById('resEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';
+  document.getElementById('resScore').textContent=score+'/'+TOTAL+' ('+pct+'%)';
+  document.getElementById('resMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';
+  document.getElementById('resStudent').textContent='👤 '+studentName+' · Lektion 05';
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>
