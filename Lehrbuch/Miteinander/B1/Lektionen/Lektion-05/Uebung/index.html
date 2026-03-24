@@ -3,67 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadowing A3c</title>
+<title>Shadowing PRO</title>
 
 <style>
-body {
-    font-family: Arial;
-    margin: 0;
-    background: #f0f2f5;
-}
-
-.container {
-    max-width: 600px;
-    margin: auto;
-    padding: 10px;
-}
+body { font-family: Arial; background:#f0f2f5; margin:0; }
+.container { max-width:600px; margin:auto; padding:10px; }
 
 .card {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 12px;
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:10px;
 }
 
+.text span.correct { color:green; }
+.text span.wrong { color:red; }
+
 .text {
-    font-size: 20px;
-    line-height: 1.5;
+  font-size:22px;
+  line-height:1.6;
+  font-weight:bold;
 }
 
 button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 6px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
 }
 
-.play { background: #4CAF50; color: white; }
-.record { background: #2196F3; color: white; }
-.stop { background: #f44336; color: white; }
+.play{background:#4CAF50;color:white;}
+.auto{background:#FF9800;color:white;}
+.stop{background:#f44336;color:white;}
 
-.result {
-    text-align: center;
-    font-size: 18px;
-    margin-top: 10px;
-    font-weight: bold;
-}
+.result { text-align:center; margin-top:10px; font-size:18px; }
 
-.nav {
-    display: flex;
-    gap: 5px;
-}
-
-.nav button {
-    flex: 1;
-    background: #ddd;
-}
-
-.active {
-    background: #4CAF50 !important;
-    color: white;
-}
+.nav { display:flex; flex-wrap:wrap; gap:5px; }
+.nav button { flex:1 0 18%; background:#ddd; }
+.active { background:#4CAF50!important;color:white; }
 </style>
 </head>
 
@@ -72,17 +51,17 @@ button {
 <div class="container">
 
 <div class="card">
-    <h2>🎧 Shadowing A3c</h2>
+<h2>🎧 Shadowing A3c</h2>
 
-    <audio id="audio" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
+<audio id="audio" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
 
-    <div class="text" id="sentence"></div>
+<div class="text" id="sentence"></div>
 
-    <button class="play" onclick="playSentence()">▶️ Listen</button>
-    <button class="record" onclick="startRecording()">🎤 Record</button>
-    <button class="stop" onclick="stopRecording()">⏹ Stop</button>
+<button class="play" onclick="playOnce()">▶️ Listen</button>
+<button class="auto" onclick="autoMode()">⚡ Auto Mode</button>
+<button class="stop" onclick="stopAll()">⏹ Stop</button>
 
-    <div class="result" id="result">Match: ---</div>
+<div class="result" id="result">Match: ---</div>
 </div>
 
 <div class="card nav" id="nav"></div>
@@ -91,134 +70,131 @@ button {
 
 <script>
 
-// ===== DATA: chia câu =====
-const sentences = [
-"Wer schreibt mit? Soll ich Notizen machen?",
-"Das wäre toll. Danke, Nazan.",
-"Also wir brauchen auf jeden Fall Fotos.",
-"Fotos, die richtig gut sind.",
-"Ja, das kann ich gern übernehmen.",
-"Vielleicht machen wir ein großes Foto.",
-"Das klingt gut.",
-"Und dann schreiben wir kurze Texte.",
-"Genau. Wer wir sind.",
-"Das klingt super!"
+// ===== DATA =====
+const data = [
+{ text:"Wer schreibt mit Soll ich Notizen machen", start:0, end:3 },
+{ text:"Das wäre toll Danke Nazan", start:3, end:6 },
+{ text:"Also wir brauchen auf jeden Fall Fotos", start:6, end:10 },
+{ text:"Fotos die richtig gut sind", start:10, end:13 },
+{ text:"Ja das kann ich gern übernehmen", start:13, end:17 }
 ];
 
-let current = 0;
-let recognition;
+let current=0, recognition, timer, auto=false;
 
-// ===== load sentence =====
-function loadSentence() {
-    document.getElementById("sentence").innerText = sentences[current];
+// ===== load =====
+function load(){
+  document.getElementById("sentence").innerHTML =
+    data[current].text.split(" ").map(w=>`<span>${w}</span>`).join(" ");
 
-    document.querySelectorAll(".nav button").forEach((btn, i) => {
-        btn.classList.toggle("active", i === current);
-    });
+  document.querySelectorAll(".nav button")
+    .forEach((b,i)=>b.classList.toggle("active",i===current));
 }
 
-// ===== audio =====
-function playSentence() {
-    let audio = document.getElementById("audio");
+// ===== play =====
+function playSegment(cb){
+  let a=document.getElementById("audio");
+  let {start,end}=data[current];
 
-    // NOTE: simple play toàn file (vì không có timestamps)
-    audio.currentTime = 0;
-    audio.play();
+  a.currentTime=start;
+  a.play();
+
+  timer=setInterval(()=>{
+    if(a.currentTime>=end){
+      a.pause();
+      clearInterval(timer);
+      if(cb) cb();
+    }
+  },50);
+}
+
+function playOnce(){ stopAll(); playSegment(); }
+
+// ===== auto mode =====
+function autoMode(){
+  stopAll();
+  auto=true;
+
+  playSegment(()=>{
+    setTimeout(()=>{
+      startRecording(true);
+    },500);
+  });
 }
 
 // ===== speech =====
-function startRecording() {
-    if (!('webkitSpeechRecognition' in window)) {
-        alert("Chrome Android hoặc PC nhé 😄");
-        return;
+function startRecording(isAuto=false){
+  if(!('webkitSpeechRecognition'in window)){
+    alert("Dùng Chrome nhé 😄");return;
+  }
+
+  recognition=new webkitSpeechRecognition();
+  recognition.lang="de-DE";
+
+  recognition.onresult=(e)=>{
+    let user=e.results[0][0].transcript;
+    compare(user);
+
+    if(auto){
+      setTimeout(()=>{
+        next();
+        autoMode();
+      },1500);
     }
+  };
 
-    recognition = new webkitSpeechRecognition();
-    recognition.lang = "de-DE";
-    recognition.continuous = false;
-
-    recognition.onresult = function(event) {
-        let userText = event.results[0][0].transcript;
-        compare(userText);
-    };
-
-    recognition.start();
+  recognition.start();
 }
 
-function stopRecording() {
-    if (recognition) recognition.stop();
-}
+// ===== compare + highlight =====
+function compare(user){
+  let original=data[current].text.split(" ");
+  let spoken=user.split(" ");
 
-// ===== compare =====
-function compare(userText) {
-    let original = sentences[current];
+  let html="";
+  let correct=0;
 
-    let score = similarity(original.toLowerCase(), userText.toLowerCase());
-
-    document.getElementById("result").innerText =
-        "Match: " + Math.round(score * 100) + "%";
-}
-
-// ===== algorithm =====
-function similarity(s1, s2) {
-    let longer = s1.length > s2.length ? s1 : s2;
-    let shorter = s1.length > s2.length ? s2 : s1;
-    let longerLength = longer.length;
-
-    if (longerLength === 0) return 1.0;
-
-    return (longerLength - editDistance(longer, shorter)) / longerLength;
-}
-
-function editDistance(s1, s2) {
-    let costs = [];
-
-    for (let i = 0; i <= s1.length; i++) {
-        let lastValue = i;
-
-        for (let j = 0; j <= s2.length; j++) {
-            if (i == 0)
-                costs[j] = j;
-            else {
-                if (j > 0) {
-                    let newValue = costs[j - 1];
-
-                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
-                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-
-                    costs[j - 1] = lastValue;
-                    lastValue = newValue;
-                }
-            }
-        }
-
-        if (i > 0)
-            costs[s2.length] = lastValue;
+  original.forEach((w,i)=>{
+    if(spoken[i] && spoken[i].toLowerCase()===w.toLowerCase()){
+      html+=`<span class="correct">${w} </span>`;
+      correct++;
+    } else {
+      html+=`<span class="wrong">${w} </span>`;
     }
+  });
 
-    return costs[s2.length];
+  document.getElementById("sentence").innerHTML=html;
+
+  let score=Math.round(correct/original.length*100);
+  document.getElementById("result").innerText="Match: "+score+"%";
 }
 
-// ===== nav buttons =====
-function initNav() {
-    let nav = document.getElementById("nav");
-
-    sentences.forEach((_, i) => {
-        let btn = document.createElement("button");
-        btn.innerText = i + 1;
-
-        btn.onclick = () => {
-            current = i;
-            loadSentence();
-        };
-
-        nav.appendChild(btn);
-    });
+// ===== control =====
+function stopAll(){
+  let a=document.getElementById("audio");
+  a.pause();
+  clearInterval(timer);
+  auto=false;
 }
 
-// init
+function next(){
+  current=(current+1)%data.length;
+  load();
+}
+
+// ===== nav =====
+function initNav(){
+  let nav=document.getElementById("nav");
+
+  data.forEach((_,i)=>{
+    let b=document.createElement("button");
+    b.innerText=i+1;
+    b.onclick=()=>{current=i;load();};
+    nav.appendChild(b);
+  });
+}
+
 initNav();
-loadSentence();
+load();
 
 </script>
 
