@@ -1,201 +1,136 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadowing PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shadowing Manual - L05</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: system-ui, sans-serif; 
+            background: var(--bg); color: var(--text); 
+            margin: 0; display: flex; flex-direction: column; height: 100vh; 
+        }
 
-<style>
-body { font-family: Arial; background:#f0f2f5; margin:0; }
-.container { max-width:600px; margin:auto; padding:10px; }
+        /* Danh sách câu hỏi */
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 150px; }
+        .line { 
+            padding: 15px; margin-bottom: 12px; border-radius: 12px; 
+            background: var(--card); border: 1px solid #334155; opacity: 0.5; transition: 0.3s;
+        }
+        .line.active { opacity: 1; border-color: var(--primary); transform: scale(1.02); background: #1e293b; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+        .speaker { color: var(--primary); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display: block; }
 
-.card {
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:10px;
-}
+        /* Bộ điều khiển Fixed ở dưới */
+        .controls { 
+            position: fixed; bottom: 0; width: 100%; background: #111827; 
+            padding: 20px; border-top: 1px solid #334155; display: flex; flex-direction: column; gap: 10px;
+        }
 
-.text span.correct { color:green; }
-.text span.wrong { color:red; }
+        .main-btn {
+            height: 80px; border-radius: 16px; border: none; color: white;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+            transition: active 0.1s;
+        }
+        .btn-play { background: var(--primary); }
+        .btn-stop { background: var(--secondary); }
+        
+        .sub-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-sub { background: #334155; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; }
 
-.text {
-  font-size:22px;
-  line-height:1.6;
-  font-weight:bold;
-}
-
-button {
-  width:100%;
-  padding:14px;
-  margin-top:6px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-}
-
-.play{background:#4CAF50;color:white;}
-.auto{background:#FF9800;color:white;}
-.stop{background:#f44336;color:white;}
-
-.result { text-align:center; margin-top:10px; font-size:18px; }
-
-.nav { display:flex; flex-wrap:wrap; gap:5px; }
-.nav button { flex:1 0 18%; background:#ddd; }
-.active { background:#4CAF50!important;color:white; }
-</style>
+        audio { display: none; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
+<audio id="audioPlayer" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
 
-<div class="card">
-<h2>🎧 Shadowing A3c</h2>
-
-<audio id="audio" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
-
-<div class="text" id="sentence"></div>
-
-<button class="play" onclick="playOnce()">▶️ Listen</button>
-<button class="auto" onclick="autoMode()">⚡ Auto Mode</button>
-<button class="stop" onclick="stopAll()">⏹ Stop</button>
-
-<div class="result" id="result">Match: ---</div>
+<div class="content" id="transcript">
+    <div class="line active" id="l0"><span class="speaker">Nazan</span>Wer schreibt mit? Soll ich Notizen machen?</div>
+    <div class="line" id="l1"><span class="speaker">Zofia</span>Das wäre toll. Danke, Nazan. Also …</div>
+    <div class="line" id="l2"><span class="speaker">Miro</span>Also wir brauchen auf jeden Fall Fotos.</div>
+    <div class="line" id="l3"><span class="speaker">Heinz</span>Mhm. Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia? Du bist doch Fotografin.</div>
+    <div class="line" id="l4"><span class="speaker">Zofia</span>Ja, das kann ich gern übernehmen. Vielleicht machen wir ein großes Foto...</div>
 </div>
 
-<div class="card nav" id="nav"></div>
-
+<div class="controls">
+    <div id="hint" style="text-align: center; font-size: 0.8rem; color: #94a3b8;">Nhấn Start để nghe câu đầu tiên</div>
+    <button id="masterBtn" class="main-btn btn-play" onclick="handleMasterAction()">BẮT ĐẦU NGHE</button>
+    <div class="sub-controls">
+        <button class="btn-sub" onclick="replayCurrent()">↩ Nghe lại câu này</button>
+        <button class="btn-sub" onclick="resetAll()">🔄 Học lại từ đầu</button>
+    </div>
 </div>
 
 <script>
+    const audio = document.getElementById('audioPlayer');
+    const masterBtn = document.getElementById('masterBtn');
+    const hint = document.getElementById('hint');
+    const lines = document.querySelectorAll('.line');
+    
+    let currentLineIdx = 0;
 
-// ===== DATA =====
-const data = [
-{ text:"Wer schreibt mit Soll ich Notizen machen", start:0, end:3 },
-{ text:"Das wäre toll Danke Nazan", start:3, end:6 },
-{ text:"Also wir brauchen auf jeden Fall Fotos", start:6, end:10 },
-{ text:"Fotos die richtig gut sind", start:10, end:13 },
-{ text:"Ja das kann ich gern übernehmen", start:13, end:17 }
-];
-
-let current=0, recognition, timer, auto=false;
-
-// ===== load =====
-function load(){
-  document.getElementById("sentence").innerHTML =
-    data[current].text.split(" ").map(w=>`<span>${w}</span>`).join(" ");
-
-  document.querySelectorAll(".nav button")
-    .forEach((b,i)=>b.classList.toggle("active",i===current));
-}
-
-// ===== play =====
-function playSegment(cb){
-  let a=document.getElementById("audio");
-  let {start,end}=data[current];
-
-  a.currentTime=start;
-  a.play();
-
-  timer=setInterval(()=>{
-    if(a.currentTime>=end){
-      a.pause();
-      clearInterval(timer);
-      if(cb) cb();
+    function handleMasterAction() {
+        if (audio.paused) {
+            // ĐANG DỪNG -> BẤM ĐỂ CHẠY
+            audio.play();
+            updateUI(true);
+        } else {
+            // ĐANG CHẠY -> BẤM ĐỂ DỪNG & SHADOWING
+            audio.pause();
+            updateUI(false);
+            prepareNextLine();
+        }
     }
-  },50);
-}
 
-function playOnce(){ stopAll(); playSegment(); }
-
-// ===== auto mode =====
-function autoMode(){
-  stopAll();
-  auto=true;
-
-  playSegment(()=>{
-    setTimeout(()=>{
-      startRecording(true);
-    },500);
-  });
-}
-
-// ===== speech =====
-function startRecording(isAuto=false){
-  if(!('webkitSpeechRecognition'in window)){
-    alert("Dùng Chrome nhé 😄");return;
-  }
-
-  recognition=new webkitSpeechRecognition();
-  recognition.lang="de-DE";
-
-  recognition.onresult=(e)=>{
-    let user=e.results[0][0].transcript;
-    compare(user);
-
-    if(auto){
-      setTimeout(()=>{
-        next();
-        autoMode();
-      },1500);
+    function updateUI(isPlaying) {
+        if (isPlaying) {
+            masterBtn.innerText = "DỪNG & SHADOWING";
+            masterBtn.className = "main-btn btn-stop";
+            hint.innerText = "Đang nghe câu " + (currentLineIdx + 1);
+        } else {
+            masterBtn.innerText = "NGHE TIẾP CÂU SAU";
+            masterBtn.className = "main-btn btn-play";
+            hint.innerText = "Hãy lặp lại (Shadowing) câu vừa rồi!";
+        }
     }
-  };
 
-  recognition.start();
-}
+    function prepareNextLine() {
+        // Xóa active cũ
+        lines[currentLineIdx].classList.remove('active');
+        
+        // Tăng index
+        if (currentLineIdx < lines.length - 1) {
+            currentLineIdx++;
+        } else {
+            hint.innerText = "Đã hoàn thành bài tập!";
+            masterBtn.disabled = true;
+            masterBtn.style.opacity = "0.5";
+        }
 
-// ===== compare + highlight =====
-function compare(user){
-  let original=data[current].text.split(" ");
-  let spoken=user.split(" ");
-
-  let html="";
-  let correct=0;
-
-  original.forEach((w,i)=>{
-    if(spoken[i] && spoken[i].toLowerCase()===w.toLowerCase()){
-      html+=`<span class="correct">${w} </span>`;
-      correct++;
-    } else {
-      html+=`<span class="wrong">${w} </span>`;
+        // Active câu mới
+        lines[currentLineIdx].classList.add('active');
+        lines[currentLineIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  });
 
-  document.getElementById("sentence").innerHTML=html;
+    function replayCurrent() {
+        // Không đổi index, chỉ tua lại 1 chút (khoảng 3-5 giây) hoặc từ đầu câu 
+        // Vì làm manual nên ta có thể cho tua lại 3s là hợp lý nhất
+        audio.currentTime = Math.max(0, audio.currentTime - 3);
+        audio.play();
+        updateUI(true);
+    }
 
-  let score=Math.round(correct/original.length*100);
-  document.getElementById("result").innerText="Match: "+score+"%";
-}
-
-// ===== control =====
-function stopAll(){
-  let a=document.getElementById("audio");
-  a.pause();
-  clearInterval(timer);
-  auto=false;
-}
-
-function next(){
-  current=(current+1)%data.length;
-  load();
-}
-
-// ===== nav =====
-function initNav(){
-  let nav=document.getElementById("nav");
-
-  data.forEach((_,i)=>{
-    let b=document.createElement("button");
-    b.innerText=i+1;
-    b.onclick=()=>{current=i;load();};
-    nav.appendChild(b);
-  });
-}
-
-initNav();
-load();
-
+    function resetAll() {
+        location.reload();
+    }
 </script>
 
 </body>
