@@ -1,206 +1,225 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shadowing Lektion 05</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --text: #1e293b;
-            --active-bg: #eff6ff;
-            --accent: #ef4444;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadowing A3c</title>
 
-        * { touch-action: manipulation; box-sizing: border-box; }
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f0f2f5;
+}
 
-        body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 10px;
+}
 
-        /* Tiêu đề gọn gàng */
-        .header {
-            padding: 15px;
-            text-align: center;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
 
-        h1 { font-size: 1.2rem; margin: 0; color: var(--primary); }
+.text {
+    font-size: 20px;
+    line-height: 1.5;
+}
 
-        /* Khu vực hiển thị Transcript - Tối ưu cho Mobile */
-        .transcript-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            padding-bottom: 120px; /* Chừa chỗ cho bộ điều khiển */
-        }
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 6px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
 
-        .line {
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            font-size: 1.1rem;
-            line-height: 1.5;
-            transition: 0.2s;
-        }
+.play { background: #4CAF50; color: white; }
+.record { background: #2196F3; color: white; }
+.stop { background: #f44336; color: white; }
 
-        .line.active {
-            background: var(--active-bg);
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-            transform: scale(1.02);
-        }
+.result {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 10px;
+    font-weight: bold;
+}
 
-        .speaker {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
+.nav {
+    display: flex;
+    gap: 5px;
+}
 
-        /* BỘ ĐIỀU KHIỂN TO (BIG BUTTONS) CHO MOBILE */
-        .fixed-controls {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 15px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            z-index: 1000;
-        }
+.nav button {
+    flex: 1;
+    background: #ddd;
+}
 
-        .btn-big {
-            height: 70px; /* Nút rất to để dễ bấm */
-            border-radius: 15px;
-            border: none;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-
-        .btn-play { background: var(--primary); }
-        .btn-replay { background: #64748b; }
-
-        .status-tag {
-            grid-column: span 2;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--accent);
-            height: 20px;
-            font-weight: bold;
-        }
-
-        audio { display: none; } /* Ẩn trình phát mặc định của trình duyệt */
-
-    </style>
+.active {
+    background: #4CAF50 !important;
+    color: white;
+}
+</style>
 </head>
+
 <body>
 
-<div class="header">
-    <h1>Lektion 05: Aufgabe A3c</h1>
+<div class="container">
+
+<div class="card">
+    <h2>🎧 Shadowing A3c</h2>
+
+    <audio id="audio" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
+
+    <div class="text" id="sentence"></div>
+
+    <button class="play" onclick="playSentence()">▶️ Listen</button>
+    <button class="record" onclick="startRecording()">🎤 Record</button>
+    <button class="stop" onclick="stopRecording()">⏹ Stop</button>
+
+    <div class="result" id="result">Match: ---</div>
 </div>
 
-<audio id="audioPlayer">
-    <source src="https://drive.google.com/uc?export=download&id=1Z85VvG0xFhvsookKzEoorBMZWD7ufaYa" type="audio/mpeg">
-</audio>
+<div class="card nav" id="nav"></div>
 
-<div class="transcript-container" id="transcript">
-    <div class="line" data-start="0" data-end="3.5"><span class="speaker">Nazan</span>Wer schreibt mit? Soll ich Notizen machen?</div>
-    <div class="line" data-start="3.6" data-end="6.0"><span class="speaker">Zofia</span>Das wäre toll. Danke, Nazan. Also …</div>
-    <div class="line" data-start="6.1" data-end="9.0"><span class="speaker">Miro</span>Also wir brauchen auf jeden Fall Fotos.</div>
-    <div class="line" data-start="9.1" data-end="14.5"><span class="speaker">Heinz</span>Mhm. Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia? Du bist doch Fotografin.</div>
-    <div class="line" data-start="14.6" data-end="23.0"><span class="speaker">Zofia</span>Ja, das kann ich gern übernehmen. Vielleicht machen wir ein großes Foto...</div>
-    </div>
-
-<div class="fixed-controls">
-    <div id="statusLabel" class="status-tag"></div>
-    <button class="btn-big btn-replay" onclick="replaySentence()">↩ REPLAY</button>
-    <button id="playBtn" class="btn-big btn-play" onclick="togglePlay()">▶ PLAY</button>
 </div>
 
 <script>
-    const audio = document.getElementById('audioPlayer');
-    const playBtn = document.getElementById('playBtn');
-    const statusLabel = document.getElementById('statusLabel');
-    const lines = document.querySelectorAll('.line');
-    let stopTime = 0;
 
-    function togglePlay() {
-        if (audio.paused) {
-            audio.play();
-            playBtn.innerHTML = "⏸ PAUSE";
-        } else {
-            audio.pause();
-            playBtn.innerHTML = "▶ PLAY";
-        }
+// ===== DATA: chia câu =====
+const sentences = [
+"Wer schreibt mit? Soll ich Notizen machen?",
+"Das wäre toll. Danke, Nazan.",
+"Also wir brauchen auf jeden Fall Fotos.",
+"Fotos, die richtig gut sind.",
+"Ja, das kann ich gern übernehmen.",
+"Vielleicht machen wir ein großes Foto.",
+"Das klingt gut.",
+"Und dann schreiben wir kurze Texte.",
+"Genau. Wer wir sind.",
+"Das klingt super!"
+];
+
+let current = 0;
+let recognition;
+
+// ===== load sentence =====
+function loadSentence() {
+    document.getElementById("sentence").innerText = sentences[current];
+
+    document.querySelectorAll(".nav button").forEach((btn, i) => {
+        btn.classList.toggle("active", i === current);
+    });
+}
+
+// ===== audio =====
+function playSentence() {
+    let audio = document.getElementById("audio");
+
+    // NOTE: simple play toàn file (vì không có timestamps)
+    audio.currentTime = 0;
+    audio.play();
+}
+
+// ===== speech =====
+function startRecording() {
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Chrome Android hoặc PC nhé 😄");
+        return;
     }
 
-    function replaySentence() {
-        const active = document.querySelector('.line.active');
-        if (active) {
-            audio.currentTime = parseFloat(active.getAttribute('data-start'));
-            audio.play();
-            playBtn.innerHTML = "⏸ PAUSE";
-        }
-    }
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "de-DE";
+    recognition.continuous = false;
 
-    audio.ontimeupdate = () => {
-        const now = audio.currentTime;
-        lines.forEach(line => {
-            const start = parseFloat(line.getAttribute('data-start'));
-            const end = parseFloat(line.getAttribute('data-end'));
-
-            if (now >= start && now <= end) {
-                if (!line.classList.contains('active')) {
-                    line.classList.add('active');
-                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    stopTime = end;
-                }
-            } else {
-                line.classList.remove('active');
-            }
-        });
-
-        // Tự động dừng cho Shadowing
-        if (now >= stopTime && !audio.paused && stopTime !== 0) {
-            audio.pause();
-            playBtn.innerHTML = "▶ TIẾP TỤC";
-            statusLabel.innerText = "Sprechen Sie nach! (Lặp lại)";
-        }
+    recognition.onresult = function(event) {
+        let userText = event.results[0][0].transcript;
+        compare(userText);
     };
 
-    audio.onplay = () => { statusLabel.innerText = ""; };
+    recognition.start();
+}
 
-    // Cho phép click vào dòng bất kỳ để nghe
-    lines.forEach(line => {
-        line.addEventListener('click', () => {
-            audio.currentTime = parseFloat(line.getAttribute('data-start'));
-            audio.play();
-            playBtn.innerHTML = "⏸ PAUSE";
-        });
+function stopRecording() {
+    if (recognition) recognition.stop();
+}
+
+// ===== compare =====
+function compare(userText) {
+    let original = sentences[current];
+
+    let score = similarity(original.toLowerCase(), userText.toLowerCase());
+
+    document.getElementById("result").innerText =
+        "Match: " + Math.round(score * 100) + "%";
+}
+
+// ===== algorithm =====
+function similarity(s1, s2) {
+    let longer = s1.length > s2.length ? s1 : s2;
+    let shorter = s1.length > s2.length ? s2 : s1;
+    let longerLength = longer.length;
+
+    if (longerLength === 0) return 1.0;
+
+    return (longerLength - editDistance(longer, shorter)) / longerLength;
+}
+
+function editDistance(s1, s2) {
+    let costs = [];
+
+    for (let i = 0; i <= s1.length; i++) {
+        let lastValue = i;
+
+        for (let j = 0; j <= s2.length; j++) {
+            if (i == 0)
+                costs[j] = j;
+            else {
+                if (j > 0) {
+                    let newValue = costs[j - 1];
+
+                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+
+                    costs[j - 1] = lastValue;
+                    lastValue = newValue;
+                }
+            }
+        }
+
+        if (i > 0)
+            costs[s2.length] = lastValue;
+    }
+
+    return costs[s2.length];
+}
+
+// ===== nav buttons =====
+function initNav() {
+    let nav = document.getElementById("nav");
+
+    sentences.forEach((_, i) => {
+        let btn = document.createElement("button");
+        btn.innerText = i + 1;
+
+        btn.onclick = () => {
+            current = i;
+            loadSentence();
+        };
+
+        nav.appendChild(btn);
     });
+}
+
+// init
+initNav();
+loadSentence();
+
 </script>
 
 </body>
