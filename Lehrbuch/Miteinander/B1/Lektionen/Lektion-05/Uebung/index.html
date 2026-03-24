@@ -3,222 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Schattenlesen – Lektion 05 A3c</title>
+    <title>Shadowing Pro – Lektion 5</title>
     <style>
         :root {
-            --bg: #f8fafc;
+            --bg: #f0f7ff;
             --card: #ffffff;
             --primary: #2563eb;
-            --secondary: #16a34a;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --accent: #ea580c;
+            --secondary: #059669;
+            --error: #dc2626;
+            --text: #1e293b;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); color: var(--text-main); 
-            margin: 0; display: flex; flex-direction: column; height: 100vh; 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); color: var(--text); margin: 0; 
+            display: flex; flex-direction: column; height: 100vh; 
         }
 
-        .header { 
-            padding: 15px; text-align: center; background: white; 
-            border-bottom: 2px solid #e2e8f0;
-        }
+        .header { padding: 15px; text-align: center; background: white; border-bottom: 2px solid #dbeafe; }
         h1 { font-size: 1rem; margin: 0; color: var(--primary); font-weight: 800; }
 
         .content { flex: 1; overflow-y: auto; padding: 20px 15px 220px 15px; }
 
         .line { 
-            padding: 20px; margin-bottom: 15px; border-radius: 16px; 
+            padding: 20px; margin-bottom: 15px; border-radius: 20px; 
             background: var(--card); border: 1px solid #e2e8f0; 
             transition: 0.3s; opacity: 0.4;
         }
+        .line.active { opacity: 1; border: 2px solid var(--primary); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1); }
 
-        .line.active { 
-            opacity: 1; border-color: var(--primary); 
-            box-shadow: 0 10px 15px rgba(37, 99, 235, 0.08);
-            transform: translateY(-2px);
+        .speaker { font-weight: 800; font-size: 0.7rem; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        
+        /* Hiển thị so sánh từ */
+        .word-compare { font-size: 1.15rem; line-height: 1.6; font-weight: 500; }
+        .word-correct { color: var(--secondary); border-bottom: 2px solid var(--secondary); }
+        .word-wrong { color: var(--error); text-decoration: line-through; opacity: 0.7; }
+        .word-pending { color: var(--text); }
+
+        .feedback-box { 
+            margin-top: 15px; padding: 12px; border-radius: 12px; 
+            background: #f8fafc; font-size: 0.9rem; min-height: 40px;
         }
 
-        .speaker { font-weight: 800; font-size: 0.75rem; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .original-text { font-size: 1.1rem; line-height: 1.6; font-weight: 500; }
-
-        .feedback-area { 
-            margin-top: 12px; font-size: 1rem; color: var(--accent); 
-            font-style: italic; min-height: 24px; border-top: 1px solid #f1f5f9; padding-top: 10px;
-        }
-
-        .footer-controls { 
-            position: fixed; bottom: 0; width: 100%; 
-            background: white; border-top: 2px solid #e2e8f0;
-            padding: 20px 20px 35px 20px;
+        .footer { 
+            position: fixed; bottom: 0; width: 100%; background: white; 
+            padding: 20px; border-top: 2px solid #e2e8f0;
             display: flex; flex-direction: column; gap: 10px;
-            box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
         }
 
-        .btn-master {
-            height: 70px; border-radius: 18px; border: none; color: white;
+        .btn-main {
+            height: 75px; border-radius: 20px; border: none; color: white;
             font-size: 1.2rem; font-weight: 800; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 12px;
-            transition: all 0.1s;
         }
+        .btn-listen { background: var(--primary); box-shadow: 0 5px 0 #1d4ed8; }
+        .btn-record { background: #ea580c; box-shadow: 0 5px 0 #c2410c; }
+        .btn-next { background: var(--secondary); box-shadow: 0 5px 0 #047857; }
+        .btn-main:active { transform: translateY(3px); box-shadow: none; }
 
-        .btn-listen { background: var(--primary); box-shadow: 0 4px 0 #1d4ed8; }
-        .btn-speak { background: var(--secondary); box-shadow: 0 4px 0 #15803d; }
-        .btn-master:active { transform: translateY(4px); box-shadow: none; }
-
-        .sub-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-small { background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text-muted); padding: 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
-
-        #statusInfo { text-align: center; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        audio { display: none; }
+        .sub-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-sub { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; color: #64748b; }
     </style>
 </head>
 <body>
 
-<div class="header"><h1>A3c: DAS MULTI-KULTI-TEAM</h1></div>
-
-<audio id="audioSource" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
+<div class="header"><h1>A3c: CHATTEN & SPRECHEN</h1></div>
+<audio id="audio" src="2_04_Miteinander_B11_KB_L5_A3c.mp3"></audio>
 
 <div class="content" id="container"></div>
 
-<div class="footer-controls">
-    <div id="statusInfo">BEREIT FÜR DAS TRAINING</div>
-    <button id="actionBtn" class="btn-master btn-listen" onclick="handleMainAction()">
-        <span id="btnIcon">▶</span> <span id="btnText">HÖREN</span>
-    </button>
-    <div class="sub-btns">
-        <button class="btn-small" onclick="repeatCurrent()">WIEDERHOLEN</button>
-        <button class="btn-small" onclick="location.reload()">NEUSTART</button>
+<div class="footer">
+    <div id="status" style="text-align:center; font-size:0.8rem; font-weight:bold; color:#64748b;">BEREIT</div>
+    <button id="masterBtn" class="btn-main btn-listen" onclick="handleFlow()">▶ HÖREN</button>
+    <div class="sub-group">
+        <button class="btn-sub" onclick="audio.currentTime -= 4; audio.play();">WIEDERHOLEN</button>
+        <button class="btn-sub" onclick="location.reload()">NEUSTART</button>
     </div>
 </div>
 
 <script>
-    const transcriptData = [
-        { s: "Nazan", t: "Wer schreibt mit? Soll ich Notizen machen?" },
-        { s: "Zofia", t: "Das wäre toll. Danke, Nazan. Also …" },
-        { s: "Miro", t: "Also wir brauchen auf jeden Fall Fotos." },
-        { s: "Heinz", t: "Mhm. Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia? Du bist doch Fotografin." },
-        { s: "Zofia", t: "Ja, das kann ich gern übernehmen. Vielleicht machen wir ein großes Foto, das das ganze Team zeigt und dann von jedem Team-Mitglied noch ein kleines Foto. Was meint ihr?" },
-        { s: "Miro", t: "Das klingt gut. Und dann schreiben wir kurze Texte, die zu den Fotos passen …" },
-        { s: "Heinz", t: "Genau. Wer wir sind, was wir hier im Reparaturcafé machen …" },
-        { s: "Nazan", t: "Und wir müssen natürlich zeigen, wie vielfältig wir sind. Zum Beispiel: „Heinz kann nicht nur Deutsch, sondern auch Russisch und Kroatisch. Außerdem ist er unser Experte für Elektrogeräte“… oder so was." },
-        { s: "Heinz", t: "Das klingt super! … Würdest du die Texte schreiben, Nazan? Ich glaube, du kannst das richtig gut." },
-        { s: "Nazan", t: "In Ordnung, aber ich möchte das nicht allein machen. Können wir die Texte vielleicht zu zweit schreiben? … Heinz? Was sagst du dazu?" },
-        { s: "Heinz", t: "Ich weiß nicht. Ich glaube, darin bin ich nicht so gut." },
-        { s: "Miro", t: "Kein Problem. Dann schreiben wir beide die Texte. Wenn das okay für dich ist, Nazan." },
-        { s: "Nazan", t: "Natürlich. Danke, Miro." },
-        { s: "Zofia", t: "So … Dann haben wir Bilder und Texte. Jetzt fehlt nur noch die Überschrift." },
-        { s: "Miro", t: "Ja, zum Beispiel: „Das Multi-Kulti-Team aus dem Reparaturcafé“" },
-        { s: "Nazan", t: "Genau. In großen Buchstaben und ganz bunt. Wer möchte die Überschrift gestalten?" },
-        { s: "Heinz", t: "Das kann ich machen." },
-        { s: "Nazan", t: "Super! Danke, Heinz." },
-        { s: "Heinz", t: "Vielleicht hilft mir Ilias dabei." },
-        { s: "Zofia", t: "Ilias?" },
-        { s: "Heinz", t: "Das ist ein Kollege, der auch als Künstler arbeitet. Er kommt in einer halben Stunde." },
-        { s: "Zofia", t: "Okay, Ilias kommt gleich, aber dann ist das Team noch nicht komplett, richtig? Ihr seid sieben …" },
-        { s: "Miro", t: "Genau. Drei arbeiten heute nicht. … Ähm, das ist jetzt blöd, oder? Für das Gruppenfoto müssen ja auch alle da sein." },
-        { s: "Zofia", t: "Kein Problem. Wir können die Fotos an einem anderen Tag machen. Sag mir einfach Bescheid, wann es euch passt." },
-        { s: "Miro", t: "Das mache ich. Ich spreche nochmal mit den anderen und melde mich dann, ja?" },
-        { s: "Zofia", t: "Alles klar, so machen wir es." }
-    ];
+const data = [
+    { s: "Nazan", t: "Wer schreibt mit? Soll ich Notizen machen?" },
+    { s: "Zofia", t: "Das wäre toll. Danke, Nazan. Also …" },
+    { s: "Miro", t: "Also wir brauchen auf jeden Fall Fotos." },
+    { s: "Heinz", t: "Mhm. Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia? Du bist doch Fotografin." }
+    // Thêm các câu khác tại đây...
+];
 
-    const container = document.getElementById('container');
-    const audio = document.getElementById('audioSource');
-    const actionBtn = document.getElementById('actionBtn');
-    const btnText = document.getElementById('btnText');
-    const btnIcon = document.getElementById('btnIcon');
-    const statusInfo = document.getElementById('statusInfo');
+let idx = 0;
+let state = 'idle'; // idle, listening, recording, evaluated
+let fullTranscript = "";
 
-    let currentIdx = 0;
-    let isRecording = false;
+const container = document.getElementById('container');
+const masterBtn = document.getElementById('masterBtn');
+const audio = document.getElementById('audio');
 
-    transcriptData.forEach((item, index) => {
-        container.innerHTML += `
-            <div class="line ${index === 0 ? 'active' : ''}" id="line-${index}">
-                <span class="speaker">${item.s}</span>
-                <div class="original-text">${item.t}</div>
-                <div class="feedback-area" id="fb-${index}"></div>
-            </div>`;
-    });
+// Khởi tạo Speech
+const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognizer = Rec ? new Rec() : null;
+if(recognizer) {
+    recognizer.lang = 'de-DE';
+    recognizer.continuous = true;
+    recognizer.interimResults = true;
+}
 
-    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const rec = Recognition ? new Recognition() : null;
-    
-    if (rec) {
-        rec.lang = 'de-DE';
-        rec.continuous = true; 
-        rec.interimResults = true;
-        rec.onresult = (e) => {
-            let text = "";
-            for (let i = e.resultIndex; i < e.results.length; i++) {
-                text += e.results[i][0].transcript;
-            }
-            document.getElementById(`fb-${currentIdx}`).innerText = "Du sagst: " + text;
-        };
-    }
+function render() {
+    container.innerHTML = data.map((d, i) => `
+        <div class="line ${i === idx ? 'active' : ''}" id="l${i}">
+            <span class="speaker">${d.s}</span>
+            <div class="word-compare" id="w${i}">${d.t}</div>
+            <div class="feedback-box" id="f${i}">Hören Sie zuerst zu...</div>
+        </div>
+    `).join('');
+}
+render();
 
-    function handleMainAction() {
-        if (audio.paused && !isRecording) {
-            audio.play();
-            updateUI('playing');
-        } else if (!audio.paused) {
-            audio.pause();
-            startSpeaking();
-        } else {
-            stopSpeaking();
-            nextSentence();
-        }
-    }
-
-    function startSpeaking() {
-        if (!rec) return alert("Browser unterstützt kein Mikrofon.");
-        isRecording = true;
-        updateUI('speaking');
-        rec.start();
-    }
-
-    function stopSpeaking() { if (rec) rec.stop(); isRecording = false; }
-
-    function updateUI(state) {
-        if (state === 'playing') {
-            actionBtn.className = "btn-master btn-speak";
-            btnIcon.innerText = "🛑"; btnText.innerText = "STOPP & SPRECHEN";
-            statusInfo.innerText = "HÖREN...";
-        } else if (state === 'speaking') {
-            actionBtn.className = "btn-master btn-listen";
-            btnIcon.innerText = "✔"; btnText.innerText = "NÄCHSTER SATZ";
-            statusInfo.innerText = "SPRECHEN (Mikrofon aktiv)";
-        } else {
-            actionBtn.className = "btn-master btn-listen";
-            btnIcon.innerText = "▶"; btnText.innerText = "HÖREN";
-            statusInfo.innerText = "BEREIT.";
-        }
-    }
-
-    function nextSentence() {
-        document.getElementById(`line-${currentIdx}`).classList.remove('active');
-        if (currentIdx < transcriptData.length - 1) {
-            currentIdx++;
-            const next = document.getElementById(`line-${currentIdx}`);
-            next.classList.add('active');
-            next.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            updateUI('ready');
-        } else {
-            statusInfo.innerText = "GESCHAFFT!";
-            actionBtn.disabled = true;
-        }
-    }
-
-    function repeatCurrent() {
-        stopSpeaking();
-        audio.currentTime = Math.max(0, audio.currentTime - 4);
+function handleFlow() {
+    if (state === 'idle' || state === 'evaluated') {
         audio.play();
-        updateUI('playing');
+        state = 'listening';
+        updateUI();
+    } else if (state === 'listening') {
+        audio.pause();
+        startRecording();
+    } else if (state === 'recording') {
+        stopRecording();
+        evaluate();
+    } else if (state === 'evaluated') {
+        next();
     }
+}
+
+function startRecording() {
+    fullTranscript = "";
+    state = 'recording';
+    updateUI();
+    recognizer.start();
+    recognizer.onresult = (e) => {
+        let interim = "";
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            if (e.results[i].isFinal) fullTranscript += e.results[i][0].transcript + " ";
+            else interim += e.results[i][0].transcript;
+        }
+        document.getElementById(`f${idx}`).innerText = "Du sagst: " + fullTranscript + interim;
+    };
+}
+
+function stopRecording() {
+    recognizer.stop();
+    state = 'evaluated';
+    updateUI();
+}
+
+function evaluate() {
+    const original = data[idx].t.toLowerCase().replace(/[.,!?]/g, "").split(" ");
+    const spoken = fullTranscript.toLowerCase().split(" ");
+    
+    const html = original.map(word => {
+        const isMatch = spoken.some(s => s.includes(word) || word.includes(s));
+        return `<span class="${isMatch ? 'word-correct' : 'word-wrong'}">${word}</span>`;
+    }).join(" ");
+    
+    document.getElementById(`w${idx}`).innerHTML = html;
+    const score = Math.round((original.filter(w => spoken.some(s => s.includes(w))).length / original.length) * 100);
+    document.getElementById(`f${idx}`).innerHTML = `<b>Ergebnis: ${score}% Match</b>. Từ đỏ là bạn đọc chưa rõ.`;
+}
+
+function updateUI() {
+    const btn = masterBtn;
+    const st = document.getElementById('status');
+    if (state === 'listening') {
+        btn.innerHTML = "🛑 STOPP & SPRECHEN";
+        btn.className = "btn-main btn-record";
+        st.innerText = "HÖREN...";
+    } else if (state === 'recording') {
+        btn.innerHTML = "✔ FERTIG & PRÜFEN";
+        btn.className = "btn-main btn-next";
+        st.innerText = "BITTE SPRECHEN...";
+    } else if (state === 'evaluated') {
+        btn.innerHTML = "▶ NÄCHSTER SATZ";
+        btn.className = "btn-main btn-listen";
+        st.innerText = "AUSGEWERTET";
+    }
+}
+
+function next() {
+    if (idx < data.length - 1) {
+        idx++;
+        render();
+        document.getElementById(`l${idx}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        state = 'idle';
+        updateUI();
+    } else {
+        alert("Glückwunsch! Bạn đã hoàn thành bài tập.");
+    }
+}
 </script>
 </body>
 </html>
