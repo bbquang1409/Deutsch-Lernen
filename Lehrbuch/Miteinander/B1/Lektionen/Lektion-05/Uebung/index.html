@@ -2,90 +2,170 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shadowing Trainer - Lektion 05 (A3c)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shadowing Lektion 05</title>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --active-bg: #eff6ff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 750px; }
-        h1 { color: var(--primary); text-align: center; font-size: 1.4rem; margin-bottom: 5px; }
-        .path-hint { text-align: center; color: #94a3b8; font-size: 0.75rem; margin-bottom: 20px; font-family: monospace; }
-        
-        .audio-section { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .audio-player { width: 100%; }
-        
-        .transcript-container { max-height: 500px; overflow-y: auto; padding-right: 15px; }
-        .line { padding: 12px 15px; margin: 8px 0; border-radius: 10px; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; position: relative; line-height: 1.5; }
-        .line:hover { background: #f1f5f9; border-color: #cbd5e1; }
-        .line.active { background: var(--active-bg); border-color: #3b82f6; color: #1e40af; font-weight: 600; }
-        
-        .speaker { font-size: 0.7rem; text-transform: uppercase; color: #3b82f6; font-weight: 800; display: block; margin-bottom: 2px; }
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding-top: 15px; border-top: 2px solid #f1f5f9; }
-        
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .btn:hover { background: #1d4ed8; }
-        #status { font-weight: bold; color: #ef4444; font-size: 0.9rem; }
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --active-bg: #eff6ff;
+            --accent: #ef4444;
+        }
 
-        /* Scrollbar */
-        .transcript-container::-webkit-scrollbar { width: 5px; }
-        .transcript-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        * { touch-action: manipulation; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Tiêu đề gọn gàng */
+        .header {
+            padding: 15px;
+            text-align: center;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        h1 { font-size: 1.2rem; margin: 0; color: var(--primary); }
+
+        /* Khu vực hiển thị Transcript - Tối ưu cho Mobile */
+        .transcript-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 120px; /* Chừa chỗ cho bộ điều khiển */
+        }
+
+        .line {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            transition: 0.2s;
+        }
+
+        .line.active {
+            background: var(--active-bg);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: scale(1.02);
+        }
+
+        .speaker {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        /* BỘ ĐIỀU KHIỂN TO (BIG BUTTONS) CHO MOBILE */
+        .fixed-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .btn-big {
+            height: 70px; /* Nút rất to để dễ bấm */
+            border-radius: 15px;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .btn-play { background: var(--primary); }
+        .btn-replay { background: #64748b; }
+
+        .status-tag {
+            grid-column: span 2;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--accent);
+            height: 20px;
+            font-weight: bold;
+        }
+
+        audio { display: none; } /* Ẩn trình phát mặc định của trình duyệt */
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🎧 Shadowing: Das Multi-Kulti-Team</h1>
-    <div class="path-hint">GitHub\...\Lektion-05\Uebung\shadowing.html</div>
+<div class="header">
+    <h1>Lektion 05: Aufgabe A3c</h1>
+</div>
 
-    <div class="audio-section">
-        <audio id="audioPlayer" controls class="audio-player">
-            <source src="https://drive.google.com/uc?export=download&id=1Z85VvG0xFhvsookKzEoorBMZWD7ufaYa" type="audio/mpeg">
-        </audio>
+<audio id="audioPlayer">
+    <source src="https://drive.google.com/uc?export=download&id=1Z85VvG0xFhvsookKzEoorBMZWD7ufaYa" type="audio/mpeg">
+</audio>
+
+<div class="transcript-container" id="transcript">
+    <div class="line" data-start="0" data-end="3.5"><span class="speaker">Nazan</span>Wer schreibt mit? Soll ich Notizen machen?</div>
+    <div class="line" data-start="3.6" data-end="6.0"><span class="speaker">Zofia</span>Das wäre toll. Danke, Nazan. Also …</div>
+    <div class="line" data-start="6.1" data-end="9.0"><span class="speaker">Miro</span>Also wir brauchen auf jeden Fall Fotos.</div>
+    <div class="line" data-start="9.1" data-end="14.5"><span class="speaker">Heinz</span>Mhm. Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia? Du bist doch Fotografin.</div>
+    <div class="line" data-start="14.6" data-end="23.0"><span class="speaker">Zofia</span>Ja, das kann ich gern übernehmen. Vielleicht machen wir ein großes Foto...</div>
     </div>
 
-    <div class="transcript-container" id="transcript">
-        <div class="line" data-start="0" data-end="3.5"><span class="speaker">Nazan</span>Wer schreibt mit? Soll ich Notizen machen?</div>
-        <div class="line" data-start="3.6" data-end="6.0"><span class="speaker">Zofia</span>Das wäre toll. Danke, Nazan. Also …</div>
-        <div class="line" data-start="6.1" data-end="9.0"><span class="speaker">Miro</span>Also wir brauchen auf jeden Fall Fotos.</div>
-        <div class="line" data-start="9.1" data-end="14.5"><span class="speaker">Heinz</span>Mhm. Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia? Du bist doch Fotografin.</div>
-        <div class="line" data-start="14.6" data-end="23.0"><span class="speaker">Zofia</span>Ja, das kann ich gern übernehmen. Vielleicht machen wir ein großes Foto, das das ganze Team zeigt và dann von jedem Team-Mitglied noch ein kleines Foto. Was meint ihr?</div>
-        <div class="line" data-start="23.1" data-end="27.5"><span class="speaker">Miro</span>Das klingt gut. Und dann schreiben wir kurze Texte, die zu den Fotos passen …</div>
-        <div class="line" data-start="27.6" data-end="32.0"><span class="speaker">Heinz</span>Genau. Wer wir sind, was wir hier im Reparaturcafé machen …</div>
-        <div class="line" data-start="32.1" data-end="45.0"><span class="speaker">Nazan</span>Und wir müssen natürlich zeigen, wie vielfältig wir sind. Zum Beispiel: „Heinz kann nicht nur Deutsch, sondern auch Russisch und Kroatisch. Außerdem ist er unser Experte für Elektrogeräte“… oder so was.</div>
-        <div class="line" data-start="45.1" data-end="47.5"><span class="speaker">Heinz</span>Das klingt super! … Würdest du die Texte schreiben, Nazan? Ich glaube, du kannst das richtig gut.</div>
-        <div class="line" data-start="47.6" data-end="55.0"><span class="speaker">Nazan</span>In Ordnung, aber ich möchte das nicht allein machen. Können wir die Texte vielleicht zu zweit schreiben? … Heinz? Was sagst du dazu?</div>
-        <div class="line" data-start="55.1" data-end="58.5"><span class="speaker">Heinz</span>Ich weiß nicht. Ich glaube, darin bin ich nicht so gut.</div>
-        <div class="line" data-start="58.6" data-end="63.0"><span class="speaker">Miro</span>Kein Problem. Dann schreiben wir beide die Texte. Wenn das okay für dich ist, Nazan.</div>
-        <div class="line" data-start="63.1" data-end="68.0"><span class="speaker">Nazan</span>Natürlich. Danke, Miro.</div>
-        <div class="line" data-start="68.1" data-end="71.0"><span class="speaker">Zofia</span>So … Dann haben wir Bilder und Texte. Jetzt fehlt nur noch die Überschrift.</div>
-        <div class="line" data-start="71.1" data-end="75.0"><span class="speaker">Miro</span>Ja, zum Beispiel: „Das Multi-Kulti-Team aus dem Reparaturcafé“</div>
-        <div class="line" data-start="75.1" data-end="78.0"><span class="speaker">Nazan</span>Genau. In großen Buchstaben und ganz bunt. Wer möchte die Überschrift gestalten?</div>
-        <div class="line" data-start="78.1" data-end="80.0"><span class="speaker">Heinz</span>Das kann ich machen.</div>
-        <div class="line" data-start="80.1" data-end="82.0"><span class="speaker">Nazan</span>Super! Danke, Heinz.</div>
-        <div class="line" data-start="82.1" data-end="84.5"><span class="speaker">Heinz</span>Vielleicht hilft mir Ilias dabei.</div>
-        <div class="line" data-start="84.6" data-end="86.0"><span class="speaker">Zofia</span>Ilias?</div>
-        <div class="line" data-start="86.1" data-end="91.0"><span class="speaker">Heinz</span>Das ist ein Kollege, der auch als Künstler arbeitet. Er kommt in einer halben Stunde.</div>
-        <div class="line" data-start="91.1" data-end="96.0"><span class="speaker">Zofia</span>Okay, Ilias kommt gleich, aber dann ist das Team noch không đầy đủ, richtig? Ihr seid sieben …</div>
-        <div class="line" data-start="96.1" data-end="103.0"><span class="speaker">Miro</span>Genau. Drei arbeiten heute nicht. … Ähm, das ist jetzt blöd, oder? Für das Gruppenfoto müssen ja auch alle da sein.</div>
-        <div class="line" data-start="103.1" data-end="110.0"><span class="speaker">Zofia</span>Kein Problem. Wir können die Fotos an einem anderen Tag machen. Sag mir einfach Bescheid, wann es euch passt.</div>
-        <div class="line" data-start="110.1" data-end="115.0"><span class="speaker">Miro</span>Das mache ich. Ich spreche nochmal mit den anderen und melde mich dann, ja?</div>
-        <div class="line" data-start="115.1" data-end="118.0"><span class="speaker">Zofia</span>Alles klar, so machen wir es.</div>
-    </div>
-
-    <div class="controls">
-        <button class="btn" onclick="replaySentence()"><span>↩</span> Nghe lại câu này</button>
-        <span id="status"></span>
-        <div style="color: #94a3b8; font-size: 0.8rem;">Space: Play/Pause</div>
-    </div>
+<div class="fixed-controls">
+    <div id="statusLabel" class="status-tag"></div>
+    <button class="btn-big btn-replay" onclick="replaySentence()">↩ REPLAY</button>
+    <button id="playBtn" class="btn-big btn-play" onclick="togglePlay()">▶ PLAY</button>
 </div>
 
 <script>
     const audio = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const statusLabel = document.getElementById('statusLabel');
     const lines = document.querySelectorAll('.line');
-    const status = document.getElementById('status');
     let stopTime = 0;
 
-    // Logic xử lý Shadowing: Tự động dừng và Highlight
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play();
+            playBtn.innerHTML = "⏸ PAUSE";
+        } else {
+            audio.pause();
+            playBtn.innerHTML = "▶ PLAY";
+        }
+    }
+
+    function replaySentence() {
+        const active = document.querySelector('.line.active');
+        if (active) {
+            audio.currentTime = parseFloat(active.getAttribute('data-start'));
+            audio.play();
+            playBtn.innerHTML = "⏸ PAUSE";
+        }
+    }
+
     audio.ontimeupdate = () => {
         const now = audio.currentTime;
         lines.forEach(line => {
@@ -103,36 +183,23 @@
             }
         });
 
+        // Tự động dừng cho Shadowing
         if (now >= stopTime && !audio.paused && stopTime !== 0) {
             audio.pause();
-            status.innerText = "⏸ Shadowing... Lặp lại câu vừa nghe!";
+            playBtn.innerHTML = "▶ TIẾP TỤC";
+            statusLabel.innerText = "Sprechen Sie nach! (Lặp lại)";
         }
     };
 
-    audio.onplay = () => { status.innerText = ""; };
+    audio.onplay = () => { statusLabel.innerText = ""; };
 
-    function replaySentence() {
-        const active = document.querySelector('.line.active');
-        if (active) {
-            audio.currentTime = parseFloat(active.getAttribute('data-start'));
-            audio.play();
-        }
-    }
-
-    // Click vào dòng nào nghe câu đó
+    // Cho phép click vào dòng bất kỳ để nghe
     lines.forEach(line => {
         line.addEventListener('click', () => {
             audio.currentTime = parseFloat(line.getAttribute('data-start'));
             audio.play();
+            playBtn.innerHTML = "⏸ PAUSE";
         });
-    });
-
-    // Phím tắt Space để điều khiển nhanh
-    window.addEventListener('keydown', (e) => {
-        if (e.code === "Space") {
-            e.preventDefault();
-            audio.paused ? audio.play() : audio.pause();
-        }
     });
 </script>
 
