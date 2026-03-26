@@ -273,6 +273,7 @@ let recResult = '';
 let scores    = new Array(S.length).fill(null);
 let stopTmr   = null;
 let recObj    = null;
+let afterEvalState = null;  // 'next' | 'done' | null
 
 /* ── INIT ── */
 (function init(){
@@ -308,7 +309,7 @@ function buildTranscript(){
 
 /* ── LOAD ── */
 function loadSentence(idx){
-  cur=idx; loopN=0; isLoop=false;
+  cur=idx; loopN=0; isLoop=false; afterEvalState=null;
   const s=S[idx];
 
   // card
@@ -357,6 +358,9 @@ function clean(s){
 
 /* ── PLAY ── */
 function handleMain(){
+  // after evaluation: next sentence
+  if(afterEvalState==='next'){ afterEvalState=null; go(1); return; }
+  if(afterEvalState==='done'){ afterEvalState=null; return; }
   if(isRec){ stopRec(); return; }
   if(isLoop){ stopEverything(); return; }
   if(isPlaying){ stopEverything(); return; }
@@ -493,16 +497,23 @@ function startRec(){
   recObj.start();
 }
 
-function stopRec(){
+function stopRec(skipEval){
   isRec=false;
-  if(recObj){ try{ recObj.stop(); }catch(e){} }
+  if(recObj){
+    // detach all handlers first so onend/onresult don't fire after stop
+    recObj.onresult=null;
+    recObj.onerror=null;
+    recObj.onend=null;
+    try{ recObj.stop(); }catch(e){}
+    recObj=null;
+  }
   cardState('idle');
+  if(skipEval){ recResult=''; return; }  // called from navigate → skip eval
   setStatus('WIRD AUSGEWERTET …','ready');
-
   setTimeout(()=>{
     if(recResult.trim()) evaluate(recResult.trim());
     else{ setStatus('NICHTS ERKANNT – nochmal?','ready'); resetMainBtn(); }
-  }, 400);
+  }, 300);
 }
 
 /* ── EVALUATE — fuzzy, tolerant ── */
@@ -538,10 +549,10 @@ function evaluate(spoken){
   applyScoreClass(cur);
   setStatus(`ERGEBNIS: ${pct}%`, pct>=70?'ready':'playing');
 
-  // main btn → next
+  // main btn → next sentence (use flag, not onclick override)
+  afterEvalState = cur < S.length-1 ? 'next' : 'done';
   if(cur<S.length-1){
     setMainBtn('→','NÄCHSTER SATZ','mb-next');
-    document.getElementById('mainBtn').onclick=()=>{ go(1); document.getElementById('mainBtn').onclick=handleMain; };
   } else {
     setMainBtn('✓','FERTIG!','mb-next');
   }
@@ -623,7 +634,7 @@ function stopEverything(){
   document.getElementById('btnLoop').style.color='';
   cardState('idle');
   resetLoopDots();
-  if(isRec){ isRec=false; try{ recObj&&recObj.stop(); }catch(e){} }
+  if(isRec) stopRec(true);  // true = skip eval, we are navigating away
   resetMainBtn();
   setStatus('BEREIT','ready');
 }
