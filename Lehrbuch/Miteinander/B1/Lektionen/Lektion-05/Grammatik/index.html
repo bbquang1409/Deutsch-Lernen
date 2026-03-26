@@ -16,15 +16,17 @@ button {
   padding: 10px 20px;
   margin: 10px;
   font-size: 16px;
+  cursor: pointer;
 }
 
 #text {
   font-size: 22px;
   margin: 20px;
+  font-weight: bold;
 }
 
 #result {
-  font-size: 20px;
+  font-size: 18px;
   margin-top: 20px;
   color: green;
 }
@@ -38,40 +40,48 @@ button {
 
 <div id="text">Nhấn Play để bắt đầu</div>
 
-<button onclick="play()">▶️ Play</button> <button onclick="stop()">⏹ Stop</button>
+<button onclick="startApp()">▶️ Play</button> <button onclick="stopApp()">⏹ Stop</button>
 
 <div id="result"></div>
 
 <script>
 const audio = new Audio("2_04_Miteinander_B11_KB_L5_A3c.mp3");
 
-let sentences = [
+const sentences = [
   {s:0.5, e:3.2, t:"Guten Morgen, wie geht es dir?"},
   {s:3.5, e:6.5, t:"Ich habe heute viel zu tun."}
 ];
 
 let index = 0;
-let playing = false;
 let token = 0;
+let running = false;
 
 let recognition;
 let resultText = "";
 
-function play(){
+function startApp(){
+  running = true;
   index = 0;
   next();
 }
 
-function stop(){
-  playing = false;
-  audio.pause();
+function stopApp(){
+  running = false;
   token++;
+  audio.pause();
+  audio.currentTime = 0;
+  document.getElementById("text").innerText = "Đã dừng";
 }
 
 function next(){
-  if(index >= sentences.length) return;
+  if(!running) return;
 
-  let s = sentences[index];
+  if(index >= sentences.length){
+    document.getElementById("text").innerText = "Hoàn thành!";
+    return;
+  }
+
+  const s = sentences[index];
   document.getElementById("text").innerText = s.t;
 
   playSentence(s);
@@ -85,19 +95,21 @@ function playSentence(s){
 
   audio.play().catch(()=>{});
 
-  audio.ontimeupdate = ()=>{
+  audio.ontimeupdate = function(){
     if(myToken !== token) return;
 
     if(audio.currentTime >= s.e){
       audio.pause();
       audio.ontimeupdate = null;
 
-      startRecording();
+      setTimeout(startRecording, 300);
     }
   };
 }
 
 function startRecording(){
+  if(!running) return;
+
   if(!('webkitSpeechRecognition' in window)){
     document.getElementById("result").innerText = "Trình duyệt không hỗ trợ mic";
     return;
@@ -105,15 +117,20 @@ function startRecording(){
 
   recognition = new webkitSpeechRecognition();
   recognition.lang = "de-DE";
-  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
   resultText = "";
 
-  recognition.onresult = (e)=>{
+  recognition.onresult = function(e){
     resultText = e.results[0][0].transcript;
   };
 
-  recognition.onend = ()=>{
+  recognition.onerror = function(){
+    document.getElementById("result").innerText = "Lỗi nhận diện giọng nói";
+  };
+
+  recognition.onend = function(){
     evaluate(resultText);
   };
 
@@ -121,10 +138,12 @@ function startRecording(){
 }
 
 function evaluate(user){
-  let origin = sentences[index].t.toLowerCase();
+  if(!running) return;
 
-  let oWords = origin.split(" ");
-  let uWords = user.toLowerCase().split(" ");
+  const origin = sentences[index].t.toLowerCase();
+
+  const oWords = origin.split(" ");
+  const uWords = user.toLowerCase().split(" ");
 
   let correct = 0;
 
@@ -132,13 +151,14 @@ function evaluate(user){
     if(uWords.includes(w)) correct++;
   });
 
-  let score = Math.round(correct / oWords.length * 100);
+  const score = Math.round(correct / oWords.length * 100);
 
   document.getElementById("result").innerText =
     "Bạn nói: " + user + " | Điểm: " + score + "%";
 
   index++;
-  setTimeout(next, 1000);
+
+  setTimeout(next, 1200);
 }
 </script>
 
