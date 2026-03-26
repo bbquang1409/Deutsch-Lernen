@@ -1,716 +1,146 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Shadowing – L5 A3c</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<title>ShadowEcho</title>
+
 <style>
-:root {
-  --bg:#0d1b2a; --surf:#112240; --surf2:#1a2f4a; --border:#1e3a5f;
-  --blue:#3b82f6; --blu2:#1d4ed8;
-  --green:#22c55e; --grn2:#15803d;
-  --rose:#f43f5e;  --rslt:#9f1239;
-  --amber:#f59e0b;
-  --text:#e2e8f0;  --muted:#64748b; --dim:#334155;
-  --nazan:#f59e0b; --zofia:#3b82f6; --miro:#22c55e; --heinz:#a78bfa;
+body {
+  font-family: Arial;
+  text-align: center;
+  margin: 40px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
-  display:flex;flex-direction:column;height:100vh;height:100dvh;}
 
-/* ── HEADER ── */
-.hdr{flex-shrink:0;background:var(--surf);border-bottom:1px solid var(--border);
-  padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
-.hdr-left .tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);}
-.hdr-left h1{font-family:'DM Serif Display',serif;font-size:16px;line-height:1.2;}
-.progress-ring{width:38px;height:38px;flex-shrink:0;}
-.progress-ring circle{fill:none;stroke-width:3;stroke-linecap:round;}
-.ring-bg{stroke:var(--border);}
-.ring-fill{stroke:var(--blue);stroke-dasharray:100;stroke-dashoffset:100;
-  transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .4s;}
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+}
 
-/* ── SENTENCE NAV STRIP ── */
-.snav{flex-shrink:0;display:flex;gap:5px;padding:8px 14px 6px;
-  overflow-x:auto;scrollbar-width:none;background:var(--surf);}
-.snav::-webkit-scrollbar{display:none;}
-.sn{flex-shrink:0;width:28px;height:28px;border-radius:7px;
-  border:1.5px solid var(--border);background:var(--surf2);
-  color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Outfit',sans-serif;transition:all .15s;}
-.sn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-.sn.great{border-color:var(--green);color:var(--green);background:#052e16;}
-.sn.ok{border-color:var(--amber);color:var(--amber);background:#2d1a00;}
-.sn.low{border-color:var(--rose);color:var(--rose);background:#2d0010;}
+#text {
+  font-size: 22px;
+  margin: 20px;
+}
 
-/* ── MAIN SCROLL ── */
-.main{flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:10px;}
-
-/* ── SENTENCE CARD ── */
-.s-card{border-radius:16px;border:1.5px solid var(--border);background:var(--surf);
-  overflow:hidden;transition:border-color .2s;}
-.s-card.playing{border-color:var(--blue);}
-.s-card.recording{border-color:var(--rose);}
-.s-top{padding:14px 14px 10px;border-bottom:1px solid var(--border);}
-.s-speaker{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
-.s-text{font-family:'DM Serif Display',serif;font-size:21px;line-height:1.5;}
-.s-text .w{transition:all .2s;display:inline;}
-.s-text .w.ok{color:var(--green);font-weight:700;}
-.s-text .w.no{color:var(--rose);text-decoration:line-through;opacity:.7;}
-.s-bottom{padding:10px 14px;display:flex;align-items:center;gap:10px;min-height:44px;}
-.s-wave{display:flex;align-items:center;gap:2px;height:22px;}
-.s-wave span{display:block;width:3px;border-radius:99px;background:var(--blue);height:4px;transition:height .1s;}
-.s-wave.playing span{animation:wav .5s ease-in-out infinite;}
-.s-wave span:nth-child(2){animation-delay:.08s;}
-.s-wave span:nth-child(3){animation-delay:.16s;}
-.s-wave span:nth-child(4){animation-delay:.24s;}
-.s-wave span:nth-child(5){animation-delay:.16s;}
-.s-wave span:nth-child(6){animation-delay:.08s;}
-@keyframes wav{0%,100%{height:4px}50%{height:18px}}
-.s-wave.rec-wave span{background:var(--rose);animation:wav .35s ease-in-out infinite!important;}
-
-/* loop dots */
-.l-dots{display:flex;gap:4px;margin-left:auto;}
-.ld{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .2s;}
-.ld.lit{background:var(--amber);}
-.ld.cur{background:var(--blue);box-shadow:0 0 5px var(--blue);}
-
-/* ── SCORE CHIP ── */
-.score-chip{display:none;align-items:center;gap:10px;
-  background:var(--surf2);border-radius:12px;padding:10px 14px;border:1px solid var(--border);}
-.score-chip.show{display:flex;}
-.sc-ring{width:46px;height:46px;flex-shrink:0;position:relative;}
-.sc-ring svg{width:46px;height:46px;}
-.sc-ring circle{fill:none;stroke-width:3.5;}
-.sc-ring .rg-bg{stroke:var(--border);}
-.sc-ring .rg-fill{stroke-dasharray:100;stroke-dashoffset:100;stroke-linecap:round;
-  transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .5s .1s;}
-.sc-ring .rg-pct{position:absolute;inset:0;display:flex;align-items:center;
-  justify-content:center;font-size:11px;font-weight:800;}
-.sc-info{flex:1;}
-.sc-title{font-size:13px;font-weight:700;margin-bottom:2px;}
-.sc-said{font-size:11px;color:var(--muted);line-height:1.5;font-style:italic;}
-
-/* ── TRANSCRIPT ── */
-.tr-card{border-radius:14px;border:1px solid var(--border);background:var(--surf);overflow:hidden;}
-.tr-head{padding:10px 14px;font-size:9px;font-weight:700;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
-.tr-line{display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);
-  cursor:pointer;transition:background .15s;}
-.tr-line:last-child{border-bottom:none;}
-.tr-line:hover{background:var(--surf2);}
-.tr-line.active{background:rgba(59,130,246,.08);}
-.tr-n{font-size:10px;font-weight:700;color:var(--dim);min-width:16px;padding-top:2px;}
-.tr-n.active{color:var(--blue);}
-.tr-sp{font-weight:700;font-size:12px;margin-right:4px;}
-.tr-txt{font-size:13px;color:var(--muted);line-height:1.6;}
-.tr-line.active .tr-txt{color:var(--text);}
-
-/* ── BOTTOM CONTROLS ── */
-.btm{flex-shrink:0;background:var(--surf);border-top:1px solid var(--border);
-  padding:10px 14px 14px;display:flex;flex-direction:column;gap:8px;}
-
-/* Main action button */
-.main-btn{width:100%;padding:16px;border-radius:14px;border:none;
-  font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:all .15s;letter-spacing:.3px;}
-.main-btn:active{transform:scale(.97);}
-.mb-play{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.3);}
-.mb-loop{background:var(--amber);color:#000;box-shadow:0 4px 14px rgba(245,158,11,.25);}
-.mb-rec{background:var(--rose);color:#fff;box-shadow:0 4px 14px rgba(244,63,94,.25);}
-.mb-stop-rec{background:var(--surf2);color:var(--rose);border:1.5px solid var(--rose);}
-.mb-next{background:var(--green);color:#000;box-shadow:0 4px 14px rgba(34,197,94,.2);}
-
-/* Sub row */
-.sub-row{display:flex;gap:8px;}
-.sub-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);
-  background:var(--surf2);color:var(--muted);font-family:'Outfit',sans-serif;
-  font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;}
-.sub-btn:active{transform:scale(.97);}
-.sub-btn:hover{border-color:var(--blue);color:var(--text);}
-
-/* status */
-.status-row{display:flex;align-items:center;justify-content:center;gap:6px;
-  font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
-.status-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);}
-.status-dot.playing{background:var(--blue);box-shadow:0 0 5px var(--blue);animation:blink 1s infinite;}
-.status-dot.recording{background:var(--rose);box-shadow:0 0 5px var(--rose);animation:blink .6s infinite;}
-.status-dot.ready{background:var(--green);}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#result {
+  font-size: 20px;
+  margin-top: 20px;
+  color: green;
+}
 </style>
+
 </head>
+
 <body>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-left">
-    <div class="tag">Lektion 5 · A3c · Shadowing</div>
-    <h1>Reparaturcafé – Dialog</h1>
-  </div>
-  <svg class="progress-ring" viewBox="0 0 38 38">
-    <circle class="ring-bg" cx="19" cy="19" r="15"/>
-    <circle class="ring-fill" id="ringFill" cx="19" cy="19" r="15"/>
-  </svg>
-</div>
+<h2>🎧 ShadowEcho</h2>
 
-<!-- NAV STRIP -->
-<div class="snav" id="snav"></div>
+<div id="text">Nhấn Play để bắt đầu</div>
 
-<!-- MAIN SCROLL -->
-<div class="main" id="main">
+<button onclick="play()">▶️ Play</button> <button onclick="stop()">⏹ Stop</button>
 
-  <!-- Sentence card -->
-  <div class="s-card" id="scard">
-    <div class="s-top">
-      <div class="s-speaker" id="sSpeaker"></div>
-      <div class="s-text" id="sText"></div>
-    </div>
-    <div class="s-bottom">
-      <div class="s-wave" id="sWave">
-        <span></span><span></span><span></span><span></span><span></span><span></span>
-      </div>
-      <div class="l-dots" id="lDots">
-        <div class="ld" id="ld0"></div>
-        <div class="ld" id="ld1"></div>
-        <div class="ld" id="ld2"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Score chip -->
-  <div class="score-chip" id="scoreChip">
-    <div class="sc-ring">
-      <svg viewBox="0 0 46 46">
-        <circle class="rg-bg" cx="23" cy="23" r="18"/>
-        <circle class="rg-fill" id="scRingFill" cx="23" cy="23" r="18"/>
-      </svg>
-      <div class="rg-pct" id="scPct">–</div>
-    </div>
-    <div class="sc-info">
-      <div class="sc-title" id="scTitle"></div>
-      <div class="sc-said" id="scSaid"></div>
-    </div>
-  </div>
-
-  <!-- Transcript -->
-  <div class="tr-card">
-    <div class="tr-head">📄 Vollständiger Dialog</div>
-    <div id="trList"></div>
-  </div>
-
-</div>
-
-<!-- BOTTOM CONTROLS -->
-<div class="btm">
-  <div class="status-row">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">BEREIT</span>
-  </div>
-  <button class="main-btn mb-play" id="mainBtn" onclick="handleMain()">
-    <span id="mainIcon">▶</span>
-    <span id="mainLabel">HÖREN</span>
-  </button>
-  <div class="sub-row">
-    <button class="sub-btn" id="btnLoop" onclick="handleLoop()">🔁 Loop 3×</button>
-    <button class="sub-btn" id="btnPrev" onclick="go(-1)">← Zurück</button>
-    <button class="sub-btn" id="btnNext" onclick="go(1)">Weiter →</button>
-  </div>
-</div>
-
-<audio id="audio" preload="auto">
-  <source src="2_04_Miteinander_B11_KB_L5_A3c.mp3" type="audio/mpeg">
-</audio>
+<div id="result"></div>
 
 <script>
-/* ============================================================
-   DATA – alle Sätze mit Timestamps (Sekunden)
-   Passen Sie start/end an, wenn Audio leicht abweicht
-   ============================================================ */
-const S = [
-  {sp:"Nazan", t:"Wer schreibt mit? Soll ich Notizen machen?",                                   s:0.5,  e:3.2},
-  {sp:"Zofia", t:"Das wäre toll. Danke, Nazan.",                                                  s:3.5,  e:5.2},
-  {sp:"Miro",  t:"Also wir brauchen auf jeden Fall Fotos.",                                       s:5.8,  e:8.0},
-  {sp:"Heinz", t:"Fotos, die richtig gut sind. Kannst du die nicht machen, Zofia?",               s:8.3,  e:12.0},
-  {sp:"Zofia", t:"Ja, das kann ich gern übernehmen.",                                             s:12.5, e:14.5},
-  {sp:"Zofia", t:"Vielleicht machen wir ein großes Foto, das das ganze Team zeigt.",              s:15.0, e:18.5},
-  {sp:"Miro",  t:"Das klingt gut.",                                                               s:19.0, e:20.0},
-  {sp:"Miro",  t:"Und dann schreiben wir kurze Texte, die zu den Fotos passen.",                 s:20.2, e:23.5},
-  {sp:"Heinz", t:"Genau. Wer wir sind, was wir hier im Reparaturcafé machen.",                   s:24.0, e:27.0},
-  {sp:"Nazan", t:"Und wir müssen natürlich zeigen, wie vielfältig wir sind.",                    s:27.5, e:30.5},
-  {sp:"Nazan", t:"Heinz kann nicht nur Deutsch, sondern auch Russisch und Kroatisch.",            s:31.0, e:34.5},
-  {sp:"Heinz", t:"Das klingt super!",                                                             s:35.0, e:36.2},
-  {sp:"Heinz", t:"Würdest du die Texte schreiben, Nazan?",                                       s:36.5, e:38.8},
-  {sp:"Nazan", t:"In Ordnung, aber ich möchte das nicht allein machen.",                         s:39.5, e:42.0},
-  {sp:"Nazan", t:"Können wir die Texte vielleicht zu zweit schreiben?",                          s:42.3, e:45.5},
-  {sp:"Heinz", t:"Ich weiß nicht. Ich glaube, darin bin ich nicht so gut.",                     s:46.0, e:49.0},
-  {sp:"Miro",  t:"Kein Problem. Dann schreiben wir beide die Texte.",                            s:49.5, e:52.0},
-  {sp:"Nazan", t:"Natürlich. Danke, Miro.",                                                      s:52.5, e:54.0},
-  {sp:"Zofia", t:"So … Dann haben wir Bilder und Texte. Jetzt fehlt nur noch die Überschrift.", s:54.5, e:58.5},
-  {sp:"Miro",  t:"Das Multi-Kulti-Team aus dem Reparaturcafé.",                                  s:59.0, e:61.5},
-  {sp:"Nazan", t:"Genau. In großen Buchstaben und ganz bunt.",                                   s:62.0, e:64.5},
-  {sp:"Heinz", t:"Das kann ich machen.",                                                          s:65.0, e:66.3},
-  {sp:"Heinz", t:"Vielleicht hilft mir Ilias dabei.",                                             s:66.8, e:68.5},
-  {sp:"Zofia", t:"Okay, Ilias kommt gleich, aber dann ist das Team noch nicht komplett.",        s:69.0, e:73.0},
-  {sp:"Miro",  t:"Genau. Drei arbeiten heute nicht.",                                             s:73.5, e:75.5},
-  {sp:"Zofia", t:"Kein Problem. Wir können die Fotos an einem anderen Tag machen.",              s:76.0, e:79.5},
-  {sp:"Miro",  t:"Das mache ich. Ich spreche nochmal mit den anderen.",                          s:80.0, e:83.0},
-  {sp:"Zofia", t:"Alles klar, so machen wir es.",                                                s:83.5, e:85.5},
+const audio = new Audio("2_04_Miteinander_B11_KB_L5_A3c.mp3");
+
+let sentences = [
+  {s:0.5, e:3.2, t:"Guten Morgen, wie geht es dir?"},
+  {s:3.5, e:6.5, t:"Ich habe heute viel zu tun."}
 ];
 
-const COLORS = {Nazan:'var(--nazan)',Zofia:'var(--zofia)',Miro:'var(--miro)',Heinz:'var(--heinz)'};
-const LOOPS  = 3;
-const audio  = document.getElementById('audio');
+let index = 0;
+let playing = false;
+let token = 0;
 
-let cur       = 0;
-let loopN     = 0;
-let isLoop    = false;
-let isPlaying = false;
-let isRec     = false;
-let recResult = '';
-let scores    = new Array(S.length).fill(null);
-let stopTmr   = null;
-let recObj    = null;
-let afterEvalState = null;  // 'next' | 'done' | null
+let recognition;
+let resultText = "";
 
-/* ── INIT ── */
-(function init(){
-  buildSnav();
-  buildTranscript();
-  loadSentence(0);
-  audio.addEventListener('ended', ()=>{ isPlaying=false; cardState('idle'); resetMainBtn(); });
-})();
-
-/* ── BUILD ── */
-function buildSnav(){
-  const nav=document.getElementById('snav');
-  S.forEach((_,i)=>{
-    const b=document.createElement('button');
-    b.className='sn'; b.id=`sn${i}`; b.textContent=i+1;
-    b.onclick=()=>{ stopEverything(); loadSentence(i); };
-    nav.appendChild(b);
-  });
+function play(){
+  index = 0;
+  next();
 }
 
-function buildTranscript(){
-  const list=document.getElementById('trList');
-  S.forEach((s,i)=>{
-    const d=document.createElement('div');
-    d.className='tr-line'; d.id=`tl${i}`;
-    d.innerHTML=`<span class="tr-n" id="tln${i}">${i+1}</span>
-      <span><span class="tr-sp" style="color:${COLORS[s.sp]||'#60a5fa'}">${s.sp}:</span>
-      <span class="tr-txt">${s.t}</span></span>`;
-    d.onclick=()=>{ stopEverything(); loadSentence(i); };
-    list.appendChild(d);
-  });
-}
-
-/* ── LOAD ── */
-function loadSentence(idx){
-  cur=idx; loopN=0; isLoop=false; afterEvalState=null;
-  const s=S[idx];
-
-  // card
-  document.getElementById('sSpeaker').textContent=s.sp;
-  document.getElementById('sSpeaker').style.color=COLORS[s.sp]||'#60a5fa';
-  document.getElementById('sText').innerHTML=tokenize(s.t);
-  document.getElementById('scard').style.borderColor='var(--border)';
-  document.getElementById('scard').style.background=
-    `linear-gradient(135deg,${COLORS[s.sp]||'#3b82f6'}18 0%,var(--surf) 55%)`;
-
-  cardState('idle');
-  resetLoopDots();
-  hideScore();
-  resetMainBtn();
-  setStatus('BEREIT','ready');
-
-  // nav
-  document.querySelectorAll('.sn').forEach((b,i)=>{ b.classList.toggle('active',i===idx); });
-  applyScoreClass(idx);
-
-  // transcript
-  document.querySelectorAll('.tr-line').forEach((l,i)=>l.classList.toggle('active',i===idx));
-  document.querySelectorAll('.tr-n').forEach((n,i)=>n.classList.toggle('active',i===idx));
-  const tl=document.getElementById(`tl${idx}`);
-  if(tl) setTimeout(()=>tl.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
-
-  // global ring
-  const pct=(idx+1)/S.length*100;
-  const circ=2*Math.PI*15;
-  document.getElementById('ringFill').style.strokeDashoffset=circ-(pct/100*circ);
-
-  // sub btns
-  document.getElementById('btnPrev').disabled=idx===0;
-  document.getElementById('btnNext').textContent=idx===S.length-1?'✓ Fertig':'Weiter →';
-}
-
-/* ── TOKENIZE for highlight ── */
-function tokenize(text){
-  return text.split(/(\s+)/).map(t=>
-    t.trim()?`<span class="w" data-w="${clean(t)}">${t}</span>`:t
-  ).join('');
-}
-function clean(s){
-  return s.toLowerCase().replace(/[.,!?;:„"…–]/g,'').trim();
-}
-
-/* ── PLAY ── */
-function handleMain(){
-  // after evaluation: next sentence
-  if(afterEvalState==='next'){ afterEvalState=null; go(1); return; }
-  if(afterEvalState==='done'){ afterEvalState=null; return; }
-  if(isRec){ stopRec(); return; }
-  if(isLoop){ stopEverything(); return; }
-  if(isPlaying){ stopEverything(); return; }
-  playSentence(true);
-}
-
-function playSentence(single){
-  const s=S[cur];
-  clearTimeout(stopTmr);
-  // Hard stop audio first to avoid delay
+function stop(){
+  playing = false;
   audio.pause();
-  audio.currentTime=s.s;
+  token++;
+}
 
-  // Small buffer before play to ensure seek is complete
-  setTimeout(()=>{
-    audio.play().catch(()=>{});
-    isPlaying=true;
-    cardState('playing');
-    setStatus('HÖREN …','playing');
+function next(){
+  if(index >= sentences.length) return;
 
-    if(single){
-      setMainBtn('⏹','STOP','mb-play');
-    }
+  let s = sentences[index];
+  document.getElementById("text").innerText = s.t;
 
-    const dur=(s.e-s.s)*1000;
-    stopTmr=setTimeout(()=>{
+  playSentence(s);
+}
+
+function playSentence(s){
+  const myToken = ++token;
+
+  audio.pause();
+  audio.currentTime = s.s;
+
+  audio.play().catch(()=>{});
+
+  audio.ontimeupdate = ()=>{
+    if(myToken !== token) return;
+
+    if(audio.currentTime >= s.e){
       audio.pause();
-      isPlaying=false;
-      cardState('idle');
-      if(!isLoop){
-        resetMainBtn();
-        setStatus('BEREIT','ready');
-      }
-    }, dur);
-  }, 80); // 80ms seek buffer — eliminates overlap
+      audio.ontimeupdate = null;
+
+      startRecording();
+    }
+  };
 }
 
-/* ── LOOP ── */
-function handleLoop(){
-  if(isLoop){ stopEverything(); return; }
-  stopEverything();
-  isLoop=true;
-  loopN=0;
-  document.getElementById('btnLoop').style.background='var(--amber)';
-  document.getElementById('btnLoop').style.color='#000';
-  setMainBtn('⏹','STOP LOOP','mb-loop');
-  runLoop();
-}
-
-function runLoop(){
-  if(!isLoop||loopN>=LOOPS){
-    isLoop=false;
-    document.getElementById('btnLoop').style.background='';
-    document.getElementById('btnLoop').style.color='';
-    loopN=LOOPS;
-    updateLoopDots(LOOPS,false);
-    cardState('idle');
-    resetMainBtn();
-    setStatus('JETZT SPRECHEN!','recording');
-    // auto-nudge to record after 0.5s
-    setTimeout(()=>{ if(!isRec) nudgeRec(); }, 500);
+function startRecording(){
+  if(!('webkitSpeechRecognition' in window)){
+    document.getElementById("result").innerText = "Trình duyệt không hỗ trợ mic";
     return;
   }
 
-  updateLoopDots(loopN, true);
-  setStatus(`LOOP ${loopN+1}/${LOOPS}`,'playing');
-  playSentence(false);
+  recognition = new webkitSpeechRecognition();
+  recognition.lang = "de-DE";
+  recognition.continuous = false;
 
-  const s=S[cur];
-  const dur=(s.e-s.s)*1000;
-  stopTmr=setTimeout(()=>{
-    if(!isLoop) return;
-    loopN++;
-    updateLoopDots(loopN,false);
-    // pause between loops for natural shadowing rhythm
-    setTimeout(runLoop, 700);
-  }, dur+80);
-}
+  resultText = "";
 
-/* ── RECORD ── */
-function nudgeRec(){
-  const btn=document.getElementById('mainBtn');
-  btn.style.transition='background .2s';
-  setMainBtn('🎤','SPRECHEN','mb-rec');
-}
-
-function handleRecord(){
-  if(isRec){ stopRec(); return; }
-  stopEverything();
-  startRec();
-}
-
-function startRec(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ alert('Bitte Chrome/Edge verwenden.'); return; }
-
-  recResult='';
-  recObj=new SR();
-  recObj.lang='de-DE';
-  recObj.continuous=true;
-  recObj.interimResults=true;
-
-  recObj.onstart=()=>{
-    isRec=true;
-    cardState('recording');
-    setMainBtn('⏹','FERTIG','mb-stop-rec');
-    setStatus('BITTE SPRECHEN …','recording');
-    hideScore();
-    // clear word highlights while recording
-    document.querySelectorAll('#sText .w').forEach(w=>w.className='w');
+  recognition.onresult = (e)=>{
+    resultText = e.results[0][0].transcript;
   };
 
-  recObj.onresult=(e)=>{
-    let interim='';
-    recResult='';
-    for(let i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) recResult+=e.results[i][0].transcript+' ';
-      else interim+=e.results[i][0].transcript;
-    }
-    // live preview in status
-    const preview=(recResult+interim).trim();
-    setStatus(preview?'„'+preview.slice(-40)+'"':'WARTE …','recording');
+  recognition.onend = ()=>{
+    evaluate(resultText);
   };
 
-  recObj.onerror=(e)=>{
-    if(e.error!=='no-speech') console.warn(e.error);
-    stopRec();
-  };
-
-  recObj.onend=()=>{
-    if(isRec) stopRec();
-  };
-
-  recObj.start();
+  recognition.start();
 }
 
-function stopRec(skipEval){
-  isRec=false;
-  if(recObj){
-    // detach all handlers first so onend/onresult don't fire after stop
-    recObj.onresult=null;
-    recObj.onerror=null;
-    recObj.onend=null;
-    try{ recObj.stop(); }catch(e){}
-    recObj=null;
-  }
-  cardState('idle');
-  if(skipEval){ recResult=''; return; }  // called from navigate → skip eval
-  setStatus('WIRD AUSGEWERTET …','ready');
-  setTimeout(()=>{
-    if(recResult.trim()) evaluate(recResult.trim());
-    else{ setStatus('NICHTS ERKANNT – nochmal?','ready'); resetMainBtn(); }
-  }, 300);
-}
+function evaluate(user){
+  let origin = sentences[index].t.toLowerCase();
 
-/* ── EVALUATE — fuzzy, tolerant ── */
-function evaluate(spoken){
-  const original=S[cur].t;
-  const oWords=tokenWords(original);
-  const sWords=tokenWords(spoken);
+  let oWords = origin.split(" ");
+  let uWords = user.toLowerCase().split(" ");
 
-  let correct=0;
-  const wordMatches=[];
+  let correct = 0;
 
-  oWords.forEach(ow=>{
-    // check if any spoken word is similar enough
-    const match=sWords.some(sw=>fuzzyMatch(ow,sw));
-    wordMatches.push(match);
-    if(match) correct++;
+  oWords.forEach(w=>{
+    if(uWords.includes(w)) correct++;
   });
 
-  const pct=Math.round(correct/oWords.length*100);
-  scores[cur]=pct;
+  let score = Math.round(correct / oWords.length * 100);
 
-  // highlight words in sentence
-  const spans=document.querySelectorAll('#sText .w');
-  let wi=0;
-  spans.forEach(sp=>{
-    if(wordMatches[wi]!==undefined){
-      sp.classList.add(wordMatches[wi]?'ok':'no');
-      wi++;
-    }
-  });
+  document.getElementById("result").innerText =
+    "Bạn nói: " + user + " | Điểm: " + score + "%";
 
-  showScore(pct, spoken);
-  applyScoreClass(cur);
-  setStatus(`ERGEBNIS: ${pct}%`, pct>=70?'ready':'playing');
-
-  // main btn → next sentence (use flag, not onclick override)
-  afterEvalState = cur < S.length-1 ? 'next' : 'done';
-  if(cur<S.length-1){
-    setMainBtn('→','NÄCHSTER SATZ','mb-next');
-  } else {
-    setMainBtn('✓','FERTIG!','mb-next');
-  }
+  index++;
+  setTimeout(next, 1000);
 }
-
-function tokenWords(text){
-  return text.toLowerCase()
-    .replace(/[.,!?;:„"…–]/g,'')
-    .split(/\s+/)
-    .filter(w=>w.length>0);
-}
-
-/* fuzzyMatch — tolerates:
-   • Umlaut differences (ü/u, ö/o, ä/a)
-   • Common suffix changes (-en/-e/-t/-st)
-   • Edit distance ≤ 2 for words >4 chars
-   • Short words (≤3 chars): exact match
-*/
-function fuzzyMatch(a, b){
-  if(a===b) return true;
-  const an=normalizeDE(a), bn=normalizeDE(b);
-  if(an===bn) return true;
-  // suffix tolerance
-  if(stripSuffix(an)===stripSuffix(bn)) return true;
-  // length-based edit distance
-  const maxDist = a.length<=3 ? 0 : a.length<=5 ? 1 : 2;
-  return editDist(an,bn)<=maxDist;
-}
-
-function normalizeDE(s){
-  return s.replace(/ü/g,'u').replace(/ö/g,'o').replace(/ä/g,'a')
-          .replace(/ß/g,'ss').replace(/[^a-z]/g,'');
-}
-
-function stripSuffix(s){
-  return s.replace(/(ieren|tion|en|er|es|st|te|t|e|n)$/,'');
-}
-
-function editDist(a,b){
-  if(Math.abs(a.length-b.length)>3) return 99;
-  const m=a.length,n=b.length;
-  const dp=[];
-  for(let i=0;i<=m;i++){dp[i]=[];for(let j=0;j<=n;j++) dp[i][j]=i===0?j:j===0?i:0;}
-  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
-    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
-  return dp[m][n];
-}
-
-/* ── SHOW SCORE ── */
-function showScore(pct, spoken){
-  const chip=document.getElementById('scoreChip');
-  chip.classList.add('show');
-
-  // ring
-  const circ=2*Math.PI*18;
-  const fill=document.getElementById('scRingFill');
-  fill.style.strokeDashoffset=circ-(pct/100*circ);
-  const color=pct>=80?'var(--green)':pct>=55?'var(--amber)':'var(--rose)';
-  fill.style.stroke=color;
-  document.getElementById('scPct').textContent=pct+'%';
-  document.getElementById('scPct').style.color=color;
-
-  const title=pct>=80?'🏆 Ausgezeichnet!':pct>=55?'👍 Gut gemacht!':'💪 Nochmal üben!';
-  document.getElementById('scTitle').textContent=title;
-  document.getElementById('scSaid').textContent='„'+spoken.slice(0,80)+(spoken.length>80?'…':'')+'"';
-}
-
-function hideScore(){
-  document.getElementById('scoreChip').classList.remove('show');
-  document.getElementById('scRingFill').style.strokeDashoffset=2*Math.PI*18;
-}
-
-/* ── STOP ALL ── */
-function stopEverything(){
-  clearTimeout(stopTmr);
-  audio.pause();
-  isPlaying=false; isLoop=false; loopN=0;
-  document.getElementById('btnLoop').style.background='';
-  document.getElementById('btnLoop').style.color='';
-  cardState('idle');
-  resetLoopDots();
-  if(isRec) stopRec(true);  // true = skip eval, we are navigating away
-  resetMainBtn();
-  setStatus('BEREIT','ready');
-}
-
-/* ── UI helpers ── */
-function cardState(st){
-  const c=document.getElementById('scard');
-  const w=document.getElementById('sWave');
-  c.classList.remove('playing','recording');
-  w.classList.remove('playing','rec-wave');
-  if(st==='playing'){ c.classList.add('playing'); w.classList.add('playing'); }
-  if(st==='recording'){ c.classList.add('recording'); w.classList.add('rec-wave'); }
-}
-
-function resetMainBtn(){
-  const btn=document.getElementById('mainBtn');
-  btn.onclick=handleMain;
-  setMainBtn('▶','HÖREN','mb-play');
-}
-
-function setMainBtn(icon,label,cls){
-  const btn=document.getElementById('mainBtn');
-  btn.className='main-btn '+cls;
-  document.getElementById('mainIcon').textContent=icon;
-  document.getElementById('mainLabel').textContent=label;
-}
-
-function setStatus(text,type){
-  document.getElementById('statusText').textContent=text;
-  const dot=document.getElementById('statusDot');
-  dot.className='status-dot';
-  if(type==='playing') dot.classList.add('playing');
-  else if(type==='recording') dot.classList.add('recording');
-  else if(type==='ready') dot.classList.add('ready');
-}
-
-function resetLoopDots(){
-  for(let i=0;i<LOOPS;i++){
-    const d=document.getElementById(`ld${i}`);
-    if(d){ d.className='ld'; }
-  }
-}
-
-function updateLoopDots(n,current){
-  for(let i=0;i<LOOPS;i++){
-    const d=document.getElementById(`ld${i}`);
-    if(!d) continue;
-    d.className='ld';
-    if(i<n) d.classList.add('lit');
-    else if(i===n&&current) d.classList.add('cur');
-  }
-}
-
-function applyScoreClass(idx){
-  const b=document.getElementById(`sn${idx}`);
-  if(!b||scores[idx]===null) return;
-  const p=scores[idx];
-  b.classList.remove('great','ok','low');
-  b.classList.add(p>=80?'great':p>=55?'ok':'low');
-}
-
-function go(dir){
-  const next=cur+dir;
-  if(next<0||next>=S.length) return;
-  stopEverything();
-  loadSentence(next);
-  // auto-play next sentence
-  setTimeout(()=>playSentence(true), 300);
-}
-
-/* ── SEPARATE REC BUTTON ── */
-// Make loop button also work as record trigger after loop finishes
-document.getElementById('btnLoop').addEventListener('click', ()=>{
-  if(!isLoop && !isPlaying && loopN===LOOPS){ handleRecord(); return; }
-  handleLoop();
-});
 </script>
+
 </body>
 </html>
