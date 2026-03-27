@@ -112,17 +112,22 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
 .btm{flex-shrink:0;background:var(--surf);border-top:1px solid var(--border);
   padding:10px 14px 14px;display:flex;flex-direction:column;gap:8px;}
 
-/* Main action button */
-.main-btn{width:100%;padding:16px;border-radius:14px;border:none;
-  font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+.main-row{display:flex;gap:8px;}
+.action-btn{flex:1;padding:15px 8px;border-radius:14px;border:none;
+  font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
   transition:all .15s;letter-spacing:.3px;}
-.main-btn:active{transform:scale(.97);}
-.mb-play{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.3);}
-.mb-loop{background:var(--amber);color:#000;box-shadow:0 4px 14px rgba(245,158,11,.25);}
-.mb-rec{background:var(--rose);color:#fff;box-shadow:0 4px 14px rgba(244,63,94,.25);}
-.mb-stop-rec{background:var(--surf2);color:var(--rose);border:1.5px solid var(--rose);}
-.mb-next{background:var(--green);color:#000;box-shadow:0 4px 14px rgba(34,197,94,.2);}
+.action-btn:active{transform:scale(.96);}
+
+.btn-play{background:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,.3);}
+.btn-play.playing{background:var(--surf2);color:var(--rose);border:1.5px solid var(--rose);}
+.btn-play.looping{background:var(--amber);color:#000;}
+
+.btn-rec{background:var(--surf2);color:var(--rose);border:1.5px solid var(--rslt);}
+.btn-rec.recording{background:var(--rose);color:#fff;border-color:var(--rose);
+  animation:pulse-rec .9s infinite;}
+.btn-rec.has-score{background:#052e16;color:var(--green);border-color:var(--green);}
+@keyframes pulse-rec{0%,100%{opacity:1}50%{opacity:.75}}
 
 /* Sub row */
 .sub-row{display:flex;gap:8px;}
@@ -209,10 +214,18 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
     <div class="status-dot" id="statusDot"></div>
     <span id="statusText">BEREIT</span>
   </div>
-  <button class="main-btn mb-play" id="mainBtn" onclick="handleMain()">
-    <span id="mainIcon">▶</span>
-    <span id="mainLabel">HÖREN</span>
-  </button>
+  <!-- Row 1: Hören + Sprechen (die zwei Hauptaktionen) -->
+  <div class="main-row">
+    <button class="action-btn btn-play" id="btnPlay" onclick="handlePlay()">
+      <span id="playIcon">▶</span>
+      <span id="playLabel">HÖREN</span>
+    </button>
+    <button class="action-btn btn-rec" id="btnRec" onclick="handleRecord()">
+      <span id="recIcon">🎤</span>
+      <span id="recLabel">SPRECHEN</span>
+    </button>
+  </div>
+  <!-- Row 2: Loop + Nav -->
   <div class="sub-row">
     <button class="sub-btn" id="btnLoop" onclick="handleLoop()">🔁 Loop 3×</button>
     <button class="sub-btn" id="btnPrev" onclick="go(-1)">← Zurück</button>
@@ -225,9 +238,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
 </audio>
 
 <script>
+
+<script>
 /* ============================================================
-   DATA – alle Sätze mit Timestamps (Sekunden)
-   Passen Sie start/end an, wenn Audio leicht abweicht
+   DATA
    ============================================================ */
 const S = [
   {sp:"Nazan", t:"Wer schreibt mit? Soll ich Notizen machen?",                                   s:0.5,  e:3.2},
@@ -264,23 +278,23 @@ const COLORS = {Nazan:'var(--nazan)',Zofia:'var(--zofia)',Miro:'var(--miro)',Hei
 const LOOPS  = 3;
 const audio  = document.getElementById('audio');
 
-let cur       = 0;
-let loopN     = 0;
-let isLoop    = false;
-let isPlaying = false;
-let isRec     = false;
-let recResult = '';
-let scores    = new Array(S.length).fill(null);
-let stopTmr   = null;
-let recObj    = null;
-let afterEvalState = null;  // 'next' | 'done' | null
+/* ── STATE ── */
+let cur      = 0;
+let loopN    = 0;
+let isLoop   = false;
+let isPlay   = false;
+let isRec    = false;
+let recText  = '';
+let scores   = new Array(S.length).fill(null);
+let stopTmr  = null;
+let recObj   = null;
 
 /* ── INIT ── */
-(function init(){
+(function(){
   buildSnav();
   buildTranscript();
   loadSentence(0);
-  audio.addEventListener('ended', ()=>{ isPlaying=false; cardState('idle'); resetMainBtn(); });
+  audio.addEventListener('ended', ()=>{ isPlay=false; cardState('idle'); setPlayBtn('▶','HÖREN',''); });
 })();
 
 /* ── BUILD ── */
@@ -289,7 +303,7 @@ function buildSnav(){
   S.forEach((_,i)=>{
     const b=document.createElement('button');
     b.className='sn'; b.id=`sn${i}`; b.textContent=i+1;
-    b.onclick=()=>{ stopEverything(); loadSentence(i); };
+    b.onclick=()=>{ stopAll(); loadSentence(i); };
     nav.appendChild(b);
   });
 }
@@ -302,17 +316,16 @@ function buildTranscript(){
     d.innerHTML=`<span class="tr-n" id="tln${i}">${i+1}</span>
       <span><span class="tr-sp" style="color:${COLORS[s.sp]||'#60a5fa'}">${s.sp}:</span>
       <span class="tr-txt">${s.t}</span></span>`;
-    d.onclick=()=>{ stopEverything(); loadSentence(i); };
+    d.onclick=()=>{ stopAll(); loadSentence(i); };
     list.appendChild(d);
   });
 }
 
 /* ── LOAD ── */
 function loadSentence(idx){
-  cur=idx; loopN=0; isLoop=false; afterEvalState=null;
+  cur=idx; loopN=0; isLoop=false;
   const s=S[idx];
 
-  // card
   document.getElementById('sSpeaker').textContent=s.sp;
   document.getElementById('sSpeaker').style.color=COLORS[s.sp]||'#60a5fa';
   document.getElementById('sText').innerHTML=tokenize(s.t);
@@ -323,11 +336,12 @@ function loadSentence(idx){
   cardState('idle');
   resetLoopDots();
   hideScore();
-  resetMainBtn();
+  setPlayBtn('▶','HÖREN','');
+  setRecBtn('🎤','SPRECHEN','');
   setStatus('BEREIT','ready');
 
-  // nav
-  document.querySelectorAll('.sn').forEach((b,i)=>{ b.classList.toggle('active',i===idx); });
+  // nav strip
+  document.querySelectorAll('.sn').forEach((b,i)=>b.classList.toggle('active',i===idx));
   applyScoreClass(idx);
 
   // transcript
@@ -336,128 +350,110 @@ function loadSentence(idx){
   const tl=document.getElementById(`tl${idx}`);
   if(tl) setTimeout(()=>tl.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 
-  // global ring
-  const pct=(idx+1)/S.length*100;
+  // ring progress
   const circ=2*Math.PI*15;
-  document.getElementById('ringFill').style.strokeDashoffset=circ-(pct/100*circ);
+  document.getElementById('ringFill').style.strokeDashoffset=circ-((idx+1)/S.length*circ);
 
-  // sub btns
-  document.getElementById('btnPrev').disabled=idx===0;
+  // sub nav
+  document.getElementById('btnPrev').disabled=(idx===0);
   document.getElementById('btnNext').textContent=idx===S.length-1?'✓ Fertig':'Weiter →';
+
+  // snav scroll
+  const snavBtn=document.getElementById(`sn${idx}`);
+  if(snavBtn) setTimeout(()=>snavBtn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),50);
 }
 
-/* ── TOKENIZE for highlight ── */
+/* ── TOKENIZE ── */
 function tokenize(text){
   return text.split(/(\s+)/).map(t=>
     t.trim()?`<span class="w" data-w="${clean(t)}">${t}</span>`:t
   ).join('');
 }
-function clean(s){
-  return s.toLowerCase().replace(/[.,!?;:„"…–]/g,'').trim();
-}
+function clean(s){ return s.toLowerCase().replace(/[.,!?;:„"…–]/g,'').trim(); }
 
 /* ── PLAY ── */
-function handleMain(){
-  // after evaluation: next sentence
-  if(afterEvalState==='next'){ afterEvalState=null; go(1); return; }
-  if(afterEvalState==='done'){ afterEvalState=null; return; }
-  if(isRec){ stopRec(); return; }
-  if(isLoop){ stopEverything(); return; }
-  if(isPlaying){ stopEverything(); return; }
-  playSentence(true);
+function handlePlay(){
+  if(isLoop){ stopAll(); return; }
+  if(isPlay){ stopAll(); return; }
+  playSentence();
 }
 
-function playSentence(single){
+function playSentence(){
   const s=S[cur];
   clearTimeout(stopTmr);
-  // Hard stop audio first to avoid delay
   audio.pause();
   audio.currentTime=s.s;
-
-  // Small buffer before play to ensure seek is complete
   setTimeout(()=>{
     audio.play().catch(()=>{});
-    isPlaying=true;
+    isPlay=true;
     cardState('playing');
     setStatus('HÖREN …','playing');
-
-    if(single){
-      setMainBtn('⏹','STOP','mb-play');
-    }
-
+    setPlayBtn('⏹','STOP','playing');
     const dur=(s.e-s.s)*1000;
     stopTmr=setTimeout(()=>{
       audio.pause();
-      isPlaying=false;
-      cardState('idle');
-      if(!isLoop){
-        resetMainBtn();
-        setStatus('BEREIT','ready');
-      }
+      isPlay=false;
+      if(!isLoop){ cardState('idle'); setPlayBtn('▶','HÖREN',''); setStatus('BEREIT','ready'); }
     }, dur);
-  }, 80); // 80ms seek buffer — eliminates overlap
+  }, 80);
 }
 
 /* ── LOOP ── */
 function handleLoop(){
-  if(isLoop){ stopEverything(); return; }
-  stopEverything();
-  isLoop=true;
-  loopN=0;
-  document.getElementById('btnLoop').style.background='var(--amber)';
-  document.getElementById('btnLoop').style.color='#000';
-  setMainBtn('⏹','STOP LOOP','mb-loop');
+  if(isLoop){ stopAll(); return; }
+  stopAll();
+  isLoop=true; loopN=0;
+  const lb=document.getElementById('btnLoop');
+  lb.style.background='var(--amber)'; lb.style.color='#000';
+  setPlayBtn('⏹','STOP','looping');
   runLoop();
 }
 
 function runLoop(){
   if(!isLoop||loopN>=LOOPS){
     isLoop=false;
-    document.getElementById('btnLoop').style.background='';
-    document.getElementById('btnLoop').style.color='';
-    loopN=LOOPS;
-    updateLoopDots(LOOPS,false);
+    const lb=document.getElementById('btnLoop');
+    lb.style.background=''; lb.style.color='';
+    loopN=LOOPS; updateLoopDots(LOOPS,false);
     cardState('idle');
-    resetMainBtn();
-    setStatus('JETZT SPRECHEN!','recording');
-    // auto-nudge to record after 0.5s
-    setTimeout(()=>{ if(!isRec) nudgeRec(); }, 500);
+    setPlayBtn('▶','HÖREN','');
+    setStatus('JETZT SPRECHEN! 🎤','recording');
+    // pulse Sprechen button
+    const rb=document.getElementById('btnRec');
+    rb.style.background='var(--rose)'; rb.style.color='#fff';
+    setTimeout(()=>{ if(!isRec){ rb.style.background=''; rb.style.color=''; } }, 2000);
     return;
   }
-
-  updateLoopDots(loopN, true);
-  setStatus(`LOOP ${loopN+1}/${LOOPS}`,'playing');
-  playSentence(false);
-
+  updateLoopDots(loopN,true);
+  setStatus(`LOOP ${loopN+1}/${LOOPS} – shadowing!`,'playing');
   const s=S[cur];
-  const dur=(s.e-s.s)*1000;
-  stopTmr=setTimeout(()=>{
-    if(!isLoop) return;
-    loopN++;
-    updateLoopDots(loopN,false);
-    // pause between loops for natural shadowing rhythm
-    setTimeout(runLoop, 700);
-  }, dur+80);
+  clearTimeout(stopTmr);
+  audio.pause(); audio.currentTime=s.s;
+  setTimeout(()=>{
+    audio.play().catch(()=>{});
+    isPlay=true; cardState('playing');
+    const dur=(s.e-s.s)*1000;
+    stopTmr=setTimeout(()=>{
+      audio.pause(); isPlay=false;
+      if(!isLoop) return;
+      loopN++;
+      updateLoopDots(loopN,false);
+      setTimeout(runLoop, 700);
+    }, dur);
+  }, 80);
 }
 
 /* ── RECORD ── */
-function nudgeRec(){
-  const btn=document.getElementById('mainBtn');
-  btn.style.transition='background .2s';
-  setMainBtn('🎤','SPRECHEN','mb-rec');
-}
-
 function handleRecord(){
-  if(isRec){ stopRec(); return; }
-  stopEverything();
+  if(isRec){ stopRec(false); return; }
+  stopAll();
   startRec();
 }
 
 function startRec(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ alert('Bitte Chrome/Edge verwenden.'); return; }
-
-  recResult='';
+  if(!SR){ alert('Bitte Chrome/Edge verwenden (Spracherkennung).'); return; }
+  recText='';
   recObj=new SR();
   recObj.lang='de-DE';
   recObj.continuous=true;
@@ -466,131 +462,77 @@ function startRec(){
   recObj.onstart=()=>{
     isRec=true;
     cardState('recording');
-    setMainBtn('⏹','FERTIG','mb-stop-rec');
+    setRecBtn('⏹','FERTIG','recording');
     setStatus('BITTE SPRECHEN …','recording');
     hideScore();
-    // clear word highlights while recording
     document.querySelectorAll('#sText .w').forEach(w=>w.className='w');
   };
 
   recObj.onresult=(e)=>{
     let interim='';
-    recResult='';
+    recText='';
     for(let i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) recResult+=e.results[i][0].transcript+' ';
+      if(e.results[i].isFinal) recText+=e.results[i][0].transcript+' ';
       else interim+=e.results[i][0].transcript;
     }
-    // live preview in status
-    const preview=(recResult+interim).trim();
-    setStatus(preview?'„'+preview.slice(-40)+'"':'WARTE …','recording');
+    const preview=(recText+interim).trim();
+    if(preview) setStatus('„'+preview.slice(-50)+'"','recording');
   };
 
-  recObj.onerror=(e)=>{
-    if(e.error!=='no-speech') console.warn(e.error);
-    stopRec();
-  };
-
-  recObj.onend=()=>{
-    if(isRec) stopRec();
-  };
-
+  recObj.onerror=(e)=>{ if(e.error!=='no-speech') console.warn(e.error); stopRec(false); };
+  recObj.onend=()=>{ if(isRec) stopRec(false); };
   recObj.start();
 }
 
 function stopRec(skipEval){
   isRec=false;
   if(recObj){
-    // detach all handlers first so onend/onresult don't fire after stop
-    recObj.onresult=null;
-    recObj.onerror=null;
-    recObj.onend=null;
+    recObj.onresult=null; recObj.onerror=null; recObj.onend=null;
     try{ recObj.stop(); }catch(e){}
     recObj=null;
   }
   cardState('idle');
-  if(skipEval){ recResult=''; return; }  // called from navigate → skip eval
+  setRecBtn('🎤','SPRECHEN','');
+  if(skipEval){ recText=''; setStatus('BEREIT','ready'); return; }
   setStatus('WIRD AUSGEWERTET …','ready');
   setTimeout(()=>{
-    if(recResult.trim()) evaluate(recResult.trim());
-    else{ setStatus('NICHTS ERKANNT – nochmal?','ready'); resetMainBtn(); }
+    if(recText.trim()) evaluate(recText.trim());
+    else{ setStatus('Nichts erkannt – nochmal?','ready'); }
   }, 300);
 }
 
-/* ── EVALUATE — fuzzy, tolerant ── */
+/* ── EVALUATE ── */
 function evaluate(spoken){
-  const original=S[cur].t;
-  const oWords=tokenWords(original);
+  const oWords=tokenWords(S[cur].t);
   const sWords=tokenWords(spoken);
-
-  let correct=0;
-  const wordMatches=[];
-
-  oWords.forEach(ow=>{
-    // check if any spoken word is similar enough
-    const match=sWords.some(sw=>fuzzyMatch(ow,sw));
-    wordMatches.push(match);
-    if(match) correct++;
-  });
-
-  const pct=Math.round(correct/oWords.length*100);
+  const matches=oWords.map(ow=>sWords.some(sw=>fuzzyMatch(ow,sw)));
+  const pct=Math.round(matches.filter(Boolean).length/oWords.length*100);
   scores[cur]=pct;
 
-  // highlight words in sentence
-  const spans=document.querySelectorAll('#sText .w');
-  let wi=0;
-  spans.forEach(sp=>{
-    if(wordMatches[wi]!==undefined){
-      sp.classList.add(wordMatches[wi]?'ok':'no');
-      wi++;
-    }
-  });
+  // highlight words
+  const spans=[...document.querySelectorAll('#sText .w')];
+  matches.forEach((ok,i)=>{ if(spans[i]) spans[i].classList.add(ok?'ok':'no'); });
 
-  showScore(pct, spoken);
+  showScore(pct,spoken);
   applyScoreClass(cur);
-  setStatus(`ERGEBNIS: ${pct}%`, pct>=70?'ready':'playing');
-
-  // main btn → next sentence (use flag, not onclick override)
-  afterEvalState = cur < S.length-1 ? 'next' : 'done';
-  if(cur<S.length-1){
-    setMainBtn('→','NÄCHSTER SATZ','mb-next');
-  } else {
-    setMainBtn('✓','FERTIG!','mb-next');
-  }
+  setStatus(`ERGEBNIS: ${pct}% – nochmal oder weiter?`, pct>=70?'ready':'playing');
+  // reset rec button to normal (not recording state)
+  setRecBtn('🔄','NOCHMAL','');
 }
 
-function tokenWords(text){
-  return text.toLowerCase()
-    .replace(/[.,!?;:„"…–]/g,'')
-    .split(/\s+/)
-    .filter(w=>w.length>0);
-}
+/* ── FUZZY MATCH ── */
+function tokenWords(t){ return t.toLowerCase().replace(/[.,!?;:„"…–]/g,'').split(/\s+/).filter(w=>w); }
 
-/* fuzzyMatch — tolerates:
-   • Umlaut differences (ü/u, ö/o, ä/a)
-   • Common suffix changes (-en/-e/-t/-st)
-   • Edit distance ≤ 2 for words >4 chars
-   • Short words (≤3 chars): exact match
-*/
-function fuzzyMatch(a, b){
+function fuzzyMatch(a,b){
   if(a===b) return true;
-  const an=normalizeDE(a), bn=normalizeDE(b);
+  const an=norm(a), bn=norm(b);
   if(an===bn) return true;
-  // suffix tolerance
-  if(stripSuffix(an)===stripSuffix(bn)) return true;
-  // length-based edit distance
-  const maxDist = a.length<=3 ? 0 : a.length<=5 ? 1 : 2;
-  return editDist(an,bn)<=maxDist;
+  if(strip(an)===strip(bn)) return true;
+  const d=a.length<=3?0:a.length<=5?1:2;
+  return editDist(an,bn)<=d;
 }
-
-function normalizeDE(s){
-  return s.replace(/ü/g,'u').replace(/ö/g,'o').replace(/ä/g,'a')
-          .replace(/ß/g,'ss').replace(/[^a-z]/g,'');
-}
-
-function stripSuffix(s){
-  return s.replace(/(ieren|tion|en|er|es|st|te|t|e|n)$/,'');
-}
-
+function norm(s){ return s.replace(/ü/g,'u').replace(/ö/g,'o').replace(/ä/g,'a').replace(/ß/g,'ss').replace(/[^a-z]/g,''); }
+function strip(s){ return s.replace(/(ieren|tion|en|er|es|st|te|t|e|n)$/,''); }
 function editDist(a,b){
   if(Math.abs(a.length-b.length)>3) return 99;
   const m=a.length,n=b.length;
@@ -601,45 +543,46 @@ function editDist(a,b){
   return dp[m][n];
 }
 
-/* ── SHOW SCORE ── */
-function showScore(pct, spoken){
+/* ── SCORE UI ── */
+function showScore(pct,spoken){
   const chip=document.getElementById('scoreChip');
   chip.classList.add('show');
-
-  // ring
   const circ=2*Math.PI*18;
   const fill=document.getElementById('scRingFill');
   fill.style.strokeDashoffset=circ-(pct/100*circ);
-  const color=pct>=80?'var(--green)':pct>=55?'var(--amber)':'var(--rose)';
-  fill.style.stroke=color;
+  const col=pct>=80?'var(--green)':pct>=55?'var(--amber)':'var(--rose)';
+  fill.style.stroke=col;
   document.getElementById('scPct').textContent=pct+'%';
-  document.getElementById('scPct').style.color=color;
-
-  const title=pct>=80?'🏆 Ausgezeichnet!':pct>=55?'👍 Gut gemacht!':'💪 Nochmal üben!';
-  document.getElementById('scTitle').textContent=title;
-  document.getElementById('scSaid').textContent='„'+spoken.slice(0,80)+(spoken.length>80?'…':'')+'"';
+  document.getElementById('scPct').style.color=col;
+  document.getElementById('scTitle').textContent=pct>=80?'🏆 Ausgezeichnet!':pct>=55?'👍 Gut gemacht!':'💪 Nochmal üben!';
+  document.getElementById('scSaid').textContent='„'+spoken.slice(0,90)+(spoken.length>90?'…':'')+'"';
 }
-
-function hideScore(){
-  document.getElementById('scoreChip').classList.remove('show');
-  document.getElementById('scRingFill').style.strokeDashoffset=2*Math.PI*18;
-}
+function hideScore(){ document.getElementById('scoreChip').classList.remove('show'); }
 
 /* ── STOP ALL ── */
-function stopEverything(){
+function stopAll(){
   clearTimeout(stopTmr);
   audio.pause();
-  isPlaying=false; isLoop=false; loopN=0;
-  document.getElementById('btnLoop').style.background='';
-  document.getElementById('btnLoop').style.color='';
-  cardState('idle');
-  resetLoopDots();
-  if(isRec) stopRec(true);  // true = skip eval, we are navigating away
-  resetMainBtn();
+  isPlay=false; isLoop=false; loopN=0;
+  const lb=document.getElementById('btnLoop');
+  lb.style.background=''; lb.style.color='';
+  cardState('idle'); resetLoopDots();
+  if(isRec) stopRec(true);
+  setPlayBtn('▶','HÖREN','');
+  setRecBtn('🎤','SPRECHEN','');
   setStatus('BEREIT','ready');
 }
 
-/* ── UI helpers ── */
+/* ── NAV ── */
+function go(dir){
+  const next=cur+dir;
+  if(next<0||next>=S.length) return;
+  stopAll();
+  loadSentence(next);
+  setTimeout(()=>playSentence(), 300);
+}
+
+/* ── UI HELPERS ── */
 function cardState(st){
   const c=document.getElementById('scard');
   const w=document.getElementById('sWave');
@@ -649,17 +592,20 @@ function cardState(st){
   if(st==='recording'){ c.classList.add('recording'); w.classList.add('rec-wave'); }
 }
 
-function resetMainBtn(){
-  const btn=document.getElementById('mainBtn');
-  btn.onclick=handleMain;
-  setMainBtn('▶','HÖREN','mb-play');
+function setPlayBtn(icon,label,state){
+  const b=document.getElementById('btnPlay');
+  document.getElementById('playIcon').textContent=icon;
+  document.getElementById('playLabel').textContent=label;
+  b.className='action-btn btn-play';
+  if(state) b.classList.add(state);
 }
 
-function setMainBtn(icon,label,cls){
-  const btn=document.getElementById('mainBtn');
-  btn.className='main-btn '+cls;
-  document.getElementById('mainIcon').textContent=icon;
-  document.getElementById('mainLabel').textContent=label;
+function setRecBtn(icon,label,state){
+  const b=document.getElementById('btnRec');
+  document.getElementById('recIcon').textContent=icon;
+  document.getElementById('recLabel').textContent=label;
+  b.className='action-btn btn-rec';
+  if(state) b.classList.add(state);
 }
 
 function setStatus(text,type){
@@ -674,17 +620,16 @@ function setStatus(text,type){
 function resetLoopDots(){
   for(let i=0;i<LOOPS;i++){
     const d=document.getElementById(`ld${i}`);
-    if(d){ d.className='ld'; }
+    if(d) d.className='ld';
   }
 }
-
-function updateLoopDots(n,current){
+function updateLoopDots(n,cur){
   for(let i=0;i<LOOPS;i++){
     const d=document.getElementById(`ld${i}`);
     if(!d) continue;
     d.className='ld';
     if(i<n) d.classList.add('lit');
-    else if(i===n&&current) d.classList.add('cur');
+    else if(i===n&&cur) d.classList.add('cur');
   }
 }
 
@@ -695,22 +640,6 @@ function applyScoreClass(idx){
   b.classList.remove('great','ok','low');
   b.classList.add(p>=80?'great':p>=55?'ok':'low');
 }
-
-function go(dir){
-  const next=cur+dir;
-  if(next<0||next>=S.length) return;
-  stopEverything();
-  loadSentence(next);
-  // auto-play next sentence
-  setTimeout(()=>playSentence(true), 300);
-}
-
-/* ── SEPARATE REC BUTTON ── */
-// Make loop button also work as record trigger after loop finishes
-document.getElementById('btnLoop').addEventListener('click', ()=>{
-  if(!isLoop && !isPlaying && loopN===LOOPS){ handleRecord(); return; }
-  handleLoop();
-});
 </script>
 </body>
 </html>

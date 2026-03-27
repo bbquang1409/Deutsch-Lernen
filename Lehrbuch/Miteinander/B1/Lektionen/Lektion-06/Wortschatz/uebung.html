@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Übung – Lektion 06</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#eef4fb; --card:#fff; --ink:#1e3a5f; --muted:#5b7a99; --border:#c5d8ee;
+      --teal:#2563eb; --teal-lt:#dbeafe;
+      --amber:#0ea5e9; --amber-lt:#e0f2fe;
+      --rose:#e11d48; --rose-lt:#ffe4e6;
+      --green:#16a34a; --green-lt:#dcfce7;
+      --sky:#2563eb; --sky-lt:#dbeafe;
+      --violet:#1d4ed8; --violet-lt:#dbeafe;
+      --blue:#2563eb; --blue-lt:#dbeafe;
+      --r:16px; --sh:0 2px 16px rgba(37,99,235,0.10);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:80px;}
+
+    header{background:#1e3a5f;color:#fff;padding:32px 20px 28px;position:relative;overflow:hidden;}
+    header .deco{position:absolute;inset:0;
+      background:radial-gradient(ellipse at 80% -20%,#3b82f6 0%,transparent 55%),
+                 radial-gradient(ellipse at -10% 120%,#0ea5e9 0%,transparent 50%);opacity:.45;}
+    header .inner{position:relative;max-width:640px;margin:0 auto;}
+    .hd-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#93c5fd;margin-bottom:8px;}
+    header h1{font-family:'DM Serif Display',serif;font-size:30px;line-height:1.15;margin-bottom:6px;}
+    header p{font-size:13px;color:rgba(255,255,255,.6);}
+
+    .tab-wrap{background:var(--card);box-shadow:0 2px 0 var(--border);position:sticky;top:0;z-index:200;}
+    .tabs{max-width:640px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{flex-shrink:0;padding:14px 18px;font-size:13px;font-weight:600;color:var(--muted);
+      border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+    .tab.active{color:#2563eb;border-bottom-color:#2563eb;}
+    .tab.done{color:var(--green);}
+
+    .nav-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 0;max-width:640px;margin:0 auto;}
+    .nav-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 16px;
+      font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;transition:border-color .2s;}
+    .nav-btn:hover{border-color:#2563eb;color:#2563eb;}
+    .nav-btn:disabled{opacity:.3;pointer-events:none;}
+    .nav-dot-wrap{display:flex;gap:6px;}
+    .nav-dot{width:8px;height:8px;border-radius:99px;background:var(--border);transition:all .2s;}
+    .nav-dot.active{background:#2563eb;width:20px;}
+    .nav-dot.done{background:var(--green);}
+
+    main{max-width:640px;margin:0 auto;padding:20px 16px;}
+    .section{display:none;flex-direction:column;gap:18px;animation:fadeUp .3s ease;}
+    .section.active{display:flex;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+    .card-head{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .card-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .card-title{font-size:16px;font-weight:700;flex:1;}
+    .card-pts{font-size:11px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:99px;background:#1e3a5f;color:#fff;}
+    .card-body{padding:18px;display:flex;flex-direction:column;gap:14px;}
+    .instr{font-size:14px;color:var(--muted);font-style:italic;line-height:1.6;}
+
+    .t-vok  .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-mat  .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-luc  .card-icon{background:#fee2e2;color:#dc2626;}
+    .t-def  .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-mc   .card-icon{background:#dbeafe;color:#2563eb;}
+    .t-dialog .card-icon{background:#dbeafe;color:#1d4ed8;}
+    .t-anagram .card-icon{background:#dbeafe;color:#1d4ed8;}
+    .t-bank .card-icon{background:#dbeafe;color:#1d4ed8;}
+
+    .inp{width:100%;border:2px solid var(--border);border-radius:10px;padding:11px 14px;
+      font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--ink);background:#fafafa;
+      outline:none;transition:border-color .2s,background .2s;}
+    .inp:focus{border-color:#2563eb;background:#fff;}
+    .inp.ok{border-color:var(--green)!important;background:var(--green-lt)!important;color:var(--green)!important;}
+    .inp.no{border-color:var(--rose)!important;background:var(--rose-lt)!important;color:var(--rose)!important;}
+
+    .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .witem{display:flex;flex-direction:column;gap:4px;}
+    .wlabel{font-size:14px;color:var(--ink);font-weight:600;letter-spacing:.3px;line-height:1.4;}
+
+    .fill-row{background:#f8f8fb;border-radius:10px;padding:14px 16px;
+      display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:15px;line-height:2.2;}
+    .blank{border:none;border-bottom:2.5px solid var(--teal);background:transparent;
+      font-size:15px;font-family:'DM Sans',sans-serif;font-weight:700;color:#2563eb;
+      outline:none;min-width:130px;max-width:200px;padding:2px 4px;text-align:center;}
+    .blank.ok{border-color:var(--green)!important;color:var(--green)!important;}
+    .blank.no{border-color:var(--rose)!important;color:var(--rose)!important;}
+
+    .sel{width:100%;border:2px solid var(--border);border-radius:10px;padding:10px 36px 10px 12px;
+      font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;color:var(--ink);background:#fafafa;
+      outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237c7c92' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 14px center;}
+    .sel:focus{border-color:#2563eb;}
+    .sel.ok{border-color:var(--green)!important;background-color:var(--green-lt)!important;}
+    .sel.no{border-color:var(--rose)!important;background-color:var(--rose-lt)!important;}
+
+    .match-grid{display:flex;flex-direction:column;gap:8px;}
+    .match-row{display:flex;align-items:center;gap:8px;}
+    .match-de{flex:1;background:#dbeafe;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;
+      color:#1d4ed8;border:2px solid #bfdbfe;line-height:1.4;}
+    .match-arr{font-size:14px;color:var(--muted);flex-shrink:0;}
+    .match-sel{flex:1;}
+
+    .def-item{background:#f8f8fb;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+    .def-tag{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+      color:#1d4ed8;background:#dbeafe;display:inline-block;padding:3px 10px;border-radius:99px;width:fit-content;}
+    .def-text{font-size:15px;line-height:1.7;color:#1e3a5f;border-left:3px solid #2563eb;padding-left:12px;font-style:italic;}
+    .def-input-row{display:flex;gap:8px;align-items:center;}
+    .def-art{width:90px;flex-shrink:0;border:2px solid var(--border);border-radius:8px;padding:10px 8px;
+      font-size:15px;font-family:'DM Sans',sans-serif;font-weight:700;text-align:center;
+      background:#fafafa;outline:none;transition:border-color .2s,background .2s;color:var(--ink);}
+    .def-art:focus{border-color:#2563eb;background:#fff;}
+    .def-art.ok{border-color:var(--green)!important;background:var(--green-lt)!important;color:var(--green)!important;}
+    .def-art.no{border-color:var(--rose)!important;background:var(--rose-lt)!important;color:var(--rose)!important;}
+    .def-word{flex:1;}
+
+    .mc-item{background:#f8f8fb;border-radius:10px;padding:12px 14px;margin-bottom:4px;}
+    .mc-prompt{font-size:15px;font-weight:700;margin-bottom:10px;color:var(--sky);}
+    .mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .mc-opt{background:#fff;border:2px solid var(--border);border-radius:10px;padding:9px 12px;
+      font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;
+      text-align:left;transition:all .15s;color:var(--ink);line-height:1.4;}
+    .mc-opt:hover{border-color:var(--sky);}
+    .mc-opt.ok{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+    .mc-opt.no{background:var(--rose-lt)!important;border-color:var(--rose)!important;color:var(--rose)!important;pointer-events:none;}
+    .mc-opt.reveal{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+    .mc-opt.locked{pointer-events:none;opacity:.55;}
+
+    .btn-check-tab{background:#2563eb;color:#fff;border:none;border-radius:10px;padding:12px 20px;
+      font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+      transition:all .15s;align-self:stretch;}
+    .btn-check-tab:hover{opacity:.9;transform:translateY(-1px);}
+    .btn-check-tab:disabled{opacity:.4;cursor:default;transform:none;}
+
+    .tab-result{display:none;background:linear-gradient(135deg,#1d4ed8,#2563eb);
+      color:#fff;border-radius:12px;padding:16px 18px;align-items:center;gap:14px;}
+    .tab-result.show{display:flex;}
+    .tab-res-emoji{font-size:32px;flex-shrink:0;}
+    .tab-res-score{font-family:'DM Serif Display',serif;font-size:28px;line-height:1;}
+    .tab-res-msg{font-size:13px;opacity:.85;margin-top:3px;}
+
+    .answer-panel{display:none;background:var(--ink);border-radius:12px;padding:18px;}
+    .answer-panel.show{display:block;animation:fadeUp .3s ease;}
+    .ans-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#60a5fa;margin-bottom:14px;}
+    .ans-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+    .ans-row:last-child{border-bottom:none;}
+    .ans-num{font-size:11px;color:#64748b;font-weight:700;min-width:20px;padding-top:2px;flex-shrink:0;}
+    .ans-de{font-size:14px;font-weight:700;color:#e2e8f0;line-height:1.4;}
+    .ans-art{font-size:11px;color:#2563eb;font-weight:700;margin-left:6px;background:rgba(37,99,235,.15);padding:1px 6px;border-radius:4px;}
+    .ans-vi{font-size:13px;color:#60a5fa;margin-top:3px;}
+    .ans-ex{font-size:13px;color:#64748b;font-style:italic;margin-top:4px;line-height:1.5;}
+
+    .result{display:none;text-align:center;background:var(--card);border-radius:var(--r);
+      box-shadow:var(--sh);padding:28px 20px;max-width:640px;margin:16px auto 0;}
+    .result.show{display:block;animation:fadeUp .3s ease;}
+    .result-emoji{font-size:52px;margin-bottom:12px;}
+    .result-score{font-family:'DM Serif Display',serif;font-size:42px;color:#2563eb;margin-bottom:6px;}
+    .result-msg{font-size:16px;color:var(--muted);margin-bottom:18px;}
+    .score-strip{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+    .score-chip{background:#dbeafe;color:#1d4ed8;border-radius:10px;padding:10px 14px;
+      font-size:13px;font-weight:700;text-align:center;cursor:pointer;transition:transform .15s;}
+    .score-chip:hover{transform:scale(1.06);}
+
+    .btn-row{display:flex;gap:10px;padding:0 16px;max-width:640px;margin:14px auto 0;}
+    .btn{flex:1;padding:14px;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;
+      font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s;}
+    .btn:active{transform:scale(.97);}
+    .btn-primary{background:#2563eb;color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.35);}
+    .btn-ghost{background:#fff;color:var(--muted);border:2px solid var(--border);}
+
+    .dialog-grid{display:flex;flex-direction:column;gap:8px;}
+    .dialog-row{display:flex;align-items:center;gap:8px;}
+    .dialog-left{flex:1;background:#eff6ff;border-radius:10px;padding:9px 12px;font-size:14px;
+      font-weight:600;color:#1d4ed8;border:2px solid #bfdbfe;line-height:1.4;}
+    .dialog-arr{font-size:14px;color:var(--muted);flex-shrink:0;}
+    .dialog-sel{flex:1;}
+
+    .anagram-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .anagram-item{display:flex;flex-direction:column;gap:6px;background:#eff6ff;border-radius:10px;padding:12px;}
+    .anagram-scrambled{font-size:22px;font-weight:800;letter-spacing:3px;color:#1d4ed8;
+      font-family:'DM Serif Display',serif;text-align:center;}
+    .anagram-inputs{display:flex;gap:6px;}
+    .anagram-art{width:88px;flex-shrink:0;border:2px solid #bfdbfe;border-radius:8px;padding:7px 6px;
+      font-size:15px;font-family:'DM Sans',sans-serif;font-weight:700;text-align:center;
+      background:white;outline:none;transition:border-color .2s;color:var(--ink);}
+    .anagram-art:focus{border-color:#2563eb;}
+    .anagram-art.ok{border-color:var(--green)!important;background:var(--green-lt)!important;color:var(--green)!important;}
+    .anagram-art.no{border-color:var(--rose)!important;background:var(--rose-lt)!important;color:var(--rose)!important;}
+    .anagram-word{flex:1;}
+
+    .wordbank-pool{background:#eff6ff;border:2px dashed #93c5fd;border-radius:12px;
+      padding:12px;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+    .wb-chip{background:white;border:2px solid #93c5fd;border-radius:99px;
+      padding:5px 14px;font-size:14px;font-weight:700;color:#1d4ed8;
+      cursor:pointer;transition:all .15s;user-select:none;}
+    .wb-chip:hover{background:#dbeafe;}
+    .wb-chip.used{opacity:.3;text-decoration:line-through;pointer-events:none;}
+    .wb-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+      color:#1d4ed8;width:100%;margin-bottom:2px;}
+    .wb-fill-row{background:#f8f8fb;border-radius:10px;padding:10px 14px;font-size:14px;line-height:2;}
+
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,30,60,.7);
+      z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .modal-overlay.hidden{display:none;}
+    .modal-box{background:#fff;border-radius:20px;padding:36px 32px;width:min(92vw,420px);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;}
+    .modal-logo{font-size:48px;margin-bottom:12px;}
+    .modal-title{font-family:'DM Serif Display',serif;font-size:22px;color:#1e3a5f;margin-bottom:6px;}
+    .modal-sub{font-size:14px;color:#5b7a99;margin-bottom:24px;line-height:1.6;}
+    .modal-inp{width:100%;border:2px solid #c5d8ee;border-radius:12px;padding:14px 16px;
+      font-size:16px;font-family:'DM Sans',sans-serif;font-weight:600;color:#1e3a5f;
+      outline:none;text-align:center;transition:border-color .2s;margin-bottom:16px;}
+    .modal-inp:focus{border-color:#2563eb;}
+    .modal-btn{width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;
+      padding:14px;font-size:16px;font-weight:700;cursor:pointer;
+      font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+    .modal-btn:hover{opacity:.88;}
+    .modal-btn:disabled{opacity:.4;cursor:default;}
+
+    .student-bar{display:none;}
+    .student-bar.show{display:block;position:sticky;top:0;z-index:300;box-shadow:0 3px 12px rgba(37,99,235,.15);}
+    .student-card{background:#fff;border-bottom:3px solid #2563eb;padding:12px 20px 10px;text-align:center;}
+    .sb-avatar{width:36px;height:36px;border-radius:50%;background:#2563eb;display:flex;align-items:center;
+      justify-content:center;font-size:16px;margin:0 auto 6px;box-shadow:0 3px 8px rgba(37,99,235,.3);}
+    .sb-name{font-family:'DM Serif Display',serif;font-size:19px;font-weight:700;color:#1e3a5f;letter-spacing:.3px;margin-bottom:4px;}
+    .sb-divider{width:32px;height:2px;background:#dbeafe;border-radius:99px;margin:0 auto 6px;}
+    .sb-meta{font-size:12px;color:#5b7a99;line-height:1.7;}
+    .sb-timer-wrap{display:inline-flex;align-items:center;gap:7px;background:#eef4fb;
+      border:2px solid #dbeafe;border-radius:99px;padding:5px 16px;margin-top:8px;}
+    .sb-timer-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5b7a99;}
+    .sb-timer{font-size:18px;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums;letter-spacing:1px;}
+
+    .summary-card{display:none;background:#fff;border-radius:20px;padding:28px 24px;
+      max-width:640px;margin:20px auto 0;box-shadow:0 4px 24px rgba(37,99,235,.15);border:2px solid #dbeafe;}
+    .summary-card.show{display:block;animation:fadeUp .3s ease;}
+    .sc-header{text-align:center;margin-bottom:20px;}
+    .sc-school{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#2563eb;margin-bottom:6px;}
+    .sc-title{font-family:'DM Serif Display',serif;font-size:20px;color:#1e3a5f;margin-bottom:4px;}
+    .sc-student{font-size:16px;font-weight:700;color:#1e3a5f;}
+    .sc-meta{font-size:13px;color:#5b7a99;margin-top:4px;}
+    .sc-rows{border-top:2px solid #dbeafe;margin-top:16px;}
+    .sc-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eff6ff;}
+    .sc-row:last-child{border-bottom:none;}
+    .sc-lbl{font-size:13px;font-weight:600;flex:1;color:#1e3a5f;}
+    .sc-score{font-size:14px;font-weight:800;color:#2563eb;min-width:56px;text-align:right;}
+    .sc-time{font-size:12px;color:#5b7a99;min-width:56px;text-align:right;}
+    .sc-total{display:flex;justify-content:space-between;align-items:center;
+      background:#dbeafe;border-radius:12px;padding:14px 18px;margin-top:16px;}
+    .sc-total-lbl{font-size:15px;font-weight:700;color:#1d4ed8;}
+    .sc-total-val{font-family:'DM Serif Display',serif;font-size:28px;color:#1e3a5f;}
+    .sc-total-time{font-size:13px;color:#5b7a99;}
+    .sc-footer{text-align:center;margin-top:16px;font-size:12px;color:#94a3b8;font-style:italic;}
+
+    .back-btn{display:flex;align-items:center;gap:8px;background:#1e3a5f;color:#fff;
+      border:none;border-radius:14px;padding:14px 24px;font-size:15px;font-weight:700;
+      cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;text-decoration:none;}
+    .back-btn:hover{opacity:.85;}
+    .back-row{max-width:640px;margin:16px auto 0;padding:0 16px;display:flex;gap:10px;}
+
+    .hdr-back{display:inline-block;margin-top:10px;background:rgba(255,255,255,.13);border:none;
+      border-radius:10px;color:#93c5fd;font-size:12px;font-weight:700;padding:7px 16px;
+      text-decoration:none;transition:background .2s;}
+    .hdr-back:hover{background:rgba(255,255,255,.25);}
+    input::placeholder{color:#94a3b8;font-weight:400;}
+    .def-art::placeholder,.anagram-art::placeholder{color:#93c5fd;font-weight:500;font-size:13px;}
+    .page-content{display:none;}
+    .page-content.visible{display:block;}
+  </style>
+</head>
+<body id="pageBody">
+
+<div class="modal-overlay" id="nameModal">
+  <div class="modal-box">
+    <div class="modal-logo">💬</div>
+    <div class="modal-title">Willkommen!</div>
+    <div class="modal-sub">Lektion 06 – <em>Miteinander reden</em><br>Bitte geben Sie Ihren Namen ein, bevor Sie beginnen.</div>
+    <input class="modal-inp" id="nameInput" type="text" placeholder="Ihr Name …" maxlength="60"
+      oninput="document.getElementById('startBtn').disabled=!this.value.trim()"
+      onkeydown="if(event.key==='Enter')startExercise()"/>
+    <button class="modal-btn" id="startBtn" onclick="startExercise()" disabled>🚀 Übung starten</button>
+  </div>
+</div>
+
+<div class="student-bar" id="studentBar">
+  <div class="student-card">
+    <div class="sb-avatar">👤</div>
+    <div class="sb-name" id="sbName"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-meta" id="sbMeta"></div>
+    <div class="sb-timer-wrap">
+      <div class="sb-timer-label">⏱ Zeit</div>
+      <div class="sb-timer" id="sbTimer">00:00</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content" id="pageContent">
+<header>
+  <div class="deco"></div>
+  <div class="inner">
+    <div class="hd-tag">Miteinander! B1.1</div>
+    <h1>Lektion 06<br><em style="font-style:italic;opacity:.8;font-size:.8em">Miteinander reden</em></h1>
+    <p>Vokabelübungen – Kommunikation & Konflikte</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="tab-wrap"><div class="tabs" id="tabBar"></div></div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Zurück</button>
+  <div class="nav-dot-wrap" id="navDots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Weiter →</button>
+</div>
+
+<main id="mainArea"></main>
+
+<div class="btn-row">
+  <button class="btn btn-ghost" onclick="resetAll()">↺ Neu starten</button>
+  <button class="btn btn-primary" onclick="checkAllTabs()">✓ Alle auswerten</button>
+</div>
+
+<div class="result" id="resultPanel">
+  <div class="result-emoji" id="rEmoji"></div>
+  <div class="result-score" id="rScore"></div>
+  <div class="result-msg" id="rMsg"></div>
+  <div class="score-strip" id="rStrip"></div>
+</div>
+
+<div class="summary-card" id="summaryCard">
+  <div class="sc-header">
+    <div class="sc-school">Miteinander! B1.1 – Lektion 06</div>
+    <div class="sc-title">Miteinander reden – Übung</div>
+    <div class="sc-student" id="scName"></div>
+    <div class="sc-meta" id="scMeta"></div>
+  </div>
+  <div class="sc-rows" id="scRows"></div>
+  <div class="sc-total">
+    <div>
+      <div class="sc-total-lbl">Gesamtergebnis</div>
+      <div class="sc-total-time" id="scTotalTime"></div>
+    </div>
+    <div class="sc-total-val" id="scTotalVal"></div>
+  </div>
+  <div class="sc-footer">📸 Screenshot als Abgabenachweis – <span id="scTimestamp"></span></div>
+</div>
+
+<div class="back-row">
+  <a class="back-btn" href="index.html">← Ende &amp; Zurück zur Übersicht</a>
+</div>
+<div style="height:40px;"></div>
+
+<script>
+/* ============================================================
+/* ============================================================
+   WORD DATABASE – Lektion 06 (Amadou – Miteinander reden)
+   ============================================================ */
+const WORDS = [
+  {de:"die Abteilung, -en",     vi:"bộ phận, phòng ban",          base:"Abteilung",      art:"die", ex:"Mir ist aufgefallen, dass ich mich als Einzige in der Abteilung um den Automaten kümmere.", def:"Eine Gruppe von Mitarbeitenden, die zusammen an ähnlichen Aufgaben in einer Firma arbeiten.", vi_alts:["phòng ban","bộ phận công ty","phòng"]},
+  {de:"aktuell",                vi:"hiện tại, hiện thời",          base:"aktuell",        art:null,  ex:"Aktueller Projektstand.", def:"Zum jetzigen Zeitpunkt gültig oder relevant; was gerade jetzt passiert oder wichtig ist.", vi_alts:["hiện tại","hiện thời","hiện nay"]},
+  {de:"realistisch",            vi:"thực tế, khả thi",             base:"realistisch",    art:null,  ex:"Zeitplan realistisch?", def:"Vernünftig und erreichbar; was in der Praxis tatsächlich möglich ist.", vi_alts:["thực tế","khả thi","có thể thực hiện"]},
+  {de:"nass",                   vi:"ướt",                          base:"nass",           art:null,  ex:"Warum sind Ninas Haare nass?", def:"Von Wasser oder einer anderen Flüssigkeit durchfeuchtet.", vi_alts:["bị ướt","ẩm ướt"]},
+  {de:"der Pfleger, –",         vi:"người chăm sóc, y tá",         base:"Pfleger",        art:"der", ex:"Ein Pfleger hat angerufen und gesagt, dass es ihm gar nicht gut geht.", def:"Eine Person, die beruflich kranke oder ältere Menschen betreut und versorgt.", vi_alts:["y tá","người chăm sóc","điều dưỡng viên"]},
+  {de:"der Flug, ¨-e",          vi:"chuyến bay",                   base:"Flug",           art:"der", ex:"So kann aus dem Sitznachbarn, den man auf der Flugreise kennengelernt hat, auch ein Freund werden.", def:"Eine Reise mit dem Flugzeug von einem Ort zum anderen.", vi_alts:["chuyến bay"]},
+  {de:"merkwürdig",             vi:"kỳ lạ, lạ lùng",               base:"merkwürdig",     art:null,  ex:"Für Nina ist es merkwürdig, dass Olaf noch nicht da ist.", def:"Seltsam und unerwartet; etwas, das Verwunderung oder Fragen aufwirft.", vi_alts:["kỳ lạ","lạ lùng","kỳ quặc"]},
+  {de:"genießen",               vi:"tận hưởng, thưởng thức",       base:"genießen",       art:null,  ex:"Amadou hat es genossen, dass er am Wochenende keine Termine hatte.", def:"Etwas Angenehmes bewusst und mit Freude erleben.", vi_alts:["tận hưởng","thưởng thức","thưởng"]},
+  {de:"der Gegensatz, ¨-e",     vi:"sự tương phản, mặt đối lập",   base:"Gegensatz",      art:"der", ex:"Nina findet es schade, dass sie im Gegensatz zu Amadou zurzeit nicht viel reist.", def:"Zwei Dinge, die sich stark voneinander unterscheiden oder gegensätzliche Eigenschaften haben.", vi_alts:["sự tương phản","mặt đối lập","sự khác biệt"]},
+  {de:"das Altersheim, -e",     vi:"viện dưỡng lão",               base:"Altersheim",     art:"das", ex:"Nina findet es nett, dass Amadou nach ihrem Vater im Altersheim fragt.", def:"Eine Einrichtung, in der ältere Menschen betreut werden und wohnen.", vi_alts:["viện dưỡng lão","nhà dưỡng lão"]},
+  {de:"die Arbeitslosigkeit",   vi:"nạn thất nghiệp",              base:"Arbeitslosigkeit",art:"die", ex:"Arbeitslosigkeit bedeutet, keinen Job zu haben.", def:"Der Zustand, keine bezahlte Beschäftigung zu haben, obwohl man arbeiten möchte.", vi_alts:["tình trạng thất nghiệp","thất nghiệp"]},
+  {de:"die Katastrophe, -n",    vi:"thảm họa",                     base:"Katastrophe",    art:"die", ex:"Wenn etwas sehr Schlimmes passiert, spricht man von einer Katastrophe.", def:"Ein sehr schwerwiegendes Ereignis, das großen Schaden anrichtet.", vi_alts:["tai họa","thảm kịch"]},
+  {de:"der Konsum (Sg.)",       vi:"sự tiêu thụ, tiêu dùng",       base:"Konsum",         art:"der", ex:"Konsum ist das Verbrauchen von Lebensmitteln, Kleidung und anderen Produkten.", def:"Das Kaufen und Verbrauchen von Waren und Dienstleistungen.", vi_alts:["tiêu dùng","tiêu thụ"]},
+  {de:"die Religion, -en",      vi:"tôn giáo",                     base:"Religion",       art:"die", ex:"Über Religion sollte man beim Small Talk nicht sprechen.", def:"Ein System von Glaubensvorstellungen und Praktiken, das sich auf das Heilige oder Göttliche bezieht.", vi_alts:["tôn giáo","đạo","tín ngưỡng"]},
+  {de:"der Skandal, -e",        vi:"vụ bê bối",                    base:"Skandal",        art:"der", ex:"Findest du, Skandale sind ein gutes Thema für Small Talk?", def:"Ein Ereignis, das öffentliche Empörung auslöst, weil es moralisch falsch erscheint.", vi_alts:["bê bối","scandal"]},
+  {de:"die Umweltverschmutzung",vi:"ô nhiễm môi trường",           base:"Umweltverschmutzung",art:"die",ex:"Umweltverschmutzung ist alles, was die Natur und die Luft schmutzig macht.", def:"Das Verschmutzen von Luft, Wasser oder Boden durch schädliche Stoffe.", vi_alts:["ô nhiễm môi trường","ô nhiễm"]},
+  {de:"der Kiosk, -e",          vi:"quầy báo, ki-ốt",              base:"Kiosk",          art:"der", ex:"Könntest du mir ein Brötchen vom Kiosk mitbringen?", def:"Ein kleiner Verkaufsstand oder kleines Geschäft, das Zeitungen, Getränke oder Snacks verkauft.", vi_alts:["ki-ốt","quầy hàng nhỏ","quầy báo"]},
+  {de:"die Münze, -n",          vi:"đồng xu",                      base:"Münze",          art:"die", ex:"Könntest du fünf Euro in Münzen wechseln?", def:"Ein rundes Metallgeldstück als Zahlungsmittel.", vi_alts:["đồng tiền xu","xu"]},
+  {de:"fassen",                 vi:"không thể tin được",            base:"fassen",         art:null,  ex:"Ich fasse es nicht!", def:"Etwas begreifen oder verstehen; oft in 'Ich fasse es nicht!' = unglaublich!", vi_alts:["không thể tin được","không thể hiểu được"]},
+  {de:"sich beruhigen",         vi:"bình tĩnh lại",                 base:"beruhigen",      art:null,  ex:"Jetzt beruhigen wir uns erst mal.", def:"Ruhiger werden; Aufregung oder Ärger nachlassen lassen.", vi_alts:["bình tĩnh","dịu lại","nguôi xuống"]},
+  {de:"zusammenfassen",         vi:"tóm tắt",                      base:"zusammenfassen", art:null,  ex:"Olaf sollte den Stand des Projekts zusammenfassen.", def:"Die wichtigsten Punkte kurz und übersichtlich darstellen.", vi_alts:["tóm tắt lại","tổng hợp"]},
+  {de:"herunterfahren",         vi:"tắt máy (máy tính)",            base:"herunterfahren", art:null,  ex:"Du solltest eigentlich den Computer runterfahren.", def:"Einen Computer oder ein Gerät ordnungsgemäß ausschalten.", vi_alts:["tắt máy tính","shutdown","tắt nguồn"]},
+  {de:"sich festlegen",         vi:"quyết định, cam kết rõ ràng",   base:"festlegen",      art:null,  ex:"Das haben wir doch zusammen festgelegt.", def:"Eine endgültige Entscheidung treffen und daran festhalten.", vi_alts:["quyết định","cam kết","xác định"]},
+  {de:"die Sitzung, -en",       vi:"cuộc họp, phiên họp",           base:"Sitzung",        art:"die", ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet.", def:"Ein formelles Treffen einer Gruppe, um Themen zu besprechen oder Entscheidungen zu treffen.", vi_alts:["phiên họp","buổi họp","cuộc họp"]},
+  {de:"die Folie, -n",          vi:"slide trình chiếu",             base:"Folie",          art:"die", ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet.", def:"Eine transparente oder bedruckte Seite, die bei Präsentationen gezeigt wird.", vi_alts:["slide","trang trình chiếu"]},
+  {de:"mündlich",               vi:"bằng miệng, bằng lời nói",     base:"mündlich",       art:null,  ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt.", def:"Durch das gesprochene Wort, nicht schriftlich.", vi_alts:["bằng lời","miệng","nói miệng"]},
+  {de:"mitteilen",              vi:"thông báo, truyền đạt",         base:"mitteilen",      art:null,  ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt.", def:"Jemandem etwas sagen oder schreiben; eine Information weitergeben.", vi_alts:["thông báo","báo cáo","truyền đạt"]},
+  {de:"aufschreiben",           vi:"viết xuống, ghi lại",           base:"aufschreiben",   art:null,  ex:"Wenn man die wichtigsten Infos aufschreibt, ist das Protokoll schneller fertig.", def:"Etwas schriftlich notieren, damit man es nicht vergisst.", vi_alts:["ghi lại","viết ra","ghi chép"]},
+  {de:"entstehen",              vi:"phát sinh, hình thành",         base:"entstehen",      art:null,  ex:"Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist.", def:"Durch einen Prozess neu gebildet werden oder anfangen zu existieren.", vi_alts:["nảy sinh","xuất hiện","hình thành"]},
+  {de:"grundsätzlich",          vi:"về nguyên tắc, cơ bản là",      base:"grundsätzlich",  art:null,  ex:"Habt ihr einen Vorschlag, wie wir grundsätzlich mit Konflikten umgehen wollen?", def:"Als allgemeine Regel oder Prinzip; im Wesentlichen.", vi_alts:["về nguyên tắc","cơ bản","về cơ bản"]},
+  {de:"der Konflikt, -e",       vi:"xung đột, mâu thuẫn",           base:"Konflikt",       art:"der", ex:"Konflikte sind ein Problem, dem man in fast jedem Projekt begegnet.", def:"Ein ernsthafter Streit oder eine Auseinandersetzung zwischen Personen oder Gruppen.", vi_alts:["mâu thuẫn","xung đột","tranh chấp"]},
+  {de:"sich verlassen auf",     vi:"tin tưởng vào, trông cậy vào",  base:"verlassen",      art:null,  ex:"Irgendwie habe ich das Gefühl, dass ich mich auf Olaf nicht verlassen kann.", def:"Jemandem oder etwas vertrauen; sicher sein, dass jemand zuverlässig ist.", vi_alts:["tin cậy","dựa vào","trông cậy"]},
+  {de:"vertrauen",              vi:"tin tưởng",                     base:"vertrauen",      art:null,  ex:"Du vertraust mir nicht, oder was?", def:"Glauben, dass jemand ehrlich und zuverlässig ist.", vi_alts:["tin tưởng","tin vào","có lòng tin"]},
+  {de:"Bescheid sagen",         vi:"thông báo, báo cho biết",       base:"Bescheid",       art:null,  ex:"Du gibst nie Bescheid, dass du eine Mail bekommen hast.", def:"Jemandem mitteilen oder informieren, was man weiß oder plant.", vi_alts:["báo cho biết","thông báo","cho biết"]},
+  {de:"ansprechen",             vi:"đề cập, nêu ra vấn đề",         base:"ansprechen",     art:null,  ex:"Danke Amadou, dass du das Problem offen angesprochen hast.", def:"Ein Thema oder Problem direkt erwähnen oder jemanden direkt kontaktieren.", vi_alts:["nêu ra","đề cập đến","đặt vấn đề"]},
+  {de:"vernünftig",             vi:"hợp lý, có lý trí",             base:"vernünftig",     art:null,  ex:"Und eine vernünftige Lösung finden willst.", def:"Logisch und klug denkend; eine Lösung, die Sinn macht.", vi_alts:["có lý","lý trí","hợp lý"]},
+  {de:"interessiert",           vi:"quan tâm, thích thú",           base:"interessiert",   art:null,  ex:"Als Konfliktmanager sollte man an Menschen interessiert sein.", def:"Neugier oder Interesse an etwas oder jemandem zeigen.", vi_alts:["quan tâm","có hứng thú","thích thú"]},
+  {de:"sich aufregen",          vi:"bực mình, nổi giận",            base:"aufregen",       art:null,  ex:"Reg dich nicht auf.", def:"Ärgerlich oder aufgewühlt werden; die Fassung verlieren.", vi_alts:["tức giận","bực bội","nổi giận"]},
+  {de:"ernst",                  vi:"nghiêm túc",                    base:"ernst",          art:null,  ex:"Amadou ist ernst geblieben.", def:"Nicht scherzhaft; eine ruhige und ernsthafte Haltung bewahren.", vi_alts:["nghiêm túc","nghiêm nghị","thận trọng"]},
+  {de:"die Fortbildung, -en",   vi:"khóa đào tạo nâng cao",         base:"Fortbildung",    art:"die", ex:"Ich finde es wichtig, dass man Fortbildungen macht.", def:"Eine Weiterbildung, um neue Kenntnisse oder Fähigkeiten im Beruf zu erwerben.", vi_alts:["đào tạo thêm","bồi dưỡng","nâng cao nghiệp vụ"]},
+  {de:"begegnen",               vi:"gặp gỡ, đối mặt với",           base:"begegnen",       art:null,  ex:"Konflikte sind ein Problem, dem man in fast jedem Projekt begegnet.", def:"Auf jemanden oder etwas treffen; einem Problem gegenüberstehen.", vi_alts:["gặp phải","đối mặt","gặp gỡ"]},
+  {de:"besprechen",             vi:"thảo luận, bàn bạc",            base:"besprechen",     art:null,  ex:"Besprechen Sie Konflikte im Team immer lösungsorientiert.", def:"Über etwas reden, um eine Lösung oder Entscheidung zu finden.", vi_alts:["bàn bạc","trao đổi","thảo luận"]},
+  {de:"die Kritik (Sg.)",       vi:"sự phê bình, chỉ trích",        base:"Kritik",         art:"die", ex:"Äußern Sie Ihre Kritik ruhig und ohne Bewertungen.", def:"Eine Beurteilung, die auf Fehler oder Schwächen hinweist.", vi_alts:["phê phán","chỉ trích","phê bình"]},
+  {de:"der Vorwurf, ¨-e",       vi:"lời trách móc, cáo buộc",       base:"Vorwurf",        art:"der", ex:"Machen Sie keine Vorwürfe.", def:"Eine Aussage, die jemanden für einen Fehler verantwortlich macht.", vi_alts:["sự trách móc","cáo buộc","lời chê trách"]},
+  {de:"der Standpunkt, -e",     vi:"quan điểm, lập trường",         base:"Standpunkt",     art:"der", ex:"Zeigen Sie Interesse am Standpunkt der anderen Seite.", def:"Die persönliche Meinung oder Haltung zu einem bestimmten Thema.", vi_alts:["lập trường","quan điểm","ý kiến"]},
+  {de:"unterbrechen",           vi:"ngắt lời, cắt ngang",           base:"unterbrechen",   art:null,  ex:"Unterbrechen Sie nicht.", def:"Jemanden beim Reden stoppen, bevor er fertig ist.", vi_alts:["cắt ngang","ngắt lời","chen ngang"]},
+  {de:"die Ansicht, -en",       vi:"quan điểm, ý kiến",             base:"Ansicht",        art:"die", ex:"Die anderen haben sicher nicht nur Ansichten, denen Sie widersprechen!", def:"Die persönliche Meinung oder Sichtweise auf etwas.", vi_alts:["ý kiến","quan niệm","quan điểm"]},
+  {de:"bereit",                 vi:"sẵn sàng",                      base:"bereit",         art:null,  ex:"Seien Sie bereit zu einem Kompromiss.", def:"Vorbereitet und willens, etwas zu tun.", vi_alts:["sẵn lòng","sẵn sàng"]},
+  {de:"dauernd",                vi:"liên tục, cứ mãi",              base:"dauernd",        art:null,  ex:"Ihre Kollegin macht dauernd Pausen.", def:"Immer wieder; ohne Unterbrechung oder sehr häufig.", vi_alts:["liên tục","không ngừng","mãi mãi"]},
+  {de:"die Konsequenz, -en",    vi:"hậu quả, kết quả tất yếu",      base:"Konsequenz",     art:"die", ex:"Die Konsequenz ist, dass andere mehr Aufgaben übernehmen müssen.", def:"Die Folge oder das Ergebnis einer Handlung oder Entscheidung.", vi_alts:["hậu quả","kết quả","hệ quả"]},
+  {de:"die Rücksicht (Sg.)",    vi:"sự quan tâm, sự chiếu cố",      base:"Rücksicht",      art:"die", ex:"Typisch, dass du keine Rücksicht auf andere nimmst.", def:"Das Berücksichtigen der Bedürfnisse und Gefühle anderer Menschen.", vi_alts:["sự thông cảm","sự tôn trọng","sự quan tâm"]},
+  {de:"merken",                 vi:"nhận ra, nhận thấy",            base:"merken",         art:null,  ex:"Tobias merkte, wie sehr er sich ärgerte.", def:"Etwas bemerken oder wahrnehmen; erkennen, dass etwas der Fall ist.", vi_alts:["nhận ra","cảm nhận","nhận thấy"]},
+  {de:"der Ärger (Sg.)",        vi:"sự bực bội, tức giận",          base:"Ärger",          art:"der", ex:"Da er seinen Ärger spürte, antwortete er kaum.", def:"Das Gefühl von Verärgerung oder Unzufriedenheit über etwas.", vi_alts:["tức giận","bực tức","sự tức giận"]},
+  {de:"spüren",                 vi:"cảm nhận, cảm thấy",            base:"spüren",         art:null,  ex:"Da er seinen Ärger spürte, antwortete er kaum.", def:"Etwas wahrnehmen oder fühlen, oft ein Gefühl oder eine körperliche Empfindung.", vi_alts:["cảm thấy","nhận ra","cảm nhận"]},
+  {de:"verschwinden",           vi:"biến mất",                      base:"verschwinden",   art:null,  ex:"Aber sie lächelte nur und verschwand mit ihrer großen Tasse im Besprechungsraum.", def:"Plötzlich nicht mehr sichtbar oder vorhanden sein.", vi_alts:["mất tích","biến đi","không còn thấy nữa"]},
+  {de:"heim",                   vi:"về nhà",                        base:"heim",           art:null,  ex:"Den ganzen Heimweg schimpfte er vor sich hin.", def:"In Richtung nach Hause; oft als Präfix in Wörtern wie 'Heimweg' oder 'heimgehen'.", vi_alts:["về nhà","hướng về nhà"]},
+];
+
+const DIALOG_PAIRS = [
+  {left:"Warum sind Ninas Haare nass?",                    right:"Es hat geregnet und sie ist ohne Schirm zur Arbeit gekommen."},
+  {left:"Ich fasse es nicht!",                             right:"Jetzt beruhigen wir uns erst mal."},
+  {left:"Wie war denn dein Wochenende?",                   right:"Wir haben es total genossen – ganz ohne Termine."},
+  {left:"Wie wäre Dienstag, 15 Uhr?",                      right:"Perfekt. Danke."},
+  {left:"Kann man sich auf Olaf verlassen?",               right:"Irgendwie habe ich das Gefühl, dass ich mich auf Olaf nicht verlassen kann."},
+  {left:"Du vertraust mir nicht, oder was?",               right:"Nicht so richtig."},
+  {left:"Warum bist du unzufrieden?",                      right:"Du gibst nie Bescheid, dass du eine Mail bekommen hast."},
+  {left:"Was würde dir helfen?",                           right:"Vielleicht kannst du mehr auf Nachrichten antworten."},
+  {left:"Lasst uns das Problem besprechen.",               right:"Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist."},
+  {left:"Machen Sie keine Vorwürfe.",                      right:"Äußern Sie Ihre Kritik ruhig und ohne Bewertungen."},
+  {left:"Unterbrechen Sie nicht.",                         right:"Hören Sie aufmerksam zu und schauen Sie die Person dabei an."},
+  {left:"Seien Sie bereit zu einem Kompromiss.",           right:"Oft hilft es, wenn eine dritte Person bei dem Gespräch dabei ist."},
+  {left:"Was ist die Konsequenz?",                         right:"Die Konsequenz ist, dass andere mehr Aufgaben übernehmen müssen."},
+  {left:"Reg dich nicht auf.",                             right:"Danke, dass du das Problem offen angesprochen hast."},
+  {left:"Wie kann man Konflikte lösen?",                   right:"Besprechen Sie Konflikte im Team immer lösungsorientiert."},
+  {left:"Was bedeutet 'grundsätzlich'?",                   right:"Als allgemeine Regel; im Wesentlichen, wie man immer vorgehen will."},
+  {left:"Was soll ich nach einer Mail schreiben?",         right:"Vielleicht einfach kurz bestätigen – sowas wie 'Ja, geht klar!'"},
+  {left:"Olaf ist als Erster mit seiner Präsentation dran.",right:"Hm, bisschen merkwürdig, oder? Es ist ja schon zehn Uhr."},
+  {left:"Zeigen Sie Interesse am Standpunkt der anderen Seite.", right:"Die anderen haben sicher nicht nur Ansichten, denen Sie widersprechen!"},
+  {left:"Was bedeutet 'dauernd'?",                         right:"Immer wieder, ohne Unterbrechung – ihre Kollegin macht dauernd Pausen."},
+];
+
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function pick(arr,n){return shuffle(arr).slice(0,n);}
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ');}
+function normVI(s){
+  return s.trim().toLowerCase()
+    .replace(/\(.*?\)/g,'')
+    .replace(/[,;.!?]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function checkVI(input, word){
+  const candidates = word.vi_alts || [word.vi];
+  const inp = normVI(input);
+  return candidates.some(cand => {
+    const c = normVI(cand);
+    if(inp === c) return true;
+    const parts = c.split(',').map(p=>p.trim()).filter(p=>p.length>2);
+    if(parts.some(p => inp === p)) return true;
+    if(parts.some(p => p.split(' ').every(w=>w.length>2 && inp.includes(w)))) return true;
+    return false;
+  });
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+function esc2(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+
+/* ============================================================
+   EXERCISE GENERATORS – alle DE→DE (kein Vietnamesisch)
+   A: Definition → Wort      (Nomen mit Artikel)
+   B: Lückentext             (Wort im Beispielsatz ergänzen)
+   C: Multiple Choice DE     (deutsche Definition wählen)
+   D: Anagramm               (Buchstaben ordnen + Artikel)
+   E: Dialog verbinden       (DE Frage ↔ DE Antwort)
+   F: Wortbank               (Wort aus Pool in Lücke einsetzen)
+   G: Artikel-Trainer        (Hinweis = Beispielsatz, Artikel + Wort eingeben)
+   ============================================================ */
+
+/* A – Definition → Wort */
+function genDef(){
+  const pool=WORDS.filter(w=>w.def);
+  const words=pick(pool,8);
+  return {type:'def',title:'Was ist das Wort?',icon:'🧩',color:'t-def',pts:8,
+    instr:'Lesen Sie die deutsche Erklärung und schreiben Sie Artikel + Wort. Der erste Buchstabe hilft!',
+    items:words.map((w,i)=>({
+      id:'df'+i, def:w.def, answer:w.base, art:w.art,
+      de:w.de, vi:w.vi, ex:w.ex,
+      hint1: w.base[0].toUpperCase()+'___',
+    }))};
+}
+
+/* B – Lückentext */
+function genFill(){
+  const eligible=WORDS.filter(w=>{
+    const key=w.base.replace(/\.\.\./g,'').trim().split(' ')[0];
+    return w.ex.toLowerCase().includes(key.toLowerCase()) && key.length>3;
+  });
+  const words=pick(eligible,8);
+  return {type:'fill',title:'Lückentext',icon:'📝',color:'t-luc',pts:8,
+    instr:'Welches Wort fehlt im Satz? Schreiben Sie das passende Wort in die Lücke.',
+    items:words.map((w,i)=>{
+      const key=w.base.replace(/\.\.\./g,'').trim().split(' ')[0];
+      const rx=new RegExp(key,'i');
+      const m=w.ex.match(rx);
+      const shown=m?w.ex.replace(m[0],'___'):w.ex;
+      return {id:`fi${i}`,sentence:shown,answer:m?m[0]:key,hint:'',de:w.de,vi:w.vi,art:w.art,ex:w.ex};
+    })};
+}
+
+/* C – Multiple Choice mit deutschen Definitionen */
+function genMCDef(){
+  const pool=WORDS.filter(w=>w.def);
+  const words=pick(pool,8);
+  return {type:'mcdef',title:'Welche Definition passt?',icon:'🎯',color:'t-mc',pts:8,
+    instr:'Welche deutsche Erklärung passt zum Wort? Wählen Sie die richtige Definition.',
+    items:words.map((w,i)=>{
+      const dist=shuffle(pool.filter(x=>x.base!==w.base)).slice(0,3);
+      return {id:`cd${i}`,de:w.de,answer:w.def,options:shuffle([w.def,...dist.map(x=>x.def)]),art:w.art,ex:w.ex,vi:w.vi};
+    })};
+}
+
+/* D – Anagramm */
+function scramble(w){
+  const a=w.split('');let s;let tries=0;
+  do{s=shuffle([...a]).join('');tries++;}while(s===w&&tries<20);
+  return s;
+}
+function genAnagram(){
+  const eligible=WORDS.filter(w=>w.base.length>=4&&!w.base.includes(' '));
+  const words=pick(eligible,8);
+  return {type:'anagram',title:'Anagramm',icon:'🔡',color:'t-anagram',pts:8,
+    instr:'Ordnen Sie die Buchstaben zum richtigen Wort. Schreiben Sie Artikel + Wort.',
+    items:words.map((w,i)=>({
+      id:'ag'+i,
+      scrambled:scramble(w.base).toUpperCase(),
+      answer:w.base,art:w.art,
+      de:w.de,vi:w.vi,ex:w.ex
+    }))};
+}
+
+/* E – Dialog verbinden (DE↔DE) */
+function genDialog(){
+  const pairs=pick(DIALOG_PAIRS,8);
+  const rights=shuffle(pairs.map(p=>p.right));
+  return {type:'dialog',title:'Dialog verbinden',icon:'💬',color:'t-dialog',pts:8,
+    instr:'Welche Antwort passt zur Frage? Verbinden Sie die Aussagen auf Deutsch.',
+    items:pairs.map((p,i)=>({id:'dl'+i,left:p.left,answer:p.right})),
+    options:rights};
+}
+
+/* F – Wortbank */
+function genWordBank(){
+  const eligible=WORDS.filter(w=>{
+    const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
+    return w.ex.toLowerCase().includes(key.toLowerCase())&&key.length>3;
+  });
+  const words=pick(eligible,8);
+  const answers=words.map(w=>{
+    const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
+    const rx=new RegExp(key,'i');
+    const m=w.ex.match(rx);
+    return m?m[0]:key;
+  });
+  const bank=shuffle([...answers]);
+  return {type:'wordbank',title:'Wortbank – Lücken füllen',icon:'🏦',color:'t-bank',pts:8,
+    instr:'Wählen Sie das passende Wort aus der Wortbank und füllen Sie die Lücke im Satz.',
+    bank,
+    items:words.map((w,i)=>{
+      const key=w.base.replace(/\.\.\.*/g,'').trim().split(' ')[0];
+      const rx=new RegExp(key,'i');
+      const m=w.ex.match(rx);
+      const ans=m?m[0]:key;
+      const shown=m?w.ex.replace(m[0],'___'):w.ex;
+      return {id:'wb'+i,sentence:shown,answer:ans,hint:'',de:w.de,vi:w.vi,art:w.art,ex:w.ex};
+    })};
+}
+
+/* G – Artikel-Trainer: Satz als Hinweis, Artikel + Wort eingeben */
+function genArtikel(){
+  const pool=WORDS.filter(w=>w.art);
+  const words=pick(pool,8);
+  return {type:'artikel',title:'Artikel-Trainer',icon:'🏷️',color:'t-def',pts:8,
+    instr:'Lesen Sie den Beispielsatz und schreiben Sie den richtigen Artikel (der/die/das) + Wort.',
+    items:words.map((w,i)=>({
+      id:'ar'+i,
+      ex:w.ex,
+      answer:w.base, art:w.art,
+      de:w.de, vi:w.vi
+    }))};
+}
+
+/* ── STATE ── */
+let studentName='';
+let sessionStart=null;
+let tabStartTime={};
+let tabDuration={};
+let globalTimerInterval=null;
+let globalSeconds=0;
+
+function startExercise(){
+  const name=document.getElementById('nameInput').value.trim();
+  if(!name) return;
+  studentName=name;
+  sessionStart=new Date();
+  document.getElementById('nameModal').classList.add('hidden');
+  const bar=document.getElementById('studentBar');
+  bar.classList.add('show');
+  document.getElementById('sbName').textContent=name;
+  updateSbMeta();
+  globalTimerInterval=setInterval(()=>{
+    globalSeconds++;
+    const m=String(Math.floor(globalSeconds/60)).padStart(2,'0');
+    const s=String(globalSeconds%60).padStart(2,'0');
+    document.getElementById('sbTimer').textContent=m+':'+s;
+  },1000);
+  document.getElementById('pageContent').classList.add('visible');
+  tabStartTime[0]=new Date();
+  render();
+}
+
+function updateSbMeta(){
+  const now=sessionStart;
+  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const d=days[now.getDay()];
+  const dt=now.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const tm=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('sbMeta').textContent=d+', '+dt+' – Beginn: '+tm;
+}
+
+function fmtSec(s){
+  if(!s) return '—';
+  const m=Math.floor(s/60),sec=s%60;
+  return m>0?m+'m '+String(sec).padStart(2,'0')+'s':sec+'s';
+}
+
+let exercises=[];
+let currentTab=0;
+const mcState={};
+const tabChecked={};
+
+function buildExercises(){
+  exercises=shuffle([genDef(),genFill(),genMCDef(),genAnagram(),genDialog(),genWordBank(),genArtikel()]);
+  exercises.forEach((ex,i)=>{ex.label=String.fromCharCode(65+i);ex.idx=i;});
+}
+
+/* ── RENDER ── */
+function render(){
+  buildExercises();
+  Object.keys(mcState).forEach(k=>delete mcState[k]);
+  Object.keys(tabChecked).forEach(k=>delete tabChecked[k]);
+  renderTabs();renderDots();renderAll();showTab(0);
+  document.getElementById('resultPanel').classList.remove('show');
+}
+function renderTabs(){
+  document.getElementById('tabBar').innerHTML=exercises.map((ex,i)=>`
+    <button class="tab${i===0?' active':''}" id="tab${i}" onclick="showTab(${i})">
+      ${ex.icon} ${ex.label}
+    </button>`).join('');
+}
+function renderDots(){
+  document.getElementById('navDots').innerHTML=exercises.map((_,i)=>`
+    <div class="nav-dot${i===0?' active':''}" id="dot${i}"></div>`).join('');
+}
+function renderAll(){
+  document.getElementById('mainArea').innerHTML=exercises.map((ex,i)=>renderSection(ex,i)).join('');
+}
+
+function renderSection(ex,idx){
+  let body='';
+  if(ex.type==='fill')    body=renderFill(ex);
+  if(ex.type==='def')     body=renderDef(ex);
+  if(ex.type==='mcdef')   body=renderMCDef(ex);
+  if(ex.type==='dialog')  body=renderDialog(ex);
+  if(ex.type==='anagram') body=renderAnagram(ex);
+  if(ex.type==='wordbank')body=renderWordBank(ex);
+  if(ex.type==='artikel') body=renderArtikel(ex);
+  return `
+  <div class="section${idx===0?' active':''}" id="sec${idx}">
+    <div class="card ${ex.color}">
+      <div class="card-head">
+        <div class="card-icon">${ex.icon}</div>
+        <div class="card-title">${ex.label}. ${ex.title}</div>
+        <div class="card-pts">/ ${ex.pts}</div>
+      </div>
+      <div class="card-body">
+        <div class="instr">${ex.instr}</div>
+        ${body}
+        <button class="btn-check-tab" id="checkbtn${idx}" onclick="checkTab(${idx})">
+          ✓ Auswerten &amp; Lösungen anzeigen
+        </button>
+        <div class="tab-result" id="tabres${idx}"></div>
+        <div class="answer-panel" id="anspanel${idx}"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderFill(ex){
+  return ex.items.map(it=>`
+    <div class="fill-row">
+      <div style="width:100%;font-size:14px;margin-top:2px;">
+        ${it.sentence.replace('___',`<input class="blank" id="${it.id}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" style="min-width:140px;"/>`)}
+      </div>
+    </div>`).join('');
+}
+
+function renderDef(ex){
+  return ex.items.map(it=>`
+    <div class="def-item">
+      <div class="def-tag">🧩 Definition</div>
+      <div class="def-text">${it.def}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--violet);margin-top:2px;">
+        💡 Tipp: Das Wort beginnt mit „<span style="font-size:15px;">${it.answer[0].toUpperCase()}</span>"
+      </div>
+      <div class="def-input-row">
+        ${it.art?`<input class="def-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>`:''}
+        <input class="inp def-word" id="${it.id}_word" type="text" placeholder="${it.answer[0].toUpperCase()}…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>`).join('');
+}
+
+function renderMCDef(ex){
+  return ex.items.map(it=>`
+    <div class="mc-item">
+      <div class="mc-prompt">${it.art?it.art+' ':''}<strong>${it.de}</strong></div>
+      <div class="mc-opts" id="opts_${it.id}">
+        ${it.options.map((o,j)=>`
+          <button class="mc-opt" id="opt_${it.id}_${j}"
+            onclick="mcPick('${it.id}',${j},'${esc2(o)}','${esc2(it.answer)}')"
+          >${o}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderDialog(ex){
+  const optHtml=`<option value="">— wählen —</option>`
+    +ex.options.map(o=>`<option value="${esc(o)}">${o}</option>`).join('');
+  return `<div class="dialog-grid">${ex.items.map(it=>`
+    <div class="dialog-row">
+      <div class="dialog-left">${it.left}</div>
+      <div class="dialog-arr">→</div>
+      <div class="dialog-sel"><select class="sel" id="${it.id}">${optHtml}</select></div>
+    </div>`).join('')}</div>`;
+}
+
+function renderAnagram(ex){
+  return `<div class="anagram-grid">${ex.items.map(it=>`
+    <div class="anagram-item">
+      <div class="anagram-scrambled">${it.scrambled}</div>
+      <div style="font-size:11px;color:#60a5fa;font-style:italic;text-align:center;margin-bottom:4px;">${it.ex}</div>
+      <div class="anagram-inputs">
+        ${it.art?`<input class="anagram-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>`:''}
+        <input class="inp anagram-word" id="${it.id}_word" type="text" placeholder="Wort …" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderWordBank(ex){
+  const bankHtml=`<div class="wb-label">📦 Wortbank:</div>`
+    +ex.bank.map(w=>`<div class="wb-chip" id="wbc_${w}" onclick="wbChipClick(this,'${w.replace(/'/g,"\\'")}')"> ${w}</div>`).join('');
+  const sentHtml=ex.items.map(it=>`
+    <div class="wb-fill-row">
+      ${it.sentence.replace('___',`<input class="blank" id="${it.id}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" style="min-width:130px;" oninput="wbSyncBank()"/>`)}
+    </div>`).join('');
+  return `<div class="wordbank-pool">${bankHtml}</div>${sentHtml}`;
+}
+
+function renderArtikel(ex){
+  return ex.items.map(it=>`
+    <div class="def-item">
+      <div class="def-tag">🏷️ Artikel-Trainer</div>
+      <div class="def-text">${it.ex}</div>
+      <div class="def-input-row">
+        <input class="def-art" id="${it.id}_art" type="text" placeholder="der/die/das" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <input class="inp def-word" id="${it.id}_word" type="text" placeholder="Wort …" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+    </div>`).join('');
+}
+
+/* ── MC LIVE ── */
+function mcPick(id,j,chosen,answer){
+  if(mcState[id]) return;
+  mcState[id]=chosen;
+  document.querySelectorAll(`#opts_${id} .mc-opt`).forEach((btn,k)=>{
+    const val=btn.textContent.trim();
+    if(val===answer) btn.classList.add(tabChecked[getTabIdxForId(id)]!==undefined?'reveal':'ok');
+    else if(k===j && chosen!==answer) btn.classList.add('no');
+    else btn.classList.add('locked');
+  });
+}
+function getTabIdxForId(id){
+  return exercises.findIndex(ex=>ex.items&&ex.items.some(it=>it.id===id));
+}
+
+/* ── CHECK TAB ── */
+function checkTab(idx){
+  const ex=exercises[idx];
+  if(tabChecked[idx]!==undefined) return;
+  let pts=0;
+
+  if(ex.type==='fill'){
+    ex.items.forEach(it=>{
+      const inp=document.getElementById(it.id);
+      if(!inp) return;
+      const val=inp.value.trim();
+      if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='def'){
+    ex.items.forEach(it=>{
+      const artEl=it.art?document.getElementById(it.id+'_art'):null;
+      const wordEl=document.getElementById(it.id+'_word');
+      if(!wordEl) return;
+      const wordVal=wordEl.value.trim();
+      if(!wordVal) return;
+      const wordOk=norm(wordVal)===norm(it.answer);
+      wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
+      if(artEl){
+        const artOk=norm(artEl.value.trim())===norm(it.art);
+        artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      }
+      if(wordOk) pts++;
+    });
+  }
+  if(ex.type==='mcdef'){
+    ex.items.forEach(it=>{
+      const chosen=mcState[it.id];
+      if(!chosen){
+        document.querySelectorAll(`#opts_${it.id} .mc-opt`).forEach(btn=>{
+          if(btn.textContent.trim()===it.answer) btn.classList.add('reveal');
+          else btn.classList.add('locked');
+        });
+      } else if(norm(chosen)===norm(it.answer)) pts++;
+    });
+  }
+  if(ex.type==='dialog'){
+    ex.items.forEach(it=>{
+      const sel=document.getElementById(it.id);
+      if(!sel) return;
+      const val=sel.value;
+      if(!val){sel.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      sel.classList.toggle('ok',ok);sel.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='anagram'){
+    ex.items.forEach(it=>{
+      const artEl=it.art?document.getElementById(it.id+'_art'):null;
+      const wordEl=document.getElementById(it.id+'_word');
+      if(!wordEl) return;
+      const wordVal=wordEl.value.trim();
+      if(!wordVal) return;
+      const wordOk=norm(wordVal)===norm(it.answer);
+      wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
+      if(artEl){
+        const artOk=norm(artEl.value.trim())===norm(it.art);
+        artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      }
+      if(wordOk) pts++;
+    });
+  }
+  if(ex.type==='wordbank'){
+    ex.items.forEach(it=>{
+      const inp=document.getElementById(it.id);
+      if(!inp) return;
+      const val=inp.value.trim();
+      if(!val){inp.classList.remove('ok','no');return;}
+      const ok=norm(val)===norm(it.answer);
+      inp.classList.toggle('ok',ok);inp.classList.toggle('no',!ok);
+      if(ok) pts++;
+    });
+  }
+  if(ex.type==='artikel'){
+    ex.items.forEach(it=>{
+      const artEl=document.getElementById(it.id+'_art');
+      const wordEl=document.getElementById(it.id+'_word');
+      if(!artEl||!wordEl) return;
+      const wordVal=wordEl.value.trim();
+      if(!wordVal) return;
+      const wordOk=norm(wordVal)===norm(it.answer);
+      const artOk=norm(artEl.value.trim())===norm(it.art);
+      wordEl.classList.toggle('ok',wordOk);wordEl.classList.toggle('no',!wordOk);
+      artEl.classList.toggle('ok',artOk);artEl.classList.toggle('no',!artOk);
+      if(wordOk) pts++;
+    });
+  }
+
+  tabChecked[idx]=pts;
+  if(tabStartTime[idx]){
+    const elapsed=Math.round((Date.now()-tabStartTime[idx])/1000);
+    tabDuration[idx]=(tabDuration[idx]||0)+elapsed;
+  }
+
+  const pct=pts/ex.pts;
+  const emoji=pct>=.8?'🌟':pct>=.5?'👍':'💪';
+  const msg=pct>=.8?'Ausgezeichnet! Sehr gut!':pct>=.5?'Gut gemacht! Schauen Sie die Lösungen an.':'Weiter üben! Schauen Sie die Lösungen an.';
+  const resEl=document.getElementById(`tabres${idx}`);
+  resEl.innerHTML=`
+    <div class="tab-res-emoji">${emoji}</div>
+    <div>
+      <div class="tab-res-score">${pts} / ${ex.pts} Punkte</div>
+      <div class="tab-res-msg">${msg}</div>
+    </div>`;
+  resEl.classList.add('show');
+
+  const ansEl=document.getElementById(`anspanel${idx}`);
+  ansEl.innerHTML=`
+    <div class="ans-title">✅ Lösungen – ${ex.label}. ${ex.title}</div>
+    ${ex.items.map((it,k)=>{
+      if(ex.type==='dialog') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.left}</div>
+            <div class="ans-vi">→ ${it.answer}</div>
+          </div>
+        </div>`;
+      if(ex.type==='anagram') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.scrambled} → <strong>${it.art?it.art+' ':''}${it.answer}</strong></div>
+            <div class="ans-ex">${it.ex}</div>
+          </div>
+        </div>`;
+      if(ex.type==='wordbank') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.ex}</div>
+            <div class="ans-vi">→ Lückenwort: <strong>${it.answer}</strong></div>
+          </div>
+        </div>`;
+      if(ex.type==='mcdef') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">${it.art?it.art+' ':''}${it.de}</div>
+            <div class="ans-vi">✔ ${it.answer}</div>
+            <div class="ans-ex">${it.ex}</div>
+          </div>
+        </div>`;
+      if(ex.type==='artikel') return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de"><strong>${it.art} ${it.answer}</strong></div>
+            <div class="ans-ex">${it.ex}</div>
+          </div>
+        </div>`;
+      return `
+        <div class="ans-row">
+          <div class="ans-num">${k+1}.</div>
+          <div>
+            <div class="ans-de">
+              ${it.art?`<span class="ans-art">${it.art}</span> `:''}${it.de||it.prompt||it.answer||''}
+            </div>
+            <div class="ans-vi">${it.def||''}</div>
+            <div class="ans-ex">${it.ex||''}</div>
+          </div>
+        </div>`;
+    }).join('')}`;
+  ansEl.classList.add('show');
+
+  const tabEl=document.getElementById(`tab${idx}`);
+  if(tabEl) tabEl.classList.add('done');
+  const dotEl=document.getElementById(`dot${idx}`);
+  if(dotEl) dotEl.classList.add('done');
+  const btn=document.getElementById(`checkbtn${idx}`);
+  if(btn){btn.disabled=true;btn.textContent='✓ Ausgewertet';}
+}
+
+/* ── CHECK ALL ── */
+function checkAllTabs(){
+  exercises.forEach((_,i)=>{if(tabChecked[i]===undefined) checkTab(i);});
+  let total=0,max=0;
+  exercises.forEach((ex,i)=>{total+=(tabChecked[i]??0);max+=ex.pts;});
+  const panel=document.getElementById('resultPanel');
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const pct=total/max;
+  document.getElementById('rEmoji').textContent=pct>=.8?'🏆':pct>=.5?'😊':'📚';
+  document.getElementById('rScore').textContent=total+' / '+max+' Punkte';
+  document.getElementById('rMsg').textContent=pct>=.8?'Ausgezeichnet! Weiter so!':pct>=.5?'Gut gemacht! Üben Sie weiter.':'Kein Problem – einfach nochmal versuchen!';
+  document.getElementById('rStrip').innerHTML=exercises.map((ex,i)=>`
+    <div class="score-chip" onclick="showTab(${i})" title="Klicken zum Anzeigen">
+      ${ex.icon} ${ex.label}<br>${tabChecked[i]??0} / ${ex.pts}
+    </div>`).join('');
+  if(globalTimerInterval){clearInterval(globalTimerInterval);globalTimerInterval=null;}
+  showSummaryCard(total,max);
+}
+
+function showSummaryCard(total,max){
+  if(!studentName) return;
+  const now=new Date();
+  const dt=now.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const tm=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('scName').textContent='👤 '+studentName;
+  document.getElementById('scMeta').textContent=
+    sessionStart?'Beginn: '+sessionStart.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
+    +'  ·  Ende: '+tm:'Abgabe: '+tm;
+  document.getElementById('scTimestamp').textContent=dt+' '+tm;
+  document.getElementById('scTotalVal').textContent=total+' / '+max;
+  document.getElementById('scTotalTime').textContent='⏱ Gesamtdauer: '+fmtSec(globalSeconds);
+  document.getElementById('scRows').innerHTML=exercises.map((ex,i)=>`
+    <div class="sc-row">
+      <div class="sc-lbl">${ex.icon} ${ex.label}. ${ex.title}</div>
+      <div class="sc-score">${tabChecked[i]??0} / ${ex.pts}</div>
+      <div class="sc-time">⏱ ${fmtSec(tabDuration[i]||0)}</div>
+    </div>`).join('');
+  document.getElementById('summaryCard').classList.add('show');
+  document.getElementById('summaryCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── NAVIGATION ── */
+function showTab(i){
+  if(currentTab!==i && tabStartTime[currentTab] && tabChecked[currentTab]===undefined){
+    const elapsed=Math.round((Date.now()-tabStartTime[currentTab])/1000);
+    tabDuration[currentTab]=(tabDuration[currentTab]||0)+elapsed;
+  }
+  currentTab=i;
+  if(!tabStartTime[i]) tabStartTime[i]=new Date();
+  document.querySelectorAll('.section').forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.querySelectorAll('.tab').forEach((t,k)=>{
+    const wasDone=t.classList.contains('done');
+    t.classList.toggle('active',k===i);
+    if(wasDone) t.classList.add('done');
+  });
+  document.querySelectorAll('.nav-dot').forEach((d,k)=>{
+    const wasDone=d.classList.contains('done');
+    d.classList.toggle('active',k===i);
+    if(wasDone) d.classList.add('done');
+  });
+  document.getElementById('prevBtn').disabled=i===0;
+  document.getElementById('nextBtn').disabled=i===exercises.length-1;
+}
+function navigate(dir){
+  showTab(Math.max(0,Math.min(exercises.length-1,currentTab+dir)));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── WORDBANK ── */
+function wbChipClick(chip,word){
+  const inputs=document.querySelectorAll('.blank[id^="wb"]');
+  for(const inp of inputs){
+    if(!inp.value){inp.value=word;chip.classList.add('used');return;}
+  }
+}
+function wbSyncBank(){
+  document.querySelectorAll('.wb-chip').forEach(chip=>{
+    const w=chip.textContent.trim();
+    const used=[...document.querySelectorAll('.blank[id^="wb"]')].some(inp=>inp.value.trim()===w);
+    chip.classList.toggle('used',used);
+  });
+}
+
+/* ── RESET ── */
+function resetAll(){
+  Object.keys(mcState).forEach(k=>delete mcState[k]);
+  Object.keys(tabChecked).forEach(k=>delete tabChecked[k]);
+  Object.keys(tabStartTime).forEach(k=>delete tabStartTime[k]);
+  Object.keys(tabDuration).forEach(k=>delete tabDuration[k]);
+  globalSeconds=0;
+  document.getElementById('sbTimer').textContent='00:00';
+  if(globalTimerInterval){clearInterval(globalTimerInterval);globalTimerInterval=null;}
+  globalTimerInterval=setInterval(()=>{
+    globalSeconds++;
+    const m=String(Math.floor(globalSeconds/60)).padStart(2,'0');
+    const s=String(globalSeconds%60).padStart(2,'0');
+    document.getElementById('sbTimer').textContent=m+':'+s;
+  },1000);
+  tabStartTime[0]=new Date();
+  document.getElementById('summaryCard').classList.remove('show');
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</div>
+</body>
+</html>

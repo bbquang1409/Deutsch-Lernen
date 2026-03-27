@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mobil Lernen – Lektion 06</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;color:#fff;padding:28px 20px 24px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),
+             radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;
+  color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;
+  border:1px solid rgba(255,255,255,.15);transition:background .2s;}
+.hdr-back:hover{background:rgba(255,255,255,.22);}
+.mode-wrap{max-width:440px;margin:24px auto 0;padding:0 16px;display:flex;gap:10px;}
+.mode-btn{flex:1;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--card);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.mode-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.fc-wrap{max-width:440px;margin:0 auto;padding:20px 16px;}
+.fc-progress{background:var(--border);border-radius:99px;height:6px;margin-bottom:6px;}
+.fc-progress-bar{background:var(--blue);height:6px;border-radius:99px;transition:width .4s;}
+.fc-counter{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;}
+.fc-card{background:var(--card);border-radius:20px;box-shadow:0 4px 24px rgba(37,99,235,.13);
+  padding:36px 24px;text-align:center;min-height:230px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform .1s;border:2px solid var(--border);}
+.fc-card:active{transform:scale(.98);}
+.fc-art{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:4px 12px;border-radius:99px;}
+.fc-de{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);line-height:1.25;}
+.fc-vi{font-size:19px;color:var(--muted);display:none;}
+.fc-ex{font-size:12px;color:#64748b;font-style:italic;display:none;line-height:1.5;max-width:320px;}
+.fc-tap{font-size:13px;color:#94a3b8;margin-top:4px;}
+.fc-card.flipped .fc-vi{display:block;}
+.fc-card.flipped .fc-ex{display:block;}
+.fc-card.flipped .fc-tap{display:none;}
+.tts-btn{background:var(--blue-lt);border:none;border-radius:99px;width:44px;height:44px;
+  cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto;transition:background .15s;}
+.tts-btn:hover{background:#bfdbfe;}
+.fc-btns{display:flex;gap:12px;margin-top:16px;}
+.fc-btn{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .1s;}
+.fc-btn:active{transform:scale(.97);}
+.fc-btn-wrong{background:var(--rose-lt);color:var(--rose);}
+.fc-btn-ok{background:var(--green-lt);color:var(--green);}
+.main-hidden{display:none;}
+.score-screen{display:none;max-width:440px;margin:40px auto;padding:0 16px;text-align:center;}
+.score-screen.show{display:block;}
+.score-emoji{font-size:56px;margin-bottom:12px;}
+.score-big{font-family:'DM Serif Display',serif;font-size:48px;color:var(--blue);}
+.score-msg{font-size:16px;color:var(--muted);margin:8px 0 24px;}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 32px;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin:6px;}
+.btn-back{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:14px;
+  padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  text-decoration:none;display:inline-block;margin:6px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 06 · MOBIL LERNEN</div>
+    <h1>Amadou – Miteinander reden</h1>
+    <p id="modeLabel">Alle Vokabeln lernen</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="mode-wrap">
+  <button class="mode-btn active" id="btnLearn" onclick="setMode('learn')">📚 Vokabeln lernen</button>
+  <button class="mode-btn" id="btnTest" onclick="setMode('test')">🎯 Wortschatztest</button>
+</div>
+
+<div class="fc-wrap" id="fcWrap">
+  <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+  <div class="fc-counter" id="fcCounter">1 / —</div>
+  <div class="fc-card" id="fcCard" onclick="flipCard()">
+    <button class="tts-btn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
+    <div class="fc-art" id="fcArt"></div>
+    <div class="fc-de" id="fcDe">Lade…</div>
+    <div class="fc-vi" id="fcVi"></div>
+    <div class="fc-ex" id="fcEx"></div>
+    <div class="fc-tap" id="fcTap">Tippen zum Umdrehen</div>
+  </div>
+  <div class="fc-btns main-hidden" id="fcBtns">
+    <button class="fc-btn fc-btn-wrong" onclick="answer(false)">✗ Nochmal</button>
+    <button class="fc-btn fc-btn-ok" onclick="answer(true)">✓ Gewusst</button>
+  </div>
+</div>
+
+<div class="score-screen" id="scoreScreen">
+  <div class="score-emoji" id="scoreEmoji">⭐</div>
+  <div class="score-big" id="scoreBig"></div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <button class="btn-restart" onclick="restartTest()">🔄 Nochmal</button>
+  <a href="index.html" class="btn-back">← Zurück</a>
+</div>
+
+<script>
+const WORDS = [
+  {de:"die Abteilung",art:"die",vi:"bộ phận, phòng ban",ex:"Mir ist aufgefallen, dass ich mich als Einzige in der Abteilung um den Automaten kümmere."},
+  {de:"aktuell",art:"",vi:"hiện tại, hiện thời",ex:"Aktueller Projektstand."},
+  {de:"realistisch",art:"",vi:"thực tế, khả thi",ex:"Zeitplan realistisch?"},
+  {de:"nass",art:"",vi:"ướt",ex:"Warum sind Ninas Haare nass?"},
+  {de:"der Pfleger",art:"der",vi:"người chăm sóc, y tá",ex:"Ein Pfleger hat angerufen und gesagt, dass es ihm gar nicht gut geht."},
+  {de:"der Flug",art:"der",vi:"chuyến bay",ex:"So kann aus dem Sitznachbarn, den man auf der Flugreise kennengelernt hat, auch ein Freund werden."},
+  {de:"merkwürdig",art:"",vi:"kỳ lạ, lạ lùng",ex:"Für Nina ist es merkwürdig, dass Olaf noch nicht da ist."},
+  {de:"genießen",art:"",vi:"tận hưởng, thưởng thức",ex:"Amadou hat es genossen, dass er am Wochenende keine Termine hatte."},
+  {de:"der Gegensatz",art:"der",vi:"sự tương phản, mặt đối lập",ex:"Nina findet es schade, dass sie im Gegensatz zu Amadou zurzeit nicht viel reist."},
+  {de:"das Altersheim",art:"das",vi:"viện dưỡng lão",ex:"Nina findet es nett, dass Amadou nach ihrem Vater im Altersheim fragt."},
+  {de:"die Arbeitslosigkeit",art:"die",vi:"nạn thất nghiệp",ex:"Arbeitslosigkeit bedeutet, keinen Job zu haben."},
+  {de:"die Katastrophe",art:"die",vi:"thảm họa",ex:"Wenn etwas sehr Schlimmes passiert, spricht man von einer Katastrophe."},
+  {de:"der Konsum",art:"der",vi:"sự tiêu thụ, tiêu dùng",ex:"Konsum ist das Verbrauchen von Lebensmitteln, Kleidung und anderen Produkten."},
+  {de:"die Religion",art:"die",vi:"tôn giáo",ex:"Über Religion sollte man beim Small Talk nicht sprechen."},
+  {de:"der Skandal",art:"der",vi:"vụ bê bối, scandal",ex:"Findest du, Skandale sind ein gutes Thema für Small Talk?"},
+  {de:"die Umweltverschmutzung",art:"die",vi:"ô nhiễm môi trường",ex:"Umweltverschmutzung ist alles, was die Natur und die Luft schmutzig macht."},
+  {de:"der Kiosk",art:"der",vi:"quầy báo, ki-ốt",ex:"Könntest du mir ein Brötchen vom Kiosk mitbringen?"},
+  {de:"die Münze",art:"die",vi:"đồng xu",ex:"Könntest du fünf Euro in Münzen wechseln?"},
+  {de:"fassen",art:"",vi:"không thể tin được (Ich fasse es nicht!)",ex:"Ich fasse es nicht!"},
+  {de:"sich beruhigen",art:"",vi:"bình tĩnh lại",ex:"Jetzt beruhigen wir uns erst mal."},
+  {de:"zusammenfassen",art:"",vi:"tóm tắt",ex:"Olaf sollte den Stand des Projekts zusammenfassen."},
+  {de:"herunterfahren",art:"",vi:"tắt máy, shutdown",ex:"Du solltest eigentlich den Computer runterfahren."},
+  {de:"sich festlegen",art:"",vi:"quyết định, cam kết rõ ràng",ex:"Das haben wir doch zusammen festgelegt."},
+  {de:"die Sitzung",art:"die",vi:"cuộc họp, phiên họp",ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet."},
+  {de:"die Folie",art:"die",vi:"tờ slide trình chiếu",ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet."},
+  {de:"mündlich",art:"",vi:"bằng miệng, bằng lời nói",ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt."},
+  {de:"mitteilen",art:"",vi:"thông báo, truyền đạt",ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt."},
+  {de:"aufschreiben",art:"",vi:"viết xuống, ghi lại",ex:"Wenn man die wichtigsten Infos aufschreibt, ist das Protokoll schneller fertig."},
+  {de:"entstehen",art:"",vi:"phát sinh, hình thành",ex:"Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist."},
+  {de:"grundsätzlich",art:"",vi:"về nguyên tắc, cơ bản là",ex:"Habt ihr einen Vorschlag, wie wir grundsätzlich mit Konflikten umgehen wollen?"},
+  {de:"der Konflikt",art:"der",vi:"xung đột, mâu thuẫn",ex:"Wie wir grundsätzlich mit Konflikten umgehen wollen?"},
+  {de:"sich verlassen auf",art:"",vi:"tin tưởng vào, trông cậy vào",ex:"Irgendwie habe ich das Gefühl, dass ich mich auf Olaf nicht verlassen kann."},
+  {de:"vertrauen",art:"",vi:"tin tưởng ai đó",ex:"Du vertraust mir nicht, oder was?"},
+  {de:"Bescheid sagen",art:"",vi:"thông báo, báo cho biết",ex:"Du gibst nie Bescheid, dass du eine Mail bekommen hast."},
+  {de:"ansprechen",art:"",vi:"đề cập, nêu ra vấn đề",ex:"Danke Amadou, dass du das Problem offen angesprochen hast."},
+  {de:"vernünftig",art:"",vi:"hợp lý, có lý trí",ex:"Und eine vernünftige Lösung finden willst."},
+  {de:"interessiert",art:"",vi:"quan tâm, thích thú",ex:"Als Konfliktmanager sollte man an Menschen interessiert sein."},
+  {de:"sich aufregen",art:"",vi:"bực mình, nổi giận",ex:"Reg dich nicht auf."},
+  {de:"ernst",art:"",vi:"nghiêm túc, nghiêm trọng",ex:"Amadou ist ernst geblieben."},
+  {de:"die Fortbildung",art:"die",vi:"khóa đào tạo nâng cao",ex:"Ich finde es wichtig, dass man Fortbildungen macht."},
+  {de:"begegnen",art:"",vi:"gặp gỡ, đối mặt với",ex:"Konflikte sind ein Problem, dem man in fast jedem Projekt begegnet."},
+  {de:"besprechen",art:"",vi:"thảo luận, bàn bạc",ex:"Besprechen Sie Konflikte im Team immer lösungsorientiert."},
+  {de:"die Kritik",art:"die",vi:"sự phê bình, chỉ trích",ex:"Äußern Sie Ihre Kritik ruhig und ohne Bewertungen."},
+  {de:"der Vorwurf",art:"der",vi:"lời trách móc, cáo buộc",ex:"Machen Sie keine Vorwürfe."},
+  {de:"der Standpunkt",art:"der",vi:"quan điểm, lập trường",ex:"Zeigen Sie Interesse am Standpunkt der anderen Seite."},
+  {de:"unterbrechen",art:"",vi:"ngắt lời, cắt ngang",ex:"Unterbrechen Sie nicht."},
+  {de:"die Ansicht",art:"die",vi:"quan điểm, ý kiến",ex:"Die anderen haben sicher nicht nur Ansichten, denen Sie widersprechen!"},
+  {de:"bereit",art:"",vi:"sẵn sàng",ex:"Seien Sie bereit zu einem Kompromiss."},
+  {de:"dauernd",art:"",vi:"liên tục, cứ mãi",ex:"Ihre Kollegin macht dauernd Pausen."},
+  {de:"die Konsequenz",art:"die",vi:"hậu quả, kết quả tất yếu",ex:"Die Konsequenz ist, dass andere mehr Aufgaben übernehmen müssen."},
+  {de:"die Rücksicht",art:"die",vi:"sự quan tâm, sự chiếu cố",ex:"Typisch, dass du keine Rücksicht auf andere nimmst."},
+  {de:"merken",art:"",vi:"nhận ra, nhận thấy",ex:"Tobias merkte, wie sehr er sich ärgerte."},
+  {de:"der Ärger",art:"der",vi:"sự bực bội, tức giận",ex:"Da er seinen Ärger spürte, antwortete er kaum."},
+  {de:"spüren",art:"",vi:"cảm nhận, cảm thấy",ex:"Da er seinen Ärger spürte, antwortete er kaum."},
+  {de:"verschwinden",art:"",vi:"biến mất",ex:"Aber sie lächelte nur und verschwand mit ihrer großen Tasse im Besprechungsraum."},
+  {de:"heim",art:"",vi:"về nhà",ex:"Den ganzen Heimweg schimpfte er vor sich hin."},
+];
+
+let mode='learn', queue=[], current=0, flipped=false, correct=0;
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function setMode(m){
+  mode=m;
+  document.getElementById('btnLearn').classList.toggle('active',m==='learn');
+  document.getElementById('btnTest').classList.toggle('active',m==='test');
+  document.getElementById('modeLabel').textContent=m==='learn'?'Alle Vokabeln lernen':'Wortschatztest – 10 Karten';
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('fcWrap').style.display='block';
+  initDeck();
+}
+function initDeck(){
+  queue=mode==='learn'?shuffle(WORDS):shuffle(WORDS).slice(0,10);
+  current=0; correct=0; flipped=false; updateCard();
+}
+function updateCard(){
+  if(current>=queue.length){endSession();return;}
+  const w=queue[current]; flipped=false;
+  document.getElementById('fcCard').classList.remove('flipped');
+  document.getElementById('fcArt').textContent=w.art||'';
+  document.getElementById('fcArt').style.display=w.art?'inline-block':'none';
+  document.getElementById('fcDe').textContent=w.de;
+  document.getElementById('fcVi').textContent=w.vi;
+  document.getElementById('fcEx').textContent=w.ex||'';
+  document.getElementById('fcTap').style.display='block';
+  document.getElementById('fcBtns').classList.toggle('main-hidden',mode==='learn');
+  document.getElementById('fcBar').style.width=Math.round(current/queue.length*100)+'%';
+  document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
+  setTimeout(()=>speakCurrent(),300);
+}
+function flipCard(){
+  if(flipped)return; flipped=true;
+  document.getElementById('fcCard').classList.add('flipped');
+  if(mode==='learn') document.getElementById('fcBtns').classList.remove('main-hidden');
+}
+function speakCurrent(){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(queue[current].de);
+  u.lang='de-DE'; u.rate=0.85; window.speechSynthesis.speak(u);
+}
+function answer(ok){
+  if(ok){correct++;current++;updateCard();}
+  else{const w=queue.splice(current,1)[0];queue.splice(Math.min(current+3,queue.length),0,w);updateCard();}
+}
+function endSession(){
+  document.getElementById('fcWrap').style.display='none';
+  document.getElementById('scoreScreen').classList.add('show');
+  if(mode==='learn'){
+    document.getElementById('scoreEmoji').textContent='🎉';
+    document.getElementById('scoreBig').textContent='Fertig!';
+    document.getElementById('scoreMsg').textContent='Sie haben alle '+WORDS.length+' Vokabeln durchgelernt.';
+  } else {
+    const pct=Math.round(correct/10*100);
+    document.getElementById('scoreEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';
+    document.getElementById('scoreBig').textContent=correct+'/10 ('+pct+'%)';
+    document.getElementById('scoreMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';
+  }
+}
+function restartTest(){setMode(mode);}
+initDeck();
+</script>
+</body>
+</html>
