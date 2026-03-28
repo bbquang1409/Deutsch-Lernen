@@ -106,67 +106,71 @@ header p{font-size:13px;color:rgba(255,255,255,.55);}
 </div>
 
 <script>
+
+<script>
+// pl: Pluralform | null wenn kein Plural oder unzählbar
 const WORDS = [
-  {de:"die Abteilung",art:"die",vi:"bộ phận, phòng ban",ex:"Mir ist aufgefallen, dass ich mich als Einzige in der Abteilung um den Automaten kümmere."},
-  {de:"aktuell",art:"",vi:"hiện tại, hiện thời",ex:"Aktueller Projektstand."},
-  {de:"realistisch",art:"",vi:"thực tế, khả thi",ex:"Zeitplan realistisch?"},
-  {de:"nass",art:"",vi:"ướt",ex:"Warum sind Ninas Haare nass?"},
-  {de:"der Pfleger",art:"der",vi:"người chăm sóc, y tá",ex:"Ein Pfleger hat angerufen und gesagt, dass es ihm gar nicht gut geht."},
-  {de:"der Flug",art:"der",vi:"chuyến bay",ex:"So kann aus dem Sitznachbarn, den man auf der Flugreise kennengelernt hat, auch ein Freund werden."},
-  {de:"merkwürdig",art:"",vi:"kỳ lạ, lạ lùng",ex:"Für Nina ist es merkwürdig, dass Olaf noch nicht da ist."},
-  {de:"genießen",art:"",vi:"tận hưởng, thưởng thức",ex:"Amadou hat es genossen, dass er am Wochenende keine Termine hatte."},
-  {de:"der Gegensatz",art:"der",vi:"sự tương phản, mặt đối lập",ex:"Nina findet es schade, dass sie im Gegensatz zu Amadou zurzeit nicht viel reist."},
-  {de:"das Altersheim",art:"das",vi:"viện dưỡng lão",ex:"Nina findet es nett, dass Amadou nach ihrem Vater im Altersheim fragt."},
-  {de:"die Arbeitslosigkeit",art:"die",vi:"nạn thất nghiệp",ex:"Arbeitslosigkeit bedeutet, keinen Job zu haben."},
-  {de:"die Katastrophe",art:"die",vi:"thảm họa",ex:"Wenn etwas sehr Schlimmes passiert, spricht man von einer Katastrophe."},
-  {de:"der Konsum",art:"der",vi:"sự tiêu thụ, tiêu dùng",ex:"Konsum ist das Verbrauchen von Lebensmitteln, Kleidung und anderen Produkten."},
-  {de:"die Religion",art:"die",vi:"tôn giáo",ex:"Über Religion sollte man beim Small Talk nicht sprechen."},
-  {de:"der Skandal",art:"der",vi:"vụ bê bối, scandal",ex:"Findest du, Skandale sind ein gutes Thema für Small Talk?"},
-  {de:"die Umweltverschmutzung",art:"die",vi:"ô nhiễm môi trường",ex:"Umweltverschmutzung ist alles, was die Natur und die Luft schmutzig macht."},
-  {de:"der Kiosk",art:"der",vi:"quầy báo, ki-ốt",ex:"Könntest du mir ein Brötchen vom Kiosk mitbringen?"},
-  {de:"die Münze",art:"die",vi:"đồng xu",ex:"Könntest du fünf Euro in Münzen wechseln?"},
-  {de:"fassen",art:"",vi:"không thể tin được (Ich fasse es nicht!)",ex:"Ich fasse es nicht!"},
-  {de:"sich beruhigen",art:"",vi:"bình tĩnh lại",ex:"Jetzt beruhigen wir uns erst mal."},
-  {de:"zusammenfassen",art:"",vi:"tóm tắt",ex:"Olaf sollte den Stand des Projekts zusammenfassen."},
-  {de:"herunterfahren",art:"",vi:"tắt máy, shutdown",ex:"Du solltest eigentlich den Computer runterfahren."},
-  {de:"sich festlegen",art:"",vi:"quyết định, cam kết rõ ràng",ex:"Das haben wir doch zusammen festgelegt."},
-  {de:"die Sitzung",art:"die",vi:"cuộc họp, phiên họp",ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet."},
-  {de:"die Folie",art:"die",vi:"tờ slide trình chiếu",ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet."},
-  {de:"mündlich",art:"",vi:"bằng miệng, bằng lời nói",ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt."},
-  {de:"mitteilen",art:"",vi:"thông báo, truyền đạt",ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt."},
-  {de:"aufschreiben",art:"",vi:"viết xuống, ghi lại",ex:"Wenn man die wichtigsten Infos aufschreibt, ist das Protokoll schneller fertig."},
-  {de:"entstehen",art:"",vi:"phát sinh, hình thành",ex:"Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist."},
-  {de:"grundsätzlich",art:"",vi:"về nguyên tắc, cơ bản là",ex:"Habt ihr einen Vorschlag, wie wir grundsätzlich mit Konflikten umgehen wollen?"},
-  {de:"der Konflikt",art:"der",vi:"xung đột, mâu thuẫn",ex:"Wie wir grundsätzlich mit Konflikten umgehen wollen?"},
-  {de:"sich verlassen auf",art:"",vi:"tin tưởng vào, trông cậy vào",ex:"Irgendwie habe ich das Gefühl, dass ich mich auf Olaf nicht verlassen kann."},
-  {de:"vertrauen",art:"",vi:"tin tưởng ai đó",ex:"Du vertraust mir nicht, oder was?"},
-  {de:"Bescheid sagen",art:"",vi:"thông báo, báo cho biết",ex:"Du gibst nie Bescheid, dass du eine Mail bekommen hast."},
-  {de:"ansprechen",art:"",vi:"đề cập, nêu ra vấn đề",ex:"Danke Amadou, dass du das Problem offen angesprochen hast."},
-  {de:"vernünftig",art:"",vi:"hợp lý, có lý trí",ex:"Und eine vernünftige Lösung finden willst."},
-  {de:"interessiert",art:"",vi:"quan tâm, thích thú",ex:"Als Konfliktmanager sollte man an Menschen interessiert sein."},
-  {de:"sich aufregen",art:"",vi:"bực mình, nổi giận",ex:"Reg dich nicht auf."},
-  {de:"ernst",art:"",vi:"nghiêm túc, nghiêm trọng",ex:"Amadou ist ernst geblieben."},
-  {de:"die Fortbildung",art:"die",vi:"khóa đào tạo nâng cao",ex:"Ich finde es wichtig, dass man Fortbildungen macht."},
-  {de:"begegnen",art:"",vi:"gặp gỡ, đối mặt với",ex:"Konflikte sind ein Problem, dem man in fast jedem Projekt begegnet."},
-  {de:"besprechen",art:"",vi:"thảo luận, bàn bạc",ex:"Besprechen Sie Konflikte im Team immer lösungsorientiert."},
-  {de:"die Kritik",art:"die",vi:"sự phê bình, chỉ trích",ex:"Äußern Sie Ihre Kritik ruhig und ohne Bewertungen."},
-  {de:"der Vorwurf",art:"der",vi:"lời trách móc, cáo buộc",ex:"Machen Sie keine Vorwürfe."},
-  {de:"der Standpunkt",art:"der",vi:"quan điểm, lập trường",ex:"Zeigen Sie Interesse am Standpunkt der anderen Seite."},
-  {de:"unterbrechen",art:"",vi:"ngắt lời, cắt ngang",ex:"Unterbrechen Sie nicht."},
-  {de:"die Ansicht",art:"die",vi:"quan điểm, ý kiến",ex:"Die anderen haben sicher nicht nur Ansichten, denen Sie widersprechen!"},
-  {de:"bereit",art:"",vi:"sẵn sàng",ex:"Seien Sie bereit zu einem Kompromiss."},
-  {de:"dauernd",art:"",vi:"liên tục, cứ mãi",ex:"Ihre Kollegin macht dauernd Pausen."},
-  {de:"die Konsequenz",art:"die",vi:"hậu quả, kết quả tất yếu",ex:"Die Konsequenz ist, dass andere mehr Aufgaben übernehmen müssen."},
-  {de:"die Rücksicht",art:"die",vi:"sự quan tâm, sự chiếu cố",ex:"Typisch, dass du keine Rücksicht auf andere nimmst."},
-  {de:"merken",art:"",vi:"nhận ra, nhận thấy",ex:"Tobias merkte, wie sehr er sich ärgerte."},
-  {de:"der Ärger",art:"der",vi:"sự bực bội, tức giận",ex:"Da er seinen Ärger spürte, antwortete er kaum."},
-  {de:"spüren",art:"",vi:"cảm nhận, cảm thấy",ex:"Da er seinen Ärger spürte, antwortete er kaum."},
-  {de:"verschwinden",art:"",vi:"biến mất",ex:"Aber sie lächelte nur und verschwand mit ihrer großen Tasse im Besprechungsraum."},
-  {de:"heim",art:"",vi:"về nhà",ex:"Den ganzen Heimweg schimpfte er vor sich hin."},
+  {de:"die Abteilung",    pl:"die Abteilungen",  art:"die", vi:"bộ phận, phòng ban",        ex:"Mir ist aufgefallen, dass ich mich als Einzige in der Abteilung um den Automaten kümmere."},
+  {de:"aktuell",          pl:null,               art:"",    vi:"hiện tại, hiện thời",        ex:"Aktueller Projektstand."},
+  {de:"realistisch",      pl:null,               art:"",    vi:"thực tế, khả thi",           ex:"Zeitplan realistisch?"},
+  {de:"nass",             pl:null,               art:"",    vi:"ướt",                        ex:"Warum sind Ninas Haare nass?"},
+  {de:"der Pfleger",      pl:"die Pfleger",      art:"der", vi:"người chăm sóc, y tá",       ex:"Ein Pfleger hat angerufen und gesagt, dass es ihm gar nicht gut geht."},
+  {de:"der Flug",         pl:"die Flüge",        art:"der", vi:"chuyến bay",                 ex:"So kann aus dem Sitznachbarn, den man auf der Flugreise kennengelernt hat, auch ein Freund werden."},
+  {de:"merkwürdig",       pl:null,               art:"",    vi:"kỳ lạ, lạ lùng",             ex:"Für Nina ist es merkwürdig, dass Olaf noch nicht da ist."},
+  {de:"genießen",         pl:null,               art:"",    vi:"tận hưởng, thưởng thức",     ex:"Amadou hat es genossen, dass er am Wochenende keine Termine hatte."},
+  {de:"der Gegensatz",    pl:"die Gegensätze",   art:"der", vi:"sự tương phản, mặt đối lập", ex:"Nina findet es schade, dass sie im Gegensatz zu Amadou zurzeit nicht viel reist."},
+  {de:"das Altersheim",   pl:"die Altersheime",  art:"das", vi:"viện dưỡng lão",             ex:"Nina findet es nett, dass Amadou nach ihrem Vater im Altersheim fragt."},
+  {de:"die Arbeitslosigkeit", pl:null,           art:"die", vi:"nạn thất nghiệp",            ex:"Arbeitslosigkeit bedeutet, keinen Job zu haben."},
+  {de:"die Katastrophe",  pl:"die Katastrophen", art:"die", vi:"thảm họa",                   ex:"Wenn etwas sehr Schlimmes passiert, spricht man von einer Katastrophe."},
+  {de:"der Konsum",       pl:null,               art:"der", vi:"sự tiêu thụ, tiêu dùng",     ex:"Konsum ist das Verbrauchen von Lebensmitteln, Kleidung und anderen Produkten."},
+  {de:"die Religion",     pl:"die Religionen",   art:"die", vi:"tôn giáo",                   ex:"Über Religion sollte man beim Small Talk nicht sprechen."},
+  {de:"der Skandal",      pl:"die Skandale",     art:"der", vi:"vụ bê bối, scandal",         ex:"Findest du, Skandale sind ein gutes Thema für Small Talk?"},
+  {de:"die Umweltverschmutzung", pl:null,        art:"die", vi:"ô nhiễm môi trường",         ex:"Umweltverschmutzung ist alles, was die Natur und die Luft schmutzig macht."},
+  {de:"der Kiosk",        pl:"die Kioske",       art:"der", vi:"quầy báo, ki-ốt",            ex:"Könntest du mir ein Brötchen vom Kiosk mitbringen?"},
+  {de:"die Münze",        pl:"die Münzen",       art:"die", vi:"đồng xu",                    ex:"Könntest du fünf Euro in Münzen wechseln?"},
+  {de:"fassen",           pl:null,               art:"",    vi:"không thể tin được",          ex:"Ich fasse es nicht!"},
+  {de:"sich beruhigen",   pl:null,               art:"",    vi:"bình tĩnh lại",              ex:"Jetzt beruhigen wir uns erst mal."},
+  {de:"zusammenfassen",   pl:null,               art:"",    vi:"tóm tắt",                    ex:"Olaf sollte den Stand des Projekts zusammenfassen."},
+  {de:"herunterfahren",   pl:null,               art:"",    vi:"tắt máy, shutdown",          ex:"Du solltest eigentlich den Computer runterfahren."},
+  {de:"sich festlegen",   pl:null,               art:"",    vi:"quyết định, cam kết rõ ràng", ex:"Das haben wir doch zusammen festgelegt."},
+  {de:"die Sitzung",      pl:"die Sitzungen",    art:"die", vi:"cuộc họp, phiên họp",        ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet."},
+  {de:"die Folie",        pl:"die Folien",       art:"die", vi:"slide trình chiếu",           ex:"Olaf hat für die Sitzung keine Präsentation mit Folien vorbereitet."},
+  {de:"mündlich",         pl:null,               art:"",    vi:"bằng miệng, bằng lời nói",   ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt."},
+  {de:"mitteilen",        pl:null,               art:"",    vi:"thông báo, truyền đạt",      ex:"In Amadous alter Firma hat man den Projektstand mündlich mitgeteilt."},
+  {de:"aufschreiben",     pl:null,               art:"",    vi:"viết xuống, ghi lại",        ex:"Wenn man die wichtigsten Infos aufschreibt, ist das Protokoll schneller fertig."},
+  {de:"entstehen",        pl:null,               art:"",    vi:"phát sinh, hình thành",      ex:"Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist."},
+  {de:"grundsätzlich",    pl:null,               art:"",    vi:"về nguyên tắc, cơ bản là",   ex:"Habt ihr einen Vorschlag, wie wir grundsätzlich mit Konflikten umgehen wollen?"},
+  {de:"der Konflikt",     pl:"die Konflikte",    art:"der", vi:"xung đột, mâu thuẫn",        ex:"Konflikte sind ein Problem, dem man in fast jedem Projekt begegnet."},
+  {de:"sich verlassen auf", pl:null,             art:"",    vi:"tin tưởng vào, trông cậy vào",ex:"Irgendwie habe ich das Gefühl, dass ich mich auf Olaf nicht verlassen kann."},
+  {de:"vertrauen",        pl:null,               art:"",    vi:"tin tưởng",                  ex:"Du vertraust mir nicht, oder was?"},
+  {de:"Bescheid sagen",   pl:null,               art:"",    vi:"thông báo, báo cho biết",    ex:"Du gibst nie Bescheid, dass du eine Mail bekommen hast."},
+  {de:"ansprechen",       pl:null,               art:"",    vi:"đề cập, nêu ra vấn đề",      ex:"Danke Amadou, dass du das Problem offen angesprochen hast."},
+  {de:"vernünftig",       pl:null,               art:"",    vi:"hợp lý, có lý trí",          ex:"Und eine vernünftige Lösung finden willst."},
+  {de:"interessiert",     pl:null,               art:"",    vi:"quan tâm, thích thú",        ex:"Als Konfliktmanager sollte man an Menschen interessiert sein."},
+  {de:"sich aufregen",    pl:null,               art:"",    vi:"bực mình, nổi giận",         ex:"Reg dich nicht auf."},
+  {de:"ernst",            pl:null,               art:"",    vi:"nghiêm túc",                 ex:"Amadou ist ernst geblieben."},
+  {de:"die Fortbildung",  pl:"die Fortbildungen",art:"die", vi:"khóa đào tạo nâng cao",      ex:"Ich finde es wichtig, dass man Fortbildungen macht."},
+  {de:"begegnen",         pl:null,               art:"",    vi:"gặp gỡ, đối mặt với",        ex:"Konflikte sind ein Problem, dem man in fast jedem Projekt begegnet."},
+  {de:"besprechen",       pl:null,               art:"",    vi:"thảo luận, bàn bạc",         ex:"Besprechen Sie Konflikte im Team immer lösungsorientiert."},
+  {de:"die Kritik",       pl:null,               art:"die", vi:"sự phê bình, chỉ trích",     ex:"Äußern Sie Ihre Kritik ruhig und ohne Bewertungen."},
+  {de:"der Vorwurf",      pl:"die Vorwürfe",     art:"der", vi:"lời trách móc, cáo buộc",    ex:"Machen Sie keine Vorwürfe."},
+  {de:"der Standpunkt",   pl:"die Standpunkte",  art:"der", vi:"quan điểm, lập trường",      ex:"Zeigen Sie Interesse am Standpunkt der anderen Seite."},
+  {de:"unterbrechen",     pl:null,               art:"",    vi:"ngắt lời, cắt ngang",        ex:"Unterbrechen Sie nicht."},
+  {de:"die Ansicht",      pl:"die Ansichten",    art:"die", vi:"quan điểm, ý kiến",          ex:"Die anderen haben sicher nicht nur Ansichten, denen Sie widersprechen!"},
+  {de:"bereit",           pl:null,               art:"",    vi:"sẵn sàng",                   ex:"Seien Sie bereit zu einem Kompromiss."},
+  {de:"dauernd",          pl:null,               art:"",    vi:"liên tục, cứ mãi",           ex:"Ihre Kollegin macht dauernd Pausen."},
+  {de:"die Konsequenz",   pl:"die Konsequenzen", art:"die", vi:"hậu quả, kết quả tất yếu",  ex:"Die Konsequenz ist, dass andere mehr Aufgaben übernehmen müssen."},
+  {de:"die Rücksicht",    pl:null,               art:"die", vi:"sự quan tâm, sự chiếu cố",   ex:"Typisch, dass du keine Rücksicht auf andere nimmst."},
+  {de:"merken",           pl:null,               art:"",    vi:"nhận ra, nhận thấy",         ex:"Tobias merkte, wie sehr er sich ärgerte."},
+  {de:"der Ärger",        pl:null,               art:"der", vi:"sự bực bội, tức giận",       ex:"Da er seinen Ärger spürte, antwortete er kaum."},
+  {de:"spüren",           pl:null,               art:"",    vi:"cảm nhận, cảm thấy",         ex:"Da er seinen Ärger spürte, antwortete er kaum."},
+  {de:"verschwinden",     pl:null,               art:"",    vi:"biến mất",                   ex:"Aber sie lächelte nur und verschwand mit ihrer großen Tasse im Besprechungsraum."},
+  {de:"heim",             pl:null,               art:"",    vi:"về nhà",                     ex:"Den ganzen Heimweg schimpfte er vor sich hin."},
 ];
 
 let mode='learn', queue=[], current=0, flipped=false, correct=0;
 function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
 function setMode(m){
   mode=m;
   document.getElementById('btnLearn').classList.toggle('active',m==='learn');
@@ -176,40 +180,75 @@ function setMode(m){
   document.getElementById('fcWrap').style.display='block';
   initDeck();
 }
+
 function initDeck(){
   queue=mode==='learn'?shuffle(WORDS):shuffle(WORDS).slice(0,10);
   current=0; correct=0; flipped=false; updateCard();
 }
+
+function buildDisplayText(w){
+  // Nouns: show "das Buch · die Bücher", verbs/adj: show just base form
+  if(w.art && w.pl){
+    return w.de + ' · ' + w.pl;
+  }
+  return w.de;
+}
+
 function updateCard(){
   if(current>=queue.length){endSession();return;}
   const w=queue[current]; flipped=false;
   document.getElementById('fcCard').classList.remove('flipped');
-  document.getElementById('fcArt').textContent=w.art||'';
-  document.getElementById('fcArt').style.display=w.art?'inline-block':'none';
-  document.getElementById('fcDe').textContent=w.de;
-  document.getElementById('fcVi').textContent=w.vi;
-  document.getElementById('fcEx').textContent=w.ex||'';
-  document.getElementById('fcTap').style.display='block';
-  document.getElementById('fcBtns').classList.toggle('main-hidden',mode==='learn');
-  document.getElementById('fcBar').style.width=Math.round(current/queue.length*100)+'%';
-  document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
-  setTimeout(()=>speakCurrent(),300);
+
+  // Artikel badge (nur bei Nomen)
+  document.getElementById('fcArt').textContent = w.art||'';
+  document.getElementById('fcArt').style.display = w.art ? 'inline-block' : 'none';
+
+  // Wort + Plural anzeigen
+  document.getElementById('fcDe').textContent = buildDisplayText(w);
+  document.getElementById('fcVi').textContent = w.vi;
+  document.getElementById('fcEx').textContent = w.ex||'';
+  document.getElementById('fcTap').style.display = 'block';
+  document.getElementById('fcBtns').classList.toggle('main-hidden', mode==='learn');
+  document.getElementById('fcBar').style.width = Math.round(current/queue.length*100)+'%';
+  document.getElementById('fcCounter').textContent = (current+1)+' / '+queue.length;
+  setTimeout(()=>speakCurrent(), 300);
 }
+
 function flipCard(){
   if(flipped)return; flipped=true;
   document.getElementById('fcCard').classList.add('flipped');
   if(mode==='learn') document.getElementById('fcBtns').classList.remove('main-hidden');
 }
+
 function speakCurrent(){
   if(!window.speechSynthesis)return;
+  const w = queue[current];
   window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(queue[current].de);
-  u.lang='de-DE'; u.rate=0.85; window.speechSynthesis.speak(u);
+
+  if(w.art && w.pl){
+    // Noun: speak singular first, then plural after short pause
+    const u1 = new SpeechSynthesisUtterance(w.de);
+    u1.lang='de-DE'; u1.rate=0.85;
+    const u2 = new SpeechSynthesisUtterance(w.pl);
+    u2.lang='de-DE'; u2.rate=0.85;
+    // Add 400ms silence between via empty utterance
+    const pause = new SpeechSynthesisUtterance(' ');
+    pause.lang='de-DE'; pause.rate=0.1; pause.volume=0;
+    window.speechSynthesis.speak(u1);
+    window.speechSynthesis.speak(pause);
+    window.speechSynthesis.speak(u2);
+  } else {
+    const u = new SpeechSynthesisUtterance(w.de);
+    u.lang='de-DE'; u.rate=0.85;
+    window.speechSynthesis.speak(u);
+  }
 }
+
 function answer(ok){
   if(ok){correct++;current++;updateCard();}
   else{const w=queue.splice(current,1)[0];queue.splice(Math.min(current+3,queue.length),0,w);updateCard();}
 }
+
 function endSession(){
   document.getElementById('fcWrap').style.display='none';
   document.getElementById('scoreScreen').classList.add('show');
