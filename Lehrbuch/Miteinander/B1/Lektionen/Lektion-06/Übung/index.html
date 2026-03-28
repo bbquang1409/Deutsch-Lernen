@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch Shadowing - Bảo Quang</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .character { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+        .sentence { font-size: 1.2rem; margin-bottom: 20px; min-height: 50px; color: #34495e; }
+        .result { font-weight: bold; margin-top: 15px; padding: 10px; border-radius: 5px; }
+        .green { background: #d4edda; color: #155724; }
+        .red { background: #f8d7da; color: #721c24; }
+        .controls button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; margin: 5px; }
+        #btnMicro { background: #007bff; color: white; }
+        #btnNext { background: #6c757d; color: white; }
+        .user-said { font-style: italic; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Shadowing Practice</h2>
+    <hr>
+    <div id="displayArea">
+        <p class="character" id="charName">Nhân vật</p>
+        <p class="sentence" id="targetText">Đang tải nội dung...</p>
+    </div>
+
+    <div class="controls">
+        <button id="btnMicro">🎤 Bắt đầu nói</button>
+        <button id="btnNext">Câu tiếp theo ⮕</button>
+    </div>
+
+    <div id="resultArea" class="result" style="display:none;"></div>
+    <div id="userSaid" class="user-said"></div>
+</div>
+
+<script>
+    // Dữ liệu từ file MP3 bạn gửi (Miteinander B1)
+    const script = [
+        { name: "Nina", text: "So kriegen wir das Projekt nie hin." },
+        { name: "Olaf", text: "Was soll das eigentlich, Nina?" },
+        { name: "Amadou", text: "Wartet, wartet. Jetzt beruhigen wir uns erstmal." },
+        { name: "Amadou", text: "Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist." }
+    ];
+
+    let currentIndex = 0;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'de-DE'; // Thiết lập nhận diện tiếng Đức
+    recognition.interimResults = false;
+
+    const btnMicro = document.getElementById('btnMicro');
+    const btnNext = document.getElementById('btnNext');
+    const targetText = document.getElementById('targetText');
+    const charName = document.getElementById('charName');
+    const resultArea = document.getElementById('resultArea');
+    const userSaid = document.getElementById('userSaid');
+
+    function loadSentence() {
+        charName.innerText = script[currentIndex].name;
+        targetText.innerText = script[currentIndex].text;
+        resultArea.style.display = 'none';
+        userSaid.innerText = '';
+        btnMicro.innerText = '🎤 Bắt đầu nói';
+        btnMicro.style.background = '#007bff';
+    }
+
+    btnMicro.onclick = () => {
+        if (btnMicro.innerText === '🎤 Bắt đầu nói') {
+            recognition.start();
+            btnMicro.innerText = '🛑 Đang nghe...';
+            btnMicro.style.background = '#dc3545';
+        } else {
+            recognition.stop();
+        }
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const original = script[currentIndex].text;
+        
+        userSaid.innerText = "Bạn đã nói: " + transcript;
+        checkResult(transcript, original);
+        
+        btnMicro.innerText = '🎤 Bắt đầu nói';
+        btnMicro.style.background = '#007bff';
+    };
+
+    function checkResult(said, original) {
+        // Làm sạch chuỗi: bỏ dấu câu, chuyển chữ thường để so sánh
+        const clean = (str) => str.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"").trim();
+        
+        resultArea.style.display = 'block';
+        if (clean(said) === clean(original)) {
+            resultArea.innerText = "Chính xác! Gút chóp! 👍";
+            resultArea.className = "result green";
+        } else {
+            resultArea.innerText = "Gần đúng rồi, thử lại nhé!";
+            resultArea.className = "result red";
+        }
+    }
+
+    btnNext.onclick = () => {
+        currentIndex = (currentIndex + 1) % script.length;
+        loadSentence();
+    };
+
+    // Khởi tạo câu đầu tiên
+    loadSentence();
+</script>
+
+</body>
+</html>
