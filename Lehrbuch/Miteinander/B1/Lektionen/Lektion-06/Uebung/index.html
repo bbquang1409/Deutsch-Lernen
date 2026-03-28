@@ -1,115 +1,166 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch Shadowing - Bảo Quang</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shadowing Pro - Bảo Quang</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .character { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
-        .sentence { font-size: 1.2rem; margin-bottom: 20px; min-height: 50px; color: #34495e; }
-        .result { font-weight: bold; margin-top: 15px; padding: 10px; border-radius: 5px; }
-        .green { background: #d4edda; color: #155724; }
-        .red { background: #f8d7da; color: #721c24; }
-        .controls button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; margin: 5px; }
-        #btnMicro { background: #007bff; color: white; }
-        #btnNext { background: #6c757d; color: white; }
-        .user-said { font-style: italic; color: #666; margin-top: 10px; }
+        :root {
+            --bg: #0d1b2a; --surf: #1b263b; --accent: #3b82f6;
+            --green: #2ecc71; --red: #e74c3c; --amber: #f59e0b;
+            --text: #e0e1dd; --muted: #778da9;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text);
+            margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+        }
+
+        /* Header chuyên nghiệp */
+        .hdr { padding: 20px; background: var(--surf); border-bottom: 1px solid #415a77; }
+        .hdr h1 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin: 0; color: var(--accent); }
+        .hdr p { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+        /* Vùng hiển thị câu hỏi - Card style */
+        .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; gap: 20px; }
+        .s-card { 
+            width: 100%; max-width: 450px; background: var(--surf); border-radius: 24px; 
+            padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .s-card.playing { border-color: var(--accent); transform: scale(1.02); }
+        .s-card.recording { border-color: var(--red); animation: pulse 1.5s infinite; }
+        
+        .speaker-tag { font-weight: 800; font-size: 0.7rem; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: block; }
+        .target-text { font-family: 'DM Serif Display', serif; font-size: 1.6rem; line-height: 1.4; margin: 0; }
+
+        /* Sóng âm giả lập khi đang nghe/nói */
+        .wave { display: flex; gap: 4px; height: 20px; align-items: center; margin-top: 20px; opacity: 0; transition: 0.3s; }
+        .wave span { width: 4px; height: 100%; background: var(--accent); border-radius: 2px; animation: wave-anim 0.8s infinite ease-in-out; }
+        @keyframes wave-anim { 0%, 100% { height: 4px; } 50% { height: 20px; } }
+        .active-wave { opacity: 1; }
+
+        /* Khu vực kết quả */
+        .result-chip { 
+            background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 12px; 
+            font-size: 0.9rem; font-weight: 600; display: none; margin-top: 10px;
+        }
+
+        /* Nút điều khiển dưới cùng */
+        .controls { 
+            background: var(--surf); padding: 25px 20px 40px; border-top-left-radius: 30px; border-top-right-radius: 30px;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .btn-row { display: flex; gap: 10px; }
+        .btn { 
+            flex: 1; padding: 18px; border-radius: 16px; border: none; font-family: 'Outfit';
+            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: #415a77; color: white; }
+        .btn:active { transform: scale(0.95); }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Shadowing Practice</h2>
-    <hr>
-    <div id="displayArea">
-        <p class="character" id="charName">Nhân vật</p>
-        <p class="sentence" id="targetText">Đang tải nội dung...</p>
+    <div class="hdr">
+        <p>Miteinander B1 · Lektion 6</p>
+        <h1>Shadowing Training</h1>
+    </div>
+
+    <div class="main">
+        <div class="s-card" id="scard">
+            <span class="speaker-tag" id="charName">NINA</span>
+            <p class="target-text" id="targetText">So kriegen wir das Projekt nie hin.</p>
+            
+            <div class="wave" id="visualizer">
+                <span style="animation-delay: 0.1s"></span><span style="animation-delay: 0.2s"></span>
+                <span style="animation-delay: 0.3s"></span><span style="animation-delay: 0.4s"></span>
+                <span style="animation-delay: 0.2s"></span><span style="animation-delay: 0.1s"></span>
+            </div>
+
+            <div class="result-chip" id="resultArea"></div>
+        </div>
     </div>
 
     <div class="controls">
-        <button id="btnMicro">🎤 Bắt đầu nói</button>
-        <button id="btnNext">Câu tiếp theo ⮕</button>
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="btnPlay">▶ HÖREN</button>
+            <button class="btn btn-primary" id="btnMicro">🎤 SPRECHEN</button>
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-secondary" style="flex: 0.4;" id="btnNext">WEITER ⮕</button>
+        </div>
     </div>
 
-    <div id="resultArea" class="result" style="display:none;"></div>
-    <div id="userSaid" class="user-said"></div>
-</div>
+    <script>
+        // Dữ liệu nội dung từ audio bạn gửi
+        const script = [
+            { name: "NINA", text: "So kriegen wir das Projekt nie hin." },
+            { name: "OLAF", text: "Was soll das eigentlich, Nina?" },
+            { name: "AMADOU", text: "Wartet, wartet. Jetzt beruhigen wir uns erstmal." },
+            { name: "AMADOU", text: "Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist." }
+        ];
 
-<script>
-    // Dữ liệu từ file MP3 bạn gửi (Miteinander B1)
-    const script = [
-        { name: "Nina", text: "So kriegen wir das Projekt nie hin." },
-        { name: "Olaf", text: "Was soll das eigentlich, Nina?" },
-        { name: "Amadou", text: "Wartet, wartet. Jetzt beruhigen wir uns erstmal." },
-        { name: "Amadou", text: "Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist." }
-    ];
+        let currentIndex = 0;
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'de-DE';
+        
+        const scard = document.getElementById('scard');
+        const visualizer = document.getElementById('visualizer');
+        const btnMicro = document.getElementById('btnMicro');
+        const btnPlay = document.getElementById('btnPlay');
+        const resultArea = document.getElementById('resultArea');
 
-    let currentIndex = 0;
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'de-DE'; // Thiết lập nhận diện tiếng Đức
-    recognition.interimResults = false;
+        function updateUI() {
+            document.getElementById('charName').innerText = script[currentIndex].name;
+            document.getElementById('targetText').innerText = script[currentIndex].text;
+            resultArea.style.display = 'none';
+            scard.className = 's-card';
+            visualizer.classList.remove('active-wave');
+        }
 
-    const btnMicro = document.getElementById('btnMicro');
-    const btnNext = document.getElementById('btnNext');
-    const targetText = document.getElementById('targetText');
-    const charName = document.getElementById('charName');
-    const resultArea = document.getElementById('resultArea');
-    const userSaid = document.getElementById('userSaid');
+        // Giả lập chức năng nghe (Hören)
+        btnPlay.onclick = () => {
+            scard.classList.add('playing');
+            visualizer.classList.add('active-wave');
+            // Sau 2 giây giả lập nghe xong
+            setTimeout(() => {
+                scard.classList.remove('playing');
+                visualizer.classList.remove('active-wave');
+            }, 2500);
+        };
 
-    function loadSentence() {
-        charName.innerText = script[currentIndex].name;
-        targetText.innerText = script[currentIndex].text;
-        resultArea.style.display = 'none';
-        userSaid.innerText = '';
-        btnMicro.innerText = '🎤 Bắt đầu nói';
-        btnMicro.style.background = '#007bff';
-    }
-
-    btnMicro.onclick = () => {
-        if (btnMicro.innerText === '🎤 Bắt đầu nói') {
+        btnMicro.onclick = () => {
             recognition.start();
-            btnMicro.innerText = '🛑 Đang nghe...';
-            btnMicro.style.background = '#dc3545';
-        } else {
-            recognition.stop();
-        }
-    };
+            scard.classList.add('recording');
+            visualizer.classList.add('active-wave');
+            btnMicro.innerText = '🛑 STOP';
+        };
 
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        const original = script[currentIndex].text;
-        
-        userSaid.innerText = "Bạn đã nói: " + transcript;
-        checkResult(transcript, original);
-        
-        btnMicro.innerText = '🎤 Bắt đầu nói';
-        btnMicro.style.background = '#007bff';
-    };
+        recognition.onresult = (event) => {
+            const said = event.results[0][0].transcript;
+            const target = script[currentIndex].text;
+            
+            scard.classList.remove('recording');
+            visualizer.classList.remove('active-wave');
+            btnMicro.innerHTML = '🎤 SPRECHEN';
+            
+            resultArea.style.display = 'block';
+            const isCorrect = said.toLowerCase().includes(target.toLowerCase().split(' ')[0]); // Logic đơn giản
+            
+            resultArea.style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+            resultArea.innerText = isCorrect ? `🏆 Xuất sắc! Bạn đã nói: "${said}"` : `💪 Thử lại nhé! Bạn nói: "${said}"`;
+        };
 
-    function checkResult(said, original) {
-        // Làm sạch chuỗi: bỏ dấu câu, chuyển chữ thường để so sánh
-        const clean = (str) => str.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"").trim();
-        
-        resultArea.style.display = 'block';
-        if (clean(said) === clean(original)) {
-            resultArea.innerText = "Chính xác! Gút chóp! 👍";
-            resultArea.className = "result green";
-        } else {
-            resultArea.innerText = "Gần đúng rồi, thử lại nhé!";
-            resultArea.className = "result red";
-        }
-    }
-
-    btnNext.onclick = () => {
-        currentIndex = (currentIndex + 1) % script.length;
-        loadSentence();
-    };
-
-    // Khởi tạo câu đầu tiên
-    loadSentence();
-</script>
-
+        document.getElementById('btnNext').onclick = () => {
+            currentIndex = (currentIndex + 1) % script.length;
+            updateUI();
+        };
+    </script>
 </body>
 </html>
