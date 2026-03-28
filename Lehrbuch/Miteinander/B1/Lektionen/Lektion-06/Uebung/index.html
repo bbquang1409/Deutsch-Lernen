@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shadowing Pro - Bảo Quang</title>
+    <title>Deutsch Shadowing - Nur auf Deutsch</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0d1b2a; --surf: #1b263b; --accent: #3b82f6;
-            --green: #2ecc71; --red: #e74c3c; --amber: #f59e0b;
-            --text: #e0e1dd; --muted: #778da9;
+            --bg: #F8FAFC; --card: #FFFFFF; --primary: #3B82F6;
+            --text: #1E293B; --muted: #64748B; --border: #E2E8F0;
+            --success: #22C55E; --danger: #EF4444; --amber: #F59E0B;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -17,150 +17,74 @@
             margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
 
-        /* Header chuyên nghiệp */
-        .hdr { padding: 20px; background: var(--surf); border-bottom: 1px solid #415a77; }
-        .hdr h1 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin: 0; color: var(--accent); }
-        .hdr p { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+        .hdr { padding: 15px 20px; background: var(--card); border-bottom: 1px solid var(--border); text-align: center; }
+        .hdr h1 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; margin: 0; color: var(--primary); }
 
-        /* Vùng hiển thị câu hỏi - Card style */
-        .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; gap: 20px; }
-        .s-card { 
-            width: 100%; max-width: 450px; background: var(--surf); border-radius: 24px; 
-            padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .s-card.playing { border-color: var(--accent); transform: scale(1.02); }
-        .s-card.recording { border-color: var(--red); animation: pulse 1.5s infinite; }
+        .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         
-        .speaker-tag { font-weight: 800; font-size: 0.7rem; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: block; }
-        .target-text { font-family: 'DM Serif Display', serif; font-size: 1.6rem; line-height: 1.4; margin: 0; }
+        .s-card { 
+            width: 100%; max-width: 400px; background: var(--card); border-radius: 28px; 
+            padding: 30px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center; transition: 0.3s; position: relative;
+        }
+        .speaker { font-weight: 800; font-size: 0.75rem; color: var(--primary); letter-spacing: 1px; margin-bottom: 12px; display: block; }
+        .text { font-family: 'DM Serif Display', serif; font-size: 1.5rem; line-height: 1.4; margin: 0; min-height: 80px; }
 
-        /* Sóng âm giả lập khi đang nghe/nói */
-        .wave { display: flex; gap: 4px; height: 20px; align-items: center; margin-top: 20px; opacity: 0; transition: 0.3s; }
-        .wave span { width: 4px; height: 100%; background: var(--accent); border-radius: 2px; animation: wave-anim 0.8s infinite ease-in-out; }
-        @keyframes wave-anim { 0%, 100% { height: 4px; } 50% { height: 20px; } }
-        .active-wave { opacity: 1; }
-
-        /* Khu vực kết quả */
-        .result-chip { 
-            background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 12px; 
-            font-size: 0.9rem; font-weight: 600; display: none; margin-top: 10px;
+        .score-badge {
+            position: absolute; top: -15px; right: 20px; padding: 5px 15px;
+            border-radius: 20px; font-weight: 800; font-size: 0.8rem; display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* Nút điều khiển dưới cùng */
-        .controls { 
-            background: var(--surf); padding: 25px 20px 40px; border-top-left-radius: 30px; border-top-right-radius: 30px;
-            display: flex; flex-direction: column; gap: 15px;
+        .controls-hub { 
+            background: var(--card); padding: 25px 20px 45px; border-radius: 32px 32px 0 0;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; gap: 12px;
         }
-        .btn-row { display: flex; gap: 10px; }
-        .btn { 
-            flex: 1; padding: 18px; border-radius: 16px; border: none; font-family: 'Outfit';
-            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-secondary { background: #415a77; color: white; }
-        .btn:active { transform: scale(0.95); }
 
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+        .btn-main {
+            width: 75px; height: 75px; border-radius: 50%; border: none;
+            background: var(--primary); color: white; font-size: 1.6rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); transition: 0.2s;
+        }
+        .btn-main.rec { background: var(--danger); animation: pulse 1s infinite; }
+
+        .label-main { font-weight: 800; font-size: 0.85rem; color: var(--primary); height: 20px; text-transform: uppercase; }
+
+        .btn-sub {
+            background: #F1F5F9; color: var(--text); border: 1px solid var(--border); 
+            padding: 12px 50px; border-radius: 18px; font-family: 'Outfit'; 
+            font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase;
+        }
+
+        .user-said { font-size: 0.85rem; color: var(--muted); font-style: italic; margin-top: 12px; text-align: center; height: 20px; width: 100%; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 70% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div class="hdr">
-        <p>Miteinander B1 · Lektion 6</p>
-        <h1>Shadowing Training</h1>
+        <h1>Miteinander B1 · Shadowing</h1>
     </div>
 
     <div class="main">
-        <div class="s-card" id="scard">
-            <span class="speaker-tag" id="charName">NINA</span>
-            <p class="target-text" id="targetText">So kriegen wir das Projekt nie hin.</p>
-            
-            <div class="wave" id="visualizer">
-                <span style="animation-delay: 0.1s"></span><span style="animation-delay: 0.2s"></span>
-                <span style="animation-delay: 0.3s"></span><span style="animation-delay: 0.4s"></span>
-                <span style="animation-delay: 0.2s"></span><span style="animation-delay: 0.1s"></span>
-            </div>
-
-            <div class="result-chip" id="resultArea"></div>
+        <div id="scoreBadge" class="score-badge"></div>
+        <div class="s-card">
+            <span class="speaker" id="spk">PERSON</span>
+            <p class="text" id="txt">Laden...</p>
         </div>
+        <div class="user-said" id="transcript"></div>
     </div>
 
-    <div class="controls">
-        <div class="btn-row">
-            <button class="btn btn-secondary" id="btnPlay">▶ HÖREN</button>
-            <button class="btn btn-primary" id="btnMicro">🎤 SPRECHEN</button>
-        </div>
-        <div class="btn-row">
-            <button class="btn btn-secondary" style="flex: 0.4;" id="btnNext">WEITER ⮕</button>
-        </div>
+    <div class="controls-hub">
+        <span class="label-main" id="lbl">HÖREN</span>
+        <button class="btn-main" id="actionBtn">▶</button>
+        <button class="btn-sub" id="nextBtn">WEITER ⮕</button>
     </div>
+
+    <audio id="audioPlayer"></audio>
 
     <script>
-        // Dữ liệu nội dung từ audio bạn gửi
-        const script = [
-            { name: "NINA", text: "So kriegen wir das Projekt nie hin." },
-            { name: "OLAF", text: "Was soll das eigentlich, Nina?" },
-            { name: "AMADOU", text: "Wartet, wartet. Jetzt beruhigen wir uns erstmal." },
-            { name: "AMADOU", text: "Lasst uns mal ganz in Ruhe klären, wie das Problem entstanden ist." }
-        ];
-
-        let currentIndex = 0;
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'de-DE';
-        
-        const scard = document.getElementById('scard');
-        const visualizer = document.getElementById('visualizer');
-        const btnMicro = document.getElementById('btnMicro');
-        const btnPlay = document.getElementById('btnPlay');
-        const resultArea = document.getElementById('resultArea');
-
-        function updateUI() {
-            document.getElementById('charName').innerText = script[currentIndex].name;
-            document.getElementById('targetText').innerText = script[currentIndex].text;
-            resultArea.style.display = 'none';
-            scard.className = 's-card';
-            visualizer.classList.remove('active-wave');
-        }
-
-        // Giả lập chức năng nghe (Hören)
-        btnPlay.onclick = () => {
-            scard.classList.add('playing');
-            visualizer.classList.add('active-wave');
-            // Sau 2 giây giả lập nghe xong
-            setTimeout(() => {
-                scard.classList.remove('playing');
-                visualizer.classList.remove('active-wave');
-            }, 2500);
-        };
-
-        btnMicro.onclick = () => {
-            recognition.start();
-            scard.classList.add('recording');
-            visualizer.classList.add('active-wave');
-            btnMicro.innerText = '🛑 STOP';
-        };
-
-        recognition.onresult = (event) => {
-            const said = event.results[0][0].transcript;
-            const target = script[currentIndex].text;
-            
-            scard.classList.remove('recording');
-            visualizer.classList.remove('active-wave');
-            btnMicro.innerHTML = '🎤 SPRECHEN';
-            
-            resultArea.style.display = 'block';
-            const isCorrect = said.toLowerCase().includes(target.toLowerCase().split(' ')[0]); // Logic đơn giản
-            
-            resultArea.style.color = isCorrect ? 'var(--green)' : 'var(--red)';
-            resultArea.innerText = isCorrect ? `🏆 Xuất sắc! Bạn đã nói: "${said}"` : `💪 Thử lại nhé! Bạn nói: "${said}"`;
-        };
-
-        document.getElementById('btnNext').onclick = () => {
-            currentIndex = (currentIndex + 1) % script.length;
-            updateUI();
-        };
-    </script>
-</body>
-</html>
+        // Data from your Miteinander B1 audio file
+        const script =
