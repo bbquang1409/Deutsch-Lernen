@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>50 Redemittel B2 - Mittelpunkt</title>
+<title>B2 Redemittel - Bảo Quang</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -11,25 +11,32 @@
   body{font-family:'Outfit',sans-serif;background:var(--bg);color:#1e3a5f;padding-bottom:40px;}
   .hdr{background:var(--blue);padding:40px 20px;text-align:center;color:white;}
   .tab-active{border-bottom:4px solid var(--emerald);color:var(--emerald);font-weight:700;}
-  .flip-card{perspective:1000px;height:400px;width:100%;max-width:450px;margin:0 auto;}
+  
+  /* Flashcard Layout */
+  .card-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin: 0 auto; }
+  .flip-card{perspective:1000px; height:420px; width: 100%; max-width:400px; flex-shrink: 0;}
   .flip-inner{position:relative;width:100%;height:100%;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;}
   .flipped{transform:rotateY(180deg);}
-  .flip-front, .flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;box-shadow:0 15px 35px rgba(0,0,0,0.1);}
+  .flip-front, .flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;box-shadow:0 15px 35px rgba(0,0,0,0.1);}
   .flip-front{background:white;border:2px solid #e2e8f0;}
   .flip-back{background:var(--blue);color:white;transform:rotateY(180deg);}
+  
+  .nav-btn { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; shadow: 0 4px 6px rgba(0,0,0,0.1); flex-shrink: 0; transition: all 0.2s; }
+  .nav-btn:active { transform: scale(0.9); background: #e2e8f0; }
 </style>
 </head>
 <body>
+
 <div class="hdr">
     <h1 class="text-3xl font-bold">Redemittel B2</h1>
-    <p class="text-blue-200 text-xs font-bold mt-2 uppercase">Diskussion • Präsentation • Mittelpunkt</p>
-    <a href="index.html" class="inline-block mt-4 text-white/50 text-sm">← Back</a>
+    <p class="text-blue-200 text-xs font-bold mt-2 uppercase">Diskussion • Argumentation</p>
+    <a href="index.html" class="inline-block mt-4 text-white/50 text-sm italic">← Zurück</a>
 </div>
 
-<div class="max-w-3xl mx-auto px-4 -mt-8 relative z-20">
-  <div class="bg-white rounded-2xl shadow-lg flex p-1 mb-8">
+<div class="max-w-4xl mx-auto px-2 -mt-8 relative z-20">
+  <div class="bg-white rounded-2xl shadow-lg flex p-1 mb-8 max-w-md mx-auto">
     <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active font-bold">📖 Liste</button>
-    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 font-bold">🔄 Flashcards</button>
+    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 font-bold">🔄 Karten</button>
   </div>
 
   <div id="content1" class="space-y-4">
@@ -37,72 +44,100 @@
   </div>
 
   <div id="content2" class="hidden">
-    <div class="text-center mb-6"><span id="counter" class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-bold text-sm"></span></div>
-    <div class="flip-card" onclick="toggleFlip()"><div id="card-inner" class="flip-inner"><div class="flip-front"><p id="f-phrase" class="text-2xl font-bold text-center text-slate-800 leading-snug"></p></div><div class="flip-back"><p id="f-explain" class="text-lg text-center mb-6 text-blue-100 font-medium"></p><div class="h-px w-12 bg-white/20 mb-6"></div><p id="f-viet" class="text-2xl font-bold text-emerald-400 text-center"></p></div></div></div>
-    <div class="flex justify-center items-center gap-6 mt-10">
-      <button onclick="prev()" class="w-14 h-14 bg-white rounded-full shadow-md flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
-      <button onclick="random()" class="px-6 py-3 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg">Random</button>
-      <button onclick="next()" class="w-14 h-14 bg-white rounded-full shadow-md flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
+    <div class="text-center mb-6">
+        <span id="counter" class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-bold text-sm"></span>
+    </div>
+
+    <div class="card-wrapper">
+      <button onclick="prev()" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+
+      <div class="flip-card" onclick="toggleFlip()">
+        <div id="card-inner" class="flip-inner">
+          <div class="flip-front">
+            <p id="f-phrase" class="text-xl md:text-2xl font-bold text-center text-slate-800 leading-snug"></p>
+            <p class="mt-8 text-gray-300 text-xs uppercase tracking-widest font-bold">Tippen zum Drehen</p>
+          </div>
+          <div class="flip-back">
+            <p class="text-emerald-400 text-xs font-bold mb-2 uppercase">Funktion:</p>
+            <p id="f-explain" class="text-lg text-center mb-6 text-blue-100 italic"></p>
+            <div class="h-px w-12 bg-white/20 mb-6"></div>
+            <p id="f-viet" class="text-xl font-bold text-white text-center"></p>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="next()" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <div class="flex justify-center mt-10">
+      <button onclick="random()" class="px-8 py-3 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 uppercase tracking-wider text-sm">Zufällig</button>
     </div>
   </div>
 </div>
 
 <script>
 const data = [
-  {phrase:"Ich bin der festen Überzeugung, dass...", explain:"Seine Meinung nachdrücklich äußern", viet:"Tôi tin chắc rằng..."},
-  {phrase:"Darf ich Sie kurz unterbrechen?", explain:"Sich höflich zu Wort melden", viet:"Tôi có thể ngắt lời ngài một chút không?"},
-  {phrase:"Das ist ein schlagendes Argument.", explain:"Zustimmung ausdrücken", viet:"Đó là một lập luận thuyết phục."},
-  {phrase:"Ich möchte das mit folgendem Beispiel verdeutlichen:", explain:"Etwas veranschaulichen", viet:"Tôi muốn làm rõ điều này bằng ví dụ sau:"},
-  {phrase:"Einerseits lässt sich sagen, dass..., andererseits...", explain:"Abwägen / Kontrastieren", viet:"Một mặt có thể nói rằng..., mặt khác..."},
-  {phrase:"Es ist fraglich, ob...", explain:"Zweifel äußern", viet:"Vẫn còn nghi vấn liệu rằng..."},
-  {phrase:"Hierzu möchte ich folgende Ergänzung machen:", explain:"Ergänzen", viet:"Về việc này tôi muốn bổ sung thêm rằng:"},
-  {phrase:"Könnten Sie das bitte näher erläutern?", explain:"Nachfragen", viet:"Ngài có thể giải thích rõ hơn về vấn đề này không?"},
-  {phrase:"Ich teile diese Auffassung nur bedingt.", explain:"Teilweise zustimmen", viet:"Tôi chỉ đồng ý với quan điểm này ở một mức độ nào đó."},
-  {phrase:"Das liegt auf der Hand, dass...", explain:"Offensichtlichkeit betonen", viet:"Rõ ràng là..."},
-  {phrase:"Daraus ergibt sich die Schlussfolgerung, dass...", explain:"Ergebnisse zusammenfassen", viet:"Từ đó rút ra kết luận rằng..."},
-  {phrase:"Ich möchte einen weiteren Punkt anführen.", explain:"Zusätzliche Argumente", viet:"Tôi muốn đưa ra một quan điểm khác."},
-  {phrase:"Das widerspricht meiner Erfahrung.", explain:"Widersprechen", viet:"Điều đó mâu thuẫn với kinh nghiệm của tôi."},
-  {phrase:"In diesem Zusammenhang sollte man bedenken, dass...", explain:"Einen Aspekt hervorheben", viet:"Trong mối liên hệ này, cần lưu ý rằng..."},
-  {phrase:"Wie man an diesem Beispiel sieht...", explain:"Beispiele einleiten", viet:"Như chúng ta thấy ở ví dụ này..."},
-  {phrase:"Ich sehe einen großen Vorteil darin, dass...", explain:"Vorteile benennen", viet:"Tôi thấy một lợi ích lớn ở việc..."},
-  {phrase:"Das Hauptargument für... ist...", explain:"Begründen", viet:"Lập luận chính cho... là..."},
-  {phrase:"Zusammenfassend lässt sich sagen, dass...", explain:"Fazit ziehen", viet:"Tóm lại có thể nói rằng..."},
-  {phrase:"Ein wichtiger Aspekt dabei ist...", explain:"Wichtigkeit betonen", viet:"Một khía cạnh quan trọng ở đây là..."},
-  {phrase:"Ich bin mir nicht ganz sicher, ob...", explain:"Vorsichtige Zweifel", viet:"Tôi không chắc chắn lắm liệu rằng..."},
-  {phrase:"Es geht vor allem darum, dass...", explain:"Den Kern ansprechen", viet:"Vấn đề chủ yếu là ở chỗ..."},
-  {phrase:"Das hat zur Folge, dass...", explain:"Konsequenzen nennen", viet:"Điều đó dẫn đến hậu quả là..."},
-  {phrase:"Man darf nicht vergessen, dass...", explain:"An etwas erinnern", viet:"Không được quên rằng..."},
-  {phrase:"Meines Erachtens nach...", explain:"Eigene Meinung (gehoben)", viet:"Theo quan điểm của tôi..."},
+  {phrase:"Ich bin der festen Überzeugung, dass...", explain:"Meinung äußern", viet:"Tôi tin chắc rằng..."},
+  {phrase:"Das ist ein schlagendes Argument.", explain:"Zustimmung", viet:"Đó là một lập luận rất thuyết phục."},
+  {phrase:"Darf ich Sie kurz unterbrechen?", explain:"Unterbrechen", viet:"Tôi có thể ngắt lời ngài một chút không?"},
+  {phrase:"Ich möchte das mit folgendem Beispiel verdeutlichen:", explain:"Beispiel anführen", viet:"Tôi muốn làm rõ điều này qua ví dụ sau:"},
+  {phrase:"Einerseits lässt sich sagen, dass..., andererseits...", explain:"Abwägen", viet:"Một mặt có thể nói rằng..., mặt khác..."},
+  {phrase:"Ich teile diese Auffassung nur bedingt.", explain:"Eingeschränkte Zustimmung", viet:"Tôi chỉ đồng ý với quan điểm này ở mức độ nào đó."},
+  {phrase:"Das liegt auf der Hand, dass...", explain:"Offensichtlichkeit", viet:"Rõ ràng là... (hiển nhiên)"},
+  {phrase:"Meines Erachtens nach...", explain:"Eigene Meinung", viet:"Theo quan điểm của tôi..."},
+  {phrase:"Könnten Sie das bitte näher erläutern?", explain:"Nachfragen", viet:"Ngài có thể giải thích rõ hơn chút được không?"},
+  {phrase:"In diesem Zusammenhang sollte man bedenken...", explain:"Ergänzen", viet:"Trong mối liên hệ này cần cân nhắc rằng..."},
+  {phrase:"Das hat zur Folge, dass...", explain:"Konsequenz", viet:"Điều đó dẫn đến hậu quả là..."},
+  {phrase:"Zusammenfassend lässt sich sagen...", explain:"Fazit ziehen", viet:"Tóm lại có thể nói là..."},
+  {phrase:"Daraus ergibt sich die Schlussfolgerung...", explain:"Schlussfolgern", viet:"Từ đó rút ra kết luận là..."},
   {phrase:"Ich vertrete den Standpunkt, dass...", explain:"Position beziehen", viet:"Tôi giữ lập trường rằng..."},
-  {phrase:"Das ist ein wesentlicher Punkt.", explain:"Bedeutung hervorheben", viet:"Đó là một điểm cốt yếu."},
-  {phrase:"Kommen wir nun zum nächsten Punkt.", explain:"Überleitung", viet:"Bây giờ chúng ta chuyển sang ý tiếp theo."},
-  {phrase:"Dazu möchte ich noch anmerken, dass...", explain:"Ergänzen", viet:"Về vấn đề này tôi muốn ghi chú thêm rằng..."},
-  {phrase:"In gewisser Weise haben Sie recht, aber...", explain:"Teilweise zustimmen", viet:"Ở một khía cạnh nào đó ngài có lý, nhưng..."},
-  {phrase:"Dafür spricht, dass...", explain:"Pro-Argument", viet:"Điều ủng hộ cho việc này là..."},
-  {phrase:"Dagegen spricht, dass...", explain:"Contra-Argument", viet:"Điều chống lại việc này là..."},
-  {phrase:"Soweit ich das beurteilen kann...", explain:"Einschränkung", viet:"Theo như tôi có thể đánh giá..."},
-  {phrase:"Dies lässt sich wie folgt begründen:", explain:"Begründung einleiten", viet:"Điều này có thể được lý giải như sau:"},
-  {phrase:"Es spielt eine entscheidende Rolle, ob...", explain:"Wichtigkeit", viet:"Việc liệu... đóng một vai trò quyết định."},
-  {phrase:"Darüber hinaus sollte man berücksichtigen, dass...", explain:"Ergänzen", viet:"Ngoài ra, cần cân nhắc rằng..."},
-  {phrase:"Ich möchte noch einmal auf das zurückkommen, was...", explain:"Rückbezug", viet:"Tôi muốn quay lại vấn đề mà..."},
-  {phrase:"Alles in allem zeigt sich, dass...", explain:"Gesamtbewertung", viet:"Tất cả cho thấy rằng..."},
-  {phrase:"Darf ich dazu direkt etwas sagen?", explain:"Einmischen", viet:"Tôi có thể nói trực tiếp về vấn đề này không?"},
-  {phrase:"Das ist doch völlig unakzeptabel.", explain:"Ablehnung", viet:"Điều đó hoàn toàn không thể chấp nhận được."},
-  {phrase:"Das halte ich für problematisch.", explain:"Bedenken äußern", viet:"Tôi cho rằng điều đó có vấn đề."},
-  {phrase:"Das überzeugt mich nicht.", explain:"Skepsis", viet:"Điều đó không thuyết phục được tôi."},
-  {phrase:"Könnten Sie das an einem Beispiel festmachen?", explain:"Präzisierung verlangen", viet:"Ngài có thể lấy ví dụ cụ thể cho điều đó không?"},
-  {phrase:"Das ist ein berechtigter Einwand.", explain:"Einwand akzeptieren", viet:"Đó là một sự phản đối có cơ sở."},
-  {phrase:"Im Vergleich zu...", explain:"Vergleichen", viet:"So với..."},
   {phrase:"Es steht außer Frage, dass...", explain:"Gewissheit", viet:"Không cần bàn cãi rằng..."},
-  {phrase:"Ich sehe das etwas differenzierter.", explain:"Andere Sichtweise", viet:"Tôi nhìn nhận vấn đề này khác một chút."},
-  {phrase:"Das lässt sich nicht so einfach sagen.", explain:"Vorsicht", viet:"Điều đó không thể nói một cách đơn giản như vậy được."},
-  {phrase:"Ich schließe mich Ihrer Meinung an.", explain:"Zustimmen", viet:"Tôi đồng ý với ý kiến của ngài."},
-  {phrase:"Darf ich das kurz zusammenfassen?", explain:"Zusammenfassen", viet:"Tôi có thể tóm tắt ngắn gọn lại không?"},
-  {phrase:"Damit bin ich am Ende meines Beitrags.", explain:"Beenden", viet:"Đến đây tôi xin kết thúc phần đóng góp của mình."}
+  {phrase:"Darf ich dazu direkt etwas sagen?", explain:"Einmischen", viet:"Tôi có thể nói thẳng vào ý này không?"},
+  {phrase:"Ich halte das für problematisch.", explain:"Zweifel/Bedenken", viet:"Tôi cho rằng điều đó có vấn đề."},
+  {phrase:"Das überzeugt mich nicht.", explain:"Ablehnung", viet:"Điều đó không thuyết phục được tôi."},
+  {phrase:"Ein wichtiger Aspekt dabei ist...", explain:"Wichtigkeit", viet:"Một khía cạnh quan trọng ở đây là..."},
+  {phrase:"Im Gegensatz zu...", explain:"Kontrast", viet:"Trái ngược với..."},
+  {phrase:"Wie man an diesem Beispiel sieht...", explain:"Beispiel", viet:"Như chúng ta thấy ở ví dụ này..."},
+  {phrase:"Ich möchte noch einmal auf das zurückkommen...", explain:"Rückbezug", viet:"Tôi muốn quay lại vấn đề mà..."},
+  {phrase:"Das ist ein berechtigter Einwand.", explain:"Einwand akzeptieren", viet:"Đó là một sự phản đối có cơ sở."},
+  {phrase:"Alles in allem zeigt sich...", explain:"Zusammenfassung", viet:"Tất cả cho thấy rằng..."},
+  {phrase:"Damit bin ich am Ende meines Beitrags.", explain:"Beenden", viet:"Đến đây tôi xin kết thúc phần phát biểu."}
+  // Bạn có thể copy thêm từ PDF Mittelpunkt vào đây
 ];
 
 let current = 0;
 function showTab(n) {
   document.getElementById('content1').classList.toggle('hidden', n!==1);
   document.getElementById('content2').classList.toggle('hidden', n!==2);
-  document.getElementById('tab1').className = n===1 ? 'flex-1 py-4 tab
+  document.getElementById('tab1').className = n===1 ? 'flex-1 py-4 tab-active font-bold' : 'flex-1 py-4 font-bold text-gray-400';
+  document.getElementById('tab2').className = n===2 ? 'flex-1 py-4 tab-active font-bold' : 'flex-1 py-4 font-bold text-gray-400';
+  if(n===2) updateFlashcard();
+}
+function renderList() {
+  document.getElementById('list-container').innerHTML = data.map((item, i) => `
+    <div class="bg-white p-5 rounded-2xl border flex gap-4">
+      <div class="bg-blue-50 text-blue-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0">${i+1}</div>
+      <div>
+        <h3 class="text-lg font-bold text-slate-800">${item.phrase}</h3>
+        <p class="text-slate-500 text-xs mt-1 italic">${item.explain}</p>
+        <p class="text-emerald-600 font-bold text-sm mt-1">${item.viet}</p>
+      </div>
+    </div>
+  `).join('');
+}
+function updateFlashcard() {
+  const item = data[current];
+  document.getElementById('f-phrase').textContent = item.phrase;
+  document.getElementById('f-explain').textContent = item.explain;
+  document.getElementById('f-viet').textContent = item.viet;
+  document.getElementById('counter').textContent = `${current+1} / ${data.length}`;
+  document.getElementById('card-inner').classList.remove('flipped');
+}
+function toggleFlip() { document.getElementById('card-inner').classList.toggle('flipped'); }
+function next() { current = (current+1)%data.length; updateFlashcard(); }
+function prev() { current = (current-1+data.length)%data.length; updateFlashcard(); }
+function random() { current = Math.floor(Math.random()*data.length); updateFlashcard(); }
+window.onload = renderList;
+</script>
+</body>
+</html>
