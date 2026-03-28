@@ -1,85 +1,23 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>50 häufig verwendete Verben</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;}
-  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);padding-bottom:40px;}
-  .hdr{background:var(--ink);padding:30px 20px;text-align:center;color:white;position:relative;}
-  .tab-active{border-bottom:4px solid var(--blue);color:var(--blue);font-weight:800;}
-  .card-wrapper{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:500px;margin:0 auto;}
-  .flip-card{perspective:1000px;height:400px;width:100%;flex-shrink:0;}
-  .flip-inner{position:relative;width:100%;height:100%;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;}
-  .flipped{transform:rotateY(180deg);}
-  .flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;box-shadow:0 10px 25px rgba(30,58,95,0.15);}
-  .flip-front{background:white;border:1px solid #c5d8ee;}
-  .flip-back{background:var(--ink);color:white;transform:rotateY(180deg);}
-  .nav-btn{width:48px;height:48px;background:white;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.08);color:var(--blue);transition:0.2s;}
-  .nav-btn:active{transform:scale(0.9);}
-</style>
-</head>
-<body>
-<div class="hdr">
-    <div class="text-xs font-bold opacity-60 uppercase tracking-widest mb-1">Starke & Gemischte Verben</div>
-    <h1 class="text-2xl font-extrabold">50 Verben B2</h1>
-    <a href="index.html" class="inline-block mt-4 text-white/50 text-sm italic">← Zurück</a>
-</div>
-
-<div class="max-w-2xl mx-auto px-4 -mt-6 relative z-20">
-  <div class="bg-white rounded-2xl shadow-xl flex p-1 mb-8">
-    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active font-bold">📖 Liste</button>
-    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 font-bold text-slate-400">🔄 Karten</button>
-  </div>
-
-  <div id="content1" class="space-y-3">
-    <div id="list-container" class="grid gap-3"></div>
-  </div>
-
-  <div id="content2" class="hidden">
-    <div class="text-center mb-6"><span id="counter" class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full font-bold text-xs"></span></div>
-    <div class="card-wrapper">
-      <button onclick="prev()" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
-      <div class="flip-card" onclick="toggleFlip()">
-        <div id="card-inner" class="flip-inner">
-          <div class="flip-front"><p id="f-phrase" class="text-4xl font-black text-center text-blue-700"></p></div>
-          <div class="flip-back">
-            <p id="f-explain" class="text-blue-100 text-xl mb-4 font-bold text-center leading-relaxed"></p>
-            <div class="h-px w-12 bg-white/20 mb-4"></div>
-            <p id="f-viet" class="text-xl font-bold text-emerald-400 text-center"></p>
-          </div>
-        </div>
-      </div>
-      <button onclick="next()" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
-    </div>
-    <div class="flex justify-center mt-10"><button onclick="random()" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg uppercase text-sm tracking-widest">Zufällig</button></div>
-  </div>
-</div>
-
-<script>
 const data = [
   {verb:"beginnen", forms:"beginnt • begann • hat begonnen", viet:"bắt đầu"},
-  {verb:"bieten", forms:"bietet • bot • hat geboten", viet:"cung cấp/đưa ra"},
-  {verb:"bitten", forms:"bittet • bat • hat gebeten", viet:"nhờ vả/xin"},
+  {verb:"bieten", forms:"bietet • bot • hat geboten", viet:"cung cấp"},
+  {verb:"bitten", forms:"bittet • bat • hat gebeten", viet:"nhờ vả"},
   {verb:"bleiben", forms:"bleibt • blieb • ist geblieben", viet:"ở lại"},
   {verb:"bringen", forms:"bringt • brachte • hat gebracht", viet:"mang đến"},
   {verb:"denken", forms:"denkt • dachte • hat gedacht", viet:"suy nghĩ"},
-  {verb:"empfehlen", forms:"empfiehlt • empfahl • hat empfohlen", viet:"khuyên/đề xuất"},
+  {verb:"empfehlen", forms:"empfiehlt • empfahl • hat empfohlen", viet:"khuyên"},
   {verb:"essen", forms:"isst • aß • hat gegessen", viet:"ăn"},
-  {verb:"fahren", forms:"fährt • fuhr • ist gefahren", viet:"lái xe/đi xe"},
-  {verb:"fallen", forms:"fällt • fiel • ist gefallen", viet:"ngã/rơi"},
+  {verb:"fahren", forms:"fährt • fuhr • ist gefahren", viet:"lái xe"},
+  {verb:"fallen", forms:"fällt • fiel • ist gefallen", viet:"ngã"},
   {verb:"fangen", forms:"fängt • fing • hat gefangen", viet:"bắt lấy"},
   {verb:"finden", forms:"findet • fand • hat gefunden", viet:"tìm thấy"},
   {verb:"fliegen", forms:"fliegt • flog • ist geflogen", viet:"bay"},
-  {verb:"geben", forms:"gibt • gab • hat gegeben", viet:"cho/đưa"},
-  {verb:"gehen", forms:"geht • ging • ist gegangen", viet:"đi bộ"},
+  {verb:"geben", forms:"gibt • gab • hat gegeben", viet:"cho"},
+  {verb:"gehen", forms:"geht • ging • ist gegangen", viet:"đi"},
   {verb:"genießen", forms:"genießt • genoss • hat genossen", viet:"tận hưởng"},
   {verb:"geschehen", forms:"geschieht • geschah • ist geschehen", viet:"xảy ra"},
   {verb:"gewinnen", forms:"gewinnt • gewann • hat gewonnen", viet:"chiến thắng"},
-  {verb:"halten", forms:"hält • hielt • hat gehalten", viet:"cầm/giữ"},
+  {verb:"halten", forms:"hält • hielt • hat gehalten", viet:"giữ"},
   {verb:"helfen", forms:"hilft • half • hat geholfen", viet:"giúp đỡ"},
   {verb:"kennen", forms:"kennt • kannte • hat gekannt", viet:"quen biết"},
   {verb:"kommen", forms:"kommt • kam • ist gekommen", viet:"đến"},
@@ -87,16 +25,15 @@ const data = [
   {verb:"laufen", forms:"läuft • lief • ist gelaufen", viet:"chạy"},
   {verb:"lesen", forms:"liest • las • hat gelesen", viet:"đọc"},
   {verb:"liegen", forms:"liegt • lag • hat gelegen", viet:"nằm"},
-  {verb:"nehmen", forms:"nimmt • nahm • hat genommen", viet:"lấy/cầm"},
+  {verb:"nehmen", forms:"nimmt • nahm • hat genommen", viet:"lấy"},
   {verb:"nennen", forms:"nennt • nannte • hat genannt", viet:"gọi tên"},
   {verb:"raten", forms:"rät • riet • hat geraten", viet:"khuyên"},
   {verb:"rufen", forms:"ruft • rief • hat gerufen", viet:"gọi"},
-  {verb:"schlafen", forms:"schläft • schlief • hat schlafen", viet:"ngủ"},
+  {verb:"schlafen", forms:"schläft • schlief • hat geschlafen", viet:"ngủ"},
   {verb:"schlagen", forms:"schlägt • schlug • hat geschlagen", viet:"đánh"},
   {verb:"schreiben", forms:"schreibt • schrieb • hat geschrieben", viet:"viết"},
   {verb:"schwimmen", forms:"schwimmt • schwamm • ist geschwommen", viet:"bơi"},
   {verb:"sehen", forms:"sieht • sah • hat gesehen", viet:"nhìn"},
-  {verb:"sein", forms:"ist • war • ist gewesen", viet:"là/ở"},
   {verb:"singen", forms:"singt • sang • hat gesungen", viet:"hát"},
   {verb:"sitzen", forms:"sitzt • saß • hat gesessen", viet:"ngồi"},
   {verb:"sprechen", forms:"spricht • sprach • hat gesprochen", viet:"nói"},
@@ -113,34 +50,3 @@ const data = [
   {verb:"wissen", forms:"weiß • wusste • hat gewusst", viet:"biết"},
   {verb:"ziehen", forms:"zieht • zog • hat gezogen", viet:"kéo/rút"}
 ];
-let current = 0;
-function showTab(n){
-  document.getElementById('content1').classList.toggle('hidden',n!==1);
-  document.getElementById('content2').classList.toggle('hidden',n!==2);
-  document.getElementById('tab1').className = n===1?'flex-1 py-4 tab-active font-bold font-sans':'flex-1 py-4 font-bold text-slate-400 font-sans';
-  document.getElementById('tab2').className = n===2?'flex-1 py-4 tab-active font-bold font-sans':'flex-1 py-4 font-bold text-slate-400 font-sans';
-  if(n===2) updateFlashcard();
-}
-function renderList(){
-  document.getElementById('list-container').innerHTML = data.map((item, i) => `
-    <div class="bg-white p-4 rounded-xl border border-slate-200 flex gap-4 items-center">
-      <div class="text-blue-600 font-black opacity-30 text-xl w-8 text-center">${i+1}</div>
-      <div><h3 class="font-bold text-xl text-slate-800">${item.verb}</h3><p class="text-slate-500 text-xs font-bold uppercase">${item.forms}</p><p class="text-emerald-600 text-sm font-medium mt-1 italic">${item.viet}</p></div>
-    </div>`).join('');
-}
-function updateFlashcard(){
-  const item = data[current];
-  document.getElementById('f-phrase').textContent = item.verb;
-  document.getElementById('f-explain').innerHTML = item.forms.replace(/ • /g, '<br>');
-  document.getElementById('f-viet').textContent = item.viet;
-  document.getElementById('counter').textContent = `${current+1} / ${data.length}`;
-  document.getElementById('card-inner').classList.remove('flipped');
-}
-function toggleFlip(){document.getElementById('card-inner').classList.toggle('flipped');}
-function next(){current=(current+1)%data.length;updateFlashcard();}
-function prev(){current=(current-1+data.length)%data.length;updateFlashcard();}
-function random(){current=Math.floor(Math.random()*data.length);updateFlashcard();}
-window.onload = renderList;
-</script>
-</body>
-</html>
