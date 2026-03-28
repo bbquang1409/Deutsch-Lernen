@@ -125,4 +125,67 @@ const data = [
   {verb:"nehmen", forms:"nimmt • nahm • hat genommen", viet:"lấy"},
   {verb:"nennen", forms:"nennt • nannte • hat genannt", viet:"gọi tên"},
   {verb:"pfeifen", forms:"pfeift • pfiff • hat gepfiffen", viet:"huýt sáo"},
-  {verb:"preisen", forms:"preist • pries • hat gepriesen", viet
+  {verb:"preisen", forms:"preist • pries • hat gepriesen", viet:"ca ngợi"},
+  {verb:"raten", forms:"rät • riet • hat geraten", viet:"khuyên/đoán"},
+  {verb:"reiben", forms:"reibt • rieb • hat gerieben", viet:"cọ xát"},
+  {verb:"reißen", forms:"reißt • riss • hat gerissen", viet:"xé rách"},
+  {verb:"reiten", forms:"reitet • ritt • ist geritten", viet:"cưỡi ngựa"},
+  {verb:"rennen", forms:"rennt • rannte • ist gerannt", viet:"chạy nhanh"},
+  {verb:"riechen", forms:"riecht • roch • hat gerochen", viet:"ngửi"},
+  {verb:"ringen", forms:"ringt • rang • hat gerungen", viet:"vật lộn"},
+  {verb:"rufen", forms:"ruft • rief • hat gerufen", viet:"gọi"},
+  {verb:"saufen", forms:"säuft • soff • hat gesoffen", viet:"uống (đv)"},
+  {verb:"schaffen", forms:"schafft • schuf • hat geschaffen", viet:"tạo ra"},
+  {verb:"scheinen", forms:"scheint • schien • hat geschienen", viet:"chiếu sáng"},
+  {verb:"schieben", forms:"schiebt • schob • hat geschoben", viet:"đẩy"},
+  {verb:"schießen", forms:"schießt • schoss • hat geschossen", viet:"bắn"},
+  {verb:"schlafen", forms:"schläft • schlief • hat geschlafen", viet:"ngủ"},
+  {verb:"schlagen", forms:"schlägt • schlug • hat geschlagen", viet:"đánh"},
+  {verb:"schleichen", forms:"schleicht • schlich • ist geschlichen", viet:"lẻn đi"},
+  {verb:"schließen", forms:"schließt • schloss • hat geschlossen", viet:"đóng"},
+  {verb:"schmeißen", forms:"schmeißt • schmiss • hat geschmissen", viet:"ném"},
+  {verb:"schmelzen", forms:"schmilzt • schmolz • ist geschmolzen", viet:"tan chảy"},
+  {verb:"schneiden", forms:"schneidet • schnitt • hat geschnitten", viet:"cắt"},
+  {verb:"schreiben", forms:"schreibt • schrieb • hat geschrieben", viet:"viết"},
+  {verb:"schreien", forms:"schreit • schrie • hat geschrien", viet:"hét"},
+  {verb:"schweigen", forms:"schweigt • schwieg • hat geschwiegen", viet:"im lặng"},
+  {verb:"schwimmen", forms:"schwimmt • schwamm • ist geschwommen", viet:"bơi"},
+  {verb:"sehen", forms:"sieht • sah • hat gesehen", viet:"nhìn"},
+  {verb:"sein", forms:"ist • war • ist gewesen", viet:"thì/là/ở"},
+  {verb:"senden", forms:"sendet • sandte • hat gesandt", viet:"gửi"}
+];
+let current = 0;
+function showTab(n){
+  document.getElementById('content1').classList.toggle('hidden',n!==1);
+  document.getElementById('content2').classList.toggle('hidden',n!==2);
+  document.getElementById('tab1').className = n===1?'flex-1 py-5 tab-active text-2xl font-bold uppercase':'flex-1 py-5 text-2xl font-bold text-slate-300 uppercase';
+  document.getElementById('tab2').className = n===2?'flex-1 py-5 tab-active text-2xl font-bold uppercase':'flex-1 py-5 text-2xl font-bold text-slate-300 uppercase';
+  if(n===2) updateFlashcard();
+}
+function renderList(){
+  document.getElementById('content1').innerHTML = data.map((item, i) => `
+    <div class="bg-white p-8 rounded-3xl border border-slate-100 flex gap-8 shadow-sm items-center">
+      <div class="text-blue-600 font-black opacity-20 text-4xl w-14 text-center">${i+1}</div>
+      <div class="flex-1">
+        <h3 class="font-bold text-slate-800 text-4xl mb-2">${item.verb}</h3>
+        <p class="text-slate-500 text-lg font-bold uppercase tracking-wide mb-3">${item.forms}</p>
+        <p class="text-emerald-600 text-2xl font-extrabold">${item.viet}</p>
+      </div>
+    </div>`).join('');
+}
+function updateFlashcard(){
+  const item = data[current];
+  document.getElementById('f-main').textContent = item.verb;
+  document.getElementById('f-detail').innerHTML = item.forms.replace(/ • /g, '<br>');
+  document.getElementById('f-viet').textContent = item.viet;
+  document.getElementById('counter').textContent = `${current+1} / ${data.length}`;
+  document.getElementById('card-inner').classList.remove('flipped');
+}
+function toggleFlip(){document.getElementById('card-inner').classList.toggle('flipped');}
+function next(){current=(current+1)%data.length;updateFlashcard();}
+function prev(){current=(current-1+data.length)%data.length;updateFlashcard();}
+function random(){current=Math.floor(Math.random()*data.length);updateFlashcard();}
+window.onload = renderList;
+</script>
+</body>
+</html>
