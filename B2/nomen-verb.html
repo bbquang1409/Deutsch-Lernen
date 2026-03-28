@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>50 Nomen-Verb-Verbindungen B2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root{--blue:#1e3a5f;--emerald:#10b981;--bg:#f1f5f9;}
   body{font-family:'Outfit',sans-serif;background:var(--bg);color:#1e3a5f;padding-bottom:40px;}
-  .hdr{background:var(--blue);padding:40px 20px;text-align:center;color:white;position:relative;overflow:hidden;}
-  .hdr::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg, rgba(59,130,246,0.2) 0%, transparent 100%);}
+  .hdr{background:var(--blue);padding:40px 20px;text-align:center;color:white;}
   .tab-active{border-bottom:4px solid var(--emerald);color:var(--emerald);font-weight:700;}
   .flip-card{perspective:1000px;height:350px;width:100%;max-width:400px;margin:0 auto;}
   .flip-inner{position:relative;width:100%;height:100%;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;}
@@ -22,21 +20,16 @@
 </style>
 </head>
 <body>
-
 <div class="hdr">
-  <div class="relative z-10">
-    <h1 class="font-serif text-3xl md:text-4xl mb-2">Nomen-Verb-Verbindungen</h1>
-    <p class="text-blue-200 uppercase tracking-widest text-xs font-bold">Trình độ B2 • Goethe / Telc</p>
-    <a href="index.html" class="inline-block mt-5 text-white/70 hover:text-white transition-all text-sm">
-      <i class="fas fa-arrow-left mr-2"></i> Quay lại trang chính
-    </a>
-  </div>
+    <h1 class="text-3xl font-bold">Nomen-Verb-Verbindungen</h1>
+    <p class="text-blue-200 text-xs font-bold mt-2 uppercase">B2 • TELC / GOETHE</p>
+    <a href="index.html" class="inline-block mt-4 text-white/50 text-sm">← Back</a>
 </div>
 
 <div class="max-w-3xl mx-auto px-4 -mt-8 relative z-20">
   <div class="bg-white rounded-2xl shadow-lg flex p-1 mb-8">
-    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active transition-all">📖 Danh sách</button>
-    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 transition-all">🔄 Flashcards</button>
+    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active">📖 Liste</button>
+    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4">🔄 Flashcards</button>
   </div>
 
   <div id="content1" class="space-y-4">
@@ -44,16 +37,103 @@
   </div>
 
   <div id="content2" class="hidden">
-    <div class="text-center mb-6">
-      <span id="counter" class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-bold text-sm">1 / 50</span>
+    <div class="text-center mb-6"><span id="counter" class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-bold text-sm"></span></div>
+    <div class="flip-card" onclick="toggleFlip()"><div id="card-inner" class="flip-inner"><div class="flip-front"><p id="f-phrase" class="text-2xl font-bold text-center text-slate-800"></p></div><div class="flip-back"><p id="f-explain" class="text-lg text-center mb-4 text-blue-100 italic"></p><p id="f-viet" class="text-2xl font-bold text-emerald-400 text-center"></p></div></div></div>
+    <div class="flex justify-center items-center gap-6 mt-10">
+      <button onclick="prev()" class="w-14 h-14 bg-white rounded-full shadow-md flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
+      <button onclick="random()" class="px-6 py-3 bg-emerald-500 text-white rounded-2xl font-bold shadow-lg">Random</button>
+      <button onclick="next()" class="w-14 h-14 bg-white rounded-full shadow-md flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
     </div>
+  </div>
+</div>
 
-    <div class="flip-card" onclick="toggleFlip()">
-      <div id="card-inner" class="flip-inner">
-        <div class="flip-front">
-          <p id="f-phrase" class="text-2xl md:text-3xl font-bold text-center leading-tight"></p>
-          <span class="mt-6 text-gray-400 text-xs italic">Chạm để xem nghĩa</span>
-        </div>
-        <div class="flip-back">
-          <p class="text-emerald-400 text-sm font-bold mb-2 uppercase tracking-tighter">Giải thích:</p>
-          <p id="f-explain" class="text-lg text-center mb-6 text-blue-100"></p>
+<script>
+const data = [
+  {phrase:"einen Antrag stellen", explain:"etwas offiziell beantragen", viet:"nộp đơn / yêu cầu"},
+  {phrase:"einen Beitrag leisten", explain:"etwas beitragen", viet:"đóng góp"},
+  {phrase:"eine Entscheidung treffen", explain:"sich entscheiden", viet:"quyết định"},
+  {phrase:"in Frage kommen", explain:"relevant / möglich sein", viet:"có khả năng / được xét"},
+  {phrase:"Kritik üben an", explain:"jemanden/etwas kritisieren", viet:"chỉ trích / phê bình"},
+  {phrase:"Rücksicht nehmen auf", explain:"beachten / vorsichtig sein", viet:"quan tâm / để ý tới"},
+  {phrase:"Verantwortung übernehmen", explain:"verantwortlich sein", viet:"chịu trách nhiệm"},
+  {phrase:"Abschied nehmen von", explain:"sich verabschieden", viet:"tạm biệt"},
+  {phrase:"Beachtung finden", explain:"beachtet werden", viet:"được chú ý"},
+  {phrase:"Bezug nehmen auf", explain:"sich beziehen auf", viet:"liên hệ tới / trích dẫn"},
+  {phrase:"Eindruck machen auf", explain:"jemanden beeindrucken", viet:"gây ấn tượng"},
+  {phrase:"zu Ende bringen", explain:"beenden", viet:"kết thúc / hoàn thành"},
+  {phrase:"einen Entschluss fassen", explain:"sich zu etwas entschließen", viet:"đưa ra quyết định"},
+  {phrase:"einen Fehler begehen", explain:"etwas Falsches tun", viet:"phạm lỗi"},
+  {phrase:"die Flucht ergreifen", explain:"fliehen", viet:"chạy trốn"},
+  {phrase:"ein Gespräch führen", explain:"sprechen mit", viet:"trò chuyện"},
+  {phrase:"Interesse wecken", explain:"interessieren für", viet:"khơi dậy sự quan tâm"},
+  {phrase:"in Kauf nehmen", explain:"Nachteile akzeptieren", viet:"chấp nhận rủi ro / trả giá"},
+  {phrase:"Kontakt aufnehmen mit", explain:"kontaktieren", viet:"liên lạc với ai"},
+  {phrase:"die Kosten tragen", explain:"bezahlen", viet:"chịu chi phí"},
+  {phrase:"Maßnahmen ergreifen", explain:"handeln", viet:"thực hiện biện pháp"},
+  {phrase:"eine Rolle spielen", explain:"wichtig sein", viet:"đóng vai trò quan trọng"},
+  {phrase:"Schluss machen mit", explain:"beenden", viet:"chấm dứt việc gì"},
+  {phrase:"in Schutz nehmen", explain:"verteidigen", viet:"bảo vệ ai đó"},
+  {phrase:"Sorge tragen für", explain:"sich kümmern um", viet:"lo lắng / chăm sóc cho"},
+  {phrase:"aufs Spiel setzen", explain:"riskieren", viet:"mạo hiểm / đánh đổi"},
+  {phrase:"Stellung nehmen zu", explain:"seine Meinung sagen", viet:"bày tỏ quan điểm"},
+  {phrase:"einen Unterschied machen", explain:"sich unterscheiden", viet:"tạo sự khác biệt"},
+  {phrase:"Vorbereitungen treffen", explain:"vorbereiten", viet:"chuẩn bị"},
+  {phrase:"Wert legen auf", explain:"wichtig finden", viet:"coi trọng điều gì"},
+  {phrase:"Widerstand leisten", explain:"dagegen kämpfen", viet:"kháng cự / chống lại"},
+  {phrase:"zu Wort kommen", explain:"reden dürfen", viet:"được phát biểu"},
+  {phrase:"Zustimmung finden", explain:"akzeptiert werden", viet:"được đồng thuận"},
+  {phrase:"Zweifel haben", explain:"bezweifeln", viet:"nghi ngờ"},
+  {phrase:"außer Frage stehen", explain:"zweifellos richtig sein", viet:"không còn nghi ngờ gì"},
+  {phrase:"einen Rat geben", explain:"beraten", viet:"đưa ra lời khuyên"},
+  {phrase:"in Erfüllung gehen", explain:"wahr werden", viet:"trở thành hiện thực"},
+  {phrase:"Bescheid geben", explain:"informieren", viet:"thông báo cho biết"},
+  {phrase:"einen Kompromiss schließen", explain:"sich einigen", viet:"đạt được thỏa hiệp"},
+  {phrase:"Frieden schließen", explain:"sich versöhnen", viet:"làm hòa"},
+  {phrase:"auf dem Laufenden sein", explain:"aktuell informiert sein", viet:"cập nhật tin tức"},
+  {phrase:"einen Vorschlag machen", explain:"vorschlagen", viet:"đề xuất"},
+  {phrase:"Hoffnung haben", explain:"hoffen", viet:"hy vọng"},
+  {phrase:"Angst haben vor", explain:"sich ängstigen", viet:"sợ hãi"},
+  {phrase:"Anspruch haben auf", explain:"fordern können", viet:"có quyền yêu cầu"},
+  {phrase:"Verständnis haben cho", explain:"verstehen", viet:"thấu hiểu"},
+  {phrase:"einen Blick werfen auf", explain:"ansehen", viet:"liếc nhìn / xem qua"},
+  {phrase:"Vorteile ziehen aus", explain:"profitieren", viet:"rút ra lợi ích"},
+  {phrase:"Protokoll führen", explain:"mitschreiben", viet:"ghi biên bản"},
+  {phrase:"zur Verfügung stehen", explain:"vorhanden sein", viet:"có sẵn để sử dụng"}
+];
+
+let current = 0;
+function showTab(n) {
+  document.getElementById('content1').classList.toggle('hidden', n!==1);
+  document.getElementById('content2').classList.toggle('hidden', n!==2);
+  document.getElementById('tab1').className = n===1 ? 'flex-1 py-4 tab-active' : 'flex-1 py-4';
+  document.getElementById('tab2').className = n===2 ? 'flex-1 py-4 tab-active' : 'flex-1 py-4';
+  if(n===2) updateFlashcard();
+}
+function renderList() {
+  document.getElementById('list-container').innerHTML = data.map((item, i) => `
+    <div class="bg-white p-5 rounded-2xl border flex gap-4">
+      <div class="bg-blue-50 text-blue-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0">${i+1}</div>
+      <div>
+        <h3 class="text-xl font-bold">${item.phrase}</h3>
+        <p class="text-slate-500 text-sm italic">Def: ${item.explain}</p>
+        <p class="text-emerald-600 font-bold mt-1">VN: ${item.viet}</p>
+      </div>
+    </div>
+  `).join('');
+}
+function updateFlashcard() {
+  const item = data[current];
+  document.getElementById('f-phrase').textContent = item.phrase;
+  document.getElementById('f-explain').textContent = item.explain;
+  document.getElementById('f-viet').textContent = item.viet;
+  document.getElementById('counter').textContent = `${current+1} / ${data.length}`;
+  document.getElementById('card-inner').classList.remove('flipped');
+}
+function toggleFlip() { document.getElementById('card-inner').classList.toggle('flipped'); }
+function next() { current = (current+1)%data.length; updateFlashcard(); }
+function prev() { current = (current-1+data.length)%data.length; updateFlashcard(); }
+function random() { current = Math.floor(Math.random()*data.length); updateFlashcard(); }
+window.onload = renderList;
+</script>
+</body>
+</html>
