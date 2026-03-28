@@ -1,52 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>50 wichtige Verben</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;margin:0;}
+  .hdr{background:var(--ink);padding:45px 20px;text-align:center;color:white;position:relative;}
+  .tab-active{border-bottom:4px solid var(--blue);color:var(--blue);font-weight:800;}
+  .flashcard-zone{display:flex;align-items:stretch;justify-content:center;width:100%;max-width:500px;margin:0 auto;height:450px;position:relative;}
+  .nav-area{width:70px;cursor:pointer;z-index:30;display:flex;align-items:center;justify-content:center;color:rgba(37,99,235,0.1);font-size:1.5rem;transition:0.2s;-webkit-tap-highlight-color:transparent;}
+  .nav-area:active{background:rgba(37,99,235,0.05);color:var(--blue);}
+  .flip-card{perspective:1000px;flex:1;position:relative;z-index:20;}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;cursor:pointer;}
+  .flipped{transform:rotateY(180deg);}
+  .flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;box-shadow:0 20px 40px rgba(30,58,95,0.1);border:1px solid #fff;}
+  .flip-front{background:white;}
+  .flip-back{background:linear-gradient(145deg,#1e3a5f,#2563eb);color:white;transform:rotateY(180deg);}
+</style>
+</head>
+<body>
+<div class="hdr">
+    <h1 class="text-3xl font-extrabold mb-1">50 wichtige Verben</h1>
+    <p class="opacity-50 text-sm italic">Stammformen lernen</p>
+    <a href="index.html" class="inline-block mt-4 text-white/30 text-xs font-bold uppercase tracking-widest">← Zurück</a>
+</div>
+<div class="max-w-2xl mx-auto px-4 -mt-8 relative z-20">
+  <div class="bg-white rounded-3xl shadow-xl flex p-1.5 mb-8">
+    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active font-bold font-sans">LISTE</button>
+    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 font-bold text-slate-300 font-sans">KARTEN</button>
+  </div>
+  <div id="content1" class="space-y-3 pb-12"></div>
+  <div id="content2" class="hidden">
+    <div class="text-center mb-4"><span id="counter" class="bg-blue-600 text-white px-4 py-1 rounded-full font-bold text-xs shadow-lg font-sans"></span></div>
+    <div class="flashcard-zone">
+      <div onclick="prev()" class="nav-area">❮</div>
+      <div class="flip-card" onclick="toggleFlip()">
+        <div id="card-inner" class="flip-inner">
+          <div class="flip-front"><p id="f-main" class="text-5xl font-black text-center text-blue-700"></p></div>
+          <div class="flip-back">
+            <p id="f-detail" class="text-blue-100 text-xl font-bold text-center leading-relaxed"></p>
+          </div>
+        </div>
+      </div>
+      <div onclick="next()" class="nav-area">❯</div>
+    </div>
+    <div class="flex justify-center mt-10 pb-12"><button onclick="random()" class="px-12 py-4 bg-blue-600 text-white rounded-2xl font-extrabold shadow-xl uppercase tracking-widest text-sm font-sans">Zufällig</button></div>
+  </div>
+</div>
+<script>
 const data = [
-  {verb:"beginnen", forms:"beginnt • begann • hat begonnen", viet:"bắt đầu"},
-  {verb:"bieten", forms:"bietet • bot • hat geboten", viet:"cung cấp"},
-  {verb:"bitten", forms:"bittet • bat • hat gebeten", viet:"nhờ vả"},
-  {verb:"bleiben", forms:"bleibt • blieb • ist geblieben", viet:"ở lại"},
-  {verb:"bringen", forms:"bringt • brachte • hat gebracht", viet:"mang đến"},
-  {verb:"denken", forms:"denkt • dachte • hat gedacht", viet:"suy nghĩ"},
-  {verb:"empfehlen", forms:"empfiehlt • empfahl • hat empfohlen", viet:"khuyên"},
-  {verb:"essen", forms:"isst • aß • hat gegessen", viet:"ăn"},
-  {verb:"fahren", forms:"fährt • fuhr • ist gefahren", viet:"lái xe"},
-  {verb:"fallen", forms:"fällt • fiel • ist gefallen", viet:"ngã"},
-  {verb:"fangen", forms:"fängt • fing • hat gefangen", viet:"bắt lấy"},
-  {verb:"finden", forms:"findet • fand • hat gefunden", viet:"tìm thấy"},
-  {verb:"fliegen", forms:"fliegt • flog • ist geflogen", viet:"bay"},
-  {verb:"geben", forms:"gibt • gab • hat gegeben", viet:"cho"},
-  {verb:"gehen", forms:"geht • ging • ist gegangen", viet:"đi"},
-  {verb:"genießen", forms:"genießt • genoss • hat genossen", viet:"tận hưởng"},
-  {verb:"geschehen", forms:"geschieht • geschah • ist geschehen", viet:"xảy ra"},
-  {verb:"gewinnen", forms:"gewinnt • gewann • hat gewonnen", viet:"chiến thắng"},
-  {verb:"halten", forms:"hält • hielt • hat gehalten", viet:"giữ"},
-  {verb:"helfen", forms:"hilft • half • hat geholfen", viet:"giúp đỡ"},
-  {verb:"kennen", forms:"kennt • kannte • hat gekannt", viet:"quen biết"},
-  {verb:"kommen", forms:"kommt • kam • ist gekommen", viet:"đến"},
-  {verb:"lassen", forms:"lässt • ließ • hat gelassen", viet:"để cho"},
-  {verb:"laufen", forms:"läuft • lief • ist gelaufen", viet:"chạy"},
-  {verb:"lesen", forms:"liest • las • hat gelesen", viet:"đọc"},
-  {verb:"liegen", forms:"liegt • lag • hat gelegen", viet:"nằm"},
-  {verb:"nehmen", forms:"nimmt • nahm • hat genommen", viet:"lấy"},
-  {verb:"nennen", forms:"nennt • nannte • hat genannt", viet:"gọi tên"},
-  {verb:"raten", forms:"rät • riet • hat geraten", viet:"khuyên"},
-  {verb:"rufen", forms:"ruft • rief • hat gerufen", viet:"gọi"},
-  {verb:"schlafen", forms:"schläft • schlief • hat geschlafen", viet:"ngủ"},
-  {verb:"schlagen", forms:"schlägt • schlug • hat geschlagen", viet:"đánh"},
-  {verb:"schreiben", forms:"schreibt • schrieb • hat geschrieben", viet:"viết"},
-  {verb:"schwimmen", forms:"schwimmt • schwamm • ist geschwommen", viet:"bơi"},
-  {verb:"sehen", forms:"sieht • sah • hat gesehen", viet:"nhìn"},
-  {verb:"singen", forms:"singt • sang • hat gesungen", viet:"hát"},
-  {verb:"sitzen", forms:"sitzt • saß • hat gesessen", viet:"ngồi"},
-  {verb:"sprechen", forms:"spricht • sprach • hat gesprochen", viet:"nói"},
-  {verb:"stehen", forms:"steht • stand • hat gestanden", viet:"đứng"},
-  {verb:"sterben", forms:"stirbt • starb • ist gestorben", viet:"chết"},
-  {verb:"tragen", forms:"trägt • trug • hat getragen", viet:"mặc/mang"},
-  {verb:"treffen", forms:"trifft • traf • hat getroffen", viet:"gặp gỡ"},
-  {verb:"trinken", forms:"trinkt • trank • hat getrunken", viet:"uống"},
-  {verb:"tun", forms:"tut • tat • hat getan", viet:"làm"},
-  {verb:"vergessen", forms:"vergisst • vergaß • hat vergessen", viet:"quên"},
-  {verb:"verlieren", forms:"verliert • verlor • hat verloren", viet:"đánh mất"},
-  {verb:"verstehen", forms:"versteht • verstand • hat verstanden", viet:"hiểu"},
-  {verb:"werden", forms:"wird • wurde • ist geworden", viet:"trở thành"},
-  {verb:"wissen", forms:"weiß • wusste • hat gewusst", viet:"biết"},
-  {verb:"ziehen", forms:"zieht • zog • hat gezogen", viet:"kéo/rút"}
+  {verb:"beginnen", forms:"beginnt • begann • hat begonnen"},
+  {verb:"bieten", forms:"bietet • bot • hat geboten"},
+  {verb:"bitten", forms:"bittet • bat • hat gebeten"},
+  {verb:"bleiben", forms:"bleibt • blieb • ist geblieben"},
+  {verb:"bringen", forms:"bringt • brachte • hat gebracht"},
+  {verb:"denken", forms:"denkt • dachte • hat gedacht"},
+  {verb:"empfehlen", forms:"empfiehlt • empfahl • hat empfohlen"},
+  {verb:"essen", forms:"isst • aß • hat gegessen"},
+  {verb:"fahren", forms:"fährt • fuhr • ist gefahren"},
+  {verb:"fallen", forms:"fällt • fiel • ist gefallen"},
+  {verb:"fangen", forms:"fängt • fing • hat gefangen"},
+  {verb:"finden", forms:"findet • fand • hat gefunden"},
+  {verb:"fliegen", forms:"fliegt • flog • ist geflogen"},
+  {verb:"geben", forms:"gibt • gab • hat gegeben"},
+  {verb:"gehen", forms:"geht • ging • ist gegangen"},
+  {verb:"genießen", forms:"genießt • genoss • hat genossen"},
+  {verb:"geschehen", forms:"geschieht • geschah • ist geschehen"},
+  {verb:"gewinnen", forms:"gewinnt • gewann • hat gewonnen"},
+  {verb:"halten", forms:"hält • hielt • hat gehalten"},
+  {verb:"helfen", forms:"hilft • half • hat geholfen"},
+  {verb:"kennen", forms:"kennt • kannte • hat gekannt"},
+  {verb:"kommen", forms:"kommt • kam • ist gekommen"},
+  {verb:"lassen", forms:"lässt • ließ • hat gelassen"},
+  {verb:"laufen", forms:"läuft • lief • ist gelaufen"},
+  {verb:"lesen", forms:"liest • las • hat gelesen"},
+  {verb:"liegen", forms:"liegt • lag • hat gelegen"},
+  {verb:"nehmen", forms:"nimmt • nahm • hat genommen"},
+  {verb:"nennen", forms:"nennt • nannte • hat genannt"},
+  {verb:"raten", forms:"rät • riet • hat geraten"},
+  {verb:"rufen", forms:"ruft • rief • hat gerufen"},
+  {verb:"schlafen", forms:"schläft • schlief • hat geschlafen"},
+  {verb:"schlagen", forms:"schlägt • schlug • hat geschlagen"},
+  {verb:"schreiben", forms:"schreibt • schrieb • hat geschrieben"},
+  {verb:"schwimmen", forms:"schwimmt • schwamm • ist geschwommen"},
+  {verb:"sehen", forms:"sieht • sah • hat gesehen"},
+  {verb:"sein", forms:"ist • war • ist gewesen"},
+  {verb:"singen", forms:"singt • sang • hat gesungen"},
+  {verb:"sitzen", forms:"sitzt • saß • hat gesessen"},
+  {verb:"sprechen", forms:"spricht • sprach • hat gesprochen"},
+  {verb:"stehen", forms:"steht • stand • hat gestanden"},
+  {verb:"sterben", forms:"stirbt • starb • ist gestorben"},
+  {verb:"tragen", forms:"trägt • trug • hat getragen"},
+  {verb:"treffen", forms:"trifft • traf • hat getroffen"},
+  {verb:"trinken", forms:"trinkt • trank • hat getrunken"},
+  {verb:"tun", forms:"tut • tat • hat getan"},
+  {verb:"vergessen", forms:"vergisst • vergaß • hat vergessen"},
+  {verb:"verlieren", forms:"verliert • verlor • hat verloren"},
+  {verb:"verstehen", forms:"versteht • verstand • hat verstanden"},
+  {verb:"werden", forms:"wird • wurde • ist geworden"},
+  {verb:"wissen", forms:"weiß • wusste • hat gewusst"}
 ];
+let current = 0;
+function showTab(n){
+  document.getElementById('content1').classList.toggle('hidden',n!==1);
+  document.getElementById('content2').classList.toggle('hidden',n!==2);
+  document.getElementById('tab1').className = n===1?'flex-1 py-4 tab-active font-bold font-sans':'flex-1 py-4 font-bold text-slate-300 font-sans';
+  document.getElementById('tab2').className = n===2?'flex-1 py-4 tab-active font-bold font-sans':'flex-1 py-4 font-bold text-slate-300 font-sans';
+  if(n===2) updateFlashcard();
+}
+function renderList(){
+  document.getElementById('content1').innerHTML = data.map((item, i) => `
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex gap-4 shadow-sm items-center">
+      <div class="text-blue-600 font-black opacity-20 text-2xl w-10 text-center font-sans">${i+1}</div>
+      <div>
+        <h3 class="font-bold text-slate-800 text-xl">${item.verb}</h3>
+        <p class="text-slate-500 text-xs font-bold uppercase font-sans">${item.forms}</p>
+      </div>
+    </div>`).join('');
+}
+function updateFlashcard(){
+  const item = data[current];
+  document.getElementById('f-main').textContent = item.verb;
+  document.getElementById('f-detail').innerHTML = item.forms.replace(/ • /g, '<br>');
+  document.getElementById('counter').textContent = `${current+1} / ${data.length}`;
+  document.getElementById('card-inner').classList.remove('flipped');
+}
+function toggleFlip(){document.getElementById('card-inner').classList.toggle('flipped');}
+function next(){current=(current+1)%data.length;updateFlashcard();}
+function prev(){current=(current-1+data.length)%data.length;updateFlashcard();}
+function random(){current=Math.floor(Math.random()*data.length);updateFlashcard();}
+window.onload = renderList;
+</script>
+</body>
+</html>

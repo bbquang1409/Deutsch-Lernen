@@ -1,52 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nomen-Verb-Verbindungen</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;margin:0;}
+  .hdr{background:var(--ink);padding:45px 20px;text-align:center;color:white;position:relative;}
+  .tab-active{border-bottom:4px solid var(--blue);color:var(--blue);font-weight:800;}
+  .flashcard-zone{display:flex;align-items:stretch;justify-content:center;width:100%;max-width:500px;margin:0 auto;height:450px;position:relative;}
+  .nav-area{width:70px;cursor:pointer;z-index:30;display:flex;align-items:center;justify-content:center;color:rgba(37,99,235,0.1);font-size:1.5rem;transition:0.2s;-webkit-tap-highlight-color:transparent;}
+  .nav-area:active{background:rgba(37,99,235,0.05);color:var(--blue);}
+  .flip-card{perspective:1000px;flex:1;position:relative;z-index:20;}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;cursor:pointer;}
+  .flipped{transform:rotateY(180deg);}
+  .flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;box-shadow:0 20px 40px rgba(30,58,95,0.1);border:1px solid #fff;}
+  .flip-front{background:white;}
+  .flip-back{background:linear-gradient(145deg,#1e3a5f,#2563eb);color:white;transform:rotateY(180deg);}
+</style>
+</head>
+<body>
+<div class="hdr">
+    <h1 class="text-3xl font-extrabold mb-1">Kollokationen</h1>
+    <p class="opacity-50 text-sm italic">Nomen-Verb-Verbindungen</p>
+    <a href="index.html" class="inline-block mt-4 text-white/30 text-xs font-bold uppercase tracking-widest">← Zurück</a>
+</div>
+<div class="max-w-2xl mx-auto px-4 -mt-8 relative z-20">
+  <div class="bg-white rounded-3xl shadow-xl flex p-1.5 mb-8">
+    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active font-bold font-sans">LISTE</button>
+    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 font-bold text-slate-300 font-sans">KARTEN</button>
+  </div>
+  <div id="content1" class="space-y-3 pb-12"></div>
+  <div id="content2" class="hidden">
+    <div class="text-center mb-4"><span id="counter" class="bg-blue-600 text-white px-4 py-1 rounded-full font-bold text-xs shadow-lg font-sans"></span></div>
+    <div class="flashcard-zone">
+      <div onclick="prev()" class="nav-area">❮</div>
+      <div class="flip-card" onclick="toggleFlip()">
+        <div id="card-inner" class="flip-inner">
+          <div class="flip-front"><p id="f-main" class="text-3xl font-bold text-center text-blue-800 leading-tight"></p></div>
+          <div class="flip-back">
+            <p id="f-detail" class="text-blue-100 text-xl font-bold text-center"></p>
+          </div>
+        </div>
+      </div>
+      <div onclick="next()" class="nav-area">❯</div>
+    </div>
+    <div class="flex justify-center mt-10 pb-12"><button onclick="random()" class="px-12 py-4 bg-blue-600 text-white rounded-2xl font-extrabold shadow-xl uppercase tracking-widest text-sm font-sans">Zufällig</button></div>
+  </div>
+</div>
+<script>
 const data = [
-  {phrase:"einen Antrag stellen", explain:"etwas beantragen", viet:"nộp đơn / yêu cầu"},
-  {phrase:"einen Beitrag leisten", explain:"etwas beitragen", viet:"đóng góp"},
-  {phrase:"eine Entscheidung treffen", explain:"sich entscheiden", viet:"đưa ra quyết định"},
-  {phrase:"in Frage kommen", explain:"möglich sein", viet:"có khả năng / được xét đến"},
-  {phrase:"Kritik üben an", explain:"kritisieren", viet:"chỉ trích / phê bình"},
-  {phrase:"Rücksicht nehmen auf", explain:"beachten", viet:"quan tâm / để ý tới"},
-  {phrase:"Verantwortung übernehmen", explain:"verantwortlich sein", viet:"chịu trách nhiệm"},
-  {phrase:"Bezug nehmen auf", explain:"sich beziehen auf", viet:"liên hệ tới / trích dẫn từ"},
-  {phrase:"einen Entschluss fassen", explain:"sich entscheiden", viet:"quyết định"},
-  {phrase:"in Kauf nehmen", explain:"Akzeptieren", viet:"chấp nhận rủi ro / đánh đổi"},
-  {phrase:"Maßnahmen ergreifen", explain:"handeln", viet:"thực hiện biện pháp"},
-  {phrase:"Stellung nehmen zu", explain:"Meinung sagen", viet:"bày tỏ quan điểm"},
-  {phrase:"zur Verfügung stehen", explain:"da sein", viet:"có sẵn để sử dụng"},
-  {phrase:"Beachtung finden", explain:"beachtet werden", viet:"được chú ý tới"},
-  {phrase:"zu Ende bringen", explain:"beenden", viet:"hoàn thành"},
-  {phrase:"ein Gespräch führen", explain:"sprechen", viet:"trò chuyện"},
-  {phrase:"Interesse wecken", explain:"interessieren", viet:"khơi dậy quan tâm"},
-  {phrase:"Kontakt aufnehmen mit", explain:"kontaktieren", viet:"liên lạc với ai"},
-  {phrase:"die Kosten tragen", explain:"bezahlen", viet:"chịu chi phí"},
-  {phrase:"eine Rolle spielen", explain:"wichtig sein", viet:"đóng vai trò quan trọng"},
-  {phrase:"Schluss machen mit", explain:"beenden", viet:"chấm dứt việc gì"},
-  {phrase:"in Schutz nehmen", explain:"verteidigen", viet:"bảo vệ ai đó"},
-  {phrase:"aufs Spiel setzen", explain:"riskieren", viet:"mạo hiểm"},
-  {phrase:"Vorbereitungen treffen", explain:"vorbereiten", viet:"chuẩn bị"},
-  {phrase:"Wert legen auf", explain:"wichtig finden", viet:"coi trọng"},
-  {phrase:"Widerstand leisten", explain:"kämpfen", viet:"kháng cự"},
-  {phrase:"Zustimmung finden", explain:"akzeptiert werden", viet:"được đồng thuận"},
-  {phrase:"Zweifel haben", explain:"bezweifeln", viet:"nghi ngờ"},
-  {phrase:"Bescheid geben", explain:"informieren", viet:"thông báo cho biết"},
-  {phrase:"einen Kompromiss schließen", explain:"einigen", viet:"thỏa hiệp"},
-  {phrase:"auf dem Laufenden sein", explain:"informiert sein", viet:"cập nhật tin tức"},
-  {phrase:"einen Vorschlag machen", explain:"vorschlagen", viet:"đề xuất"},
-  {phrase:"Angst haben vor", explain:"ängstigen", viet:"sợ hãi"},
-  {phrase:"Anspruch haben auf", explain:"fordern", viet:"có quyền yêu cầu"},
-  {phrase:"Verständnis haben für", explain:"verstehen", viet:"thấu hiểu"},
-  {phrase:"Vorteile ziehen aus", explain:"profitieren", viet:"rút lợi ích từ"},
-  {phrase:"Auskunft geben", explain:"informieren", viet:"cung cấp thông tin"},
-  {phrase:"einen Befehl ausführen", explain:"gehorchen", viet:"thi hành mệnh lệnh"},
-  {phrase:"die Erlaubnis erteilen", explain:"erlauben", viet:"cho phép"},
-  {phrase:"Gefahr laufen", explain:"gefährdet sein", viet:"có nguy cơ"},
-  {phrase:"Hoffnung schöpfen", explain:"hoffen", viet:"nhen nhóm hy vọng"},
-  {phrase:"in Kraft treten", explain:"gültig werden", viet:"có hiệu lực"},
-  {phrase:"Frieden schließen", explain:"versöhnen", viet:"làm hòa"},
-  {phrase:"die Meinung vertreten", explain:"meinen", viet:"giữ quan điểm"},
-  {phrase:"Rechenschaft ablegen", explain:"erklären", viet:"giải trình"},
-  {phrase:"Ruhe bewahren", explain:"ruhig bleiben", viet:"giữ bình tĩnh"},
-  {phrase:"einen Schlussstrich ziehen", explain:"beenden", viet:"vạch ra ranh giới kết thúc"},
-  {phrase:"Trost spenden", explain:"trösten", viet:"an ủi"},
-  {phrase:"Urteil fällen", explain:"beurteilen", viet:"đưa ra phán quyết"},
-  {phrase:"Vorsorge treffen", explain:"planen", viet:"dự phòng"}
+  {phrase:"einen Antrag stellen", explain:"etwas beantragen"},
+  {phrase:"einen Beitrag leisten", explain:"etwas beitragen"},
+  {phrase:"eine Entscheidung treffen", explain:"sich entscheiden"},
+  {phrase:"in Frage kommen", explain:"möglich sein"},
+  {phrase:"Kritik üben an", explain:"kritisieren"},
+  {phrase:"Rücksicht nehmen auf", explain:"beachten"},
+  {phrase:"Verantwortung übernehmen", explain:"verantwortlich sein"},
+  {phrase:"Bezug nehmen auf", explain:"sich beziehen auf"},
+  {phrase:"einen Entschluss fassen", explain:"sich entscheiden"},
+  {phrase:"in Kauf nehmen", explain:"Akzeptieren"},
+  {phrase:"Maßnahmen ergreifen", explain:"handeln"},
+  {phrase:"Stellung nehmen zu", explain:"Meinung sagen"},
+  {phrase:"zur Verfügung stehen", explain:"da sein"},
+  {phrase:"Beachtung finden", explain:"beachtet werden"},
+  {phrase:"zu Ende bringen", explain:"beenden"},
+  {phrase:"ein Gespräch führen", explain:"sprechen"},
+  {phrase:"Interesse wecken", explain:"interessieren"},
+  {phrase:"Kontakt aufnehmen mit", explain:"kontaktieren"},
+  {phrase:"die Kosten tragen", explain:"bezahlen"},
+  {phrase:"eine Rolle spielen", explain:"wichtig sein"},
+  {phrase:"Schluss machen mit", explain:"beenden"},
+  {phrase:"in Schutz nehmen", explain:"verteidigen"},
+  {phrase:"aufs Spiel setzen", explain:"riskieren"},
+  {phrase:"Vorbereitungen treffen", explain:"vorbereiten"},
+  {phrase:"Wert legen auf", explain:"wichtig finden"},
+  {phrase:"Widerstand leisten", explain:"kämpfen"},
+  {phrase:"Zustimmung finden", explain:"akzeptiert werden"},
+  {phrase:"Zweifel haben", explain:"bezweifeln"},
+  {phrase:"Bescheid geben", explain:"informieren"},
+  {phrase:"einen Kompromiss schließen", explain:"einigen"},
+  {phrase:"auf dem Laufenden sein", explain:"informiert sein"},
+  {phrase:"einen Vorschlag machen", explain:"vorschlagen"},
+  {phrase:"Angst haben vor", explain:"ängstigen"},
+  {phrase:"Anspruch haben auf", explain:"fordern"},
+  {phrase:"Verständnis haben für", explain:"verstehen"},
+  {phrase:"Vorteile ziehen aus", explain:"profitieren"},
+  {phrase:"Auskunft geben", explain:"informieren"},
+  {phrase:"einen Befehl ausführen", explain:"gehorchen"},
+  {phrase:"die Erlaubnis erteilen", explain:"erlauben"},
+  {phrase:"Gefahr laufen", explain:"gefährdet sein"},
+  {phrase:"Hoffnung schöpfen", explain:"hoffen"},
+  {phrase:"in Kraft treten", explain:"gültig werden"},
+  {phrase:"Frieden schließen", explain:"versöhnen"},
+  {phrase:"die Meinung vertreten", explain:"meinen"},
+  {phrase:"Rechenschaft ablegen", explain:"erklären"},
+  {phrase:"Ruhe bewahren", explain:"ruhig bleiben"},
+  {phrase:"einen Schlussstrich ziehen", explain:"beenden"},
+  {phrase:"Trost spenden", explain:"trösten"},
+  {phrase:"Urteil fällen", explain:"beurteilen"},
+  {phrase:"Vorsorge treffen", explain:"planen"}
 ];
+let current = 0;
+function showTab(n){
+  document.getElementById('content1').classList.toggle('hidden',n!==1);
+  document.getElementById('content2').classList.toggle('hidden',n!==2);
+  document.getElementById('tab1').className = n===1?'flex-1 py-4 tab-active font-bold font-sans':'flex-1 py-4 font-bold text-slate-300 font-sans';
+  document.getElementById('tab2').className = n===2?'flex-1 py-4 tab-active font-bold font-sans':'flex-1 py-4 font-bold text-slate-300 font-sans';
+  if(n===2) updateFlashcard();
+}
+function renderList(){
+  document.getElementById('content1').innerHTML = data.map((item, i) => `
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex gap-4 shadow-sm items-center">
+      <div class="text-blue-600 font-black opacity-20 text-2xl w-10 text-center font-sans">${i+1}</div>
+      <div>
+        <h3 class="font-bold text-slate-800 text-lg leading-tight">${item.phrase}</h3>
+        <p class="text-slate-500 text-xs font-bold uppercase font-sans italic">${item.explain}</p>
+      </div>
+    </div>`).join('');
+}
+function updateFlashcard(){
+  const item = data[current];
+  document.getElementById('f-main').textContent = item.phrase;
+  document.getElementById('f-detail').textContent = item.explain;
+  document.getElementById('counter').textContent = `${current+1} / ${data.length}`;
+  document.getElementById('card-inner').classList.remove('flipped');
+}
+function toggleFlip(){document.getElementById('card-inner').classList.toggle('flipped');}
+function next(){current=(current+1)%data.length;updateFlashcard();}
+function prev(){current=(current-1+data.length)%data.length;updateFlashcard();}
+function random(){current=Math.floor(Math.random()*data.length);updateFlashcard();}
+window.onload = renderList;
+</script>
+</body>
+</html>
