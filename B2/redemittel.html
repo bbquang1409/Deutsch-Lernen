@@ -1,139 +1,160 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>50 Redemittel B2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
-<link href="https://cdn.tailwindcss.com" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;--card:#fff;--border:#c5d8ee;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Outfit',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
-  .hdr{background:#1e3a5f;padding:24px 20px 20px;position:relative;overflow:hidden;text-align:center;}
+  :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:#1e3a5f;}
+  .hdr{background:#1e3a5f;padding:28px 20px 22px;position:relative;overflow:hidden;text-align:center;}
   .hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
   .hdr-inner{position:relative;max-width:700px;margin:0 auto;}
   .hdr-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
-  .hdr h1{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:4px;}
-  .hdr p{font-size:13px;color:rgba(255,255,255,.5);}
-  .hdr-back{display:inline-block;margin-top:14px;background:rgba(255,255,255,.12);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;}
-  .tab-active{border-bottom:4px solid #10b981;color:#10b981;font-weight:600;}
+  .hdr h1{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;margin-bottom:4px;}
+  .card{transition:all .3s cubic-bezier(0.4,0,0.2,1);}
+  .card:hover{transform:translateY(-4px);box-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1);}
   .flip-card{perspective:1000px;}
-  .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform .7s;transform-style:preserve-3d;}
+  .flip-card-inner{transition:transform .6s;transform-style:preserve-3d;}
   .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
-  .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;}
-  .flip-card-front{background:#f3e8d8;}
-  .flip-card-back{background:#1e2937;color:white;transform:rotateY(180deg);}
+  .flip-card-front,.flip-card-back{backface-visibility:hidden;border-radius:20px;}
+  .flip-card-back{transform:rotateY(180deg);}
 </style>
 </head>
 <body>
+
 <div class="hdr">
   <div class="hdr-inner">
     <div class="hdr-tag">B2 • TELC & GOETHE</div>
     <h1>50 Redemittel B2</h1>
-    <p>Mittelpunkt • Diskutieren • Präsentation</p>
-    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+    <p class="text-white/70">Mittelpunkt • Redemittelsammlung</p>
+    <a href="index.html" class="inline-block mt-4 bg-white/20 text-white text-sm font-semibold px-6 py-2 rounded-2xl hover:bg-white/30">← Quay lại</a>
   </div>
 </div>
 
-<div class="max-w-4xl mx-auto p-4">
-  <div class="flex border-b mb-6">
-    <button onclick="showTab(1)" id="tab1" class="tab-active flex-1 py-4 text-lg">📖 Giải thích chi tiết</button>
-    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 text-lg">🔄 Flashcard (tap lật)</button>
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <div class="flex bg-white rounded-3xl shadow p-1 mb-8">
+    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 rounded-3xl font-medium tab-active flex items-center justify-center gap-2">📋 List toàn bộ</button>
+    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 rounded-3xl font-medium flex items-center justify-center gap-2">🔄 Flashcard Quiz</button>
   </div>
 
-  <!-- Tab 1 -->
+  <!-- TAB 1: LIST -->
   <div id="content1">
-    <div class="space-y-6" id="list-detail"></div>
+    <input id="search" type="text" placeholder="🔎 Tìm Redemittel... (ví dụ: Meinung, Diskutieren)" 
+           class="w-full px-6 py-5 bg-white border border-slate-200 rounded-3xl text-lg mb-6 focus:outline-none focus:border-emerald-500 shadow-sm">
+    <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
   </div>
 
-  <!-- Tab 2 -->
+  <!-- TAB 2: FLASHCARD QUIZ -->
   <div id="content2" class="hidden">
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="prevCard()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl">← Trước</button>
-      <span id="card-counter" class="text-xl font-medium text-emerald-700">1 / 50</span>
-      <button onclick="nextCard()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl">Sau →</button>
+    <div class="text-center mb-6">
+      <span id="counter" class="px-6 py-2 bg-white rounded-3xl shadow text-xl font-medium"></span>
     </div>
-    <div class="flip-card mx-auto max-w-lg h-80 cursor-pointer" onclick="flipCard()">
-      <div class="flip-card-inner h-full" id="flip-inner">
-        <div class="flip-card-front flex items-center justify-center p-8 shadow-2xl">
-          <div id="front-text" class="text-2xl font-semibold text-gray-800 leading-relaxed"></div>
+    <div onclick="flip()" class="flip-card mx-auto max-w-lg h-96 cursor-pointer">
+      <div id="inner" class="flip-card-inner relative h-full">
+        <div class="flip-card-front absolute inset-0 bg-gradient-to-br from-emerald-50 to-white flex items-center justify-center p-8 shadow-2xl">
+          <div id="front" class="text-3xl font-medium text-center leading-tight"></div>
         </div>
-        <div class="flip-card-back flex flex-col items-center justify-center p-8 shadow-2xl">
-          <div id="back-explain" class="text-lg leading-relaxed mb-6"></div>
-          <div id="back-viet" class="italic text-emerald-300 text-xl"></div>
+        <div class="flip-card-back absolute inset-0 bg-slate-800 flex flex-col items-center justify-center p-10 text-white">
+          <div id="explain" class="text-center mb-8 text-lg"></div>
+          <div id="viet" class="italic text-emerald-300 text-2xl text-center"></div>
         </div>
       </div>
     </div>
-    <div class="text-center mt-8">
-      <button onclick="randomCard()" class="px-8 py-3 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700">🎲 Ngẫu nhiên</button>
+    <div class="flex justify-center gap-4 mt-12">
+      <button onclick="prev()" class="flex-1 max-w-40 py-5 bg-white rounded-3xl shadow flex items-center justify-center gap-3 text-lg font-medium">← Trước</button>
+      <button onclick="random()" class="flex-1 max-w-40 py-5 bg-emerald-600 text-white rounded-3xl shadow flex items-center justify-center gap-3 text-lg font-medium">🎲 Ngẫu nhiên</button>
+      <button onclick="next()" class="flex-1 max-w-40 py-5 bg-white rounded-3xl shadow flex items-center justify-center gap-3 text-lg font-medium">Sau →</button>
     </div>
   </div>
 </div>
 
 <script>
-const data = [
-  {id:1, phrase:"Ich bin der Meinung / Ansicht / Auffassung, dass ...", explain:"Ausdruck einer klaren persönlichen Meinung.", context:"Diskussion, Erörterung", viet:"Tôi cho rằng / Tôi nghĩ rằng..."},
-  {id:2, phrase:"Ich denke / finde, dass ...", explain:"Informelle Meinungsäußerung.", context:"Alltag, Diskussion", viet:"Tôi nghĩ / Tôi thấy rằng..."},
-  {id:3, phrase:"Meiner Ansicht / Meinung nach ...", explain:"Höfliche Einleitung der eigenen Meinung.", context:"Formell & informell", viet:"Theo quan điểm của tôi..."},
-  {id:4, phrase:"Ich bin überzeugt, dass ...", explain:"Starke Überzeugung ausdrücken.", context:"Standpunkt darlegen", viet:"Tôi tin chắc rằng..."},
-  {id:5, phrase:"Ich habe den Eindruck, dass ...", explain:"Eindruck beschreiben.", context:"Beschreibung, Interpretation", viet:"Tôi có ấn tượng rằng..."},
-  {id:6, phrase:"Entschuldigung, darf ich dich / Sie kurz unterbrechen?", explain:"Höfliches Unterbrechen.", context:"Gespräch, Interview", viet:"Xin lỗi, tôi có thể ngắt lời một chút không?"},
-  {id:7, phrase:"Darf ich bitte kurz nachfragen?", explain:"Zwischenfrage stellen.", context:"Verständigung sichern", viet:"Tôi có thể hỏi thêm một chút được không?"},
-  {id:8, phrase:"Habe ich dich / Sie richtig verstanden, dass ...?", explain:"Paraphrasieren und nachfragen.", context:"Verständigung", viet:"Tôi hiểu đúng không, bạn nghĩ rằng...?"},
-  {id:9, phrase:"Darf ich noch einmal auf den Punkt ... zurückkommen?", explain:"Überleiten zu einem früheren Punkt.", context:"Diskussion", viet:"Tôi có thể quay lại điểm... một lần nữa không?"},
-  {id:10, phrase:"Ich möchte unterstreichen / hervorheben, dass ...", explain:"Wichtigen Punkt betonen.", context:"Präsentation", viet:"Tôi muốn nhấn mạnh rằng..."},
-  {id:11, phrase:"Ein (gutes) Beispiel dafür ist ...", explain:"Beispiel anführen.", context:"Erörterung", viet:"Một ví dụ (tốt) là..."},
-  {id:12, phrase:"Alles in allem ... / Ich fasse zusammen: ...", explain:"Zusammenfassen.", context:"Präsentation, Erörterung", viet:"Tóm lại..."},
-  {id:13, phrase:"Ich finde eindeutig ... am besten, weil ...", explain:"Standpunkt + Begründung.", context:"Diskutieren", viet:"Tôi rõ ràng thấy... là tốt nhất vì..."},
-  {id:14, phrase:"Der Hauptgrund dafür ist, dass ...", explain:"Hauptbegründung.", context:"Standpunkt", viet:"Lý do chính là..."},
-  {id:15, phrase:"Damit bin ich einverstanden, weil ...", explain:"Zustimmung + Begründung.", context:"Diskussion", viet:"Tôi đồng ý vì..."},
-  {id:16, phrase:"Das sehe ich (ganz) genauso!", explain:"Volle Zustimmung.", context:"Diskussion", viet:"Tôi cũng thấy hoàn toàn như vậy!"},
-  {id:17, phrase:"Das stimmt zwar, aber ...", explain:"Teilweise Zustimmung + Einwand.", context:"Diskutieren", viet:"Điều đó đúng, nhưng..."},
-  {id:18, phrase:"Da bin ich aber ganz anderer Meinung, denn ...", explain:"Widersprechen + Begründung.", context:"Diskussion", viet:"Tôi hoàn toàn không đồng ý vì..."},
-  {id:19, phrase:"Das sehe ich ganz anders.", explain:"Kurzer Widerspruch.", context:"Diskussion", viet:"Tôi thấy hoàn toàn khác."},
-  {id:20, phrase:"Wie wäre es, wenn ...?", explain:"Vorschlag machen.", context:"Diskutieren", viet:"Thế còn nếu... thì sao?"},
-  {id:21, phrase:"Am besten vereinbaren wir gleich, dass ...", explain:"Vereinbarung treffen.", context:"Projekt", viet:"Tốt nhất chúng ta thỏa thuận ngay rằng..."},
-  {id:22, phrase:"Mich würde interessieren, ob / wann / wie ...", explain:"Höfliche Informationsfrage.", context:"Interview", viet:"Tôi rất muốn biết liệu..."},
-  {id:23, phrase:"Das hat mich (sehr) gefreut / enttäuscht ...", explain:"Gefühle äußern.", context:"Erzählen", viet:"Điều đó khiến tôi vui / thất vọng..."},
-  {id:24, phrase:"Das tut mir leid.", explain:"Anteilnahme zeigen.", context:"Trost", viet:"Tôi rất tiếc."},
-  {id:25, phrase:"Ich empfehle dir / Ihnen, ...", explain:"Ratschlag geben.", context:"Beratung", viet:"Tôi khuyên bạn..."},
-  {id:26, phrase:"An deiner / Ihrer Stelle würde ich ...", explain:"Persönlicher Ratschlag.", context:"Ratschläge", viet:"Nếu là tôi, tôi sẽ..."},
-  {id:27, phrase:"Ich bitte dich / Sie um ...", explain:"Höfliche Bitte.", context:"Bitten", viet:"Tôi xin bạn..."},
-  {id:28, phrase:"Ich muss mich leider darüber beschweren, dass ...", explain:"Beschwerde äußern.", context:"Beschwerden", viet:"Tôi tiếc phải phàn nàn rằng..."},
-  {id:29, phrase:"Ich würde Sie gerne zum Thema ... interviewen.", explain:"Interview einleiten.", context:"Interview", viet:"Tôi muốn phỏng vấn anh/chị về chủ đề..."},
-  {id:30, phrase:"Das finde ich sehr interessant.", explain:"Interesse zeigen.", context:"Interview", viet:"Tôi thấy rất thú vị."},
-  {id:31, phrase:"Ein besonderes Merkmal ist ...", explain:"Produkt vorstellen.", context:"Präsentation", viet:"Một đặc điểm nổi bật là..."},
-  {id:32, phrase:"Auf dem Bild / Foto sieht man ...", explain:"Bild beschreiben.", context:"Beschreibung", viet:"Trong hình ta thấy..."},
-  {id:33, phrase:"Das Bild zeigt, dass ...", explain:"Bild interpretieren.", context:"Interpretation", viet:"Hình ảnh cho thấy..."},
-  {id:34, phrase:"Dafür spricht, dass ...", explain:"Pro-Argument.", context:"Erörterung", viet:"Lý do ủng hộ là..."},
-  {id:35, phrase:"Dagegen spricht, dass ...", explain:"Contra-Argument.", context:"Erörterung", viet:"Lý do phản đối là..."},
-  {id:36, phrase:"Einerseits ..., andererseits ...", explain:"Abwägen.", context:"Erörterung", viet:"Một mặt..., mặt khác..."},
-  {id:37, phrase:"Abschließend lässt sich sagen, dass ...", explain:"Schlussfolgern.", context:"Erörterung", viet:"Tóm lại có thể nói rằng..."},
-  {id:38, phrase:"Der Artikel handelt von ...", explain:"Text zusammenfassen.", context:"Zusammenfassung", viet:"Bài báo nói về..."},
-  {id:39, phrase:"Sehr geehrte Damen und Herren,", explain:"Formelle Anrede.", context:"Briefe", viet:"Kính gửi Quý vị,"},
-  {id:40, phrase:"Ich wäre Ihnen sehr dankbar, wenn Sie ...", explain:"Höfliche Bitte im Brief.", context:"Formelle Briefe", viet:"Tôi sẽ rất cảm kích nếu anh/chị..."},
-  {id:41, phrase:"Ich fasse zusammen: ...", explain:"Zusammenfassen (Präsentation).", context:"Präsentation", viet:"Tôi tóm tắt:..."},
-  {id:42, phrase:"Das kann ich sehr gut verstehen.", explain:"Verständnis zeigen.", context:"Diskussion", viet:"Tôi hiểu rất rõ."},
-  {id:43, phrase:"Ich sehe nicht ein, dass ...", explain:"Starke Ablehnung.", context:"Diskutieren", viet:"Tôi không thấy lý do gì để..."},
-  {id:44, phrase:"Lassen Sie mich folgendes Beispiel anführen: ...", explain:"Formelles Beispiel.", context:"Erörterung", viet:"Hãy để tôi đưa ví dụ sau:..."},
-  {id:45, phrase:"Ich hoffe, Sie haben einen Überblick über ... erhalten.", explain:"Präsentation abschließen.", context:"Präsentation", viet:"Tôi hy vọng anh/chị đã có cái nhìn tổng quan..."},
-  {id:46, phrase:"Was hältst du / halten Sie von folgender Idee: ...?", explain:"Vorschlag einholen.", context:"Diskussion", viet:"Bạn nghĩ sao về ý tưởng này:...?"},
-  {id:47, phrase:"Ich halte das auch gleich schriftlich fest.", explain:"Vereinbarung protokollieren.", context:"Vereinbarungen", viet:"Tôi sẽ ghi lại ngay."},
-  {id:48, phrase:"Das ist mir runter gegangen wie Öl.", explain:"Sehr positive Gefühlsäußerung.", context:"Gefühle", viet:"Điều đó làm tôi thấy dễ chịu lắm."},
-  {id:49, phrase:"Kopf hoch! Wir finden einen Weg.", explain:"Anteilnahme und Ermutigung.", context:"Anteilnahme", viet:"Cố lên! Chúng ta sẽ tìm ra cách."},
-  {id:50, phrase:"Ich danke Ihnen für dieses interessante Gespräch.", explain:"Interview abschließen.", context:"Interview", viet:"Cảm ơn anh/chị đã có cuộc trò chuyện thú vị."}
+const redemittel = [
+  {phrase:"Ich bin der Meinung / Ansicht / Auffassung, dass ...", explain:"Ausdruck einer klaren persönlichen Meinung. – Diskussion, Erörterung", viet:"Tôi cho rằng / Tôi nghĩ rằng..."},
+  {phrase:"Ich denke / finde, dass ...", explain:"Informelle Meinungsäußerung. – Alltag, Diskussion", viet:"Tôi nghĩ / Tôi thấy rằng..."},
+  {phrase:"Meiner Ansicht / Meinung nach ...", explain:"Höfliche Einleitung der eigenen Meinung. – Formell & informell", viet:"Theo quan điểm của tôi..."},
+  {phrase:"Ich bin überzeugt, dass ...", explain:"Starke Überzeugung ausdrücken. – Standpunkt darlegen", viet:"Tôi tin chắc rằng..."},
+  {phrase:"Ich habe den Eindruck, dass ...", explain:"Eindruck beschreiben. – Beschreibung, Interpretation", viet:"Tôi có ấn tượng rằng..."},
+  {phrase:"Entschuldigung, darf ich dich / Sie kurz unterbrechen?", explain:"Höfliches Unterbrechen. – Gespräch, Interview", viet:"Xin lỗi, tôi có thể ngắt lời một chút không?"},
+  {phrase:"Darf ich bitte kurz nachfragen?", explain:"Zwischenfrage stellen. – Verständigung sichern", viet:"Tôi có thể hỏi thêm một chút được không?"},
+  {phrase:"Habe ich dich / Sie richtig verstanden, dass ...?", explain:"Paraphrasieren. – Verständigung", viet:"Tôi hiểu đúng không?"},
+  {phrase:"Darf ich noch einmal auf den Punkt ... zurückkommen?", explain:"Überleiten. – Diskussion", viet:"Tôi có thể quay lại điểm... một lần nữa không?"},
+  {phrase:"Ich möchte unterstreichen / hervorheben, dass ...", explain:"Wichtigen Punkt betonen. – Präsentation", viet:"Tôi muốn nhấn mạnh rằng..."},
+  {phrase:"Ein (gutes) Beispiel dafür ist ...", explain:"Beispiel anführen. – Erörterung", viet:"Một ví dụ (tốt) là..."},
+  {phrase:"Alles in allem ... / Ich fasse zusammen: ...", explain:"Zusammenfassen. – Präsentation, Erörterung", viet:"Tóm lại..."},
+  {phrase:"Ich finde eindeutig ... am besten, weil ...", explain:"Standpunkt + Begründung. – Diskutieren", viet:"Tôi rõ ràng thấy... là tốt nhất vì..."},
+  {phrase:"Der Hauptgrund dafür ist, dass ...", explain:"Hauptbegründung. – Standpunkt", viet:"Lý do chính là..."},
+  {phrase:"Damit bin ich einverstanden, weil ...", explain:"Zustimmung. – Diskussion", viet:"Tôi đồng ý vì..."},
+  {phrase:"Das sehe ich (ganz) genauso!", explain:"Volle Zustimmung. – Diskussion", viet:"Tôi cũng thấy hoàn toàn như vậy!"},
+  {phrase:"Das stimmt zwar, aber ...", explain:"Einwand. – Diskutieren", viet:"Điều đó đúng, nhưng..."},
+  {phrase:"Da bin ich aber ganz anderer Meinung, denn ...", explain:"Widersprechen. – Diskussion", viet:"Tôi hoàn toàn không đồng ý vì..."},
+  {phrase:"Wie wäre es, wenn ...?", explain:"Vorschlag machen. – Diskutieren", viet:"Thế còn nếu... thì sao?"},
+  {phrase:"Am besten vereinbaren wir gleich, dass ...", explain:"Vereinbarung treffen. – Projekt", viet:"Tốt nhất chúng ta thỏa thuận ngay rằng..."},
+  {phrase:"Mich würde interessieren, ob / wann / wie ...", explain:"Höfliche Informationsfrage. – Interview", viet:"Tôi rất muốn biết liệu..."},
+  {phrase:"Das hat mich (sehr) gefreut / enttäuscht ...", explain:"Gefühle äußern. – Erzählen", viet:"Điều đó khiến tôi vui / thất vọng..."},
+  {phrase:"Das tut mir leid.", explain:"Anteilnahme zeigen. – Trost", viet:"Tôi rất tiếc."},
+  {phrase:"Ich empfehle dir / Ihnen, ...", explain:"Ratschlag geben. – Beratung", viet:"Tôi khuyên bạn..."},
+  {phrase:"Ich bitte dich / Sie um ...", explain:"Höfliche Bitte. – Bitten", viet:"Tôi xin bạn..."},
+  {phrase:"Ich muss mich leider darüber beschweren, dass ...", explain:"Beschwerde äußern. – Beschwerden", viet:"Tôi tiếc phải phàn nàn rằng..."},
+  {phrase:"Ich würde Sie gerne zum Thema ... interviewen.", explain:"Interview einleiten. – Interview", viet:"Tôi muốn phỏng vấn anh/chị về chủ đề..."},
+  {phrase:"Das finde ich sehr interessant.", explain:"Interesse zeigen. – Interview", viet:"Tôi thấy rất thú vị."},
+  {phrase:"Ein besonderes Merkmal ist ...", explain:"Produkt vorstellen. – Präsentation", viet:"Một đặc điểm nổi bật là..."},
+  {phrase:"Auf dem Bild / Foto sieht man ...", explain:"Bild beschreiben. – Beschreibung", viet:"Trong hình ta thấy..."},
+  {phrase:"Dafür spricht, dass ...", explain:"Pro-Argument. – Erörterung", viet:"Lý do ủng hộ là..."},
+  {phrase:"Dagegen spricht, dass ...", explain:"Contra-Argument. – Erörterung", viet:"Lý do phản đối là..."},
+  {phrase:"Einerseits ..., andererseits ...", explain:"Abwägen. – Erörterung", viet:"Một mặt..., mặt khác..."},
+  {phrase:"Abschließend lässt sich sagen, dass ...", explain:"Schlussfolgern. – Erörterung", viet:"Tóm lại có thể nói rằng..."},
+  {phrase:"Der Artikel handelt von ...", explain:"Text zusammenfassen. – Zusammenfassung", viet:"Bài báo nói về..."},
+  {phrase:"Sehr geehrte Damen und Herren,", explain:"Formelle Anrede. – Briefe", viet:"Kính gửi Quý vị,"},
+  {phrase:"Ich wäre Ihnen sehr dankbar, wenn Sie ...", explain:"Höfliche Bitte im Brief. – Formelle Briefe", viet:"Tôi sẽ rất cảm kích nếu anh/chị..."},
+  {phrase:"Ich danke Ihnen für dieses interessante Gespräch.", explain:"Interview abschließen. – Interview", viet:"Cảm ơn anh/chị đã có cuộc trò chuyện thú vị."}
 ];
 
-function renderDetailList(){const container=document.getElementById('list-detail');container.innerHTML=data.map(item=>`<div class="bg-white rounded-3xl shadow p-6"><div class="flex items-start gap-4"><div class="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-bold text-lg flex-shrink-0">${item.id}</div><div class="flex-1"><div class="text-xl font-semibold text-gray-800 mb-2">${item.phrase}</div><div class="text-gray-700 mb-1"><strong>Erklärung & Kontext:</strong> ${item.explain} – ${item.context}</div><div class="italic text-emerald-600 text-base">${item.viet}</div></div></div></div>`).join('');}
-function showTab(n){document.querySelectorAll('.tab-content').forEach(el=>el.classList.add('hidden'));document.getElementById('content'+n).classList.remove('hidden');document.querySelectorAll('button[id^="tab"]').forEach(btn=>btn.classList.remove('tab-active'));document.getElementById('tab'+n).classList.add('tab-active');}
-let currentIndex=0;let isFlipped=false;function showCard(i){currentIndex=i;isFlipped=false;document.getElementById('flip-inner').classList.remove('flipped');document.getElementById('front-text').textContent=data[i].phrase;document.getElementById('back-explain').innerHTML=`<strong>Erklärung:</strong> ${data[i].explain}<br><strong>Kontext:</strong> ${data[i].context}`;document.getElementById('back-viet').textContent=data[i].viet;document.getElementById('card-counter').textContent=`${i+1} / 50`;}
-function flipCard(){isFlipped=!isFlipped;document.getElementById('flip-inner').classList.toggle('flipped',isFlipped);}
-function nextCard(){showCard((currentIndex+1)%50);}
-function prevCard(){showCard((currentIndex-1+50)%50);}
-function randomCard(){showCard(Math.floor(Math.random()*50));}
-window.onload=function(){renderDetailList();showCard(0);};
+let current = 0;
+
+function renderGrid(filtered) {
+  const container = document.getElementById('grid');
+  container.innerHTML = filtered.map(item => `
+    <div class="card bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+      <div class="text-emerald-600 text-sm mb-2">${item.explain}</div>
+      <div class="text-2xl font-medium leading-tight">${item.phrase}</div>
+      <div class="italic text-slate-600 mt-5">${item.viet}</div>
+    </div>
+  `).join('');
+}
+
+function showTab(n) {
+  document.getElementById('content1').classList.toggle('hidden', n !== 1);
+  document.getElementById('content2').classList.toggle('hidden', n !== 2);
+  document.getElementById('tab1').classList.toggle('tab-active', n === 1);
+  document.getElementById('tab2').classList.toggle('tab-active', n === 2);
+}
+
+function flip() { document.getElementById('inner').classList.toggle('flipped'); }
+function next() { current = (current + 1) % redemittel.length; showFlash(); }
+function prev() { current = (current - 1 + redemittel.length) % redemittel.length; showFlash(); }
+function random() { current = Math.floor(Math.random() * redemittel.length); showFlash(); }
+function showFlash() {
+  document.getElementById('front').textContent = redemittel[current].phrase;
+  document.getElementById('explain').innerHTML = `<strong>${redemittel[current].explain}</strong>`;
+  document.getElementById('viet').textContent = redemittel[current].viet;
+  document.getElementById('counter').textContent = `${current+1} / ${redemittel.length}`;
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  const filtered = redemittel.filter(i => i.phrase.toLowerCase().includes(term) || i.viet.toLowerCase().includes(term));
+  renderGrid(filtered);
+});
+
+window.onload = () => {
+  renderGrid(redemittel);
+  showFlash();
+};
 </script>
 </body>
 </html>

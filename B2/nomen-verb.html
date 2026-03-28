@@ -6,129 +6,54 @@
 <title>50 Nomen-Verb-Verbindungen B2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
-<link href="https://cdn.tailwindcss.com" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;--card:#fff;--border:#c5d8ee;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Outfit',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
-  .hdr{background:#1e3a5f;padding:24px 20px 20px;position:relative;overflow:hidden;text-align:center;}
-  .hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
-  .hdr-inner{position:relative;max-width:700px;margin:0 auto;}
-  .hdr-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
-  .hdr h1{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:4px;}
-  .hdr p{font-size:13px;color:rgba(255,255,255,.5);}
-  .hdr-back{display:inline-block;margin-top:14px;background:rgba(255,255,255,.12);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;}
-  .tab-active{border-bottom:4px solid #10b981;color:#10b981;font-weight:600;}
-  .flip-card{perspective:1000px;}
-  .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform .7s;transform-style:preserve-3d;}
-  .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
-  .flip-card-front,.flip-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;}
-  .flip-card-front{background:#f3e8d8;}
-  .flip-card-back{background:#1e2937;color:white;transform:rotateY(180deg);}
+  :root{--blue:#1e3a5f;--emerald:#10b981;--bg:#f1f5f9;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:#1e3a5f;padding-bottom:40px;}
+  .hdr{background:var(--blue);padding:40px 20px;text-align:center;color:white;position:relative;overflow:hidden;}
+  .hdr::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg, rgba(59,130,246,0.2) 0%, transparent 100%);}
+  .tab-active{border-bottom:4px solid var(--emerald);color:var(--emerald);font-weight:700;}
+  .flip-card{perspective:1000px;height:350px;width:100%;max-width:400px;margin:0 auto;}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform 0.6s;transform-style:preserve-3d;cursor:pointer;}
+  .flipped{transform:rotateY(180deg);}
+  .flip-front, .flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;box-shadow:0 15px 35px rgba(0,0,0,0.1);}
+  .flip-front{background:white;border:2px solid #e2e8f0;}
+  .flip-back{background:var(--blue);color:white;transform:rotateY(180deg);}
 </style>
 </head>
 <body>
+
 <div class="hdr">
-  <div class="hdr-inner">
-    <div class="hdr-tag">B2 • TELC & GOETHE</div>
-    <h1>50 Nomen-Verb-Verbindungen</h1>
-    <p>Kollokationen B2/C1 • Mittelpunkt</p>
-    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  <div class="relative z-10">
+    <h1 class="font-serif text-3xl md:text-4xl mb-2">Nomen-Verb-Verbindungen</h1>
+    <p class="text-blue-200 uppercase tracking-widest text-xs font-bold">Trình độ B2 • Goethe / Telc</p>
+    <a href="index.html" class="inline-block mt-5 text-white/70 hover:text-white transition-all text-sm">
+      <i class="fas fa-arrow-left mr-2"></i> Quay lại trang chính
+    </a>
   </div>
 </div>
 
-<div class="max-w-4xl mx-auto p-4">
-  <div class="flex border-b mb-6">
-    <button onclick="showTab(1)" id="tab1" class="tab-active flex-1 py-4 text-lg">📖 Giải thích chi tiết</button>
-    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 text-lg">🔄 Flashcard (tap lật)</button>
+<div class="max-w-3xl mx-auto px-4 -mt-8 relative z-20">
+  <div class="bg-white rounded-2xl shadow-lg flex p-1 mb-8">
+    <button onclick="showTab(1)" id="tab1" class="flex-1 py-4 tab-active transition-all">📖 Danh sách</button>
+    <button onclick="showTab(2)" id="tab2" class="flex-1 py-4 transition-all">🔄 Flashcards</button>
   </div>
 
-  <div id="content1"><div class="space-y-6" id="list-detail"></div></div>
+  <div id="content1" class="space-y-4">
+    <div id="list-container" class="grid gap-4"></div>
+  </div>
+
   <div id="content2" class="hidden">
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="prevCard()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl">← Trước</button>
-      <span id="card-counter" class="text-xl font-medium text-emerald-700">1 / 50</span>
-      <button onclick="nextCard()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl">Sau →</button>
+    <div class="text-center mb-6">
+      <span id="counter" class="bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full font-bold text-sm">1 / 50</span>
     </div>
-    <div class="flip-card mx-auto max-w-lg h-80 cursor-pointer" onclick="flipCard()">
-      <div class="flip-card-inner h-full" id="flip-inner">
-        <div class="flip-card-front flex items-center justify-center p-8 shadow-2xl">
-          <div id="front-text" class="text-2xl font-semibold text-gray-800 leading-relaxed"></div>
-        </div>
-        <div class="flip-card-back flex flex-col items-center justify-center p-8 shadow-2xl">
-          <div id="back-explain" class="text-lg leading-relaxed mb-6"></div>
-          <div id="back-viet" class="italic text-emerald-300 text-xl"></div>
-        </div>
-      </div>
-    </div>
-    <div class="text-center mt-8">
-      <button onclick="randomCard()" class="px-8 py-3 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700">🎲 Ngẫu nhiên</button>
-    </div>
-  </div>
-</div>
 
-<script>
-const data = [
-  {id:1, phrase:"eine Entscheidung treffen", explain:"Eine Wahl oder Lösung festlegen.", viet:"Ra quyết định"},
-  {id:2, phrase:"einen Beitrag leisten", explain:"Etwas beitragen / helfen.", viet:"Đóng góp"},
-  {id:3, phrase:"eine Rolle spielen", explain:"Wichtig / unwichtig sein.", viet:"Đóng vai trò"},
-  {id:4, phrase:"Einfluss ausüben", explain:"Einwirken auf etwas.", viet:"Ảnh hưởng"},
-  {id:5, phrase:"zur Verfügung stellen", explain:"Etwas bereitstellen.", viet:"Cung cấp / cho sử dụng"},
-  {id:6, phrase:"in Betracht ziehen", explain:"Etwas berücksichtigen.", viet:"Xem xét"},
-  {id:7, phrase:"zur Sprache bringen", explain:"Ein Thema ansprechen.", viet:"Đưa ra bàn luận"},
-  {id:8, phrase:"einen Vorschlag machen", explain:"Etwas vorschlagen.", viet:"Đưa ra đề xuất"},
-  {id:9, phrase:"eine Frage stellen", explain:"Fragen stellen.", viet:"Đặt câu hỏi"},
-  {id:10, phrase:"eine Antwort geben", explain:"Auf eine Frage antworten.", viet:"Trả lời"},
-  {id:11, phrase:"Kritik äußern", explain:"Kritik aussprechen.", viet:"Phê bình"},
-  {id:12, phrase:"ein Problem lösen", explain:"Eine Lösung finden.", viet:"Giải quyết vấn đề"},
-  {id:13, phrase:"ein Gespräch führen", explain:"Sich unterhalten.", viet:"Tiến hành cuộc trò chuyện"},
-  {id:14, phrase:"einen Termin vereinbaren", explain:"Einen Termin ausmachen.", viet:"Hẹn lịch"},
-  {id:15, phrase:"einen Vertrag abschließen", explain:"Einen Vertrag unterschreiben.", viet:"Ký hợp đồng"},
-  {id:16, phrase:"einen Eindruck machen / hinterlassen", explain:"Wirken auf jemanden.", viet:"Để lại ấn tượng"},
-  {id:17, phrase:"eine Wahl treffen", explain:"Sich entscheiden.", viet:"Chọn lựa"},
-  {id:18, phrase:"eine Ausbildung absolvieren", explain:"Eine Lehre / Studium machen.", viet:"Hoàn thành đào tạo"},
-  {id:19, phrase:"eine Prüfung bestehen / ablegen", explain:"Eine Prüfung machen.", viet:"Thi / đỗ kỳ thi"},
-  {id:20, phrase:"Erfahrungen sammeln", explain:"Erfahrung gewinnen.", viet:"Tích lũy kinh nghiệm"},
-  {id:21, phrase:"Verantwortung übernehmen", explain:"Verantwortlich sein.", viet:"Chịu trách nhiệm"},
-  {id:22, phrase:"einen Fehler machen / begehen", explain:"Etwas falsch machen.", viet:"Phạm lỗi"},
-  {id:23, phrase:"eine Lösung finden", explain:"Ein Problem lösen.", viet:"Tìm ra giải pháp"},
-  {id:24, phrase:"einen Grund haben", explain:"Etwas begründen.", viet:"Có lý do"},
-  {id:25, phrase:"einen Vorteil nutzen", explain:"Etwas positiv verwenden.", viet:"Tận dụng lợi thế"},
-  {id:26, phrase:"einen Nachteil haben", explain:"Etwas negativ sein.", viet:"Có nhược điểm"},
-  {id:27, phrase:"eine Meinung äußern / vertreten", explain:"Seine Meinung sagen.", viet:"Thể hiện quan điểm"},
-  {id:28, phrase:"einen Standpunkt einnehmen", explain:"Eine Position beziehen.", viet:"Lập trường"},
-  {id:29, phrase:"einen Rat geben", explain:"Ratschläge erteilen.", viet:"Đưa lời khuyên"},
-  {id:30, phrase:"einen Vorschlag annehmen", explain:"Einen Vorschlag akzeptieren.", viet:"Chấp nhận đề xuất"},
-  {id:31, phrase:"eine Bitte erfüllen", explain:"Eine Bitte erledigen.", viet:"Thực hiện yêu cầu"},
-  {id:32, phrase:"eine Beschwerde einreichen", explain:"Sich beschweren.", viet:"Gửi khiếu nại"},
-  {id:33, phrase:"einen Antrag stellen", explain:"Etwas beantragen.", viet:"Nộp đơn"},
-  {id:34, phrase:"eine Genehmigung erteilen", explain:"Etwas erlauben.", viet:"Cấp phép"},
-  {id:35, phrase:"eine Entscheidung fällen", explain:"Endgültig entscheiden.", viet:"Ra quyết định cuối cùng"},
-  {id:36, phrase:"einen Prozess starten", explain:"Etwas beginnen.", viet:"Khởi động quy trình"},
-  {id:37, phrase:"eine Diskussion führen", explain:"Diskutieren.", viet:"Thảo luận"},
-  {id:38, phrase:"ein Thema behandeln", explain:"Über ein Thema sprechen.", viet:"Xử lý chủ đề"},
-  {id:39, phrase:"eine Information weitergeben", explain:"Informationen teilen.", viet:"Chuyển thông tin"},
-  {id:40, phrase:"einen Bericht schreiben", explain:"Einen Bericht verfassen.", viet:"Viết báo cáo"},
-  {id:41, phrase:"eine Zusammenfassung machen", explain:"Etwas zusammenfassen.", viet:"Tóm tắt"},
-  {id:42, phrase:"eine Präsentation halten", explain:"Etwas präsentieren.", viet:"Trình bày"},
-  {id:43, phrase:"ein Ziel setzen", explain:"Ein Ziel festlegen.", viet:"Đặt mục tiêu"},
-  {id:44, phrase:"Fortschritte machen", explain:"Besser werden.", viet:"Tiến bộ"},
-  {id:45, phrase:"eine Chance nutzen", explain:"Eine Gelegenheit ergreifen.", viet:"Nắm bắt cơ hội"},
-  {id:46, phrase:"ein Risiko eingehen", explain:"Etwas riskieren.", viet:"Chấp nhận rủi ro"},
-  {id:47, phrase:"eine Strategie entwickeln", explain:"Eine Strategie planen.", viet:"Xây dựng chiến lược"},
-  {id:48, phrase:"ein Projekt leiten", explain:"Ein Projekt führen.", viet:"Điều hành dự án"},
-  {id:49, phrase:"eine Aufgabe erledigen", explain:"Etwas fertig machen.", viet:"Hoàn thành nhiệm vụ"},
-  {id:50, phrase:"ein Ergebnis erzielen", explain:"Etwas erreichen.", viet:"Đạt được kết quả"}
-];
-
-function renderDetailList(){const container=document.getElementById('list-detail');container.innerHTML=data.map(item=>`<div class="bg-white rounded-3xl shadow p-6"><div class="flex items-start gap-4"><div class="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-bold text-lg flex-shrink-0">${item.id}</div><div class="flex-1"><div class="text-xl font-semibold text-gray-800 mb-2">${item.phrase}</div><div class="text-gray-700 mb-1"><strong>Erklärung:</strong> ${item.explain}</div><div class="italic text-emerald-600 text-base">${item.viet}</div></div></div></div>`).join('');}
-function showTab(n){document.querySelectorAll('.tab-content').forEach(el=>el.classList.add('hidden'));document.getElementById('content'+n).classList.remove('hidden');document.querySelectorAll('button[id^="tab"]').forEach(btn=>btn.classList.remove('tab-active'));document.getElementById('tab'+n).classList.add('tab-active');}
-let currentIndex=0;let isFlipped=false;function showCard(i){currentIndex=i;isFlipped=false;document.getElementById('flip-inner').classList.remove('flipped');document.getElementById('front-text').textContent=data[i].phrase;document.getElementById('back-explain').innerHTML=`<strong>Erklärung:</strong> ${data[i].explain}`;document.getElementById('back-viet').textContent=data[i].viet;document.getElementById('card-counter').textContent=`${i+1} / 50`;}
-function flipCard(){isFlipped=!isFlipped;document.getElementById('flip-inner').classList.toggle('flipped',isFlipped);}
-function nextCard(){showCard((currentIndex+1)%50);}
-function prevCard(){showCard((currentIndex-1+50)%50);}
-function randomCard(){showCard(Math.floor(Math.random()*50));}
-window.onload=function(){renderDetailList();showCard(0);};
-</script>
-</body>
-</html>
+    <div class="flip-card" onclick="toggleFlip()">
+      <div id="card-inner" class="flip-inner">
+        <div class="flip-front">
+          <p id="f-phrase" class="text-2xl md:text-3xl font-bold text-center leading-tight"></p>
+          <span class="mt-6 text-gray-400 text-xs italic">Chạm để xem nghĩa</span>
+        </div>
+        <div class="flip-back">
+          <p class="text-emerald-400 text-sm font-bold mb-2 uppercase tracking-tighter">Giải thích:</p>
+          <p id="f-explain" class="text-lg text-center mb-6 text-blue-100"></p>
