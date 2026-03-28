@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Redemittel B2</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root{--blue:#2563eb;--ink:#1e3a5f;--bg:#eef4fb;}
@@ -18,7 +19,7 @@
   .flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;box-shadow:0 25px 50px rgba(30,58,95,0.15);}
   .flip-front{background:white;}
   .flip-back{background:linear-gradient(145deg,#1e3a5f,#2563eb);color:white;transform:rotateY(180deg);}
-  .copyright{position:fixed;bottom:10px;right:15px;font-size:10px;opacity:0.3;font-weight:700;letter-spacing:1px;pointer-events:none;color:var(--ink);}
+  .copyright{position:fixed;bottom:10px;right:15px;font-size:10px;opacity:0.3;font-weight:700;letter-spacing:1px;pointer-events:none;color:var(--ink);text-transform:uppercase;}
 </style>
 </head>
 <body>
@@ -36,10 +37,10 @@
     <div class="text-center mb-6"><span id="counter" class="bg-blue-600 text-white px-8 py-2 rounded-full font-bold text-xl shadow-lg"></span></div>
     <div class="flashcard-zone">
       <div onclick="prev()" class="nav-area">❮</div>
-      <div class="flip-card flex-1" onclick="toggleFlip()">
+      <div class="flip-card flex-1">
         <div id="card-inner" class="flip-inner">
-          <div class="flip-front"><p id="f-main" class="text-5xl font-black text-center text-blue-700"></p></div>
-          <div class="flip-back">
+          <div class="flip-front" onclick="toggleFlip()"><p id="f-main" class="text-4xl font-black text-center text-blue-700"></p></div>
+          <div class="flip-back" onclick="toggleFlip()">
             <p id="f-detail" class="text-blue-100 text-2xl font-bold text-center leading-relaxed mb-6"></p>
             <div class="h-1 w-20 bg-white/30 mb-6 rounded-full"></div>
             <p id="f-viet" class="text-3xl font-extrabold text-white text-center"></p>
@@ -48,45 +49,106 @@
       </div>
       <div onclick="next()" class="nav-area">❯</div>
     </div>
-    <div class="flex justify-center mt-12 pb-16"><button onclick="random()" class="px-16 py-6 bg-blue-600 text-white rounded-3xl font-extrabold shadow-2xl uppercase tracking-widest text-xl">ZUFÄLLIG</button></div>
+    <div class="flex justify-center gap-4 mt-12 pb-16">
+        <button onclick="speakCurrent()" class="w-20 h-20 bg-white text-blue-600 rounded-3xl flex items-center justify-center text-3xl shadow-xl active:scale-90 transition-all"><i class="fa-solid fa-volume-high"></i></button>
+        <button onclick="random()" class="px-12 py-6 bg-blue-600 text-white rounded-3xl font-extrabold shadow-2xl uppercase tracking-widest text-xl">ZUFÄLLIG</button>
+    </div>
   </div>
 </div>
-<div class="copyright uppercase">Made by BBQ with love</div>
+<div class="copyright">Made by BBQ with love</div>
 <script>
 const data = [
   {phrase:"Ich bin der Ansicht, dass...", type:"Meinung", viet:"Tôi có quan điểm là..."},
-  {phrase:"Das ist ein relevanter Punkt.", type:"Zustimmung", viet:"Đó là một điểm quan trọng."},
-  {phrase:"Ich bezweifle, dass...", type:"Zweifel", viet:"Tôi nghi ngờ rằng..."},
-  {phrase:"Meiner Meinung nach...", type:"Meinung", viet:"Theo ý kiến của tôi..."},
-  {phrase:"Ich sehe das anders.", type:"Widerspruch", viet:"Tôi thấy điều đó khác."},
+  {phrase:"Meiner Auffassung nach...", type:"Meinung", viet:"Theo quan điểm của tôi..."},
+  {phrase:"Ich bin davon überzeugt, dass...", type:"Überzeugung", viet:"Tôi tin chắc rằng..."},
   {phrase:"Ein wichtiger Aspekt ist...", type:"Argumentation", viet:"Một khía cạnh quan trọng là..."},
   {phrase:"Dazu möchte ich ergänzen...", type:"Ergänzung", viet:"Tôi muốn bổ sung thêm..."},
-  {phrase:"Es lässt sich feststellen...", type:"Beobachtung", viet:"Có thể thấy rằng..."},
-  {phrase:"Ich bin davon überzeugt.", type:"Sicherheit", viet:"Tôi thuyết phục về điều đó."},
-  {phrase:"Abschließend möchte ich...", type:"Schluss", viet:"Cuối cùng tôi muốn..."},
-  {phrase:"Darüber hinaus...", type:"Verbindung", viet:"Ngoài ra..."},
-  {phrase:"Im Vergleich zu...", type:"Vergleich", viet:"So với..."},
-  {phrase:"Hervorzuheben ist...", type:"Betonung", viet:"Cần nhấn mạnh là..."},
+  {phrase:"Hervorzuheben ist, dass...", type:"Betonung", viet:"Cần phải nhấn mạnh rằng..."},
   {phrase:"Das liegt daran, dass...", type:"Grund", viet:"Điều đó nằm ở chỗ..."},
-  {phrase:"Trotzdem nên man...", type:"Kontrast", viet:"Mặc dù vậy nên..."},
-  {phrase:"In der Regel...", type:"Allgemein", viet:"Thông thường..."},
-  {phrase:"Ich halte das für...", type:"Bewertung", viet:"Tôi coi đó là..."},
-  {phrase:"Zusammenfassend...", type:"Resümee", viet:"Tóm lại..."},
-  {phrase:"Anstatt...", type:"Alternative", viet:"Thay vì..."},
-  {phrase:"Es kommt darauf an...", type:"Abhängigkeit", viet:"Điều đó còn tùy..."},
-  {phrase:"Auf der einen Seite...", type:"Abwägen", viet:"Một mặt..."},
-  {phrase:"Zudem...", type:"Ergänzung", viet:"Thêm vào đó..."},
-  {phrase:"Folglich...", type:"Konsequenz", viet:"Kết quả là..."},
-  {phrase:"Eigentlich...", type:"Einschränkung", viet:"Thực ra..."},
-  {phrase:"Offensichtlich...", type:"Annahme", viet:"Rõ ràng là..."},
-  {phrase:"Soweit ich weiß...", type:"Wissen", viet:"Theo tôi biết..."},
+  {phrase:"Einerseits... andererseits...", type:"Abwägen", viet:"Một mặt... mặt khác..."},
+  {phrase:"Im Gegensatz dazu...", type:"Kontrast", viet:"Ngược lại với điều đó..."},
+  {phrase:"Ich stehe trên dem Standpunkt, dass...", type:"Meinung", viet:"Tôi giữ lập trường rằng..."},
+  {phrase:"Ein großer Vorteil ist...", type:"Vorteil", viet:"Một lợi thế lớn là..."},
+  {phrase:"Ein Nachteil wäre...", type:"Nachteil", viet:"Một bất lợi sẽ là..."},
+  {phrase:"Zusammenfassend lässt sich sagen...", type:"Schluss", viet:"Tóm lại có thể nói rằng..."},
+  {phrase:"Darüber hinaus sollte man...", type:"Ergänzung", viet:"Ngoài ra người ta nên..."},
+  {phrase:"Es steht außer Frage, dass...", type:"Sicherheit", viet:"Không còn nghi ngờ gì nữa..."},
+  {phrase:"Ich bezweifle, dass...", type:"Zweifel", viet:"Tôi nghi ngờ rằng..."},
+  {phrase:"Darf ich Sie kurz unterbrechen?", type:"Unterbrechen", viet:"Tôi ngắt lời một chút được không?"},
+  {phrase:"Könnten Sie das erläutern?", type:"Nachfragen", viet:"Bạn có thể giải thích rõ không?"},
+  {phrase:"Das sehe ich völlig anders.", type:"Widerspruch", viet:"Tôi thấy điều đó hoàn toàn khác."},
+  {phrase:"Da bin ich mir nicht sicher.", type:"Zweifel", viet:"Về việc đó tôi không chắc chắn."},
+  {phrase:"In diesem Zusammenhang...", type:"Verbindung", viet:"Trong bối cảnh này..."},
+  {phrase:"Wie man weiß...", type:"Allgemein", viet:"Như người ta đã biết..."},
+  {phrase:"Das ist ein schlagendes Argument.", type:"Zustimmung", viet:"Đó là một luận điểm thuyết phục."},
+  {phrase:"Ich möchte das Thema vertiefen.", type:"Vertiefung", viet:"Tôi muốn đi sâu vào chủ đề này."},
   {phrase:"Alles in allem...", type:"Fazit", viet:"Tất cả tóm lại..."},
-  {phrase:"Wie man weiß...", type:"Allgemein", viet:"Như đã biết..."},
+  {phrase:"Es kommt darauf an, ob...", type:"Abhängigkeit", viet:"Điều đó còn tùy vào việc..."},
+  {phrase:"Ich halte das für sinnvoll.", type:"Bewertung", viet:"Tôi cho rằng điều đó có lý."},
+  {phrase:"Man darf nicht vergessen...", type:"Erinnerung", viet:"Không được phép quên rằng..."},
+  {phrase:"Daraus folgt, dass...", type:"Konsequenz", viet:"Từ đó suy ra rằng..."},
+  {phrase:"Ein Beispiel dafür ist...", type:"Beispiel", viet:"Một ví dụ cho việc đó là..."},
+  {phrase:"Ich stimme Ihnen zu.", type:"Zustimmung", viet:"Tôi đồng ý với bạn."},
+  {phrase:"Das ist nur teilweise richtig.", type:"Einschränkung", viet:"Điều đó chỉ đúng một phần."},
+  {phrase:"Vorausgesetzt, dass...", type:"Bedingung", viet:"Với điều kiện là..."},
+  {phrase:"Soweit ich weiß...", type:"Wissen", viet:"Theo như tôi biết..."},
+  {phrase:"Offensichtlich ist...", type:"Annahme", viet:"Rõ ràng là..."},
+  {phrase:"Trotzdem muss man...", type:"Kontrast", viet:"Mặc dù vậy người ta phải..."},
+  {phrase:"Das hat zur Folge, dass...", type:"Konsequenz", viet:"Điều đó dẫn đến hậu quả là..."},
+  {phrase:"Ich möchte anmerken, dass...", type:"Anmerkung", viet:"Tôi muốn lưu ý rằng..."},
+  {phrase:"Es ist fraglich, ob...", type:"Zweifel", viet:"Đáng nghi ngờ liệu rằng..."},
   {phrase:"Genau genommen...", type:"Präzisierung", viet:"Nói chính xác ra..."},
-  {phrase:"Vorausgesetzt, dass...", type:"Bedingung", viet:"Với điều kiện là..."}
-  // (Bạn có thể thêm tiếp cho đủ 80 câu dựa trên cấu trúc này)
+  {phrase:"Im Grunde genommen...", type:"Prinzip", viet:"Về cơ bản là..."},
+  {phrase:"Zudem sollte man...", type:"Ergänzung", viet:"Thêm vào đó nên..."},
+  {phrase:"Folglich ist...", type:"Konsequenz", viet:"Do đó là..."},
+  {phrase:"Eigentlich meinte ich...", type:"Korrektur", viet:"Thực ra ý tôi là..."},
+  {phrase:"Das spielt keine Rolle.", type:"Irrelevant", viet:"Điều đó không đóng vai trò gì."},
+  {phrase:"Ich möchte das betonen.", type:"Betonung", viet:"Tôi muốn nhấn mạnh điều đó."},
+  {phrase:"In der Regel...", type:"Allgemein", viet:"Thông thường..."},
+  {phrase:"Soweit es mich betrifft...", type:"Persönlich", viet:"Theo như tôi thấy..."},
+  {phrase:"Es lässt sich feststellen...", type:"Beobachtung", viet:"Có thể thấy rằng..."},
+  {phrase:"Zum Schluss möchte ich...", type:"Schluss", viet:"Cuối cùng tôi muốn..."},
+  {phrase:"Ich möchte hinzufügen...", type:"Ergänzung", viet:"Tôi muốn thêm vào..."},
+  {phrase:"Das ist unbestreitbar.", type:"Sicherheit", viet:"Điều đó không thể bàn cãi."},
+  {phrase:"Ich bin dagegen.", type:"Widerspruch", viet:"Tôi phản đối điều đó."},
+  {phrase:"Das ist eine gute Idee.", type:"Zustimmung", viet:"Đó là một ý tưởng hay."},
+  {phrase:"Ich bin dafür.", type:"Zustimmung", viet:"Tôi tán thành việc đó."},
+  {phrase:"Man sollte bedenken...", type:"Überlegung", viet:"Nên cân nhắc rằng..."},
+  {phrase:"Was mich betrifft...", type:"Meinung", viet:"Về phần tôi..."},
+  {phrase:"Ich bezweifle das stark.", type:"Zweifel", viet:"Tôi nghi ngờ điều đó mạnh mẽ."},
+  {phrase:"Das ist nicht ganz klar.", type:"Unklarheit", viet:"Điều đó không hoàn toàn rõ."},
+  {phrase:"Um es kurz zu machen...", type:"Zusammenfassung", viet:"Nói tóm lại..."},
+  {phrase:"Ich möchte hervorheben...", type:"Betonung", viet:"Tôi muốn làm nổi bật..."},
+  {phrase:"Es ist offensichtlich.", type:"Annahme", viet:"Nó thật rõ ràng."},
+  {phrase:"Das stimmt m. E. không.", type:"Widerspruch", viet:"Theo tôi điều đó không đúng."},
+  {phrase:"Im Vergleich zu...", type:"Vergleich", viet:"So sánh với..."},
+  {phrase:"Erstens... Zweitens...", type:"Struktur", viet:"Thứ nhất... Thứ hai..."},
+  {phrase:"Außerdem...", type:"Ergänzung", viet:"Ngoài ra..."},
+  {phrase:"Demzufolge...", type:"Konsequenz", viet:"Theo đó..."},
+  {phrase:"Kurz gesagt...", type:"Resümee", viet:"Nói ngắn gọn..."},
+  {phrase:"Meines Erachtens...", type:"Meinung", viet:"Theo nhận định của tôi..."},
+  {phrase:"Das ist ein Irrtum.", type:"Korrektur", viet:"Đó là một sự nhầm lẫn."},
+  {phrase:"Anstatt...", type:"Alternative", viet:"Thay vì..."},
+  {phrase:"Obwohl...", type:"Kontrast", viet:"Mặc dù..."},
+  {phrase:"Weder... noch...", type:"Alternative", viet:"Không... cũng không..."},
+  {phrase:"Entweder... oder...", type:"Alternative", viet:"Hoặc là... hoặc là..."},
+  {phrase:"Nicht nur... sondern auch...", type:"Betonung", viet:"Không chỉ... mà còn..."},
+  {phrase:"Je... umso...", type:"Verhältnis", viet:"Càng... thì càng..."},
+  {phrase:"Tatsächlich...", type:"Bestätigung", viet:"Thực tế là..."},
+  {phrase:"Sicherlich...", type:"Sicherheit", viet:"Chắc chắn là..."},
+  {phrase:"Vermutlich...", type:"Annahme", viet:"Có lẽ là..."},
+  {phrase:"Wahrscheinlich...", type:"Annahme", viet:"Có khả năng là..."}
 ];
+
 let current = 0;
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance();
+  msg.text = text;
+  msg.lang = 'de-DE';
+  window.speechSynthesis.speak(msg);
+}
+function speakCurrent() { speak(data[current].phrase); }
+
 function showTab(n){
   document.getElementById('content1').classList.toggle('hidden',n!==1);
   document.getElementById('content2').classList.toggle('hidden',n!==2);
@@ -97,12 +159,13 @@ function showTab(n){
 function renderList(){
   document.getElementById('content1').innerHTML = data.map((item, i) => `
     <div class="bg-white p-8 rounded-3xl border border-slate-100 flex gap-8 shadow-sm items-center">
-      <div class="text-blue-600 font-black opacity-20 text-4xl w-14 text-center">${i+1}</div>
+      <div class="text-blue-600 font-black opacity-20 text-3xl w-14 text-center font-sans">${i+1}</div>
       <div class="flex-1">
         <h3 class="font-bold text-slate-800 text-3xl mb-2">${item.phrase}</h3>
         <p class="text-slate-500 text-lg font-bold uppercase tracking-wide mb-3">${item.type}</p>
         <p class="text-emerald-600 text-2xl font-extrabold">${item.viet}</p>
       </div>
+      <button onclick="speak('${item.phrase}')" class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl active:scale-90 transition-all"><i class="fa-solid fa-volume-high"></i></button>
     </div>`).join('');
 }
 function updateFlashcard(){
