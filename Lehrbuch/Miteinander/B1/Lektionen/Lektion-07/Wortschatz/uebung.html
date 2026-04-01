@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Übungen – Lektion 07</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;
+  --rose:#e11d48;--rose-lt:#ffe4e6;--gold:#d97706;--gold-lt:#fef3c7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;padding:28px 20px 22px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+/* tab nav */
+.tab-nav{max-width:680px;margin:20px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;}
+.tab-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap;}
+.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+/* panels */
+.panel{display:none;max-width:680px;margin:20px auto;padding:0 16px 20px;}
+.panel.active{display:block;}
+.panel-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);margin-bottom:4px;}
+.panel-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+/* exercise cards */
+.ex-card{background:var(--card);border-radius:14px;border:2px solid var(--border);padding:20px;margin-bottom:14px;}
+.ex-q{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+.ex-q em{color:var(--blue);font-style:normal;font-weight:800;}
+/* multiple choice */
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mc-opt{background:#fafafa;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Outfit',sans-serif;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--ink);}
+.mc-opt:hover:not(:disabled){border-color:var(--blue);background:var(--blue-lt);}
+.mc-opt.ok{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+.mc-opt.no{background:var(--rose-lt)!important;border-color:var(--rose)!important;color:var(--rose)!important;pointer-events:none;}
+.mc-opt.reveal{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;opacity:.7;}
+.mc-opt.locked{pointer-events:none;opacity:.4;}
+/* input exercises */
+.inp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.inp-field{border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;font-family:'Outfit',sans-serif;font-weight:600;color:var(--ink);outline:none;min-width:160px;flex:1;}
+.inp-field:focus{border-color:var(--blue);}
+.inp-field.ok{border-color:var(--green);background:var(--green-lt);color:var(--green);}
+.inp-field.no{border-color:var(--rose);background:var(--rose-lt);color:var(--rose);}
+.check-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;}
+.check-btn:disabled{opacity:.4;}
+.feedback{font-size:13px;margin-top:8px;font-weight:600;display:none;}
+.feedback.ok{color:var(--green);display:block;}
+.feedback.no{color:var(--rose);display:block;}
+/* sorting */
+.sort-area{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:48px;padding:8px;background:#fafafa;border:2px dashed var(--border);border-radius:10px;}
+.sort-chip{background:var(--blue-lt);border:2px solid var(--blue);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer;color:var(--blue);transition:all .15s;}
+.sort-chip:hover{background:var(--blue);color:#fff;}
+.sort-target{display:flex;flex-wrap:wrap;gap:8px;min-height:48px;padding:8px;background:#fafafa;border:2px solid var(--border);border-radius:10px;}
+.sort-chip.placed{background:var(--green-lt);border-color:var(--green);color:var(--green);cursor:default;}
+/* score bar */
+.score-bar{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.score-label{font-size:13px;font-weight:700;color:var(--muted);}
+.score-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--blue);}
+.reset-btn{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;}
+.reset-btn:hover{border-color:var(--blue);color:var(--blue);}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 07 · ÜBUNGEN</div>
+    <h1>Amadou – Alles Trainingssache</h1>
+    <p>7 Übungstypen · Interaktiv</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab(0)">1 · Bedeutung</button>
+  <button class="tab-btn" onclick="showTab(1)">2 · Artikel</button>
+  <button class="tab-btn" onclick="showTab(2)">3 · Lückentext</button>
+  <button class="tab-btn" onclick="showTab(3)">4 · Wortfeld</button>
+  <button class="tab-btn" onclick="showTab(4)">5 · Präfixverben</button>
+  <button class="tab-btn" onclick="showTab(5)">6 · je … desto</button>
+  <button class="tab-btn" onclick="showTab(6)">7 · Wortbildung</button>
+</div>
+
+<!-- Panel 1: Bedeutung (MC DE→VI) -->
+<div class="panel active" id="panel0">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc0">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(0)">↺ Neu</button></div>
+  <div class="panel-title">Übung 1 · Bedeutung</div>
+  <div class="panel-sub">Wählen Sie die richtige vietnamesische Übersetzung.</div>
+  <div id="p0items"></div>
+</div>
+
+<!-- Panel 2: Artikel -->
+<div class="panel" id="panel1">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc1">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(1)">↺ Neu</button></div>
+  <div class="panel-title">Übung 2 · Artikel</div>
+  <div class="panel-sub">Welcher Artikel passt? Wählen Sie der, die oder das.</div>
+  <div id="p1items"></div>
+</div>
+
+<!-- Panel 3: Lückentext -->
+<div class="panel" id="panel2">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc2">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(2)">↺ Neu</button></div>
+  <div class="panel-title">Übung 3 · Lückentext</div>
+  <div class="panel-sub">Ergänzen Sie das fehlende Wort.</div>
+  <div id="p2items"></div>
+</div>
+
+<!-- Panel 4: Wortfeld -->
+<div class="panel" id="panel3">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc3">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(3)">↺ Neu</button></div>
+  <div class="panel-title">Übung 4 · Wortfeld</div>
+  <div class="panel-sub">Synonyme, Antonyme und Kollokationen.</div>
+  <div id="p3items"></div>
+</div>
+
+<!-- Panel 5: Präfixverben -->
+<div class="panel" id="panel4">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc4">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(4)">↺ Neu</button></div>
+  <div class="panel-title">Übung 5 · Präfixverben</div>
+  <div class="panel-sub">Wählen Sie das richtige Präfixverb für den Satz.</div>
+  <div id="p4items"></div>
+</div>
+
+<!-- Panel 6: je...desto -->
+<div class="panel" id="panel5">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc5">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(5)">↺ Neu</button></div>
+  <div class="panel-title">Übung 6 · je … desto / umso</div>
+  <div class="panel-sub">Verbinden Sie die Sätze mit „je … desto" oder „je … umso".</div>
+  <div id="p5items"></div>
+</div>
+
+<!-- Panel 7: Wortbildung -->
+<div class="panel" id="panel6">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc6">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(6)">↺ Neu</button></div>
+  <div class="panel-title">Übung 7 · Wortbildung</div>
+  <div class="panel-sub">Welches Wort passt zur Definition?</div>
+  <div id="p6items"></div>
+</div>
+
+<script>
+// Score tracking per panel
+const scores = [0,0,0,0,0,0,0];
+const totals = [0,0,0,0,0,0,0];
+function addScore(panel, correct) {
+  totals[panel]++;
+  if (correct) scores[panel]++;
+  document.getElementById('sc'+panel).textContent = scores[panel]+' / '+totals[panel];
+}
+function resetPanel(panel) {
+  scores[panel]=0; totals[panel]=0;
+  document.getElementById('sc'+panel).textContent='0 / 0';
+  buildPanel(panel);
+}
+function showTab(n) {
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+}
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function makeMC(container, panelIdx, question, correctAns, wrongAnswers) {
+  const card=document.createElement('div'); card.className='ex-card';
+  const q=document.createElement('div'); q.className='ex-q'; q.innerHTML=question;
+  const grid=document.createElement('div'); grid.className='mc-opts';
+  const opts=shuffle([correctAns,...wrongAnswers]);
+  let done=false;
+  opts.forEach(o=>{
+    const btn=document.createElement('button'); btn.className='mc-opt'; btn.textContent=o;
+    btn.onclick=()=>{
+      if(done)return; done=true;
+      const ok=(o===correctAns);
+      btn.classList.add(ok?'ok':'no');
+      [...grid.children].forEach(b=>{if(b!==btn){b.classList.add(b.textContent===correctAns?'reveal':'locked');}});
+      addScore(panelIdx, ok);
+    };
+    grid.appendChild(btn);
+  });
+  card.append(q,grid); container.appendChild(card);
+}
+
+function makeInput(container, panelIdx, question, correctAns, hint='') {
+  const card=document.createElement('div'); card.className='ex-card';
+  const q=document.createElement('div'); q.className='ex-q'; q.innerHTML=question;
+  const row=document.createElement('div'); row.className='inp-row';
+  const inp=document.createElement('input'); inp.className='inp-field'; inp.type='text'; inp.placeholder='Antwort…';
+  const btn=document.createElement('button'); btn.className='check-btn'; btn.textContent='Prüfen';
+  const fb=document.createElement('div'); fb.className='feedback';
+  let done=false;
+  btn.onclick=()=>{
+    if(done)return;
+    const val=inp.value.trim();
+    const ok=val.toLowerCase()===correctAns.toLowerCase();
+    inp.classList.add(ok?'ok':'no');
+    fb.textContent=ok?'✓ Richtig!':'✗ Richtig wäre: '+correctAns+(hint?' ('+hint+')':'');
+    fb.className='feedback '+(ok?'ok':'no');
+    btn.disabled=true; done=true;
+    addScore(panelIdx, ok);
+  };
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+  row.append(inp,btn);
+  card.append(q,row,fb); container.appendChild(card);
+}
+
+// ── DATA ────────────────────────────────────────────────────────────────────
+
+const p0data = [
+  {q:'Was bedeutet <em>die Geduld</em>?', ans:'sự kiên nhẫn', wrong:['sự phát triển','cách phát âm','chiến thắng']},
+  {q:'Was bedeutet <em>der Dialekt</em>?', ans:'tiếng địa phương', wrong:['bảng chữ cái','khóa học cấp tốc','tạp chí']},
+  {q:'Was bedeutet <em>anfangs</em>?', ans:'lúc đầu / ban đầu', wrong:['kể từ đó','do đó','vì vậy']},
+  {q:'Was bedeutet <em>seitdem</em>?', ans:'kể từ đó', wrong:['lúc đầu','vì vậy','hồi đó']},
+  {q:'Was bedeutet <em>unentschieden</em>?', ans:'hòa / không phân thắng bại', wrong:['mạnh / xuất sắc','chạy trở lại','ngồi xuống']},
+  {q:'Was bedeutet <em>die Schwierigkeit</em>?', ans:'khó khăn', wrong:['sự kiên nhẫn','cách phát âm','mùa giải']},
+  {q:'Was bedeutet <em>nachschlagen</em>?', ans:'tra (từ điển)', wrong:['chép lại','đọc to','phát âm']},
+  {q:'Was bedeutet <em>vorlesen</em>?', ans:'đọc to / đọc cho nghe', wrong:['tra từ điển','chép lại','thảo luận']},
+  {q:'Was bedeutet <em>sich erholen</em>?', ans:'hồi phục / nghỉ ngơi', wrong:['hòa nhập','ghi nhớ','ngồi xuống']},
+  {q:'Was bedeutet <em>interkulturell</em>?', ans:'giao thoa văn hóa', wrong:['tiếng địa phương','chỗ học nghề','người học']},
+];
+
+const p1data = [
+  {word:'Buchstabe',art:'der',wrong:['die','das']},
+  {word:'Aussprache',art:'die',wrong:['der','das']},
+  {word:'Nachhilfe',art:'die',wrong:['der','das']},
+  {word:'Intensivkurs',art:'der',wrong:['die','das']},
+  {word:'Magazin',art:'das',wrong:['der','die']},
+  {word:'Sieg',art:'der',wrong:['die','das']},
+  {word:'Saison',art:'die',wrong:['der','das']},
+  {word:'Entwicklung',art:'die',wrong:['der','das']},
+  {word:'Geduld',art:'die',wrong:['der','das']},
+  {word:'Schwierigkeit',art:'die',wrong:['der','das']},
+  {word:'Alphabet',art:'das',wrong:['der','die']},
+  {word:'Arbeitsstelle',art:'die',wrong:['der','das']},
+];
+
+const p2data = [
+  {sent:'David konnte am Anfang kein ü und kein ch ___.', ans:'aussprechen', hint:'Infinitiv'},
+  {sent:'Er hat jeden Tag seine Aussprache ___.', ans:'trainiert', hint:'Perfekt'},
+  {sent:'___ ist es ganz normal, dass dir das Wort nicht sofort einfällt.', ans:'Daher', hint:'Konjunktionaladverb'},
+  {sent:'Schwierigen Wortschatz kannst du im Wörterbuch ___.', ans:'nachschlagen', hint:'Infinitiv'},
+  {sent:'In meinem Kurs ___ wir sogar mit der Lehrerin.', ans:'diskutieren', hint:'Präsens'},
+  {sent:'Vielen Dank für deine Hilfe, deine Zeit und deine ___.', ans:'Geduld', hint:'Nomen'},
+  {sent:'Je länger man in einem Land lebt, ___ besser klappt das Sprechen.', ans:'desto', hint:'Komparativ-Konstruktion'},
+  {sent:'Mit dir als Trainer ist die Mannschaft ___ und besser geworden.', ans:'stärker', hint:'Komparativ von stark'},
+  {sent:'Das war bei mir ___ anders.', ans:'damals', hint:'Temporaladverb'},
+  {sent:'Mein Hund läuft manchmal ___, und ich muss ihn dann suchen.', ans:'weg', hint:'Präfix'},
+];
+
+const p3data = [
+  {q:'Welches Wort ist das Synonym von <em>daher</em>?', ans:'deswegen', wrong:['seitdem','anfangs','damals']},
+  {q:'Welches Wort ist das Antonym von <em>der Sieg</em>?', ans:'die Niederlage', wrong:['die Saison','die Geduld','die Aussprache']},
+  {q:'Welches Wort ist das Antonym von <em>stark</em>?', ans:'schwach', wrong:['schnell','groß','klug']},
+  {q:'Welche Kollokation ist korrekt?', ans:'Geduld haben', wrong:['Geduld machen','Geduld geben','Geduld nehmen']},
+  {q:'Welche Kollokation ist korrekt?', ans:'ein Wort nachschlagen', wrong:['ein Wort nachgehen','ein Wort nachstehen','ein Wort nachkommen']},
+  {q:'Welches Wort ist das Synonym von <em>integrieren</em>?', ans:'eingliedern', wrong:['weglaufen','abschreiben','vorlesen']},
+  {q:'Welche Kollokation ist korrekt?', ans:'Nachhilfe nehmen', wrong:['Nachhilfe halten','Nachhilfe machen','Nachhilfe geben']},
+  {q:'Welches Wort ist das Antonym von <em>anfangs</em>?', ans:'am Ende / am Schluss', wrong:['seitdem','daher','deswegen']},
+];
+
+const p4data = [
+  {q:'Der Hund läuft manchmal ___. Dann muss ich ihn suchen.',ans:'weg',wrong:['zurück','mit','los'],hint:'weglaufen → Präfix'},
+  {q:'Sollen wir ___? Ich habe das Handy vergessen.',ans:'zurückfahren',wrong:['wegfahren','losfahren','mitfahren'],hint:'Verb wählen'},
+  {q:'Der Zug soll um 11:50 Uhr _____.',ans:'losfahren',wrong:['zurückfahren','wegfahren','mitfahren'],hint:'starten = ___'},
+  {q:'Eric will ins Schwimmbad. Möchtest du ___?',ans:'mitgehen',wrong:['weggehen','losfahren','zurückgehen'],hint:'gemeinsam gehen'},
+  {q:'Timur ___, aber der Ball fliegt am Tor vorbei.',ans:'schießt',wrong:['läuft','fährt','sitzt'],hint:'Fußball'},
+  {q:'Banna, bitte bring den Müll ___!',ans:'weg',wrong:['zurück','mit','los'],hint:'wegbringen → Präfix'},
+];
+
+const p5data = [
+  {q:'Man lernt viel. Das Sprechen wird besser. → <em>Je …</em>',ans:'Je mehr man lernt, desto besser wird das Sprechen.',wrong:['Je viel man lernt, desto besser wird das Sprechen.','Je mehr man lernt, umso besser das Sprechen wird.','Je mehr man lernt, desto das Sprechen wird besser.']},
+  {q:'Man lebt lange in Deutschland. Die Sprache wird einfacher. → <em>Je …</em>',ans:'Je länger man in Deutschland lebt, desto einfacher wird die Sprache.',wrong:['Je lang man in Deutschland lebt, desto einfacher wird die Sprache.','Je länger man in Deutschland lebt, umso die Sprache einfacher wird.','Je länger man lebt in Deutschland, desto einfacher die Sprache wird.']},
+  {q:'Man übt viel. Man spricht gut. → <em>Je … umso …</em>',ans:'Je mehr man übt, umso besser spricht man.',wrong:['Je viel man übt, umso gut spricht man.','Je mehr man übt, desto man spricht besser.','Je mehr man übt, umso man spricht besser.']},
+  {q:'Was ist die Grundstruktur von „je … desto"?',ans:'je + Komparativ + Verb, desto + Komparativ + Verb (Hauptsatz)',wrong:['je + Positiv …, desto + Komparativ …','je + Verb …, desto + Adjektiv …','je + Nomen …, desto + Verb …']},
+];
+
+const p6data = [
+  {q:'„Ein Kurs, in dem man in kurzer Zeit sehr viel lernt" – welches Wort passt?',ans:'der Intensivkurs',wrong:['der Ausbildungsplatz','die Nachhilfe','das Magazin']},
+  {q:'„Die Art, wie man Laute spricht" – welches Wort passt?',ans:'die Aussprache',wrong:['der Dialekt','der Buchstabe','das Alphabet']},
+  {q:'„Jemand, der gerade eine Ausbildung macht oder lernt" – welches Wort passt?',ans:'der Lerner / die Lernerin',wrong:['der Schüler','der Experte','der Bürgermeister']},
+  {q:'„Das längste Wort in Lektion 07" – welches Wort passt?',ans:'die Geschwindigkeitsbeschränkung',wrong:['die Staatsangehörigkeit','die Fernbedienung','die Schwierigkeit']},
+  {q:'„Ein Wort aus einem Wörterbuch suchen" – welches Verb passt?',ans:'nachschlagen',wrong:['abschreiben','vorlesen','diskutieren']},
+  {q:'„Einen Text laut lesen, damit andere ihn hören" – welches Verb passt?',ans:'vorlesen',wrong:['abschreiben','nachschlagen','aussprechen']},
+  {q:'„Eine bestehende Sprache / Varietät einer Region" – welches Wort passt?',ans:'der Dialekt',wrong:['das Magazin','der Intensivkurs','der Buchstabe']},
+  {q:'„Die Fähigkeit, ruhig zu warten" – welches Wort passt?',ans:'die Geduld',wrong:['die Schwierigkeit','die Nachhilfe','die Entwicklung']},
+];
+
+// ── BUILD ────────────────────────────────────────────────────────────────────
+function buildPanel(panel) {
+  const containers = ['p0items','p1items','p2items','p3items','p4items','p5items','p6items'];
+  const c = document.getElementById(containers[panel]);
+  c.innerHTML = '';
+  if (panel===0) {
+    shuffle(p0data).slice(0,8).forEach(d=>makeMC(c,0,d.q,d.ans,d.wrong));
+  } else if (panel===1) {
+    shuffle(p1data).slice(0,10).forEach(d=>{
+      const opts=shuffle([d.art,...d.wrong]);
+      makeMC(c,1,'Welcher Artikel gehört zu: <em>'+d.word+'</em>?',d.art,d.wrong);
+    });
+  } else if (panel===2) {
+    shuffle(p2data).slice(0,8).forEach(d=>makeInput(c,2,d.sent.replace('___','<em>______</em>'),d.ans,d.hint));
+  } else if (panel===3) {
+    shuffle(p3data).forEach(d=>makeMC(c,3,d.q,d.ans,d.wrong));
+  } else if (panel===4) {
+    shuffle(p4data).forEach(d=>makeMC(c,4,d.q,d.ans,d.wrong));
+  } else if (panel===5) {
+    shuffle(p5data).forEach(d=>makeMC(c,5,d.q,d.ans,d.wrong));
+  } else if (panel===6) {
+    shuffle(p6data).forEach(d=>makeMC(c,6,d.q,d.ans,d.wrong));
+  }
+}
+// init all panels
+[0,1,2,3,4,5,6].forEach(i=>buildPanel(i));
+</script>
+</body>
+</html>

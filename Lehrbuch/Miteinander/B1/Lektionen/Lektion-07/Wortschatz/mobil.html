@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mobil Lernen – Lektion 07</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;color:#fff;padding:28px 20px 24px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+.mode-wrap{max-width:440px;margin:24px auto 0;padding:0 16px;display:flex;gap:10px;}
+.mode-btn{flex:1;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--card);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.mode-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.fc-wrap{max-width:440px;margin:0 auto;padding:20px 16px;}
+.fc-progress{background:var(--border);border-radius:99px;height:6px;margin-bottom:6px;}
+.fc-progress-bar{background:var(--blue);height:6px;border-radius:99px;transition:width .4s;}
+.fc-counter{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;}
+.fc-card{background:var(--card);border-radius:20px;box-shadow:0 4px 24px rgba(37,99,235,.13);padding:36px 24px;text-align:center;min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform .1s;border:2px solid var(--border);}
+.fc-card:active{transform:scale(.98);}
+.fc-art{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:4px 12px;border-radius:99px;}
+.fc-de{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);line-height:1.2;}
+.fc-vi{font-size:20px;color:var(--muted);display:none;}
+.fc-ex{font-size:13px;color:#64748b;font-style:italic;display:none;line-height:1.5;max-width:320px;}
+.fc-tap{font-size:13px;color:#94a3b8;margin-top:4px;}
+.fc-card.flipped .fc-vi{display:block;}
+.fc-card.flipped .fc-ex{display:block;}
+.fc-card.flipped .fc-tap{display:none;}
+.tts-btn{background:var(--blue-lt);border:none;border-radius:99px;width:44px;height:44px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;transition:background .15s;flex-shrink:0;}
+.tts-btn:hover{background:#bfdbfe;}
+.fc-btns{display:flex;gap:12px;margin-top:16px;}
+.fc-btn{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .1s;}
+.fc-btn:active{transform:scale(.97);}
+.fc-btn-wrong{background:var(--rose-lt);color:var(--rose);}
+.fc-btn-ok{background:var(--green-lt);color:var(--green);}
+.main-hidden{display:none;}
+.score-screen{display:none;max-width:440px;margin:40px auto;padding:0 16px;text-align:center;}
+.score-screen.show{display:block;}
+.score-emoji{font-size:56px;margin-bottom:12px;}
+.score-big{font-family:'DM Serif Display',serif;font-size:48px;color:var(--blue);}
+.score-msg{font-size:16px;color:var(--muted);margin:8px 0 24px;}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin:6px;}
+.btn-back{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:14px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block;margin:6px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 07 · MOBIL LERNEN</div>
+    <h1>Amadou – Alles Trainingssache</h1>
+    <p id="modeLabel">Alle Vokabeln lernen</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+<div class="mode-wrap">
+  <button class="mode-btn active" id="btnLearn" onclick="setMode('learn')">📚 Vokabeln lernen</button>
+  <button class="mode-btn" id="btnTest" onclick="setMode('test')">🎯 Wortschatztest</button>
+</div>
+<div class="fc-wrap" id="fcWrap">
+  <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+  <div class="fc-counter" id="fcCounter">1 / —</div>
+  <div class="fc-card" id="fcCard" onclick="flipCard()">
+    <button class="tts-btn" id="ttsBtn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
+    <div class="fc-art" id="fcArt"></div>
+    <div class="fc-de" id="fcDe">Lade…</div>
+    <div class="fc-vi" id="fcVi"></div>
+    <div class="fc-ex" id="fcEx"></div>
+    <div class="fc-tap" id="fcTap">Tippen zum Umdrehen</div>
+  </div>
+  <div class="fc-btns main-hidden" id="fcBtns">
+    <button class="fc-btn fc-btn-wrong" onclick="answer(false)">✗ Nochmal</button>
+    <button class="fc-btn fc-btn-ok" onclick="answer(true)">✓ Gewusst</button>
+  </div>
+</div>
+<div class="score-screen" id="scoreScreen">
+  <div class="score-emoji" id="scoreEmoji">⭐</div>
+  <div class="score-big" id="scoreBig"></div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <button class="btn-restart" onclick="restartTest()">🔄 Nochmal</button>
+  <a href="index.html" class="btn-back">← Zurück</a>
+</div>
+<script>
+const WORDS=[
+  {de:"zurücklaufen",art:"",vi:"chạy trở lại",ex:"Timur musste nach Hause zurücklaufen, weil er etwas Wichtiges vergessen hatte."},
+  {de:"losfahren",art:"",vi:"khởi hành / bắt đầu đi",ex:"Der Zug sollte eigentlich um zehn Minuten vor zwölf losfahren."},
+  {de:"fallen",art:"",vi:"ngã / rơi xuống",ex:"Mario fällt hin. Zum Glück ist er nicht verletzt."},
+  {de:"(sich) hinsetzen",art:"",vi:"ngồi xuống",ex:"Bitte sucht euch Plätze und setzt euch hin."},
+  {de:"mitgehen",art:"",vi:"đi cùng",ex:"Eric will am Sonntag ins Schwimmbad. Möchtest du mitgehen?"},
+  {de:"schießen",art:"",vi:"sút / bắn",ex:"Timur schießt, aber der Ball fliegt am Tor vorbei!"},
+  {de:"weglaufen",art:"",vi:"chạy đi / bỏ chạy",ex:"Mein Hund läuft manchmal weg."},
+  {de:"wegfahren",art:"",vi:"lái đi / rời đi",ex:"Würden Sie bitte wegfahren?"},
+  {de:"wegbringen",art:"",vi:"mang đi / đưa đi",ex:"Banna, bitte bring den Müll weg!"},
+  {de:"zurückfahren",art:"",vi:"lái trở lại / quay về",ex:"Sollen wir zurückfahren?"},
+  {de:"die Entwicklung",art:"die",vi:"sự phát triển",ex:"Sie sprechen über die Entwicklung des Teams."},
+  {de:"aussprechen",art:"",vi:"phát âm",ex:"David konnte am Anfang kein ü und kein ch aussprechen."},
+  {de:"die Aussprache",art:"die",vi:"cách phát âm",ex:"Er hat jeden Tag seine Aussprache trainiert."},
+  {de:"daher",art:"",vi:"do đó / vì thế",ex:"Daher ist es ganz normal, dass dir das englische Wort nicht sofort einfällt."},
+  {de:"deswegen",art:"",vi:"vì vậy / do đó",ex:"Deswegen ist das Sprechen jetzt auch viel einfacher."},
+  {de:"darum",art:"",vi:"vì lẽ đó / vì vậy",ex:"Darum habe ich jeden Tag meine Aussprache trainiert."},
+  {de:"das Alphabet",art:"das",vi:"bảng chữ cái",ex:"Musstest du im Deutschkurs das deutsche Alphabet lernen?"},
+  {de:"interkulturell",art:"",vi:"giao thoa văn hóa",ex:"Im Unterricht gibt es immer wieder interkulturelle Probleme."},
+  {de:"nachschlagen",art:"",vi:"tra (từ điển)",ex:"Schwierigen Wortschatz kannst du im Wörterbuch nachschlagen."},
+  {de:"der Intensivkurs",art:"der",vi:"khóa học cấp tốc",ex:"In einem Intensivkurs lernt man in kurzer Zeit sehr viel."},
+  {de:"vorlesen",art:"",vi:"đọc to / đọc cho nghe",ex:"Im Internet kann man sich Texte vorlesen lassen."},
+  {de:"die Nachhilfe",art:"die",vi:"dạy kèm / học thêm",ex:"Er nimmt jetzt einmal pro Woche Nachhilfe."},
+  {de:"die Schwierigkeit",art:"die",vi:"khó khăn",ex:"Ich hatte früher große Schwierigkeiten mit der Aussprache."},
+  {de:"anfangs",art:"",vi:"lúc đầu / ban đầu",ex:"Daher habe ich anfangs jeden Tag vor dem Spiegel trainiert."},
+  {de:"der Buchstabe",art:"der",vi:"chữ cái / mẫu tự",ex:"In unserer Schrift gibt es keine Großbuchstaben."},
+  {de:"abschreiben",art:"",vi:"chép lại / sao chép",ex:"Ich schreibe oft schöne Sätze aus Magazinen ab."},
+  {de:"das Magazin",art:"das",vi:"tạp chí",ex:"Ich lese gerne Artikel in deutschen Magazinen."},
+  {de:"folgend",art:"",vi:"tiếp theo / sau đây",ex:"Ich habe leider folgendes Problem."},
+  {de:"der Dialekt",art:"der",vi:"tiếng địa phương",ex:"Sie spricht im Dialekt, darum kann ich sie manchmal schwer verstehen."},
+  {de:"die Geschwindigkeitsbeschränkung",art:"die",vi:"giới hạn tốc độ",ex:"Das längste Wort, das ich kenne, ist Geschwindigkeitsbeschränkung."},
+  {de:"die Unterhose",art:"die",vi:"quần lót",ex:"Das Wort Unterhose gefällt mir, weil man das so leicht merken kann."},
+  {de:"sich merken",art:"",vi:"ghi nhớ / nhớ lấy",ex:"Das kann man sich so leicht merken."},
+  {de:"seitdem",art:"",vi:"kể từ đó",ex:"Deswegen ist das seitdem mein Lieblingswort."},
+  {de:"der Sieg",art:"der",vi:"chiến thắng",ex:"Glückwunsch zu eurem Sieg: 4:3!"},
+  {de:"die Saison",art:"die",vi:"mùa giải",ex:"Amadous Mannschaft muss in dieser Saison noch einmal spielen."},
+  {de:"je … desto …",art:"",vi:"càng … càng …",ex:"Je länger man in einem Land lebt, desto besser klappt das Sprechen."},
+  {de:"die Arbeitsstelle",art:"die",vi:"chỗ làm việc",ex:"Je schneller man Deutsch lernt, umso leichter wird es, eine Arbeitsstelle zu finden."},
+  {de:"der Ausbildungsplatz",art:"der",vi:"chỗ học nghề",ex:"Je schneller man Deutsch lernt, umso leichter wird es, einen Ausbildungsplatz zu finden."},
+  {de:"der Lerner / die Lernerin",art:"der/die",vi:"người học",ex:"Die Lernerinnen und Lerner arbeiten in einer Gruppe zusammen."},
+  {de:"diskutieren",art:"",vi:"thảo luận / tranh luận",ex:"In meinem Kurs diskutieren wir sogar mit der Lehrerin."},
+  {de:"der Schüler / die Schülerin",art:"der/die",vi:"học sinh",ex:"Die Lehrerin hat immer geschimpft, wenn die Schülerinnen etwas falsch gemacht haben."},
+  {de:"damals",art:"",vi:"hồi đó / ngày xưa",ex:"Das war bei mir damals anders."},
+  {de:"unentschieden",art:"",vi:"hòa / không phân thắng bại",ex:"Wir haben gegen Isselheim unentschieden gespielt."},
+  {de:"sich erholen",art:"",vi:"hồi phục / nghỉ ngơi",ex:"Ich lerne Gitarre. Das Üben macht Spaß und ich erhole mich dabei."},
+  {de:"(sich) integrieren",art:"",vi:"hòa nhập",ex:"Du hast es geschafft, die neuen Spieler schnell ins Team zu integrieren."},
+  {de:"stark",art:"",vi:"mạnh / xuất sắc",ex:"Mit dir als Trainer ist die Mannschaft stärker geworden."},
+  {de:"die Geduld",art:"die",vi:"sự kiên nhẫn",ex:"Vielen Dank für deine Hilfe, deine Zeit und deine Geduld."},
+];
+let mode='learn';
+let queue=[];
+let current=0;
+let flipped=false;
+let correct=0;
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function setMode(m){
+  mode=m;
+  document.getElementById('btnLearn').classList.toggle('active',m==='learn');
+  document.getElementById('btnTest').classList.toggle('active',m==='test');
+  document.getElementById('modeLabel').textContent=m==='learn'?'Alle Vokabeln lernen':'Wortschatztest – 10 Karten';
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('fcWrap').style.display='block';
+  initDeck();
+}
+function initDeck(){
+  queue=mode==='learn'?shuffle(WORDS):shuffle(WORDS).slice(0,10);
+  current=0;correct=0;flipped=false;
+  updateCard();
+}
+function updateCard(){
+  if(current>=queue.length){endSession();return;}
+  const w=queue[current];
+  flipped=false;
+  document.getElementById('fcCard').classList.remove('flipped');
+  const artEl=document.getElementById('fcArt');
+  artEl.textContent=w.art||'';
+  artEl.style.display=w.art?'inline-block':'none';
+  document.getElementById('fcDe').textContent=w.de;
+  document.getElementById('fcVi').textContent=w.vi;
+  document.getElementById('fcEx').textContent=w.ex||'';
+  document.getElementById('fcTap').style.display='block';
+  document.getElementById('fcBtns').classList.toggle('main-hidden',mode==='learn');
+  const pct=Math.round(current/queue.length*100);
+  document.getElementById('fcBar').style.width=pct+'%';
+  document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
+  setTimeout(()=>speakCurrent(),300);
+}
+function flipCard(){
+  if(flipped)return;
+  flipped=true;
+  document.getElementById('fcCard').classList.add('flipped');
+  if(mode==='learn') document.getElementById('fcBtns').classList.remove('main-hidden');
+}
+function speakCurrent(){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(queue[current].de.replace(/[()\/]/g,' '));
+  u.lang='de-DE';u.rate=0.85;
+  window.speechSynthesis.speak(u);
+}
+function answer(ok){
+  if(ok){correct++;current++;updateCard();}
+  else{const w=queue.splice(current,1)[0];const pos=Math.min(current+3,queue.length);queue.splice(pos,0,w);updateCard();}
+}
+function endSession(){
+  document.getElementById('fcWrap').style.display='none';
+  const screen=document.getElementById('scoreScreen');
+  screen.classList.add('show');
+  if(mode==='learn'){
+    document.getElementById('scoreEmoji').textContent='🎉';
+    document.getElementById('scoreBig').textContent='Fertig!';
+    document.getElementById('scoreMsg').textContent='Sie haben alle '+WORDS.length+' Vokabeln durchgelernt.';
+  }else{
+    const pct=Math.round(correct/10*100);
+    document.getElementById('scoreEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';
+    document.getElementById('scoreBig').textContent=correct+'/10 ('+pct+'%)';
+    document.getElementById('scoreMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';
+  }
+}
+function restartTest(){setMode(mode);}
+initDeck();
+</script>
+</body>
+</html>
