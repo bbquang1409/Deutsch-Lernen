@@ -345,10 +345,22 @@ function buildQ_Wortfeld(wf,i,typeNum){
   note.textContent=wf.note;
   const txt=makeText(wf.q);
   const grid=makeGrid(1);
-  const shuffOpts=shuffle([...wf.opts]);let done=false;
+  const shuffOpts=shuffle([...wf.opts]);
+  let done=false;
   shuffOpts.forEach(o=>{
     const btn=makeBtn(o);
-    btn.onclick=()=>{if(done)return;done=true;const ok=(o===wf.ans);markOpts(grid,btn,ok,wf.ans);onAnswer(typeNum,ok);};
+    btn.onclick=()=>{
+      if(done)return; done=true;
+      const ok=(o===wf.ans);
+      // mark by value comparison, not textContent (avoids truncation issues)
+      [...grid.children].forEach(b=>{
+        if(b===btn) b.classList.add(ok?'ok':'no');
+        else if(b._val===wf.ans) b.classList.add('reveal');
+        else b.classList.add('locked');
+      });
+      onAnswer(typeNum,ok);
+    };
+    btn._val=o; // store original value on element
     grid.appendChild(btn);
   });
   card.append(note,txt,grid);return card;
@@ -356,20 +368,25 @@ function buildQ_Wortfeld(wf,i,typeNum){
 
 function buildQuestions(){
   const wrap=document.getElementById('qWrap');wrap.innerHTML='';
-  const wordsSh=shuffle(WORDS);
-  const nouns=wordsSh.filter(w=>w.art);
-  const pool_DE_VI=shuffle(wordsSh).slice(0,14);
-  const pool_VI_DE=shuffle(wordsSh.filter(w=>!pool_DE_VI.includes(w))).slice(0,11);
-  const pool_Art=shuffle(nouns.filter(w=>!pool_DE_VI.includes(w)&&!pool_VI_DE.includes(w))).slice(0,8);
-  const pool_Luecke=shuffle(LUECKEN).slice(0,9);
-  const pool_Wortfeld=shuffle(WORTFELD).slice(0,8);
+  const allW=shuffle([...WORDS]);
+  const onlyNouns=WORDS.filter(w=>w.art&&w.art.length>0);
+  const pool_DE_VI=allW.slice(0,14);
+  const usedSet=new Set(pool_DE_VI.map(w=>w.de));
+  const pool_VI_DE=allW.filter(w=>!usedSet.has(w.de)).slice(0,11);
+  pool_VI_DE.forEach(w=>usedSet.add(w.de));
+  const pool_Art=shuffle(onlyNouns.filter(w=>!usedSet.has(w.de))).slice(0,8);
+  const pool_Luecke=shuffle([...LUECKEN]).slice(0,9);
+  const pool_Wortfeld=shuffle([...WORTFELD]).slice(0,8);
   let questions=[];
   pool_DE_VI.forEach(w=>questions.push({fn:()=>buildQ_DE_VI(w,0,1)}));
   pool_VI_DE.forEach(w=>questions.push({fn:()=>buildQ_VI_DE(w,0,2)}));
   pool_Art.forEach(w=>questions.push({fn:()=>buildQ_Artikel(w,0,3)}));
   pool_Luecke.forEach(lq=>questions.push({fn:()=>buildQ_Luecke(lq,0,4)}));
   pool_Wortfeld.forEach(wf=>questions.push({fn:()=>buildQ_Wortfeld(wf,0,5)}));
-  questions=shuffle(questions);
+  // pad to 50 with extra DE->VI if needed
+  const extras=shuffle([...WORDS]);let ei=0;
+  while(questions.length<TOTAL){const w=extras[ei++%extras.length];questions.push({fn:()=>buildQ_DE_VI(w,0,1)});}
+  questions=shuffle(questions).slice(0,TOTAL);
   questions.forEach((q,i)=>{
     const card=q.fn();
     const numEl=card.querySelector('.q-num');
@@ -421,7 +438,7 @@ function endTest(){
     const [c,tot]=typeStats[t];if(tot===0)return;
     const p=Math.round(c/tot*100);
     const row=document.createElement('div');row.className='bd-row';
-    row.innerHTML=`<div class="bd-row-top"><span class="bd-name">${names[t]}</span><span class="bd-stat" style="color:${textCls[t]}">${c}/${tot} &nbsp;${p}%</span></div><div class="bd-bar-track"><div class="bd-bar-fill ${barCls[t]}" style="width:${p}%"></div></div>`;
+    row.innerHTML=`<div class="bd-row-top"><span class="bd-name">${names[t]}</span><span class="bd-stat" style="color:${textCls[t]}">${c}/${tot}\u00a0\u00a0${p}%</span></div><div class="bd-bar-track"><div class="bd-bar-fill ${barCls[t]}" style="width:${p}%"></div></div>`;
     bdRows.appendChild(row);
   });
   document.getElementById('result').classList.add('show');
