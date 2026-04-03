@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syntax – Grammatik B1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap');
+
+  :root {
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --primary: #3a6ea5;
+    --primary-dark: #2c5282;
+    --accent: #2a9d8f;
+    --accent2: #e76f51;
+    --text: #2d3748;
+    --text-light: #718096;
+    --border: #e2e8f0;
+    --correct: #2d6a4f;
+    --correct-bg: #d8f3dc;
+    --wrong: #9b2226;
+    --wrong-bg: #ffddd2;
+    --tag-bg: #ebf4ff;
+    --tag-color: #2b6cb0;
+    --rule-bg: #e8f4f8;
+    --rule-border: #90cdf4;
+    --ex-bg: #fef9ec;
+    --ex-border: #f6c90e;
+    --timer-warn: #c05621;
+    --header-h: 70px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ─── STICKY HEADER ─────────────────────────────── */
+  #sticky-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  #sticky-header .logo {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  #sticky-header .logo span { color: #90cdf4; }
+  #name-input {
+    flex: 1;
+    max-width: 220px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 2px solid #90cdf4;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    outline: none;
+    transition: background .2s;
+  }
+  #name-input::placeholder { color: rgba(255,255,255,.6); }
+  #name-input:focus { background: rgba(255,255,255,.25); }
+
+  #timer-box {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.12);
+    border-radius: 10px;
+    padding: 6px 14px;
+    flex-shrink: 0;
+  }
+  #timer-box .t-label {
+    font-size: .75rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.7);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  #timer-display {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    min-width: 60px;
+    text-align: right;
+  }
+  #timer-display.warn { color: #fbd38d; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  #timer-btn {
+    background: rgba(255,255,255,.2);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    transition: background .2s;
+  }
+  #timer-btn:hover { background: rgba(255,255,255,.35); }
+
+  /* ─── MAIN LAYOUT ─────────────────────────────────── */
+  .main-wrap {
+    padding-top: calc(var(--header-h) + 16px);
+    max-width: 900px;
+    margin: 0 auto;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 40px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    text-align: center;
+    margin: 16px 0 20px;
+  }
+  .page-title span { color: var(--accent); }
+
+  /* ─── TAB NAVIGATION ─────────────────────────────── */
+  .tab-nav-wrap {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 20px;
+  }
+  .tab-nav {
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+    min-width: max-content;
+  }
+  .tab-btn {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background: var(--surface);
+    color: var(--text-light);
+    font-family: 'Nunito', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* ─── TAB PANEL ──────────────────────────────────── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .grammar-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    margin-bottom: 20px;
+  }
+
+  .section-badge {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-color);
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-radius: 6px;
+    padding: 2px 8px;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 16px 0 8px;
+  }
+
+  .rule-box {
+    background: var(--rule-bg);
+    border-left: 4px solid var(--rule-border);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: .92rem;
+    line-height: 1.6;
+  }
+  .rule-box strong { color: var(--primary-dark); }
+
+  .example-list {
+    list-style: none;
+    margin: 10px 0;
+  }
+  .example-list li {
+    background: var(--ex-bg);
+    border-left: 3px solid var(--ex-border);
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    font-size: .9rem;
+    line-height: 1.5;
+  }
+  .example-list li .de { font-weight: 700; }
+  .example-list li .highlight { color: var(--accent2); font-weight: 700; }
+
+  /* Structure table */
+  .struct-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: .88rem;
+  }
+  .struct-table th {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 10px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .struct-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .struct-table tr:nth-child(even) td { background: #f7fafc; }
+  .struct-table .pos2 { background: #fff9db; font-weight: 700; color: var(--accent2); }
+
+  /* Declension table */
+  .decl-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: .82rem;
+  }
+  .decl-table th {
+    background: #e9ecef;
+    color: var(--text);
+    padding: 7px 10px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .decl-table td {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+  }
+  .decl-table tr:nth-child(even) td { background: #f7fafc; }
+
+  /* ─── EXERCISES ──────────────────────────────────── */
+  .exercises-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  }
+  .exercises-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .exercises-title::before {
+    content: "✏️";
+    font-size: 1.2rem;
+  }
+
+  .exercise-item {
+    margin-bottom: 18px;
+  }
+  .exercise-item .q-num {
+    font-size: .78rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 4px;
+  }
+  .exercise-item .q-text {
+    font-size: .92rem;
+    line-height: 1.6;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .q-text .blank {
+    display: inline-block;
+    border-bottom: 2px solid var(--primary);
+    min-width: 100px;
+    text-align: center;
+    vertical-align: bottom;
+    margin: 0 2px;
+  }
+
+  /* Fill-in-the-blank */
+  .fill-input {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    outline: none;
+    transition: border .2s;
+    width: 100%;
+    max-width: 360px;
+  }
+  .fill-input:focus { border-color: var(--primary); }
+  .fill-input.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .fill-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+
+  /* Multiple choice */
+  .mc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .mc-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .mc-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .mc-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .mc-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .mc-btn.reveal { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .mc-btn:disabled { cursor: default; }
+
+  /* Reorder */
+  .reorder-wrap { margin-top: 8px; }
+  .word-pool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 36px; }
+  .word-chip {
+    padding: 5px 13px;
+    border-radius: 16px;
+    background: #ebf4ff;
+    border: 2px solid #90cdf4;
+    color: var(--primary-dark);
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .word-chip:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .word-chip.used { opacity: .3; cursor: default; pointer-events: none; }
+  .answer-zone {
+    min-height: 44px;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    background: #fafafa;
+    align-items: center;
+  }
+  .answer-zone .placed-chip {
+    padding: 4px 11px;
+    border-radius: 14px;
+    background: var(--primary);
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .answer-zone .placed-chip:hover { background: #c05621; }
+  .answer-zone.correct-zone { border-color: var(--correct); background: var(--correct-bg); }
+  .answer-zone.wrong-zone { border-color: var(--wrong); background: var(--wrong-bg); }
+
+  /* Feedback */
+  .feedback {
+    font-size: .83rem;
+    font-weight: 700;
+    margin-top: 6px;
+    min-height: 18px;
+  }
+  .feedback.ok { color: var(--correct); }
+  .feedback.err { color: var(--wrong); }
+
+  /* Check btn */
+  .check-btn {
+    margin-top: 10px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: .88rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .check-btn:hover { background: var(--primary); }
+  .check-btn:disabled { background: #a0aec0; cursor: default; }
+
+  .reset-btn {
+    margin-top: 10px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--text-light);
+    font-family: 'Nunito', sans-serif;
+    font-size: .83rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: all .2s;
+  }
+  .reset-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* Score */
+  .score-bar {
+    background: var(--tag-bg);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .score-bar .score-text { font-weight: 700; font-size: .95rem; color: var(--primary-dark); }
+  .score-bar .score-num { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+  .tip-box {
+    background: #f0fff4;
+    border: 1px solid #9ae6b4;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: .85rem;
+    line-height: 1.6;
+    margin: 12px 0;
+    color: #276749;
+  }
+  .tip-box strong { color: #22543d; }
+
+  /* Conjunction visual */
+  .conj-box {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 12px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: .88rem;
+  }
+  .conj-part {
+    flex: 1;
+    padding: 10px 14px;
+    line-height: 1.5;
+  }
+  .conj-part.main { background: #ebf8ff; border-right: 2px solid #90cdf4; }
+  .conj-part.sub { background: #fffaf0; }
+  .conj-part .label {
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-light);
+    margin-bottom: 3px;
+  }
+
+  @media (max-width: 600px) {
+    .grammar-card, .exercises-card { padding: 16px; }
+    h2 { font-size: 1.1rem; }
+    .conj-box { flex-direction: column; }
+    .conj-part.main { border-right: none; border-bottom: 2px solid #90cdf4; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<div id="sticky-header">
+  <div class="logo">Syntax <span>B1</span></div>
+  <input id="name-input" type="text" placeholder="👤 Dein Name..." maxlength="40">
+  <div id="timer-box">
+    <span class="t-label">Zeit</span>
+    <span id="timer-display">00:00</span>
+    <button id="timer-btn" onclick="toggleTimer()">▶ Start</button>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <div class="page-title">Syntax – <span>Grammatik</span></div>
+
+  <!-- TAB NAV -->
+  <div class="tab-nav-wrap">
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn active" onclick="showTab(0)">1. Wortfolge</button>
+      <button class="tab-btn" onclick="showTab(1)">2. Reihenfolge</button>
+      <button class="tab-btn" onclick="showTab(2)">3. Negation</button>
+      <button class="tab-btn" onclick="showTab(3)">4. Welch-</button>
+      <button class="tab-btn" onclick="showTab(4)">5. Weil</button>
+      <button class="tab-btn" onclick="showTab(5)">6. Dass</button>
+      <button class="tab-btn" onclick="showTab(6)">7. Ind. Fragen</button>
+      <button class="tab-btn" onclick="showTab(7)">8. Wenn</button>
+      <button class="tab-btn" onclick="showTab(8)">9. Obwohl</button>
+      <button class="tab-btn" onclick="showTab(9)">10. Deshalb</button>
+      <button class="tab-btn" onclick="showTab(10)">11. Um…zu</button>
+      <button class="tab-btn" onclick="showTab(11)">12. Entweder…oder</button>
+      <button class="tab-btn" onclick="showTab(12)">13. Relativsätze</button>
+      <button class="tab-btn" onclick="showTab(13)">14. Temporalsätze</button>
+      <button class="tab-btn" onclick="showTab(14)">15. Infinitivsätze</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 0: Wortfolge im Hauptsatz -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab0">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 1</span>
+      <h2>Wortfolge im Hauptsatz</h2>
+      <div class="rule-box">
+        Im Hauptsatz steht das Verb (Prädikat) <strong>immer an Position II</strong>. Steht ein anderes Satzglied an Position I, rückt das Subjekt an Position III (Inversion).
+      </div>
+      <table class="struct-table">
+        <tr><th>I</th><th>II (Verb)</th><th>III</th><th>…</th></tr>
+        <tr><td>Ich</td><td class="pos2">lerne</td><td>jeden Tag</td><td>Deutsch.</td></tr>
+        <tr><td>Jeden Tag</td><td class="pos2">lerne</td><td>ich</td><td>Deutsch.</td></tr>
+        <tr><td>Morgen</td><td class="pos2">fahren</td><td>wir</td><td>nach Berlin.</td></tr>
+      </table>
+      <h3>Fragesätze</h3>
+      <div class="rule-box">
+        <strong>Ja/Nein-Fragen:</strong> Verb steht an Position I.<br>
+        <strong>W-Fragen:</strong> Fragewort → Verb → Subjekt.
+      </div>
+      <ul class="example-list">
+        <li><span class="de"><span class="highlight">Arbeitest</span> du heute?</span></li>
+        <li><span class="de"><span class="highlight">Wann</span> <span class="highlight">beginnt</span> der Kurs?</span></li>
+        <li><span class="de"><span class="highlight">Woher</span> <span class="highlight">kommt</span> du?</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Wortfolge</div>
+
+      <!-- Ex 1: Reorder -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1 – Satz bilden</div>
+        <div class="q-text">Ordne die Wörter zu einem korrekten Satz: <em>heute / kauft / Mia / im Supermarkt / ein</em></div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t0-1"></div>
+          <div class="answer-zone" id="zone-t0-1"></div>
+        </div>
+        <div class="feedback" id="fb-t0-1"></div>
+        <button class="check-btn" onclick="checkReorder('t0-1','Mia kauft heute im Supermarkt ein.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t0-1','heute / kauft / Mia / im Supermarkt / ein')">Zurücksetzen</button>
+      </div>
+      <hr class="divider">
+
+      <!-- Ex 2: Reorder with inversion -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2 – Inversion</div>
+        <div class="q-text">Beginne den Satz mit „Morgen": <em>Morgen / wir / fahren / nach Wien</em></div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t0-2"></div>
+          <div class="answer-zone" id="zone-t0-2"></div>
+        </div>
+        <div class="feedback" id="fb-t0-2"></div>
+        <button class="check-btn" onclick="checkReorder('t0-2','Morgen fahren wir nach Wien.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t0-2','Morgen / wir / fahren / nach Wien')">Zurücksetzen</button>
+      </div>
+      <hr class="divider">
+
+      <!-- Ex 3: MC question -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3 – Fragesatz</div>
+        <div class="q-text">Welcher Satz ist grammatisch richtig?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t0-3')">Du wann kommst?</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t0-3')">Wann kommst du?</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t0-3')">Kommst wann du?</button>
+        </div>
+        <div class="feedback" id="fb-t0-3"></div>
+      </div>
+      <hr class="divider">
+
+      <!-- Ex 4: Fill -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4 – Lückentext</div>
+        <div class="q-text">Ergänze: „Im Sommer ________ (fahren) meine Familie ans Meer."</div>
+        <input class="fill-input" id="fill-t0-4" placeholder="Verb eingeben..." oninput="checkFill('t0-4',['fährt'])">
+        <div class="feedback" id="fb-t0-4"></div>
+      </div>
+      <hr class="divider">
+
+      <!-- Ex 5: Fill -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5 – Lückentext</div>
+        <div class="q-text">Schreibe die Inversion: „Er trinkt jeden Morgen Kaffee." → „Jeden Morgen ________ er Kaffee."</div>
+        <input class="fill-input" id="fill-t0-5" placeholder="Verb eingeben..." oninput="checkFill('t0-5',['trinkt'])">
+        <div class="feedback" id="fb-t0-5"></div>
+      </div>
+      <hr class="divider">
+
+      <!-- Ex 6: MC -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 6 – W-Frage</div>
+        <div class="q-text">Wie fragt man nach dem Ort? „Sie wohnt in München." → ___?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t0-6')">Wann wohnt sie?</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t0-6')">Wo wohnt sie?</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t0-6')">Was wohnt sie?</button>
+        </div>
+        <div class="feedback" id="fb-t0-6"></div>
+      </div>
+      <hr class="divider">
+
+      <!-- Ex 7: Reorder -->
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 7 – Satz bilden</div>
+        <div class="q-text">Ordne: <em>nie / Jonas / Hausaufgaben / macht / seine</em></div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t0-7"></div>
+          <div class="answer-zone" id="zone-t0-7"></div>
+        </div>
+        <div class="feedback" id="fb-t0-7"></div>
+        <button class="check-btn" onclick="checkReorder('t0-7','Jonas macht nie seine Hausaufgaben.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t0-7','nie / Jonas / Hausaufgaben / macht / seine')">Zurücksetzen</button>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 1)</span>
+        <span class="score-num" id="score-t0">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 1: Reihenfolge der Objekte -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab1">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 2</span>
+      <h2>Reihenfolge der Objekte</h2>
+      <div class="rule-box">
+        Wenn zwei Objekte im Satz stehen:<br>
+        <strong>Dativobjekt → Akkusativobjekt</strong><br>
+        Außer: Pronomen kommen immer <strong>vor</strong> Nomen.
+      </div>
+      <table class="struct-table">
+        <tr><th>Subjekt</th><th>Verb</th><th>Dativ</th><th>Akkusativ</th></tr>
+        <tr><td>Ich</td><td class="pos2">gebe</td><td>meinem Bruder</td><td>das Buch.</td></tr>
+        <tr><td>Ich</td><td class="pos2">gebe</td><td>ihm</td><td>das Buch.</td></tr>
+        <tr><td>Ich</td><td class="pos2">gebe</td><td colspan="2">es ihm. ← (Akk-Pron. vor Dat-Pron.)</td></tr>
+      </table>
+      <div class="tip-box">
+        <strong>Merke:</strong> Wenn <em>beide</em> Objekte Pronomen sind, kommt das <strong>Akkusativpronomen zuerst</strong>: „Ich gebe <u>es</u> <u>ihm</u>."
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Objektreihenfolge</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">Welche Reihenfolge ist korrekt?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t1-1')">Sie erklärt dem Schüler die Aufgabe.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t1-1')">Sie erklärt die Aufgabe dem Schüler.</button>
+        </div>
+        <div class="feedback" id="fb-t1-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2 – Lückentext</div>
+        <div class="q-text">Der Vater schenkt ________ ________ (seiner Tochter / ein Fahrrad).</div>
+        <input class="fill-input" id="fill-t1-2" placeholder="Dativ zuerst..." oninput="checkFill('t1-2',['seiner tochter ein fahrrad','seiner Tochter ein Fahrrad'])">
+        <div class="feedback" id="fb-t1-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3 – Pronomen</div>
+        <div class="q-text">„Ich gebe meiner Mutter das Geschenk." → Mit Pronomen: „Ich gebe _____ _____."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t1-3')">es ihr</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t1-3')">ihr es</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t1-3')">sie ihm</button>
+        </div>
+        <div class="feedback" id="fb-t1-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">Die Lehrerin zeigt ________ ________ (den Studenten / die Lösung).</div>
+        <input class="fill-input" id="fill-t1-4" placeholder="..." oninput="checkFill('t1-4',['den studenten die lösung','den Studenten die Lösung'])">
+        <div class="feedback" id="fb-t1-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Was ist richtig? „Er bringt ___ ___." (ihr / es)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t1-5')">es ihr</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t1-5')">ihr es</button>
+        </div>
+        <div class="feedback" id="fb-t1-5"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 6</div>
+        <div class="q-text">Ordne: <em>dem Chef / erklärt / das Problem / der Mitarbeiter</em></div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t1-6"></div>
+          <div class="answer-zone" id="zone-t1-6"></div>
+        </div>
+        <div class="feedback" id="fb-t1-6"></div>
+        <button class="check-btn" onclick="checkReorder('t1-6','Der Mitarbeiter erklärt dem Chef das Problem.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t1-6','dem Chef / erklärt / das Problem / der Mitarbeiter')">Zurücksetzen</button>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 2)</span>
+        <span class="score-num" id="score-t1">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 2: Negation -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab2">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 3</span>
+      <h2>Negation mit „nicht"</h2>
+      <div class="rule-box">
+        <strong>Gesamtsatz negieren:</strong> „nicht" steht am <strong>Satzende</strong> (aber vor einem zweiten Verb).<br><br>
+        <strong>Satzteil negieren:</strong> „nicht" steht <strong>direkt vor</strong> dem negierten Element.
+      </div>
+      <ul class="example-list">
+        <li><span class="de">Er ruft mich <span class="highlight">nicht</span> an. ← ganzer Satz</span></li>
+        <li><span class="de">Ich kann heute <span class="highlight">nicht</span> kommen. ← vor Infinitiv</span></li>
+        <li><span class="de">Er fährt <span class="highlight">nicht</span> mit dem Auto (sondern mit dem Zug). ← Satzteil</span></li>
+      </ul>
+      <div class="tip-box">
+        <strong>kein- vs. nicht:</strong> „kein-" negiert Nomen ohne bestimmten Artikel: „Ich habe <u>kein</u> Auto." – „nicht" für alles andere.
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Negation</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">Wo steht „nicht"? „Er schläft früh." → „Er schläft früh _____."</div>
+        <input class="fill-input" id="fill-t2-1" placeholder="..." oninput="checkFill('t2-1',['nicht'])">
+        <div class="feedback" id="fb-t2-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">Wähle die korrekte Negation: „Ich habe ___ Hunger." (kein / nicht)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t2-2')">keinen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t2-2')">nicht</button>
+        </div>
+        <div class="feedback" id="fb-t2-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Sie kann Deutsch sprechen." → Negiere den ganzen Satz.</div>
+        <input class="fill-input" id="fill-t2-3" placeholder="Satz mit nicht..." oninput="checkFill('t2-3',['Sie kann nicht Deutsch sprechen.','sie kann nicht deutsch sprechen.'])">
+        <div class="feedback" id="fb-t2-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„Er kommt <u>nicht</u> heute." – Was wird hier negiert?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t2-4')">Das Verb „kommen"</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t2-4')">Der Zeitpunkt „heute"</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t2-4')">Der ganze Satz</button>
+        </div>
+        <div class="feedback" id="fb-t2-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">„Ich mag das Wetter hier." → Negiere: „Ich _____ das Wetter hier _____."</div>
+        <input class="fill-input" id="fill-t2-5" placeholder="..." oninput="checkFill('t2-5',['Ich mag das Wetter hier nicht.','ich mag das wetter hier nicht.'])">
+        <div class="feedback" id="fb-t2-5"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 6</div>
+        <div class="q-text">Wo gehört „nicht" hin? „Lena fährt ___ mit dem Bus (sondern mit dem Rad)."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t2-6')">vor „mit dem Bus"</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t2-6')">ans Satzende</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t2-6')">vor „Lena"</button>
+        </div>
+        <div class="feedback" id="fb-t2-6"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 3)</span>
+        <span class="score-num" id="score-t2">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Welch- -->
+  <div class="tab-panel" id="tab3">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 4</span>
+      <h2>Die Frage mit „welch-"</h2>
+      <div class="rule-box">
+        „welch-" wird verwendet, wenn man aus einer Gruppe <strong>eine bestimmte Person oder Sache</strong> auswählt. Es wird wie der <strong>bestimmte Artikel</strong> dekliniert.
+      </div>
+      <table class="decl-table">
+        <tr><th>Kasus</th><th>Maskulin</th><th>Feminin</th><th>Neutral</th><th>Plural</th></tr>
+        <tr><td>Nominativ</td><td>welcher</td><td>welche</td><td>welches</td><td>welche</td></tr>
+        <tr><td>Genitiv</td><td>welches</td><td>welcher</td><td>welches</td><td>welcher</td></tr>
+        <tr><td>Dativ</td><td>welchem</td><td>welcher</td><td>welchem</td><td>welchen</td></tr>
+        <tr><td>Akkusativ</td><td>welchen</td><td>welche</td><td>welches</td><td>welche</td></tr>
+      </table>
+      <ul class="example-list">
+        <li><span class="de"><span class="highlight">Welcher</span> Zug fährt nach Hamburg?</span></li>
+        <li><span class="de"><span class="highlight">Welche</span> Jacke möchtest du kaufen?</span></li>
+        <li><span class="de">Mit <span class="highlight">welchem</span> Bus fährst du?</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – welch-</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„_____ Film hast du gesehen?" (der Film – Akk.)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t3-1')">Welchen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t3-1')">Welcher</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t3-1')">Welchem</button>
+        </div>
+        <div class="feedback" id="fb-t3-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„_____ Lehrerin unterrichtet euch?" (die Lehrerin – Nom.)</div>
+        <input class="fill-input" id="fill-t3-2" placeholder="welch-?" oninput="checkFill('t3-2',['welche'])">
+        <div class="feedback" id="fb-t3-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Mit _____ Kollegen hast du gesprochen?" (der Kollege – Dat.)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t3-3')">welcher</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t3-3')">welchen</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t3-3')">welchem</button>
+        </div>
+        <div class="feedback" id="fb-t3-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„_____ Bücher liest du gern?" (Plural – Nom.)</div>
+        <input class="fill-input" id="fill-t3-4" placeholder="welch-?" oninput="checkFill('t3-4',['welche'])">
+        <div class="feedback" id="fb-t3-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">„_____ Kleid gefällt dir am besten?" (das Kleid – Nom.)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t3-5')">Welcher</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t3-5')">Welches</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t3-5')">Welchen</button>
+        </div>
+        <div class="feedback" id="fb-t3-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 4)</span>
+        <span class="score-num" id="score-t3">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Weil -->
+  <div class="tab-panel" id="tab4">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 5</span>
+      <h2>Kausalsätze mit „weil"</h2>
+      <div class="rule-box">
+        „weil" leitet einen Nebensatz ein: <strong>Verb steht am Ende</strong>.<br>
+        Steht der „weil"-Satz vorne, beginnt der Hauptsatz direkt mit dem Verb.
+      </div>
+      <div class="conj-box">
+        <div class="conj-part main"><div class="label">Hauptsatz</div>Ich bleibe zu Hause,</div>
+        <div class="conj-part sub"><div class="label">weil-Satz (Verb am Ende)</div><strong>weil</strong> ich krank <span style="color:var(--accent2);font-weight:800">bin</span>.</div>
+      </div>
+      <div class="conj-box">
+        <div class="conj-part sub"><div class="label">weil-Satz vorne</div><strong>Weil</strong> ich krank <span style="color:var(--accent2);font-weight:800">bin</span>,</div>
+        <div class="conj-part main"><div class="label">Hauptsatz (Verb zuerst!)</div><span style="color:var(--accent2);font-weight:800">bleibe</span> ich zu Hause.</div>
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – weil</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">Verbinde: „Wir gehen ins Restaurant. Wir haben Hunger." → „Wir gehen ins Restaurant, weil ___________."</div>
+        <input class="fill-input" id="fill-t4-1" placeholder="..." oninput="checkFill('t4-1',['wir hunger haben','wir Hunger haben'])">
+        <div class="feedback" id="fb-t4-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Er nimmt den Bus, weil sein Auto _____ (kaputt sein)."</div>
+        <input class="fill-input" id="fill-t4-2" placeholder="Verb am Ende..." oninput="checkFill('t4-2',['kaputt ist'])">
+        <div class="feedback" id="fb-t4-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3 – Inversion</div>
+        <div class="q-text">„Weil sie müde ist, _____ (schlafen) sie früh."</div>
+        <input class="fill-input" id="fill-t4-3" placeholder="Verb..." oninput="checkFill('t4-3',['schläft'])">
+        <div class="feedback" id="fb-t4-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">Welcher Satz ist korrekt?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t4-4')">Ich lerne viel, weil ich will bestehen.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t4-4')">Ich lerne viel, weil ich bestehen will.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t4-4')">Ich lerne viel, weil will ich bestehen.</button>
+        </div>
+        <div class="feedback" id="fb-t4-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Ordne: <em>weil / der Zug / Verspätung / spät / hat / kommen / wir</em> → „Wir kommen spät, ..."</div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t4-5"></div>
+          <div class="answer-zone" id="zone-t4-5"></div>
+        </div>
+        <div class="feedback" id="fb-t4-5"></div>
+        <button class="check-btn" onclick="checkReorder('t4-5','Wir kommen spät, weil der Zug Verspätung hat.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t4-5','weil / der Zug / Verspätung / spät / hat / kommen / wir')">Zurücksetzen</button>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 6</div>
+        <div class="q-text">„Ich kaufe das Buch nicht, weil es zu teuer _____."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t4-6')">ist</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t4-6')">sein</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t4-6')">war</button>
+        </div>
+        <div class="feedback" id="fb-t4-6"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 5)</span>
+        <span class="score-num" id="score-t4">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: Dass -->
+  <div class="tab-panel" id="tab5">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 6</span>
+      <h2>Objektsätze mit „dass"</h2>
+      <div class="rule-box">
+        „dass" leitet einen Nebensatz ein: <strong>Verb steht am Ende</strong>.<br>
+        Der dass-Satz ersetzt ein <strong>Akkusativobjekt</strong> (Frage: Was?).
+      </div>
+      <ul class="example-list">
+        <li><span class="de">Ich weiß, dass die Prüfung morgen <span class="highlight">beginnt</span>.</span></li>
+        <li><span class="de">Er sagt, dass er keine Zeit <span class="highlight">hat</span>.</span></li>
+        <li><span class="de">Ich bin sicher, dass du das <span class="highlight">schaffst</span>.</span></li>
+      </ul>
+      <div class="tip-box">
+        <strong>Wichtige Verben mit dass:</strong> sagen, denken, wissen, glauben, hoffen, finden, sicher sein, hören …
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – dass</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">Verbinde: „Er glaubt. – Sie kommt morgen." → „Er glaubt, dass ___________."</div>
+        <input class="fill-input" id="fill-t5-1" placeholder="..." oninput="checkFill('t5-1',['sie morgen kommt','sie morgen kommt.'])">
+        <div class="feedback" id="fb-t5-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Ich hoffe, dass das Wetter gut _____."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t5-2')">wird</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t5-2')">werden</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t5-2')">ist werden</button>
+        </div>
+        <div class="feedback" id="fb-t5-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">Ordne: <em>dass / der Chef / zufrieden / ist / ich / weiß</em></div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t5-3"></div>
+          <div class="answer-zone" id="zone-t5-3"></div>
+        </div>
+        <div class="feedback" id="fb-t5-3"></div>
+        <button class="check-btn" onclick="checkReorder('t5-3','Ich weiß, dass der Chef zufrieden ist.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t5-3','dass / der Chef / zufrieden / ist / ich / weiß')">Zurücksetzen</button>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„Sie findet, dass der Film langweilig _____."</div>
+        <input class="fill-input" id="fill-t5-4" placeholder="Verb am Ende..." oninput="checkFill('t5-4',['ist'])">
+        <div class="feedback" id="fb-t5-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Welcher Satz ist richtig?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t5-5')">Ich denke, dass kommt er bald.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t5-5')">Ich denke, dass er bald kommt.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t5-5')">Ich denke, er bald dass kommt.</button>
+        </div>
+        <div class="feedback" id="fb-t5-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 6)</span>
+        <span class="score-num" id="score-t5">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 6: Indirekte Fragen -->
+  <div class="tab-panel" id="tab6">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 7</span>
+      <h2>Indirekte Fragesätze</h2>
+      <div class="rule-box">
+        <strong>W-Fragen (indirekt):</strong> Fragewort → Nebensatz → <strong>Verb am Ende</strong>.<br>
+        <strong>Ja/Nein-Fragen (indirekt):</strong> Einleitung mit <strong>„ob"</strong> → Verb am Ende.
+      </div>
+      <ul class="example-list">
+        <li><span class="de">Direkt: <em>Was hast du gekauft?</em><br>Indirekt: Ich frage, <span class="highlight">was</span> du gekauft <span class="highlight">hast</span>.</span></li>
+        <li><span class="de">Direkt: <em>Kommt er?</em><br>Indirekt: Ich weiß nicht, <span class="highlight">ob</span> er <span class="highlight">kommt</span>.</span></li>
+        <li><span class="de">Ich möchte wissen, <span class="highlight">wann</span> der Kurs <span class="highlight">beginnt</span>.</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Indirekte Fragen</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Wo wohnt er?" → „Ich frage, _____ er _____."</div>
+        <input class="fill-input" id="fill-t6-1" placeholder="wo ... wohnt" oninput="checkFill('t6-1',['wo er wohnt'])">
+        <div class="feedback" id="fb-t6-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Ist das Büro geöffnet?" → „Ich weiß nicht, _____ das Büro geöffnet _____."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t6-2')">ob … ist</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t6-2')">was … ist</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t6-2')">dass … ist</button>
+        </div>
+        <div class="feedback" id="fb-t6-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Wann fährt der Bus?" → Formuliere einen indirekten Fragesatz.</div>
+        <input class="fill-input" id="fill-t6-3" placeholder="Ich möchte wissen, wann..." oninput="checkFill('t6-3',['ich möchte wissen, wann der bus fährt.','Ich möchte wissen, wann der Bus fährt.'])">
+        <div class="feedback" id="fb-t6-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">Welcher Satz ist richtig?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t6-4')">Ich frage, ob kommt sie morgen.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t6-4')">Ich frage, ob sie morgen kommt.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t6-4')">Ich frage, sie ob morgen kommt.</button>
+        </div>
+        <div class="feedback" id="fb-t6-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">„Wie heißt du?" → „Kannst du mir sagen, wie du _____?"</div>
+        <input class="fill-input" id="fill-t6-5" placeholder="..." oninput="checkFill('t6-5',['heißt'])">
+        <div class="feedback" id="fb-t6-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 7)</span>
+        <span class="score-num" id="score-t6">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 7: Wenn -->
+  <div class="tab-panel" id="tab7">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 8</span>
+      <h2>Konditionalsätze mit „wenn"</h2>
+      <div class="rule-box">
+        „wenn" = Bedingung. Nebensatz: <strong>Verb am Ende</strong>.<br>
+        Steht „wenn"-Satz vorne → Hauptsatz beginnt mit Verb (Inversion).
+      </div>
+      <ul class="example-list">
+        <li><span class="de"><span class="highlight">Wenn</span> es regnet, <span class="highlight">nehme</span> ich einen Regenschirm.</span></li>
+        <li><span class="de">Ich helfe dir, <span class="highlight">wenn</span> du Zeit <span class="highlight">hast</span>.</span></li>
+        <li><span class="de">Konjunktiv II: <span class="highlight">Wenn</span> ich reich <span class="highlight">wäre</span>, <span class="highlight">würde</span> ich reisen.</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – wenn</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Wenn du früh aufstehst, _____ (haben) du mehr Zeit."</div>
+        <input class="fill-input" id="fill-t7-1" placeholder="..." oninput="checkFill('t7-1',['hast'])">
+        <div class="feedback" id="fb-t7-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">Verbinde: „Es schneit. Wir bauen einen Schneemann." → „Wenn ___________."</div>
+        <input class="fill-input" id="fill-t7-2" placeholder="Wenn es schneit, ..." oninput="checkFill('t7-2',['wenn es schneit, bauen wir einen schneemann.','Wenn es schneit, bauen wir einen Schneemann.'])">
+        <div class="feedback" id="fb-t7-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3 – Konjunktiv II</div>
+        <div class="q-text">„Wenn ich mehr Geld _____ (haben), _____ (können) ich ein Auto kaufen."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t7-3')">hätte … könnte</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t7-3')">habe … kann</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t7-3')">hatte … konnte</button>
+        </div>
+        <div class="feedback" id="fb-t7-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„Wenn sie Hunger _____, isst sie immer einen Apfel."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t7-4')">hat</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t7-4')">haben</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t7-4')">hätte</button>
+        </div>
+        <div class="feedback" id="fb-t7-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5 – Inversion</div>
+        <div class="q-text">„Wenn du kommst, _____ wir zusammen Mittag essen." (können)</div>
+        <input class="fill-input" id="fill-t7-5" placeholder="..." oninput="checkFill('t7-5',['können'])">
+        <div class="feedback" id="fb-t7-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 8)</span>
+        <span class="score-num" id="score-t7">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 8: Obwohl -->
+  <div class="tab-panel" id="tab8">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 9</span>
+      <h2>Konzessivsätze: „obwohl" & „trotzdem"</h2>
+      <div class="rule-box">
+        <strong>obwohl</strong> = Konjunktion → Nebensatz (Verb am Ende).<br>
+        <strong>trotzdem</strong> = Konjunktionaladverb → Inversion im Hauptsatz (Verb vor Subjekt).
+      </div>
+      <div class="conj-box">
+        <div class="conj-part main"><div class="label">Hauptsatz</div>Ich jogge täglich,</div>
+        <div class="conj-part sub"><div class="label">obwohl-Satz</div><strong>obwohl</strong> ich müde <span style="color:var(--accent2);font-weight:800">bin</span>.</div>
+      </div>
+      <div class="conj-box">
+        <div class="conj-part main"><div class="label">Hauptsatz 1</div>Ich bin müde.</div>
+        <div class="conj-part sub"><div class="label">trotzdem → Inversion</div><strong>Trotzdem</strong> <span style="color:var(--accent2);font-weight:800">jogge</span> ich täglich.</div>
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – obwohl / trotzdem</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Er hat keine Zeit. Er hilft ihr _____ (trotzdem/obwohl)."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t8-1')">trotzdem</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t8-1')">obwohl</button>
+        </div>
+        <div class="feedback" id="fb-t8-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„_____ das Wetter schlecht ist, gehen die Kinder raus."</div>
+        <input class="fill-input" id="fill-t8-2" placeholder="..." oninput="checkFill('t8-2',['obwohl','Obwohl'])">
+        <div class="feedback" id="fb-t8-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Obwohl er viel trainiert _____, verliert er oft."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t8-3')">hat</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t8-3')">ist</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t8-3')">werden</button>
+        </div>
+        <div class="feedback" id="fb-t8-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4 – Inversion mit trotzdem</div>
+        <div class="q-text">„Er ist krank. Trotzdem _____ er zur Arbeit."</div>
+        <input class="fill-input" id="fill-t8-4" placeholder="Verb..." oninput="checkFill('t8-4',['geht','kommt','fährt'])">
+        <div class="feedback" id="fb-t8-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Welcher Satz ist korrekt?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t8-5')">Obwohl sie sehr beschäftigt ist, aber sie ruft an.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t8-5')">Obwohl sie sehr beschäftigt ist, ruft sie an.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t8-5')">Obwohl sie sehr beschäftigt, ist ruft sie an.</button>
+        </div>
+        <div class="feedback" id="fb-t8-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 9)</span>
+        <span class="score-num" id="score-t8">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 9: Deshalb -->
+  <div class="tab-panel" id="tab9">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 10</span>
+      <h2>Konsekutivsätze mit „deshalb"</h2>
+      <div class="rule-box">
+        „deshalb" = Folge. Es steht am <strong>Satzanfang des zweiten Satzes</strong> → Inversion: Verb direkt nach „deshalb".
+      </div>
+      <div class="conj-box">
+        <div class="conj-part main"><div class="label">Ursache</div>Es regnet stark.</div>
+        <div class="conj-part sub"><div class="label">Folge → deshalb + Verb</div><strong>Deshalb</strong> <span style="color:var(--accent2);font-weight:800">bleiben</span> wir zu Hause.</div>
+      </div>
+      <ul class="example-list">
+        <li><span class="de">Ich bin müde, <span class="highlight">deshalb</span> gehe ich früh ins Bett.</span></li>
+        <li><span class="de">Sie hat den Bus verpasst, <span class="highlight">deshalb</span> kommt sie zu spät.</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – deshalb</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Er hat Kopfschmerzen. Deshalb _____ er nicht lernen."</div>
+        <input class="fill-input" id="fill-t9-1" placeholder="..." oninput="checkFill('t9-1',['kann','will'])">
+        <div class="feedback" id="fb-t9-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Sie hat die Prüfung bestanden, _____ freut sie sich sehr."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t9-2')">deshalb</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t9-2')">weil</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t9-2')">obwohl</button>
+        </div>
+        <div class="feedback" id="fb-t9-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">Verbinde mit „deshalb": „Das Café ist voll. Wir suchen einen anderen Platz."</div>
+        <input class="fill-input" id="fill-t9-3" placeholder="Das Café ist voll, deshalb ..." oninput="checkFill('t9-3',['das café ist voll, deshalb suchen wir einen anderen platz.','Das Café ist voll, deshalb suchen wir einen anderen Platz.'])">
+        <div class="feedback" id="fb-t9-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4 – Inversion</div>
+        <div class="q-text">„Ich habe verschlafen. Deshalb _____ ich zu spät." (kommen)</div>
+        <input class="fill-input" id="fill-t9-4" placeholder="..." oninput="checkFill('t9-4',['komme'])">
+        <div class="feedback" id="fb-t9-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Welcher Satz ist richtig?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t9-5')">Das Restaurant ist teuer, deshalb wir essen zu Hause.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t9-5')">Das Restaurant ist teuer, deshalb essen wir zu Hause.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t9-5')">Das Restaurant ist teuer, wir deshalb essen zu Hause.</button>
+        </div>
+        <div class="feedback" id="fb-t9-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 10)</span>
+        <span class="score-num" id="score-t9">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 10: Um zu / damit -->
+  <div class="tab-panel" id="tab10">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 11</span>
+      <h2>Finalsätze: „um…zu" und „damit"</h2>
+      <div class="rule-box">
+        <strong>um…zu</strong> = Absicht, wenn <em>beide Sätze dasselbe Subjekt</em> haben. Verb im Infinitiv am Ende.<br>
+        <strong>damit</strong> = Absicht, wenn <em>die Subjekte verschieden</em> sind. Verb am Ende.
+      </div>
+      <div class="conj-box">
+        <div class="conj-part main"><div class="label">gleiches Subjekt</div>Ich lerne Deutsch, <strong>um</strong> in Deutschland zu <span style="color:var(--accent2);font-weight:800">studieren</span>.</div>
+        <div class="conj-part sub"><div class="label">verschiedene Subjekte</div>Ich erkläre es, <strong>damit</strong> <em>du</em> es verstehen <span style="color:var(--accent2);font-weight:800">kannst</span>.</div>
+      </div>
+      <div class="tip-box">
+        <strong>Achtung:</strong> „wollen" erscheint nicht in um…zu-Sätzen. Man sagt nicht: „um zu wollen lernen", sondern: „um zu lernen".
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – um…zu / damit</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Ich spare Geld. Ich will eine Reise machen." → „Ich spare Geld, _____ eine Reise zu _____."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t10-1')">um … machen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t10-1')">damit … machen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t10-1')">weil … machen</button>
+        </div>
+        <div class="feedback" id="fb-t10-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Er schreibt laut. Seine Kollegen sollen es lesen." → „Er schreibt laut, _____ seine Kollegen es lesen _____."</div>
+        <input class="fill-input" id="fill-t10-2" placeholder="damit ... können" oninput="checkFill('t10-2',['damit ... können','damit seine kollegen es lesen können.','damit seine Kollegen es lesen können.'])">
+        <div class="feedback" id="fb-t10-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„um…zu" oder „damit"? „Sie trainiert täglich, _____ den Marathon zu gewinnen."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t10-3')">um</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t10-3')">damit</button>
+        </div>
+        <div class="feedback" id="fb-t10-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„Der Lehrer erklärt langsam, _____ die Schüler alles verstehen _____."</div>
+        <input class="fill-input" id="fill-t10-4" placeholder="damit ... können" oninput="checkFill('t10-4',['damit ... können','damit','können'])">
+        <div class="feedback" id="fb-t10-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Welcher Satz ist korrekt?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t10-5')">Ich lerne Deutsch, um zu wollen arbeiten.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t10-5')">Ich lerne Deutsch, um zu arbeiten.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t10-5')">Ich lerne Deutsch, damit zu arbeiten.</button>
+        </div>
+        <div class="feedback" id="fb-t10-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 11)</span>
+        <span class="score-num" id="score-t10">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 11: Entweder oder -->
+  <div class="tab-panel" id="tab11">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 12</span>
+      <h2>Die zweiteilige Konjunktion „entweder … oder"</h2>
+      <div class="rule-box">
+        „entweder … oder" verbindet zwei Alternativen. Der erste Teil steht am Anfang des ersten Satzes, der zweite Teil zwischen den Sätzen.
+      </div>
+      <ul class="example-list">
+        <li><span class="de"><span class="highlight">Entweder</span> nimmst du den Bus <span class="highlight">oder</span> du fährst mit dem Fahrrad.</span></li>
+        <li><span class="de">Im Urlaub fahren wir <span class="highlight">entweder</span> nach Österreich <span class="highlight">oder</span> nach der Schweiz.</span></li>
+        <li><span class="de"><span class="highlight">Entweder</span> du lernst jetzt, <span class="highlight">oder</span> du wirst die Prüfung nicht bestehen.</span></li>
+      </ul>
+      <div class="tip-box">
+        <strong>Andere zweiteilige Konjunktionen:</strong> sowohl … als auch, weder … noch, nicht nur … sondern auch.
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – entweder … oder</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">Ergänze: „_____ du rufst mich an, _____ ich komme vorbei."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t11-1')">Entweder … oder</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t11-1')">Weder … noch</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t11-1')">Sowohl … als auch</button>
+        </div>
+        <div class="feedback" id="fb-t11-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">Bilde einen Satz mit „entweder … oder": Tee / Kaffee trinken</div>
+        <input class="fill-input" id="fill-t11-2" placeholder="Entweder ... oder ..." oninput="checkFill('t11-2',['entweder','Entweder'])">
+        <div class="feedback" id="fb-t11-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Er kommt _____ morgen _____ übermorgen."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t11-3')">entweder … oder</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t11-3')">weder … noch</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t11-3')">nicht nur … sondern auch</button>
+        </div>
+        <div class="feedback" id="fb-t11-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">Was drückt „weder … noch" aus?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t11-4')">Eine Alternative</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t11-4')">Doppelte Verneinung</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t11-4')">Eine Ergänzung</button>
+        </div>
+        <div class="feedback" id="fb-t11-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">Ordne: <em>entweder / gehen / oder / wir / ins Kino / zu Hause / bleiben / wir</em></div>
+        <div class="reorder-wrap">
+          <div class="word-pool" id="pool-t11-5"></div>
+          <div class="answer-zone" id="zone-t11-5"></div>
+        </div>
+        <div class="feedback" id="fb-t11-5"></div>
+        <button class="check-btn" onclick="checkReorder('t11-5','Entweder gehen wir ins Kino oder wir bleiben zu Hause.')">Prüfen</button>
+        <button class="reset-btn" onclick="resetReorder('t11-5','entweder / gehen / oder / wir / ins Kino / zu Hause / bleiben / wir')">Zurücksetzen</button>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 12)</span>
+        <span class="score-num" id="score-t11">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 12: Relativsätze -->
+  <div class="tab-panel" id="tab12">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 13</span>
+      <h2>Relativsätze</h2>
+      <div class="rule-box">
+        Relativsätze ergänzen ein Nomen im Hauptsatz. Das Relativpronomen richtet sich in <strong>Genus und Numerus nach dem Bezugsnomen</strong>, im <strong>Kasus nach dem Verb im Nebensatz</strong>. Verb steht am Ende.
+      </div>
+      <table class="decl-table">
+        <tr><th>Kasus</th><th>Maskulin</th><th>Feminin</th><th>Neutral</th><th>Plural</th></tr>
+        <tr><td>Nominativ</td><td>der</td><td>die</td><td>das</td><td>die</td></tr>
+        <tr><td>Genitiv</td><td>dessen</td><td>deren</td><td>dessen</td><td>deren</td></tr>
+        <tr><td>Dativ</td><td>dem</td><td>der</td><td>dem</td><td>denen</td></tr>
+        <tr><td>Akkusativ</td><td>den</td><td>die</td><td>das</td><td>die</td></tr>
+      </table>
+      <ul class="example-list">
+        <li><span class="de">Das ist der Mann, <span class="highlight">der</span> jeden Tag joggt. (Nom.)</span></li>
+        <li><span class="de">Das ist die Frau, <span class="highlight">der</span> ich geholfen habe. (Dat.)</span></li>
+        <li><span class="de">Das ist das Buch, <span class="highlight">das</span> ich gestern gelesen habe. (Akk.)</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Relativsätze</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Das ist die Lehrerin, _____ uns immer hilft." (helfen + Dat. → feminin)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t12-1')">die</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t12-1')">der</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t12-1')">das</button>
+        </div>
+        <div class="feedback" id="fb-t12-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Ich kenne den Mann, _____ hier wohnt." (Nom. maskulin)</div>
+        <input class="fill-input" id="fill-t12-2" placeholder="Relativpronomen..." oninput="checkFill('t12-2',['der'])">
+        <div class="feedback" id="fb-t12-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Das sind die Kollegen, _____ ich heute getroffen habe." (Akk. Plural)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t12-3')">die</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t12-3')">denen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t12-3')">deren</button>
+        </div>
+        <div class="feedback" id="fb-t12-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„Das ist die Stadt, _____ Einstein geboren wurde." (Präposition: in + wo)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t12-4')">wo</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t12-4')">der</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t12-4')">die</button>
+        </div>
+        <div class="feedback" id="fb-t12-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">„Das Projekt, _____ wir arbeiten, ist sehr interessant." (an + Dat. neutral)</div>
+        <input class="fill-input" id="fill-t12-5" placeholder="Präp. + Pron.?" oninput="checkFill('t12-5',['an dem','woran'])">
+        <div class="feedback" id="fb-t12-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 13)</span>
+        <span class="score-num" id="score-t12">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 13: Temporalsätze -->
+  <div class="tab-panel" id="tab13">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 14</span>
+      <h2>Temporalsätze: „als", „wenn", „während", „bevor", „nachdem"</h2>
+      <div class="rule-box">
+        <strong>als</strong> = einmaliges Ereignis in der Vergangenheit.<br>
+        <strong>wenn</strong> = wiederholtes Ereignis / Gegenwart / Zukunft.<br>
+        <strong>während</strong> = Gleichzeitigkeit.<br>
+        <strong>bevor</strong> = Vorzeitigkeit (was vorher passiert).<br>
+        <strong>nachdem</strong> = Nachzeitigkeit (was danach passiert).
+      </div>
+      <ul class="example-list">
+        <li><span class="de"><span class="highlight">Als</span> ich Kind war, spielte ich oft im Garten.</span></li>
+        <li><span class="de"><span class="highlight">Wenn</span> ich Musik höre, kann ich gut lernen.</span></li>
+        <li><span class="de"><span class="highlight">Während</span> sie kochte, hörte er Radio.</span></li>
+        <li><span class="de"><span class="highlight">Bevor</span> du schläfst, putz die Zähne!</span></li>
+        <li><span class="de"><span class="highlight">Nachdem</span> er gegessen hatte, räumte er auf.</span></li>
+      </ul>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Temporalsätze</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„_____ ich klein war, liebte ich das Lesen." (einmal, Vergangenheit)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t13-1')">Als</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t13-1')">Wenn</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t13-1')">Nachdem</button>
+        </div>
+        <div class="feedback" id="fb-t13-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„_____ er ankommt, rufe ich dich an." (Zukunft)</div>
+        <input class="fill-input" id="fill-t13-2" placeholder="..." oninput="checkFill('t13-2',['wenn','Wenn'])">
+        <div class="feedback" id="fb-t13-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„_____ du die Wohnung verlässt, schalte das Licht aus." (zuerst passiert)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t13-3')">Bevor</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t13-3')">Nachdem</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t13-3')">Während</button>
+        </div>
+        <div class="feedback" id="fb-t13-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">„_____ sie die E-Mail gelesen hatte, antwortete sie sofort." (zeitliche Abfolge)</div>
+        <input class="fill-input" id="fill-t13-4" placeholder="..." oninput="checkFill('t13-4',['nachdem','Nachdem'])">
+        <div class="feedback" id="fb-t13-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">„_____ ich esse, lese ich immer die Nachrichten." (wiederholt)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t13-5')">Als</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t13-5')">Wenn</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t13-5')">Bevor</button>
+        </div>
+        <div class="feedback" id="fb-t13-5"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 14)</span>
+        <span class="score-num" id="score-t13">–</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 14: Infinitivsätze -->
+  <div class="tab-panel" id="tab14">
+    <div class="grammar-card">
+      <span class="section-badge">Syntax · 15</span>
+      <h2>Infinitivsätze</h2>
+      <div class="rule-box">
+        Infinitivsätze ersetzen einen Nebensatz. Sie haben <strong>kein Subjekt</strong> und enden mit dem <strong>Infinitiv (mit „zu")</strong>. Bei trennbaren Verben steht „zu" zwischen Präfix und Stamm.
+      </div>
+      <ul class="example-list">
+        <li><span class="de">Ich versuche, pünktlich <span class="highlight">zu kommen</span>.</span></li>
+        <li><span class="de">Es ist wichtig, täglich <span class="highlight">zu üben</span>.</span></li>
+        <li><span class="de">Ich vergesse oft, das Licht <span class="highlight">auszuschalten</span>. ← trennbar!</span></li>
+        <li><span class="de">Sie hat vor, nächsten Monat <span class="highlight">umzuziehen</span>.</span></li>
+      </ul>
+      <div class="tip-box">
+        <strong>Verben mit Infinitiv + zu:</strong> versuchen, vergessen, beginnen, vorhaben, empfehlen, erlauben, bitten, hoffen …
+      </div>
+    </div>
+    <div class="exercises-card">
+      <div class="exercises-title">Übungen – Infinitivsätze</div>
+
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 1</div>
+        <div class="q-text">„Ich vergesse immer, das Fenster _____." (zumachen – trennbar)</div>
+        <input class="fill-input" id="fill-t14-1" placeholder="zu + Verb..." oninput="checkFill('t14-1',['zuzumachen'])">
+        <div class="feedback" id="fb-t14-1"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 2</div>
+        <div class="q-text">„Es ist toll, Deutsch _____ (lernen)."</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t14-2')">zu lernen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t14-2')">lernen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t14-2')">zu lernend</button>
+        </div>
+        <div class="feedback" id="fb-t14-2"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 3</div>
+        <div class="q-text">„Sie versucht, jeden Tag Sport _____." (treiben)</div>
+        <input class="fill-input" id="fill-t14-3" placeholder="zu + Verb..." oninput="checkFill('t14-3',['zu treiben'])">
+        <div class="feedback" id="fb-t14-3"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 4</div>
+        <div class="q-text">Trennbares Verb: „Er beginnt, _____." (anrufen)</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'correct','t14-4')">anzurufen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t14-4')">zu anrufen</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t14-4')">anrufend</button>
+        </div>
+        <div class="feedback" id="fb-t14-4"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 5</div>
+        <div class="q-text">„Ich habe vor, nächste Woche _____." (umziehen)</div>
+        <input class="fill-input" id="fill-t14-5" placeholder="..." oninput="checkFill('t14-5',['umzuziehen'])">
+        <div class="feedback" id="fb-t14-5"></div>
+      </div>
+      <hr class="divider">
+      <div class="exercise-item">
+        <div class="q-num">Aufgabe 6</div>
+        <div class="q-text">Welcher Satz ist korrekt?</div>
+        <div class="mc-options">
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t14-6')">Er hofft früh aufzustehen zu können.</button>
+          <button class="mc-btn" onclick="checkMC(this,'correct','t14-6')">Er hofft, früh aufstehen zu können.</button>
+          <button class="mc-btn" onclick="checkMC(this,'wrong','t14-6')">Er hofft früh zu aufstehen.</button>
+        </div>
+        <div class="feedback" id="fb-t14-6"></div>
+      </div>
+
+      <div class="score-bar">
+        <span class="score-text">Dein Ergebnis (Tab 15)</span>
+        <span class="score-num" id="score-t14">–</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main-wrap -->
+
+<script>
+// ─── TAB SWITCHING ──────────────────────────────────
+function showTab(idx) {
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ─── TIMER ──────────────────────────────────────────
+let timerSecs = 0, timerRunning = false, timerInt = null;
+function toggleTimer() {
+  if (!timerRunning) {
+    timerRunning = true;
+    document.getElementById('timer-btn').textContent = '⏸ Pause';
+    timerInt = setInterval(() => {
+      timerSecs++;
+      updateTimerDisplay();
+    }, 1000);
+  } else {
+    timerRunning = false;
+    document.getElementById('timer-btn').textContent = '▶ Start';
+    clearInterval(timerInt);
+  }
+}
+function updateTimerDisplay() {
+  const m = String(Math.floor(timerSecs/60)).padStart(2,'0');
+  const s = String(timerSecs%60).padStart(2,'0');
+  const el = document.getElementById('timer-display');
+  el.textContent = `${m}:${s}`;
+  el.classList.toggle('warn', timerSecs > 600);
+}
+
+// ─── MULTIPLE CHOICE ────────────────────────────────
+function checkMC(btn, verdict, id) {
+  const parent = btn.closest('.exercise-item');
+  const allBtns = parent.querySelectorAll('.mc-btn');
+  allBtns.forEach(b => { b.disabled = true; });
+  const fb = document.getElementById('fb-'+id);
+  if (verdict === 'correct') {
+    btn.classList.add('correct');
+    fb.textContent = '✅ Richtig!'; fb.className = 'feedback ok';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = '❌ Leider falsch. Versuche es noch einmal!'; fb.className = 'feedback err';
+    allBtns.forEach(b => {
+      if (b.onclick.toString().includes("'correct'") || b.getAttribute('onclick')?.includes("'correct'")) {
+        b.classList.add('reveal');
+      }
+    });
+  }
+  updateScore();
+}
+
+// ─── FILL IN ────────────────────────────────────────
+function checkFill(id, answers) {
+  const input = document.getElementById('fill-'+id);
+  const val = input.value.trim().toLowerCase();
+  const fb = document.getElementById('fb-'+id);
+  const correct = answers.some(a => val === a.toLowerCase());
+  if (val.length === 0) {
+    input.className = 'fill-input'; fb.textContent = ''; return;
+  }
+  if (correct) {
+    input.classList.add('correct'); input.classList.remove('wrong');
+    fb.textContent = '✅ Richtig!'; fb.className = 'feedback ok';
+    input.disabled = true;
+  } else {
+    input.classList.add('wrong'); input.classList.remove('correct');
+    fb.textContent = ''; fb.className = 'feedback';
+  }
+  updateScore();
+}
+
+// ─── REORDER ────────────────────────────────────────
+function initReorder(id, wordsStr) {
+  const words = wordsStr.split(' / ').map(w => w.trim());
+  const shuffled = [...words].sort(() => Math.random() - .5);
+  const pool = document.getElementById('pool-'+id);
+  const zone = document.getElementById('zone-'+id);
+  if (!pool || !zone) return;
+  pool.innerHTML = '';
+  zone.innerHTML = '';
+  zone.className = 'answer-zone';
+  shuffled.forEach(w => {
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.textContent = w;
+    chip.dataset.word = w;
+    chip.onclick = () => moveToZone(chip, id, w);
+    pool.appendChild(chip);
+  });
+}
+function moveToZone(chip, id, word) {
+  if (chip.classList.contains('used')) return;
+  chip.classList.add('used');
+  const zone = document.getElementById('zone-'+id);
+  const placed = document.createElement('div');
+  placed.className = 'placed-chip';
+  placed.textContent = word;
+  placed.onclick = () => { chip.classList.remove('used'); zone.removeChild(placed); };
+  zone.appendChild(placed);
+}
+function checkReorder(id, correctSentence) {
+  const zone = document.getElementById('zone-'+id);
+  const chips = zone.querySelectorAll('.placed-chip');
+  const answer = Array.from(chips).map(c => c.textContent).join(' ');
+  const fb = document.getElementById('fb-'+id);
+  if (answer === correctSentence) {
+    zone.className = 'answer-zone correct-zone';
+    fb.textContent = '✅ Richtig!'; fb.className = 'feedback ok';
+  } else {
+    zone.className = 'answer-zone wrong-zone';
+    fb.textContent = '❌ Nicht ganz. Schau nochmal!'; fb.className = 'feedback err';
+  }
+  updateScore();
+}
+function resetReorder(id, wordsStr) {
+  document.getElementById('fb-'+id).textContent = '';
+  initReorder(id, wordsStr);
+}
+
+// ─── SCORE ──────────────────────────────────────────
+function updateScore() {
+  // For each tab panel, count ok feedbacks
+  document.querySelectorAll('.tab-panel').forEach((panel, idx) => {
+    const scoreEl = document.getElementById('score-t'+idx);
+    if (!scoreEl) return;
+    const total = panel.querySelectorAll('.exercise-item').length;
+    const ok = panel.querySelectorAll('.feedback.ok').length;
+    scoreEl.textContent = `${ok} / ${total}`;
+  });
+}
+
+// ─── INIT ALL REORDERS ──────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  initReorder('t0-1','heute / kauft / Mia / im Supermarkt / ein');
+  initReorder('t0-2','Morgen / wir / fahren / nach Wien');
+  initReorder('t0-7','nie / Jonas / Hausaufgaben / macht / seine');
+  initReorder('t1-6','dem Chef / erklärt / das Problem / der Mitarbeiter');
+  initReorder('t4-5','weil / der Zug / Verspätung / spät / hat / kommen / wir');
+  initReorder('t5-3','dass / der Chef / zufrieden / ist / ich / weiß');
+  initReorder('t11-5','entweder / gehen / oder / wir / ins Kino / zu Hause / bleiben / wir');
+});
+</script>
+</body>
+</html>
