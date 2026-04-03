@@ -5,1276 +5,630 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L07 Übungen – Amadou: Alles Trainingssache</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
 
-  :root {
-    --pink: #e91e8c;
-    --pink-light: #fce4f3;
-    --yellow: #f5d000;
-    --yellow-light: #fffbe6;
-    --blue: #1a6fc4;
-    --blue-light: #e3f0ff;
-    --green: #22b573;
-    --green-light: #e6f9f2;
-    --red: #e84040;
-    --red-light: #ffeaea;
-    --dark: #1a1a2e;
-    --gray: #6b7280;
-    --bg: #f8f4ff;
-    --card: #ffffff;
-    --radius: 16px;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-  }
+:root {
+  --bg:      #f0f4f8;
+  --surface: #ffffff;
+  --border:  #dde3ea;
+  --teal:    #0d9488;
+  --teal2:   #ccfbf1;
+  --teal3:   #f0fdf9;
+  --slate:   #334155;
+  --slate2:  #64748b;
+  --slate3:  #e2e8f0;
+  --slate4:  #f8fafc;
+  --indigo:  #4f46e5;
+  --indigo2: #e0e7ff;
+  --green:   #16a34a;
+  --green2:  #dcfce7;
+  --red:     #dc2626;
+  --red2:    #fee2e2;
+  --amber:   #d97706;
+  --amber2:  #fef3c7;
+  --radius:  14px;
+  --sh:      0 2px 12px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--slate);min-height:100vh;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* TOP BAR */
+.top-bar{position:sticky;top:0;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:10px 14px;}
+.tb-row1{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.name-lbl{font-size:11px;font-weight:700;color:var(--slate2);white-space:nowrap;text-transform:uppercase;letter-spacing:.8px;}
+.name-inp{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--slate);outline:none;background:var(--slate4);transition:border-color .2s;}
+.name-inp:focus{border-color:var(--teal);background:#fff;}
+.timer{display:flex;align-items:center;gap:5px;background:var(--slate);color:#fff;border-radius:8px;padding:7px 11px;min-width:76px;justify-content:center;flex-shrink:0;transition:background .3s;}
+.timer.warn{background:var(--amber);}
+.timer.danger{background:var(--red);}
+.timer-t{font-size:15px;font-weight:700;letter-spacing:1px;}
+.tb-row2{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.prog-lbl{font-size:11px;font-weight:600;color:var(--slate2);}
+.prog-sc{font-size:12px;font-weight:700;color:var(--teal);}
+.prog-track{background:var(--slate3);border-radius:6px;height:5px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),#2dd4bf);border-radius:6px;transition:width .4s ease;width:0%;}
 
-  body {
-    font-family: 'Nunito Sans', sans-serif;
-    background: var(--bg);
-    color: var(--dark);
-    min-height: 100vh;
-    padding-bottom: 80px;
-  }
+/* PAGE HEADER */
+.pg-head{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#fff;padding:22px 16px 28px;position:relative;overflow:hidden;}
+.pg-head::before{content:'';position:absolute;top:-50px;right:-30px;width:140px;height:140px;background:rgba(13,148,136,.18);border-radius:50%;}
+.back{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,.65);text-decoration:none;margin-bottom:14px;background:rgba(255,255,255,.1);padding:5px 12px;border-radius:20px;}
+.h-chip{display:inline-block;background:var(--teal);color:#fff;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+.pg-head h1{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;line-height:1.2;margin-bottom:5px;}
+.pg-head h1 em{color:#5eead4;font-style:normal;}
+.pg-meta{font-size:12px;color:rgba(255,255,255,.55);}
 
-  /* HEADER */
-  .header {
-    background: linear-gradient(135deg, var(--pink) 0%, #c0166b 100%);
-    color: white;
-    padding: 20px 16px 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .header::before {
-    content: '';
-    position: absolute;
-    top: -30px; right: -30px;
-    width: 120px; height: 120px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 50%;
-  }
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: -20px; left: 40%;
-    width: 80px; height: 80px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
-  }
-  .back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    margin-bottom: 12px;
-    display: inline-flex;
-  }
-  .header-label {
-    font-family: 'Nunito', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.85;
-    margin-bottom: 4px;
-  }
-  .header h1 {
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-    line-height: 1.2;
-  }
-  .header h1 span { color: var(--yellow); }
-  .header-sub {
-    font-size: 13px;
-    opacity: 0.9;
-    margin-top: 6px;
-  }
+/* TABS */
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tabs-inner{display:flex;padding:0 12px;gap:2px;min-width:max-content;}
+.tab{border:none;background:none;padding:12px 14px 10px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--slate2);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+.ddot{width:7px;height:7px;background:var(--green);border-radius:50%;display:none;}
+.tab.done .ddot{display:block;}
 
-  /* PROGRESS BAR */
-  .progress-wrap {
-    background: white;
-    padding: 14px 16px;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .progress-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .progress-text {
-    font-family: 'Nunito', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gray);
-  }
-  .progress-score {
-    font-family: 'Nunito', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--pink);
-  }
-  .progress-bar-bg {
-    background: #eee;
-    border-radius: 10px;
-    height: 8px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--pink), #ff69b4);
-    border-radius: 10px;
-    transition: width 0.5s ease;
-    width: 0%;
-  }
+/* SECTIONS */
+.sec{display:none;padding:16px;}
+.sec.active{display:block;}
 
-  /* NAV TABS */
-  .tabs-wrap {
-    overflow-x: auto;
-    background: white;
-    padding: 0 12px;
-    border-bottom: 2px solid #f0f0f0;
-    scrollbar-width: none;
-  }
-  .tabs-wrap::-webkit-scrollbar { display: none; }
-  .tabs {
-    display: flex;
-    gap: 4px;
-    min-width: max-content;
-    padding: 8px 0;
-  }
-  .tab-btn {
-    border: none;
-    background: #f5f5f5;
-    border-radius: 20px;
-    padding: 7px 14px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--gray);
-    transition: all 0.2s;
-    white-space: nowrap;
-    position: relative;
-  }
-  .tab-btn.active {
-    background: var(--pink);
-    color: white;
-  }
-  .tab-btn .tab-check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px; height: 16px;
-    background: var(--green);
-    border-radius: 50%;
-    color: white;
-    font-size: 9px;
-    margin-left: 4px;
-    display: none;
-  }
-  .tab-btn.done .tab-check { display: inline-flex; }
+.sec-head{background:var(--surface);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:var(--sh);border-left:4px solid var(--teal);}
+.sec-num{font-size:10px;font-weight:700;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.sec-title{font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:5px;}
+.sec-desc{font-size:13px;color:var(--slate2);line-height:1.55;}
+.chip{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:2px 8px;border-radius:20px;margin-top:8px;}
+.cw{background:var(--teal2);color:var(--teal);}
+.cg{background:var(--indigo2);color:var(--indigo);}
+.ck{background:var(--amber2);color:var(--amber);}
 
-  /* SECTIONS */
-  .section { display: none; padding: 16px; }
-  .section.active { display: block; }
+/* CARD */
+.card{background:var(--surface);border-radius:var(--radius);padding:16px;margin-bottom:10px;box-shadow:var(--sh);border:1px solid var(--border);}
+.qn{font-size:10px;font-weight:700;color:var(--slate2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.qt{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:12px;}
+.qhint{font-size:12px;color:var(--slate2);font-style:italic;background:var(--slate4);padding:7px 11px;border-radius:8px;margin-bottom:10px;border-left:3px solid var(--slate3);}
 
-  .section-header {
-    background: white;
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow);
-    border-left: 5px solid var(--pink);
-  }
-  .section-num {
-    font-family: 'Nunito', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--pink);
-    margin-bottom: 4px;
-  }
-  .section-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 17px;
-    font-weight: 900;
-    margin-bottom: 6px;
-  }
-  .section-desc {
-    font-size: 13px;
-    color: var(--gray);
-    line-height: 1.5;
-  }
-  .tag {
-    display: inline-block;
-    background: var(--pink-light);
-    color: var(--pink);
-    font-family: 'Nunito', sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .tag.gram { background: var(--blue-light); color: var(--blue); }
-  .tag.kom { background: var(--yellow-light); color: #b08800; }
+/* WORD BANK */
+.wbank{display:flex;flex-wrap:wrap;gap:7px;background:var(--slate4);border:1.5px dashed var(--border);border-radius:10px;padding:10px;margin-bottom:14px;min-height:46px;}
+.wc{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;cursor:pointer;color:var(--slate);transition:all .15s;user-select:none;}
+.wc:hover{border-color:var(--teal);color:var(--teal);}
+.wc.sel{background:var(--teal);color:#fff;border-color:var(--teal);}
+.wc.used{opacity:.28;pointer-events:none;}
 
-  /* CARD */
-  .card {
-    background: white;
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: var(--shadow);
-  }
-  .question-num {
-    font-family: 'Nunito', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--gray);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .question-text {
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-  .question-example {
-    font-size: 13px;
-    color: var(--gray);
-    font-style: italic;
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    background: #f9f9f9;
-    border-radius: 8px;
-  }
+.blank{display:inline-block;min-width:110px;border-bottom:2.5px solid var(--teal);margin:0 4px;padding:1px 8px 2px;font-size:15px;font-weight:600;color:var(--teal);text-align:center;vertical-align:bottom;cursor:pointer;transition:all .15s;}
+.blank.filled{color:var(--slate);border-bottom-color:var(--indigo);}
+.blank.bok{border-bottom-color:var(--green);color:var(--green);}
+.blank.berr{border-bottom-color:var(--red);color:var(--red);}
 
-  /* INPUT */
-  .input-wrap { position: relative; }
-  input[type="text"] {
-    width: 100%;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    outline: none;
-    transition: all 0.2s;
-    background: white;
-    color: var(--dark);
-  }
-  input[type="text"]:focus { border-color: var(--pink); }
-  input[type="text"].correct { border-color: var(--green); background: var(--green-light); }
-  input[type="text"].wrong { border-color: var(--red); background: var(--red-light); }
+/* CHOICES */
+.choices{display:flex;flex-direction:column;gap:7px;}
+.choice{width:100%;text-align:left;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--slate);transition:all .12s;line-height:1.4;}
+.choice:hover:not(:disabled){border-color:var(--teal);background:var(--teal3);}
+.choice.csel{border-color:var(--indigo);background:var(--indigo2);color:var(--indigo);}
+.choice.cok{border-color:var(--green);background:var(--green2);color:#166534;}
+.choice.cerr{border-color:var(--red);background:var(--red2);color:#991b1b;}
+.choice:disabled{cursor:default;}
 
-  /* MULTIPLE CHOICE */
-  .choices { display: flex; flex-direction: column; gap: 8px; }
-  .choice-btn {
-    width: 100%;
-    text-align: left;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    background: white;
-    color: var(--dark);
-    transition: all 0.15s;
-    line-height: 1.4;
-  }
-  .choice-btn:hover:not(:disabled) { border-color: var(--pink); background: var(--pink-light); }
-  .choice-btn.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
-  .choice-btn.correct { border-color: var(--green); background: var(--green-light); color: #166534; }
-  .choice-btn.wrong { border-color: var(--red); background: var(--red-light); color: #991b1b; }
-  .choice-btn:disabled { cursor: default; }
+/* TEXTAREA */
+textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;outline:none;resize:vertical;min-height:78px;transition:border-color .2s;line-height:1.55;color:var(--slate);background:var(--slate4);}
+textarea:focus{border-color:var(--teal);background:#fff;}
+textarea.tok{border-color:var(--green);background:var(--green2);}
+textarea.terr{border-color:var(--red);background:var(--red2);}
 
-  /* DRAG & DROP */
-  .word-bank {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
-    background: #f9f9f9;
-    border-radius: 12px;
-    min-height: 50px;
-    margin-bottom: 12px;
-    border: 2px dashed #ddd;
-  }
-  .drag-word {
-    background: white;
-    border: 2px solid #ddd;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--dark);
-    user-select: none;
-  }
-  .drag-word:hover { border-color: var(--pink); color: var(--pink); background: var(--pink-light); }
-  .drag-word.used { opacity: 0.3; pointer-events: none; }
-  .drag-word.selected-word { border-color: var(--pink); background: var(--pink); color: white; }
+/* INPUT */
+input.ans{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;outline:none;background:var(--slate4);color:var(--slate);transition:all .2s;}
+input.ans:focus{border-color:var(--teal);background:#fff;}
+input.ans.aok{border-color:var(--green);background:var(--green2);}
+input.ans.aerr{border-color:var(--red);background:var(--red2);}
 
-  .blank-inline {
-    display: inline-block;
-    min-width: 120px;
-    border-bottom: 3px solid var(--pink);
-    margin: 0 4px;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--pink);
-    text-align: center;
-    padding: 2px 8px;
-    vertical-align: bottom;
-    transition: all 0.2s;
-  }
-  .blank-inline.filled { color: var(--dark); border-bottom-color: var(--blue); }
-  .blank-inline.correct-blank { border-bottom-color: var(--green); color: var(--green); }
-  .blank-inline.wrong-blank { border-bottom-color: var(--red); color: var(--red); }
+/* FEEDBACK */
+.fb{display:none;margin-top:9px;padding:9px 13px;border-radius:8px;font-size:13px;font-weight:600;align-items:flex-start;gap:7px;line-height:1.4;}
+.fb.show{display:flex;}
+.fb.fok{background:var(--green2);color:#166534;}
+.fb.ferr{background:var(--red2);color:#991b1b;}
+.fbi{font-size:15px;flex-shrink:0;}
 
-  /* FEEDBACK */
-  .feedback {
-    margin-top: 10px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
-  .feedback.show { display: flex; }
-  .feedback.ok { background: var(--green-light); color: #166534; }
-  .feedback.err { background: var(--red-light); color: #991b1b; }
-  .feedback-icon { font-size: 16px; flex-shrink: 0; }
+/* CONNECTOR */
+.conn{display:inline-block;background:var(--amber2);color:var(--amber);border:1.5px solid #fcd34d;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:700;margin-bottom:8px;}
+.ssrc{background:var(--slate4);border-radius:8px;padding:9px 12px;font-size:14px;margin-bottom:9px;line-height:1.55;border-left:3px solid var(--border);}
 
-  /* BUTTONS */
-  .btn {
-    border: none;
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.3px;
-  }
-  .btn-check {
-    background: var(--pink);
-    color: white;
-    width: 100%;
-    margin-top: 12px;
-  }
-  .btn-check:hover { background: #c0166b; transform: translateY(-1px); }
-  .btn-check:disabled { background: #ddd; color: #aaa; cursor: default; transform: none; }
-  .btn-next {
-    background: var(--dark);
-    color: white;
-    width: 100%;
-    margin-top: 8px;
-  }
-  .btn-reset {
-    background: #f5f5f5;
-    color: var(--gray);
-    width: 100%;
-    margin-top: 8px;
-  }
+/* BUTTONS */
+.btn{border:none;border-radius:10px;padding:12px 18px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;width:100%;}
+.bp{background:var(--teal);color:#fff;margin-top:12px;}
+.bp:hover{background:#0f766e;}
+.bp:disabled{background:var(--slate3);color:var(--slate2);cursor:default;}
+.bs{background:var(--slate4);color:var(--slate2);border:1.5px solid var(--border);margin-top:7px;}
+.bn{background:var(--slate);color:#fff;margin:12px 0;}
+.bn:hover{background:#1e293b;}
 
-  /* SECTION SCORE */
-  .section-score-box {
-    background: linear-gradient(135deg, var(--pink) 0%, #c0166b 100%);
-    color: white;
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-    text-align: center;
-    display: none;
-  }
-  .section-score-box.show { display: block; }
-  .score-big {
-    font-family: 'Nunito', sans-serif;
-    font-size: 48px;
-    font-weight: 900;
-    line-height: 1;
-  }
-  .score-label {
-    font-size: 13px;
-    opacity: 0.9;
-    margin-top: 4px;
-  }
-  .score-emoji { font-size: 32px; margin-bottom: 8px; }
+/* SCORE BOX */
+.sb{display:none;background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#fff;border-radius:var(--radius);padding:20px;margin-bottom:14px;text-align:center;}
+.sb.show{display:block;}
+.sbe{font-size:34px;margin-bottom:6px;}
+.sbig{font-family:'DM Serif Display',serif;font-size:48px;}
+.ssub{font-size:13px;color:rgba(255,255,255,.65);margin-top:4px;}
 
-  /* RESULT MODAL */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    display: none;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: white;
-    border-radius: 24px;
-    padding: 28px 24px;
-    max-width: 340px;
-    width: 100%;
-    text-align: center;
-    animation: popIn 0.3s ease;
-  }
-  @keyframes popIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .modal-emoji { font-size: 56px; margin-bottom: 12px; }
-  .modal-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-    margin-bottom: 8px;
-  }
-  .modal-score {
-    font-family: 'Nunito', sans-serif;
-    font-size: 44px;
-    font-weight: 900;
-    color: var(--pink);
-    margin: 12px 0;
-  }
-  .modal-msg { font-size: 14px; color: var(--gray); line-height: 1.5; }
-  .modal-btn {
-    background: var(--pink);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 14px 28px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    margin-top: 20px;
-    width: 100%;
-  }
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:20px;padding:28px 22px;max-width:340px;width:100%;text-align:center;animation:pop .25s ease;}
+@keyframes pop{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.me{font-size:52px;margin-bottom:10px;}
+.mt{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:8px;}
+.ms{font-family:'DM Serif Display',serif;font-size:46px;color:var(--teal);margin:10px 0;}
+.mn{font-size:14px;font-weight:600;color:var(--slate2);margin-bottom:6px;}
+.mm{font-size:13px;color:var(--slate2);line-height:1.5;}
+.mbtn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:18px;width:100%;}
 
-  /* SENTENCE REWRITE */
-  .sentence-given {
-    background: #f9f9f9;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 14px;
-    margin-bottom: 10px;
-    line-height: 1.5;
-  }
-  .sentence-connector {
-    background: var(--yellow-light);
-    border: 2px solid var(--yellow);
-    border-radius: 8px;
-    padding: 3px 10px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 800;
-    font-size: 13px;
-    color: #92600a;
-    display: inline-block;
-    margin-bottom: 8px;
-  }
-  textarea {
-    width: 100%;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    outline: none;
-    resize: vertical;
-    min-height: 80px;
-    transition: border-color 0.2s;
-    line-height: 1.5;
-  }
-  textarea:focus { border-color: var(--pink); }
-  textarea.correct { border-color: var(--green); background: var(--green-light); }
-  textarea.wrong { border-color: var(--red); background: var(--red-light); }
-
-  /* FINAL SUBMIT */
-  .submit-all-wrap {
-    padding: 16px;
-    padding-bottom: 24px;
-  }
-  .btn-submit-all {
-    background: linear-gradient(135deg, var(--pink), #c0166b);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    padding: 16px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 16px;
-    font-weight: 900;
-    cursor: pointer;
-    width: 100%;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 20px rgba(233,30,140,0.35);
-  }
+.fw{padding:0 0 24px;}
+.fbtn{background:linear-gradient(135deg,var(--teal),#0f766e);color:#fff;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;box-shadow:0 4px 16px rgba(13,148,136,.3);}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <a class="back-btn" href="index.html">← Zurück</a>
-  <div class="header-label">Lektion 07 · Übungen</div>
-  <h1>Amadou – <span>Alles Trainingssache!</span></h1>
-  <div class="header-sub">6 Übungstypen · Grammatik &amp; Wortschatz</div>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="tb-row1">
+    <span class="name-lbl">Name:</span>
+    <input class="name-inp" id="sName" type="text" placeholder="Vorname Nachname …" autocomplete="off">
+    <div class="timer" id="timerBox">
+      <span>⏱</span>
+      <span class="timer-t" id="timerT">20:00</span>
+    </div>
+  </div>
+  <div class="tb-row2">
+    <span class="prog-lbl" id="pLbl">Übung 1 von 6</span>
+    <span class="prog-sc" id="pSc">0 Punkte</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="pFill"></div></div>
 </div>
 
-<!-- PROGRESS -->
-<div class="progress-wrap">
-  <div class="progress-info">
-    <span class="progress-text" id="progressText">Übung 1 von 6</span>
-    <span class="progress-score" id="totalScore">0 Punkte</span>
-  </div>
-  <div class="progress-bar-bg">
-    <div class="progress-bar-fill" id="progressFill"></div>
-  </div>
+<!-- PAGE HEADER -->
+<div class="pg-head">
+  <a class="back" href="index.html">← Zurück</a>
+  <div class="h-chip">Lektion 07 · Übungen</div>
+  <h1>Amadou – <em>Alles Trainingssache!</em></h1>
+  <div class="pg-meta">6 Übungstypen · neue Aufgaben · Grammatik &amp; Wortschatz</div>
 </div>
 
 <!-- TABS -->
-<div class="tabs-wrap">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showSection(0)" id="tab0">Ü1 <span class="tab-check">✓</span></button>
-    <button class="tab-btn" onclick="showSection(1)" id="tab1">Ü2 <span class="tab-check">✓</span></button>
-    <button class="tab-btn" onclick="showSection(2)" id="tab2">Ü3 <span class="tab-check">✓</span></button>
-    <button class="tab-btn" onclick="showSection(3)" id="tab3">Ü4 <span class="tab-check">✓</span></button>
-    <button class="tab-btn" onclick="showSection(4)" id="tab4">Ü5 <span class="tab-check">✓</span></button>
-    <button class="tab-btn" onclick="showSection(5)" id="tab5">Ü6 <span class="tab-check">✓</span></button>
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="tab active" id="tab0" onclick="goSec(0)">Ü1 <span class="ddot"></span></button>
+    <button class="tab" id="tab1" onclick="goSec(1)">Ü2 <span class="ddot"></span></button>
+    <button class="tab" id="tab2" onclick="goSec(2)">Ü3 <span class="ddot"></span></button>
+    <button class="tab" id="tab3" onclick="goSec(3)">Ü4 <span class="ddot"></span></button>
+    <button class="tab" id="tab4" onclick="goSec(4)">Ü5 <span class="ddot"></span></button>
+    <button class="tab" id="tab5" onclick="goSec(5)">Ü6 <span class="ddot"></span></button>
   </div>
 </div>
 
-<!-- ==============================
-     ÜBUNG 1: Wortschatz Lückentext (Drag-to-fill)
-============================== -->
-<div class="section active" id="section0">
-  <div class="section-header">
-    <div class="section-num">Übung 1</div>
-    <div class="section-title">Was passt? Wählen Sie das richtige Wort.</div>
-    <div class="section-desc">Tippen Sie auf ein Wort aus der Liste, dann auf die Lücke.</div>
-    <br><span class="tag">Wörter</span>
+<!-- Ü1: WORTSCHATZ TAP-TO-FILL -->
+<div class="sec active" id="s0">
+  <div class="sec-head">
+    <div class="sec-num">Übung 1</div>
+    <div class="sec-title">Richtige Wörter einsetzen</div>
+    <div class="sec-desc">Wählen Sie ein Wort aus der Liste → tippen Sie auf die Lücke im Satz.</div>
+    <span class="chip cw">Wortschatz</span>
   </div>
-
-  <!-- Word Bank -->
   <div class="card">
-    <div class="question-num">Wortliste – tippen zum Auswählen</div>
-    <div class="word-bank" id="wordBank0">
-      <span class="drag-word" data-word="Aussprache" onclick="selectWord(this)">Aussprache</span>
-      <span class="drag-word" data-word="Entwicklung" onclick="selectWord(this)">Entwicklung</span>
-      <span class="drag-word" data-word="diskutieren" onclick="selectWord(this)">diskutieren</span>
-      <span class="drag-word" data-word="Nachhilfe" onclick="selectWord(this)">Nachhilfe</span>
-      <span class="drag-word" data-word="merken" onclick="selectWord(this)">merken</span>
-      <span class="drag-word" data-word="vorlesen" onclick="selectWord(this)">vorlesen</span>
-      <span class="drag-word" data-word="Alphabet" onclick="selectWord(this)">Alphabet</span>
-      <span class="drag-word" data-word="nachschlagen" onclick="selectWord(this)">nachschlagen</span>
-      <span class="drag-word" data-word="zurückfahren" onclick="selectWord(this)">zurückfahren</span>
+    <div class="qn">Wortliste – tippen zum Auswählen</div>
+    <div class="wbank" id="bank0">
+      <span class="wc" data-w="Intensivkurs" onclick="pw(this)">Intensivkurs</span>
+      <span class="wc" data-w="Dialekt" onclick="pw(this)">Dialekt</span>
+      <span class="wc" data-w="seitdem" onclick="pw(this)">seitdem</span>
+      <span class="wc" data-w="anfangs" onclick="pw(this)">anfangs</span>
+      <span class="wc" data-w="Schwierigkeiten" onclick="pw(this)">Schwierigkeiten</span>
+      <span class="wc" data-w="abschreiben" onclick="pw(this)">abschreiben</span>
+      <span class="wc" data-w="interkulturell" onclick="pw(this)">interkulturell</span>
+      <span class="wc" data-w="Buchstaben" onclick="pw(this)">Buchstaben</span>
+      <span class="wc" data-w="folgend" onclick="pw(this)">folgend</span>
     </div>
   </div>
-
-  <div class="card" id="fillCard0">
-    <div class="question-num">Sätze ergänzen</div>
-    <div id="fillSentences0"></div>
-    <button class="btn btn-check" onclick="checkFill0()">Antworten prüfen ✓</button>
-    <button class="btn btn-reset" onclick="resetFill0()">↺ Neu starten</button>
+  <div class="card">
+    <div class="qn">Sätze ergänzen</div>
+    <div id="f0"></div>
+    <button class="btn bp" onclick="chkF0()">Antworten prüfen ✓</button>
+    <button class="btn bs" onclick="rstF0()">↺ Neu starten</button>
   </div>
-
-  <div class="section-score-box" id="score0box"></div>
-  <button class="btn btn-next" onclick="showSection(1)" style="margin: 0 16px 16px; width: calc(100% - 32px);">Weiter zu Übung 2 →</button>
+  <div class="sb" id="sb0"></div>
+  <button class="btn bn" onclick="goSec(1)">Weiter → Übung 2</button>
 </div>
 
-<!-- ==============================
-     ÜBUNG 2: Verben mit Vorsilben – Multiple Choice
-============================== -->
-<div class="section" id="section1">
-  <div class="section-header">
-    <div class="section-num">Übung 2</div>
-    <div class="section-title">Verben mit Vorsilben</div>
-    <div class="section-desc">Welche Vorsilbe passt? Wählen Sie die richtige Antwort.</div>
-    <br><span class="tag gram">Grammatik</span>
+<!-- Ü2: VERBEN BEDEUTUNG (MCQ) -->
+<div class="sec" id="s1">
+  <div class="sec-head">
+    <div class="sec-num">Übung 2</div>
+    <div class="sec-title">Verben: Was bedeutet das?</div>
+    <div class="sec-desc">Welche Erklärung passt zum unterstrichenen Verb?</div>
+    <span class="chip cg">Grammatik</span>
   </div>
-  <div id="mcq1container"></div>
-  <div class="section-score-box" id="score1box"></div>
-  <button class="btn btn-next" onclick="showSection(2)" style="margin: 0 16px 16px; width: calc(100% - 32px);">Weiter zu Übung 3 →</button>
+  <div id="mc2"></div>
+  <div class="sb" id="sb1"></div>
+  <button class="btn bn" onclick="goSec(2)">Weiter → Übung 3</button>
 </div>
 
-<!-- ==============================
-     ÜBUNG 3: Sätze mit daher/darum/deswegen/weil
-============================== -->
-<div class="section" id="section2">
-  <div class="section-header">
-    <div class="section-num">Übung 3</div>
-    <div class="section-title">Sätze umschreiben</div>
-    <div class="section-desc">Schreiben Sie den Satz mit dem angegebenen Wort um. Achten Sie auf die Wortstellung!</div>
-    <br><span class="tag gram">Grammatik</span>
+<!-- Ü3: SÄTZE VERBINDEN (textarea) -->
+<div class="sec" id="s2">
+  <div class="sec-head">
+    <div class="sec-num">Übung 3</div>
+    <div class="sec-title">Sätze verbinden</div>
+    <div class="sec-desc">Verbinden Sie die zwei Sätze mit dem Wort in der Klammer. Achten Sie auf die Wortstellung!</div>
+    <span class="chip cg">Grammatik</span>
   </div>
-  <div id="rewrite3container"></div>
-  <div class="section-score-box" id="score2box"></div>
-  <button class="btn btn-next" onclick="showSection(3)" style="margin: 0 16px 16px; width: calc(100% - 32px);">Weiter zu Übung 4 →</button>
+  <div id="rw3"></div>
+  <div class="sb" id="sb2"></div>
+  <button class="btn bn" onclick="goSec(3)">Weiter → Übung 4</button>
 </div>
 
-<!-- ==============================
-     ÜBUNG 4: je...desto / je...umso
-============================== -->
-<div class="section" id="section3">
-  <div class="section-header">
-    <div class="section-num">Übung 4</div>
-    <div class="section-title">je … desto / je … umso</div>
-    <div class="section-desc">Verbinden Sie die Sätze mit der richtigen Konjunktion.</div>
-    <br><span class="tag gram">Grammatik</span>
+<!-- Ü4: JE … DESTO/UMSO (MCQ) -->
+<div class="sec" id="s3">
+  <div class="sec-head">
+    <div class="sec-num">Übung 4</div>
+    <div class="sec-title">je … desto / je … umso</div>
+    <div class="sec-desc">Welche Ergänzung passt zum Satz?</div>
+    <span class="chip cg">Grammatik</span>
   </div>
-  <div id="mcq4container"></div>
-  <div class="section-score-box" id="score3box"></div>
-  <button class="btn btn-next" onclick="showSection(4)" style="margin: 0 16px 16px; width: calc(100% - 32px);">Weiter zu Übung 5 →</button>
+  <div id="mc4"></div>
+  <div class="sb" id="sb3"></div>
+  <button class="btn bn" onclick="goSec(4)">Weiter → Übung 5</button>
 </div>
 
-<!-- ==============================
-     ÜBUNG 5: Kommunikation – Was passt?
-============================== -->
-<div class="section" id="section4">
-  <div class="section-header">
-    <div class="section-num">Übung 5</div>
-    <div class="section-title">Kommunikation: Was passt?</div>
-    <div class="section-desc">Wählen Sie die passende Reaktion auf die Aussage.</div>
-    <br><span class="tag kom">Kommunikation</span>
+<!-- Ü5: KOMMUNIKATION (MCQ) -->
+<div class="sec" id="s4">
+  <div class="sec-head">
+    <div class="sec-num">Übung 5</div>
+    <div class="sec-title">Kommunikation: Was sagt man?</div>
+    <div class="sec-desc">Welcher Satz passt zur Situation?</div>
+    <span class="chip ck">Kommunikation</span>
   </div>
-  <div id="mcq5container"></div>
-  <div class="section-score-box" id="score4box"></div>
-  <button class="btn btn-next" onclick="showSection(5)" style="margin: 0 16px 16px; width: calc(100% - 32px);">Weiter zu Übung 6 →</button>
+  <div id="mc5"></div>
+  <div class="sb" id="sb4"></div>
+  <button class="btn bn" onclick="goSec(5)">Weiter → Übung 6</button>
 </div>
 
-<!-- ==============================
-     ÜBUNG 6: Nomen aus Verben
-============================== -->
-<div class="section" id="section5">
-  <div class="section-header">
-    <div class="section-num">Übung 6</div>
-    <div class="section-title">Wortbildung: Nomen aus Verben</div>
-    <div class="section-desc">Schreiben Sie das Nomen zum Verb (das + Infinitiv).</div>
-    <br><span class="tag gram">Grammatik</span>
+<!-- Ü6: NOMEN AUS VERBEN (input) -->
+<div class="sec" id="s5">
+  <div class="sec-head">
+    <div class="sec-num">Übung 6</div>
+    <div class="sec-title">Nomen aus Verben</div>
+    <div class="sec-desc">Ergänzen Sie das Nomen (das + Infinitiv) im Satz.</div>
+    <span class="chip cg">Grammatik</span>
   </div>
-  <div id="nomen6container"></div>
-  <div class="section-score-box" id="score5box"></div>
-  
-  <div class="submit-all-wrap">
-    <button class="btn-submit-all" onclick="showFinalResult()">🏆 Gesamtergebnis anzeigen</button>
+  <div id="n6"></div>
+  <div class="sb" id="sb5"></div>
+  <div class="fw">
+    <button class="fbtn" onclick="showRes()">🏅 Gesamtergebnis anzeigen</button>
   </div>
 </div>
 
-<!-- FINAL MODAL -->
-<div class="modal-overlay" id="finalModal">
+<!-- MODAL -->
+<div class="overlay" id="ov">
   <div class="modal">
-    <div class="modal-emoji" id="modalEmoji">🏆</div>
-    <div class="modal-title">Geschafft!</div>
-    <div class="modal-score" id="modalScore">0 / 0</div>
-    <div class="modal-msg" id="modalMsg">Sehr gut gemacht!</div>
-    <button class="modal-btn" onclick="closeModal()">Weiter üben →</button>
+    <div class="me" id="mE">🎯</div>
+    <div class="mt">Ihr Ergebnis</div>
+    <div class="mn" id="mN"></div>
+    <div class="ms" id="mS">0/0</div>
+    <div class="mm" id="mM"></div>
+    <button class="mbtn" onclick="document.getElementById('ov').classList.remove('show')">Schließen ✕</button>
   </div>
 </div>
 
 <script>
-// ==============================
-// STATE
-// ==============================
-let totalPoints = 0;
-let sectionPoints = [0, 0, 0, 0, 0, 0];
-let sectionMax = [9, 8, 4, 5, 7, 6];
-let sectionDone = [false, false, false, false, false, false];
-let selectedWord = null;
+// ── STATE ──
+let selW=null;
+const pts=[0,0,0,0,0,0];
+const maxP=[9,6,5,5,6,5];
+const done=[false,false,false,false,false,false];
+const mSel={};
 
-// ==============================
-// ÜBUNG 1 DATA & LOGIC
-// ==============================
-const fill0data = [
-  { before: "Man kann durch Mitsingen die", blank: "Aussprache", after: "verbessern." },
-  { before: "Die", blank: "Entwicklung", after: "des Teams ist positiv, seit Amadou Trainer ist." },
-  { before: "Wir", blank: "diskutieren", after: "im Kurs über verschiedene Themen." },
-  { before: "Gibst du nicht", blank: "Nachhilfe", after: "in Französisch?" },
-  { before: "Wörter zum Thema Sport kann ich mir leicht", blank: "merken", after: "." },
-  { before: "Im Internet kann man sich Texte", blank: "vorlesen", after: "lassen und damit die Aussprache üben." },
-  { before: "In meiner Muttersprache sind die Buchstaben anders. Wir haben ein anderes", blank: "Alphabet", after: "." },
-  { before: "Neue Wörter kann man im Wörterbuch", blank: "nachschlagen", after: "." },
-  { before: "Ich musste nach Hause", blank: "zurückfahren", after: ", ich hatte meinen Geldbeutel vergessen." }
+// ── TIMER 20min ──
+let secs=20*60;
+const tEl=document.getElementById('timerT');
+const tBox=document.getElementById('timerBox');
+function pad(n){return String(n).padStart(2,'0');}
+setInterval(()=>{
+  if(secs<=0){tEl.textContent='00:00';tBox.className='timer danger';return;}
+  secs--;
+  tEl.textContent=pad(Math.floor(secs/60))+':'+pad(secs%60);
+  tBox.className='timer'+(secs<=120?' danger':secs<=300?' warn':'');
+},1000);
+
+// ── NAV ──
+function goSec(i){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('s'+i).classList.add('active');
+  document.getElementById('tab'+i).classList.add('active');
+  document.getElementById('pLbl').textContent='Übung '+(i+1)+' von 6';
+  window.scrollTo(0,0);
+}
+function updProg(){
+  const t=pts.reduce((a,b)=>a+b,0);
+  document.getElementById('pSc').textContent=t+' Punkte';
+  document.getElementById('pFill').style.width=(done.filter(Boolean).length/6*100)+'%';
+}
+function showSB(i,g,m){
+  const b=document.getElementById('sb'+i);
+  const p=Math.round(g/m*100);
+  const e=p>=80?'🎉':p>=50?'👍':'💪';
+  b.innerHTML='<div class="sbe">'+e+'</div><div class="sbig">'+g+'/'+m+'</div><div class="ssub">'+p+'% richtig</div>';
+  b.classList.add('show');
+}
+
+// ─────────────────────────────
+// Ü1 – TAP-TO-FILL
+// ─────────────────────────────
+// Neue Sätze – nicht im Lehrbuch
+const f0d=[
+  {pre:'Maria hat große',     b:'Schwierigkeiten',  suf:'mit der deutschen Aussprache.'},
+  {pre:'In einem',            b:'Intensivkurs',     suf:'lernt man in kurzer Zeit besonders viel.'},
+  {pre:'Mein Nachbar spricht im',b:'Dialekt',       suf:' und ich verstehe ihn manchmal kaum.'},
+  {pre:'',                    b:'anfangs',          suf:'hat er sich gar nicht getraut zu sprechen.'},
+  {pre:'Ich',                 b:'abschreiben',      suf:'gerne kurze Texte, um den Schreibstil zu lernen.'},
+  {pre:'',                    b:'seitdem',          suf:'er täglich übt, ist sein Deutsch viel flüssiger geworden.'},
+  {pre:'Unser Kurs hat viele',b:'interkulturell',   suf:'e Momente – wir kommen aus 10 Ländern.'},
+  {pre:'In ihrer Schrift sehen die',b:'Buchstaben', suf:'ganz anders aus als im Deutschen.'},
+  {pre:'Lesen Sie bitte den', b:'folgend',          suf:'en Text und beantworten Sie die Fragen.'}
 ];
-
-function renderFill0() {
-  const cont = document.getElementById('fillSentences0');
-  cont.innerHTML = '';
-  fill0data.forEach((item, i) => {
-    const p = document.createElement('p');
-    p.style.cssText = 'margin-bottom:14px; font-size:15px; line-height:1.8; font-weight:600;';
-    p.innerHTML = `<span style="color:var(--gray);font-size:12px;font-weight:800;">${i+1}. </span>${item.before} <span class="blank-inline" id="blank0_${i}" data-index="${i}" onclick="fillBlank(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> ${item.after}`;
-    cont.appendChild(p);
+function rndrF0(){
+  const c=document.getElementById('f0');
+  c.innerHTML='';
+  f0d.forEach((it,i)=>{
+    const p=document.createElement('p');
+    p.style.cssText='margin-bottom:14px;font-size:15px;line-height:2;font-weight:500;';
+    p.innerHTML='<span style="color:var(--slate2);font-size:11px;font-weight:700;">'+(i+1)+'. </span>'
+      +it.pre+' <span class="blank" id="bl'+i+'" data-i="'+i+'" onclick="fillB(this)">\u00a0\u00a0\u00a0\u00a0</span> '+it.suf;
+    c.appendChild(p);
   });
 }
-
-function selectWord(el) {
-  if (el.classList.contains('used')) return;
-  document.querySelectorAll('.drag-word').forEach(w => w.classList.remove('selected-word'));
-  if (selectedWord === el) { selectedWord = null; return; }
-  selectedWord = el;
-  el.classList.add('selected-word');
+function pw(el){
+  if(el.classList.contains('used'))return;
+  document.querySelectorAll('.wc').forEach(w=>w.classList.remove('sel'));
+  if(selW===el){selW=null;return;}
+  selW=el;el.classList.add('sel');
 }
-
-function fillBlank(blank) {
-  if (!selectedWord) return;
-  const i = blank.dataset.index;
-  const prev = blank.dataset.filled;
-  if (prev) {
-    document.querySelectorAll('.drag-word').forEach(w => {
-      if (w.dataset.word === prev) { w.classList.remove('used'); }
-    });
-  }
-  blank.textContent = selectedWord.dataset.word;
-  blank.dataset.filled = selectedWord.dataset.word;
-  blank.classList.add('filled');
-  selectedWord.classList.add('used');
-  selectedWord.classList.remove('selected-word');
-  selectedWord = null;
+function fillB(bl){
+  if(!selW)return;
+  const prev=bl.dataset.f;
+  if(prev){document.querySelectorAll('.wc').forEach(w=>{if(w.dataset.w===prev)w.classList.remove('used');});}
+  bl.textContent=selW.dataset.w;bl.dataset.f=selW.dataset.w;bl.classList.add('filled');
+  selW.classList.add('used');selW.classList.remove('sel');selW=null;
 }
-
-function checkFill0() {
-  let correct = 0;
-  fill0data.forEach((item, i) => {
-    const blank = document.getElementById(`blank0_${i}`);
-    const filled = blank.dataset.filled || '';
-    if (filled.trim().toLowerCase() === item.blank.toLowerCase()) {
-      blank.classList.add('correct-blank');
-      blank.classList.remove('wrong-blank');
-      correct++;
-    } else {
-      blank.classList.add('wrong-blank');
-      blank.classList.remove('correct-blank');
-      if (!blank.dataset.filled) {
-        blank.textContent = '?';
-      }
-    }
+function chkF0(){
+  let ok=0;
+  f0d.forEach((it,i)=>{
+    const bl=document.getElementById('bl'+i);
+    const val=(bl.dataset.f||'').toLowerCase().replace(/e$/,'');
+    const exp=it.b.toLowerCase().replace(/e$/,'');
+    if(val===exp){bl.classList.add('bok');bl.classList.remove('berr');ok++;}
+    else{bl.classList.add('berr');bl.classList.remove('bok');if(!bl.dataset.f)bl.textContent='?';}
   });
-  sectionPoints[0] = correct;
-  sectionDone[0] = true;
+  pts[0]=ok;done[0]=true;
   document.getElementById('tab0').classList.add('done');
-  showSectionScore(0, correct, 9, `${correct} von 9 Wörtern richtig`);
-  updateTotal();
+  showSB(0,ok,9);updProg();
 }
-
-function resetFill0() {
-  document.querySelectorAll('.drag-word').forEach(w => {
-    w.classList.remove('used', 'selected-word');
-  });
-  selectedWord = null;
-  fill0data.forEach((_, i) => {
-    const blank = document.getElementById(`blank0_${i}`);
-    blank.textContent = '\u00a0\u00a0\u00a0\u00a0\u00a0';
-    blank.classList.remove('filled', 'correct-blank', 'wrong-blank');
-    delete blank.dataset.filled;
+function rstF0(){
+  document.querySelectorAll('.wc').forEach(w=>w.classList.remove('used','sel'));
+  selW=null;
+  f0d.forEach((_,i)=>{
+    const bl=document.getElementById('bl'+i);
+    bl.textContent='\u00a0\u00a0\u00a0\u00a0';bl.classList.remove('filled','bok','berr');delete bl.dataset.f;
   });
 }
 
-// ==============================
-// ÜBUNG 2: Verben mit Vorsilben (MCQ)
-// ==============================
-const mcq1data = [
-  {
-    q: "Timur musste nach Hause ___laufen, weil er etwas vergessen hatte.",
-    choices: ["her-", "zurück-", "los-", "weg-"],
-    answer: 1,
-    explanation: "zurücklaufen = nach Hause gehen/laufen (Rückkehr)"
-  },
-  {
-    q: "Der Zug sollte eigentlich um zehn Minuten vor zwölf ___fahren.",
-    choices: ["zurück-", "mit-", "los-", "raus-"],
-    answer: 2,
-    explanation: "losfahren = abfahren, starten"
-  },
-  {
-    q: "Eric will am Sonntag ins Schwimmbad. Möchtest du ___gehen?",
-    choices: ["her-", "weg-", "mit-", "zurück-"],
-    answer: 2,
-    explanation: "mitgehen = zusammen mit jemand gehen"
-  },
-  {
-    q: "Mein Hund läuft manchmal ___, und ich muss ihn dann suchen.",
-    choices: ["mit-", "weg-", "her-", "los-"],
-    answer: 1,
-    explanation: "weglaufen = davonlaufen, fliehen"
-  },
-  {
-    q: "Entschuldigung, Sie stehen auf einem Firmenparkplatz. Würden Sie bitte ___fahren?",
-    choices: ["her-", "zurück-", "weg-", "los-"],
-    answer: 2,
-    explanation: "wegfahren = den Platz verlassen"
-  },
-  {
-    q: "Banna, bitte bring den Müll ___! Dort ist ein Mülleimer.",
-    choices: ["mit-", "weg-", "zurück-", "her-"],
-    answer: 1,
-    explanation: "wegbringen = etwas an einen anderen Ort tragen"
-  },
-  {
-    q: "Oh nein, ich habe mein Handy zu Hause vergessen. – Sollen wir ___fahren?",
-    choices: ["los-", "weg-", "zurück-", "her-"],
-    answer: 2,
-    explanation: "zurückfahren = zum Ausgangspunkt fahren"
-  },
-  {
-    q: "David konnte am Anfang kein ü und kein ch ___sprechen.",
-    choices: ["vor-", "aus-", "mit-", "nach-"],
-    answer: 1,
-    explanation: "aussprechen = Laute/Wörter artikulieren"
-  }
+// ─────────────────────────────
+// MCQ DATA
+// ─────────────────────────────
+// Ü2: Verben Bedeutung – neue Kontexte
+const d2=[
+  {q:'„Könntest du den Text bitte <u>vorlesen</u>?" – Was bedeutet das?',
+   ch:['etwas laut lesen, damit andere zuhören','einen Text abschreiben','ein Wort übersetzen','den Text auswendig lernen'],a:0,ex:'vorlesen = laut lesen für andere Menschen'},
+  {q:'„Der Bus ist schon <u>losgefahren</u>." – Was ist passiert?',
+   ch:['Der Bus ist angekommen.','Der Bus wartet noch.','Der Bus hat seine Fahrt begonnen.','Der Bus ist kaputt.'],a:2,ex:'losfahren = abfahren, die Fahrt beginnen'},
+  {q:'„Er hat sich <u>hingesetzt</u> und angefangen zu lernen." – Was bedeutet das?',
+   ch:['Er ist aufgestanden.','Er hat sich auf einen Platz gesetzt.','Er ist nach draußen gegangen.','Er hat das Buch weggelegt.'],a:1,ex:'sich hinsetzen = sich auf einen Sitz niederlassen'},
+  {q:'„Schwierige Wörter kann man im Wörterbuch <u>nachschlagen</u>." – Was bedeutet das?',
+   ch:['Wörter immer wieder schreiben','Wörter in einem Lexikon/Online suchen','Wörter mit Freunden üben','Wörter laut aussprechen'],a:1,ex:'nachschlagen = in einem Nachschlagewerk suchen'},
+  {q:'„Das Team hat <u>zusammengearbeitet</u>." – Was bedeutet das?',
+   ch:['Das Team hat getrennt gearbeitet.','Das Team hat gefeiert.','Alle haben gemeinsam und kooperativ gearbeitet.','Das Team hat diskutiert.'],a:2,ex:'zusammenarbeiten = kooperieren, gemeinsam arbeiten'},
+  {q:'„David konnte das Wort <u>aussprechen</u>." – Was bedeutet das?',
+   ch:['David hat das Wort aufgeschrieben.','David hat das Wort artikuliert/laut gesagt.','David hat das Wort nicht verstanden.','David hat das Wort gesucht.'],a:1,ex:'aussprechen = ein Wort artikulieren, laut sagen'}
 ];
 
-function renderMCQ(data, containerId, sectionIdx) {
-  const cont = document.getElementById(containerId);
-  cont.innerHTML = '';
-  data.forEach((item, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.id = `mcqCard_${sectionIdx}_${i}`;
-    let choicesHTML = item.choices.map((c, ci) =>
-      `<button class="choice-btn" id="mcqBtn_${sectionIdx}_${i}_${ci}" onclick="selectMCQ(${sectionIdx},${i},${ci})">${c}</button>`
+// Ü4: je…desto/umso – neue Beispiele
+const d4=[
+  {q:'Je mehr man mit Muttersprachlern spricht, ___',
+   ch:['… desto weniger versteht man.','… desto schneller verbessert sich die Aussprache.','… umso schwieriger wird die Sprache.','… weil man viel übt.'],a:1,ex:'je mehr üben → desto schneller Fortschritt'},
+  {q:'Je intensiver das Training ist, ___',
+   ch:['… desto mehr erholt sich die Mannschaft.','… desto stärker wird das Team.','… weil der Trainer gut ist.','… deswegen gewinnen sie oft.'],a:1,ex:'je intensiver … desto stärker = parallele Steigerung'},
+  {q:'___ länger man in Deutschland lebt, desto besser versteht man den Dialekt.',
+   ch:['Weil','Daher','Je','Umso'],a:2,ex:'Je + Komparativ, desto + Komparativ – Standardstruktur'},
+  {q:'Je öfter man einen Text laut liest, ___',
+   ch:['… desto schlechter wird die Aussprache.','… umso klarer wird die Aussprache.','… daher macht man mehr Fehler.','… weil man übt.'],a:1,ex:'je öfter lesen → umso klarer sprechen'},
+  {q:'Je mehr Geduld man beim Deutschlernen hat, ___',
+   ch:['… desto langsamer lernt man.','… umso schneller macht man Fortschritte.','… deswegen braucht man keinen Kurs.','… weil Geduld wichtig ist.'],a:1,ex:'je mehr Geduld → umso schneller Fortschritte'}
+];
+
+// Ü5: Kommunikation – Situationen (neue Szenarien)
+const d5=[
+  {q:'🗣 Sie verstehen ein Wort im Text nicht. Wie fragen Sie höflich?',
+   ch:['Ich danke Ihnen sehr!','Was ist der Unterschied zwischen „merken" und „sich erinnern"?','Das finde ich sehr interessant.','Wir könnten das zusammen machen.'],a:1,ex:'Um Erklärung bitten: „Was ist der Unterschied zwischen … und …?"'},
+  {q:'🗣 Ihr Deutschlehrer hat Ihnen sehr geholfen. Was sagen Sie?',
+   ch:['Auf Deutsch sagt man dazu …','Ich kann das nicht so gut verstehen.','Ich möchte mich bei Ihnen herzlich für Ihre Hilfe bedanken.','Wäre es nicht besser, wenn …?'],a:2,ex:'Sich bedanken: „Ich möchte mich bei Ihnen herzlich für … bedanken."'},
+  {q:'🗣 Ihr Freund schlägt vor: „Lass uns zusammen Vokabeln lernen." Sie finden das eine gute Idee. Was antworten Sie?',
+   ch:['Also, ich weiß nicht …','Ja, gute Idee! In der Gruppe lernt man besser.','Wäre es nicht besser, alleine zu lernen?','Ich habe leider keine Zeit.'],a:1,ex:'Einem Vorschlag zustimmen: direkt und positiv reagieren'},
+  {q:'🗣 Sie möchten erklären, warum Deutsch manchmal schwer ist. Was sagen Sie?',
+   ch:['Vielen Dank für alles!','Ich finde es nicht leicht, weil es so viele Ausnahmen gibt.','Wie nennt ihr das auf Deutsch?','Das macht wirklich Spaß!'],a:1,ex:'Gefühle ausdrücken: „Ich finde es nicht leicht, weil …"'},
+  {q:'🗣 Jemand fragt: „Warum lernst du so viele Wörter auswendig?" Sie antworten:',
+   ch:['Ich gehe heute nach Hause.','Je mehr Wörter ich kenne, desto leichter kann ich kommunizieren.','Ich schreibe lieber Sätze ab.','Daher ist mein Dialekt besser.'],a:1,ex:'je…desto in der Kommunikation anwenden'},
+  {q:'🗣 Ihr Kollege versteht den Dialekt des Chefs nicht. Er klagt: „Ich verstehe ihn kaum." Was antworten Sie?',
+   ch:['Ich danke dir sehr.','Klar, Dialekte können sogar für Deutsche schwer sein – üb weiter!','Je mehr du schläfst, desto besser.','Wäre es nicht besser, früher aufzustehen?'],a:1,ex:'Verständnis zeigen + ermutigen'}
+];
+
+// ─────────────────────────────
+// MCQ RENDERER
+// ─────────────────────────────
+function rndrMCQ(data,cId,secIdx){
+  const c=document.getElementById(cId);c.innerHTML='';
+  data.forEach((it,i)=>{
+    const card=document.createElement('div');card.className='card';
+    const chs=it.ch.map((ch,ci)=>
+      '<button class="choice" id="c_'+secIdx+'_'+i+'_'+ci+'" onclick="pickMCQ('+secIdx+','+i+','+ci+')">'+ch+'</button>'
     ).join('');
-    card.innerHTML = `
-      <div class="question-num">Frage ${i+1} von ${data.length}</div>
-      <div class="question-text">${item.q}</div>
-      <div class="choices">${choicesHTML}</div>
-      <div class="feedback" id="mcqFb_${sectionIdx}_${i}">
-        <span class="feedback-icon"></span><span></span>
-      </div>
-    `;
-    cont.appendChild(card);
+    card.innerHTML='<div class="qn">Frage '+(i+1)+' / '+data.length+'</div>'
+      +'<div class="qt">'+it.q+'</div>'
+      +'<div class="choices">'+chs+'</div>'
+      +'<div class="fb" id="fb_'+secIdx+'_'+i+'"><span class="fbi"></span><span></span></div>';
+    c.appendChild(card);
   });
-  // Check button
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-check';
-  btn.textContent = 'Antworten prüfen ✓';
-  btn.style.cssText = 'margin: 0 0 12px 0;';
-  btn.onclick = () => checkMCQ(data, sectionIdx, btn);
-  cont.appendChild(btn);
+  const btn=document.createElement('button');
+  btn.className='btn bp';btn.style.marginBottom='12px';btn.textContent='Antworten prüfen ✓';
+  btn.onclick=()=>chkMCQ(data,secIdx,btn);
+  c.appendChild(btn);
 }
-
-const mcqSelections = {};
-
-function selectMCQ(sec, qi, ci) {
-  const key = `${sec}_${qi}`;
-  mcqSelections[key] = ci;
-  const data = sec === 2 ? mcq1data : sec === 4 ? mcq4data : mcq5data;
-  data[qi].choices.forEach((_, idx) => {
-    const btn = document.getElementById(`mcqBtn_${sec}_${qi}_${idx}`);
-    btn.classList.toggle('selected', idx === ci);
+function pickMCQ(sec,qi,ci){
+  const key=sec+'_'+qi;mSel[key]=ci;
+  const data=sec===2?d2:sec===4?d4:d5;
+  data[qi].ch.forEach((_,idx)=>{
+    document.getElementById('c_'+sec+'_'+qi+'_'+idx).classList.toggle('csel',idx===ci);
   });
 }
-
-function checkMCQ(data, sec, btn) {
-  let correct = 0;
-  data.forEach((item, i) => {
-    const key = `${sec}_${i}`;
-    const sel = mcqSelections[key];
-    const fb = document.getElementById(`mcqFb_${sec}_${i}`);
-    data[i].choices.forEach((_, ci) => {
-      const b = document.getElementById(`mcqBtn_${sec}_${i}_${ci}`);
-      b.disabled = true;
-      b.classList.remove('selected');
-    });
-    if (sel === item.answer) {
-      document.getElementById(`mcqBtn_${sec}_${i}_${sel}`).classList.add('correct');
-      fb.className = 'feedback show ok';
-      fb.innerHTML = `<span class="feedback-icon">✓</span><span>Richtig! ${item.explanation}</span>`;
-      correct++;
-    } else {
-      if (sel !== undefined) document.getElementById(`mcqBtn_${sec}_${i}_${sel}`).classList.add('wrong');
-      document.getElementById(`mcqBtn_${sec}_${i}_${item.answer}`).classList.add('correct');
-      fb.className = 'feedback show err';
-      fb.innerHTML = `<span class="feedback-icon">✗</span><span>Falsch. Richtig: <strong>${data[i].choices[item.answer]}</strong>. ${item.explanation}</span>`;
+function chkMCQ(data,sec,btn){
+  let ok=0;
+  data.forEach((it,i)=>{
+    const sel=mSel[sec+'_'+i];
+    it.ch.forEach((_,ci)=>{const b=document.getElementById('c_'+sec+'_'+i+'_'+ci);b.disabled=true;b.classList.remove('csel');});
+    const fb=document.getElementById('fb_'+sec+'_'+i);
+    if(sel===it.a){
+      document.getElementById('c_'+sec+'_'+i+'_'+sel).classList.add('cok');
+      fb.className='fb show fok';fb.innerHTML='<span class="fbi">✓</span><span>'+it.ex+'</span>';ok++;
+    }else{
+      if(sel!==undefined)document.getElementById('c_'+sec+'_'+i+'_'+sel).classList.add('cerr');
+      document.getElementById('c_'+sec+'_'+i+'_'+it.a).classList.add('cok');
+      fb.className='fb show ferr';fb.innerHTML='<span class="fbi">✗</span><span>Richtig: <strong>'+it.ch[it.a]+'</strong>. '+it.ex+'</span>';
     }
   });
-  btn.disabled = true;
-  sectionPoints[sec-1] = correct;
-  sectionDone[sec-1] = true;
-  document.getElementById(`tab${sec-1}`).classList.add('done');
-  showSectionScore(sec-1, correct, data.length, `${correct} von ${data.length} Antworten richtig`);
-  updateTotal();
+  btn.disabled=true;
+  const pIdx={2:1,4:3,5:4}[sec];
+  pts[pIdx]=ok;done[pIdx]=true;
+  document.getElementById('tab'+pIdx).classList.add('done');
+  showSB(pIdx,ok,data.length);updProg();
 }
 
-// ==============================
-// ÜBUNG 3: Sätze umschreiben
-// ==============================
-const rewrite3data = [
-  {
-    s1: "Tim muss zurücklaufen.",
-    s2: "Er hat etwas vergessen.",
-    connector: "deswegen",
-    answer: ["Tim hat etwas vergessen. Deswegen muss er zurücklaufen.", "Er hat etwas vergessen. Deswegen muss Tim zurücklaufen."],
-    hint: "Grund → Folge. Nach 'deswegen': Verb an 2. Stelle!"
-  },
-  {
-    s1: "Erhan hat den Bus verpasst.",
-    s2: "Sie konnten nicht zusammen fahren.",
-    connector: "weil",
-    answer: ["Sie konnten nicht zusammen fahren, weil Erhan den Bus verpasst hat.", "Sie konnten nicht zusammenfahren, weil Erhan den Bus verpasst hat."],
-    hint: "Folge + weil + Grund. Verb am Ende!"
-  },
-  {
-    s1: "Simon musste heute zu Fuß gehen.",
-    s2: "Er kam zu spät zur Arbeit.",
-    connector: "darum",
-    answer: ["Simon musste heute zu Fuß gehen. Darum kam er zu spät zur Arbeit.", "Er musste zu Fuß gehen. Darum kam Simon zu spät zur Arbeit."],
-    hint: "Grund → Folge. Nach 'darum': Verb an 2. Stelle!"
-  },
-  {
-    s1: "Du schaust Serien auf Deutsch.",
-    s2: "Du verstehst schon viel.",
-    connector: "daher",
-    answer: ["Du schaust Serien auf Deutsch. Daher verstehst du schon viel.", "Du schaust Serien auf Deutsch, daher verstehst du schon viel."],
-    hint: "Grund → Folge. Nach 'daher': Verb an 2. Stelle!"
-  }
+// ─────────────────────────────
+// Ü3 – REWRITE (neue Sätze)
+// ─────────────────────────────
+const d3=[
+  {s:'Lea hat jeden Abend Vokabeln gelernt. Jetzt spricht sie sehr gut Deutsch.',
+   conn:'daher',model:'Lea hat jeden Abend Vokabeln gelernt. Daher spricht sie jetzt sehr gut Deutsch.',
+   chk:v=>v.toLowerCase().includes('daher')&&v.length>35},
+  {s:'Kevin hat den Kurs verpasst. Er weiß nicht, was die Hausaufgabe ist.',
+   conn:'deswegen',model:'Kevin hat den Kurs verpasst. Deswegen weiß er nicht, was die Hausaufgabe ist.',
+   chk:v=>v.toLowerCase().includes('deswegen')&&v.length>35},
+  {s:'Sara findet Deutsch interessant. Sie lernt jeden Tag eine Stunde.',
+   conn:'darum',model:'Sara findet Deutsch interessant. Darum lernt sie jeden Tag eine Stunde.',
+   chk:v=>v.toLowerCase().includes('darum')&&v.length>30},
+  {s:'Tom hat kein Deutsch verstanden. Er hat immer alles im Kopf übersetzt.',
+   conn:'weil',model:'Tom hat immer alles im Kopf übersetzt, weil er kein Deutsch verstanden hat.',
+   chk:v=>v.toLowerCase().includes('weil')&&v.length>35},
+  {s:'Jana hat ihren Reisepass vergessen. Sie musste nach Hause zurücklaufen.',
+   conn:'daher',model:'Jana hat ihren Reisepass vergessen. Daher musste sie nach Hause zurücklaufen.',
+   chk:v=>v.toLowerCase().includes('daher')&&v.length>35}
 ];
-
-function renderRewrite3() {
-  const cont = document.getElementById('rewrite3container');
-  cont.innerHTML = '';
-  rewrite3data.forEach((item, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="question-num">Aufgabe ${i+1} von ${rewrite3data.length}</div>
-      <div class="sentence-given">${item.s1} ${item.s2}</div>
-      <div style="margin-bottom:8px;">Schreiben Sie mit: <span class="sentence-connector">${item.connector}</span></div>
-      <textarea id="rewrite3_${i}" placeholder="Schreiben Sie hier..."></textarea>
-      <div class="feedback" id="rwFb3_${i}">
-        <span class="feedback-icon"></span><span></span>
-      </div>
-    `;
-    cont.appendChild(card);
+function rndrRW3(){
+  const c=document.getElementById('rw3');c.innerHTML='';
+  d3.forEach((it,i)=>{
+    const card=document.createElement('div');card.className='card';
+    card.innerHTML='<div class="qn">Aufgabe '+(i+1)+' / '+d3.length+'</div>'
+      +'<div class="ssrc">'+it.s+'</div>'
+      +'Schreiben Sie mit: <span class="conn">'+it.conn+'</span>'
+      +'<textarea id="rw'+i+'" placeholder="Ihren Satz hier …"></textarea>'
+      +'<div class="fb" id="rwfb'+i+'"><span class="fbi"></span><span></span></div>';
+    c.appendChild(card);
   });
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-check';
-  btn.textContent = 'Antworten prüfen ✓';
-  btn.style.cssText = 'margin: 0 0 12px 0;';
-  btn.onclick = () => checkRewrite3(btn);
-  cont.appendChild(btn);
+  const btn=document.createElement('button');btn.className='btn bp';btn.style.marginBottom='12px';
+  btn.textContent='Antworten prüfen ✓';btn.onclick=()=>chkRW3(btn);c.appendChild(btn);
 }
-
-function normalize(s) {
-  return s.toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?]/g, '').trim();
-}
-
-function checkRewrite3(btn) {
-  let correct = 0;
-  rewrite3data.forEach((item, i) => {
-    const ta = document.getElementById(`rewrite3_${i}`);
-    const val = normalize(ta.value);
-    const fb = document.getElementById(`rwFb3_${i}`);
-    const isOk = item.answer.some(a => {
-      const norm = normalize(a);
-      return val === norm || val.includes(normalize(item.connector)) && val.length > 20;
-    });
-    // More lenient: check if connector is used correctly
-    const connLower = item.connector.toLowerCase();
-    const hasConnector = val.includes(connLower);
-    const longEnough = val.length > 25;
-    if (hasConnector && longEnough) {
-      ta.className = 'correct';
-      fb.className = 'feedback show ok';
-      fb.innerHTML = `<span class="feedback-icon">✓</span><span>Gut! Musterlösung: <em>${item.answer[0]}</em></span>`;
-      correct++;
-    } else {
-      ta.className = 'wrong';
-      fb.className = 'feedback show err';
-      fb.innerHTML = `<span class="feedback-icon">✗</span><span>${item.hint}<br>Lösung: <em>${item.answer[0]}</em></span>`;
+function chkRW3(btn){
+  let ok=0;
+  d3.forEach((it,i)=>{
+    const ta=document.getElementById('rw'+i);
+    const fb=document.getElementById('rwfb'+i);
+    if(it.chk(ta.value)){
+      ta.className='tok';ok++;
+      fb.className='fb show fok';fb.innerHTML='<span class="fbi">✓</span><span>Gut! Muster: <em>'+it.model+'</em></span>';
+    }else{
+      ta.className='terr';
+      fb.className='fb show ferr';fb.innerHTML='<span class="fbi">✗</span><span>Tipp: Verb nach „'+it.conn+'" an 2. Stelle!<br>Lösung: <em>'+it.model+'</em></span>';
     }
   });
-  btn.disabled = true;
-  sectionPoints[2] = correct;
-  sectionDone[2] = true;
+  btn.disabled=true;pts[2]=ok;done[2]=true;
   document.getElementById('tab2').classList.add('done');
-  showSectionScore(2, correct, 4, `${correct} von 4 Sätzen richtig`);
-  updateTotal();
+  showSB(2,ok,d3.length);updProg();
 }
 
-// ==============================
-// ÜBUNG 4: je...desto / je...umso
-// ==============================
-const mcq4data = [
-  {
-    q: "Man lebt lange in einem Land. → Das Sprechen klappt gut.\n→ ___ länger man in einem Land lebt, ___ besser klappt das Sprechen.",
-    choices: ["Je … desto", "Je … umso", "Desto … je", "Umso … je"],
-    answer: 0,
-    explanation: "Je + Komparativ + ... , desto/umso + Komparativ + Verb"
-  },
-  {
-    q: "Man lernt viel Vokabeln. → Man spricht flüssiger Deutsch.\n→ ___ mehr Vokabeln man lernt, ___ flüssiger spricht man Deutsch.",
-    choices: ["Desto … je", "Je … desto", "Je … weil", "Weil … desto"],
-    answer: 1,
-    explanation: "Je ... desto: Komparativer Zusammenhang"
-  },
-  {
-    q: "Man übt oft die Aussprache. → Man spricht klarer.\n→ ___ öfter man die Aussprache übt, ___ klarer spricht man.",
-    choices: ["Daher … umso", "Je … umso", "Je … deswegen", "Weil … umso"],
-    answer: 1,
-    explanation: "je...umso ist gleichbedeutend mit je...desto"
-  },
-  {
-    q: "Das Training ist intensiv. → Die Mannschaft wird besser.\n→ ___ intensiver das Training ist, ___ besser wird die Mannschaft.",
-    choices: ["Je … darum", "Umso … desto", "Je … desto", "Weil … desto"],
-    answer: 2,
-    explanation: "je...desto: 2 Komparative"
-  },
-  {
-    q: "Man hat Geduld. → Man lernt schneller eine Sprache.\n→ ___ mehr Geduld man hat, ___ schneller lernt man eine Sprache.",
-    choices: ["Je … umso", "Desto … je", "Je … daher", "Weil … umso"],
-    answer: 0,
-    explanation: "je...umso = je...desto (beide korrekt)"
-  }
+// ─────────────────────────────
+// Ü6 – NOMEN AUS VERBEN (neue Sätze)
+// ─────────────────────────────
+const d6=[
+  {verb:'trainieren',nomen:'das Trainieren',sent:'___ jeden Tag ist der Schlüssel zum Erfolg, sagt Amadou.'},
+  {verb:'diskutieren',nomen:'das Diskutieren',sent:'Im Kurs macht ___ in der Gruppe besonders viel Spaß.'},
+  {verb:'nachschlagen',nomen:'das Nachschlagen',sent:'___ im Wörterbuch ist eine wichtige Lernstrategie.'},
+  {verb:'aussprechen',nomen:'das Aussprechen',sent:'___ von langen deutschen Wörtern ist eine reine Übungssache.'},
+  {verb:'zusammenarbeiten',nomen:'das Zusammenarbeiten',sent:'___ im Team stärkt das Selbstbewusstsein aller Mitglieder.'}
 ];
-
-// ==============================
-// ÜBUNG 5: Kommunikation
-// ==============================
-const mcq5data = [
-  {
-    q: "🗣 A: Hast du einen anderen Vorschlag?",
-    choices: [
-      "Wir könnten ein Picknick machen.",
-      "Zur Party bringe ich Cola mit.",
-      "Ich habe gelernt, Diskussionen zu führen.",
-      "Das dürfen wir nicht vergessen."
-    ],
-    answer: 0,
-    explanation: "Einen Vorschlag machen: 'Wir könnten...' ist die richtige Reaktion."
-  },
-  {
-    q: "🗣 A: Wir könnten doch ein Buffet draußen machen.",
-    choices: [
-      "Prima. Ich reserviere einen Tisch im Restaurant.",
-      "Ja. Dann ist wichtig, dass wir an die Teller denken.",
-      "Oh ja! Ich liebe Suppe.",
-      "Also, ich weiß nicht..."
-    ],
-    answer: 1,
-    explanation: "Zustimmung + konkreter Gedanke: 'Dann ist wichtig, dass...' passt gut."
-  },
-  {
-    q: "🗣 A: Was hältst du davon, wenn wir grillen?",
-    choices: [
-      "Oh ja! Ich liebe Suppe.",
-      "Klar, das bedeutet so etwas wie Fortschritt.",
-      "Also, ich weiß nicht …",
-      "Das dürfen wir nicht vergessen."
-    ],
-    answer: 2,
-    explanation: "'Also, ich weiß nicht...' drückt Unsicherheit/Skepsis aus – passende Reaktion auf Vorschlag."
-  },
-  {
-    q: "🗣 A: Meine Muttersprache ist ganz anders.",
-    choices: [
-      "Andererseits ist Französisch auch toll.",
-      "In meiner Sprache gibt es auch keine Großbuchstaben.",
-      "Ich finde es nicht leicht, Deutsch zu lernen.",
-      "Klar, das bedeutet so etwas wie Fortschritt."
-    ],
-    answer: 1,
-    explanation: "Vergleich mit eigener Sprache: 'In meiner Sprache...' ist die natürliche Reaktion."
-  },
-  {
-    q: "🗣 A: Kann mir jemand das Wort 'Entwicklung' erklären?",
-    choices: [
-      "Ich finde es nicht leicht, Deutsch zu lernen.",
-      "Andererseits ist Französisch auch toll.",
-      "Wäre es nicht besser, etwas in der Stadt zu machen?",
-      "Klar, das bedeutet so etwas wie Fortschritt."
-    ],
-    answer: 3,
-    explanation: "'Klar, das bedeutet so etwas wie...' – ein Wort erklären."
-  },
-  {
-    q: "🗣 A: Was hältst du davon, wenn wir an den See fahren?",
-    choices: [
-      "Ja, gern! Ich liebe es, in den Bergen zu wandern.",
-      "Wäre es nicht besser, etwas in der Stadt zu machen?",
-      "Ja, das dürfen wir nicht vergessen.",
-      "Prima. Ich reserviere einen Tisch."
-    ],
-    answer: 1,
-    explanation: "Alternative vorschlagen: 'Wäre es nicht besser...' ist ein höflicher Gegenvorschlag."
-  },
-  {
-    q: "🗣 A: Ich möchte mich bei Ihnen herzlich bedanken!",
-    choices: [
-      "Was hältst du davon?",
-      "Kein Problem! Gerne!",
-      "Ich finde es nicht leicht.",
-      "Wie nennt ihr das?"
-    ],
-    answer: 1,
-    explanation: "'Kein Problem! Gerne!' – typische Antwort auf Danke."
-  }
-];
-
-// ==============================
-// ÜBUNG 6: Nomen aus Verben
-// ==============================
-const nomen6data = [
-  { verb: "sprechen", nomen: "das Sprechen", example: "Das ___ ist sehr wichtig beim Sprachenlernen." },
-  { verb: "schreiben", nomen: "das Schreiben", example: "___ hilft, Wörter zu lernen." },
-  { verb: "lesen", nomen: "das Lesen", example: "___ von Büchern verbessert den Wortschatz." },
-  { verb: "lernen", nomen: "das Lernen", example: "___ fällt manchmal schwer, aber macht Spaß." },
-  { verb: "trainieren", nomen: "das Trainieren", example: "___ jeden Tag ist die Methode von Amadou." },
-  { verb: "spielen", nomen: "das Spielen", example: "___ verbessert die Teamarbeit." }
-];
-
-function renderNomen6() {
-  const cont = document.getElementById('nomen6container');
-  cont.innerHTML = '';
-  nomen6data.forEach((item, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="question-num">Aufgabe ${i+1} von ${nomen6data.length}</div>
-      <div class="question-text">Verb: <strong>${item.verb}</strong></div>
-      <div class="question-example">Beispiel: ${item.example}</div>
-      <div class="input-wrap">
-        <input type="text" id="nomen6_${i}" placeholder="das + Infinitiv..." autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-      <div class="feedback" id="nomenFb6_${i}">
-        <span class="feedback-icon"></span><span></span>
-      </div>
-    `;
-    cont.appendChild(card);
+function rndrN6(){
+  const c=document.getElementById('n6');c.innerHTML='';
+  d6.forEach((it,i)=>{
+    const card=document.createElement('div');card.className='card';
+    card.innerHTML='<div class="qn">Aufgabe '+(i+1)+' / '+d6.length+'</div>'
+      +'<div class="qt">Verb: <strong>'+it.verb+'</strong></div>'
+      +'<div class="qhint">'+it.sent+'</div>'
+      +'<input class="ans" type="text" id="n'+i+'" placeholder="das + Infinitiv …" autocomplete="off" spellcheck="false">'
+      +'<div class="fb" id="nfb'+i+'"><span class="fbi"></span><span></span></div>';
+    c.appendChild(card);
   });
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-check';
-  btn.textContent = 'Antworten prüfen ✓';
-  btn.style.cssText = 'margin: 0 0 12px 0;';
-  btn.onclick = () => checkNomen6(btn);
-  cont.appendChild(btn);
+  const btn=document.createElement('button');btn.className='btn bp';btn.style.marginBottom='12px';
+  btn.textContent='Antworten prüfen ✓';btn.onclick=()=>chkN6(btn);c.appendChild(btn);
 }
-
-function checkNomen6(btn) {
-  let correct = 0;
-  nomen6data.forEach((item, i) => {
-    const inp = document.getElementById(`nomen6_${i}`);
-    const val = inp.value.trim().toLowerCase();
-    const expected = item.nomen.toLowerCase();
-    const fb = document.getElementById(`nomenFb6_${i}`);
-    // Accept with or without article
-    const isOk = val === expected || val === item.verb.toLowerCase() || val === 'das ' + item.verb.toLowerCase();
-    if (isOk) {
-      inp.className = 'correct';
-      fb.className = 'feedback show ok';
-      fb.innerHTML = `<span class="feedback-icon">✓</span><span>Richtig! <strong>${item.nomen}</strong></span>`;
-      correct++;
-    } else {
-      inp.className = 'wrong';
-      fb.className = 'feedback show err';
-      fb.innerHTML = `<span class="feedback-icon">✗</span><span>Falsch. Richtig: <strong>${item.nomen}</strong></span>`;
-    }
+function chkN6(btn){
+  let ok=0;
+  d6.forEach((it,i)=>{
+    const inp=document.getElementById('n'+i);
+    const val=inp.value.trim().toLowerCase();
+    const fb=document.getElementById('nfb'+i);
+    const pass=val===it.nomen.toLowerCase()||val==='das '+it.verb.toLowerCase();
+    if(pass){inp.className='ans aok';ok++;fb.className='fb show fok';fb.innerHTML='<span class="fbi">✓</span><span><strong>'+it.nomen+'</strong> – richtig!</span>';}
+    else{inp.className='ans aerr';fb.className='fb show ferr';fb.innerHTML='<span class="fbi">✗</span><span>Richtig: <strong>'+it.nomen+'</strong></span>';}
   });
-  btn.disabled = true;
-  sectionPoints[5] = correct;
-  sectionDone[5] = true;
+  btn.disabled=true;pts[5]=ok;done[5]=true;
   document.getElementById('tab5').classList.add('done');
-  showSectionScore(5, correct, 6, `${correct} von 6 Nomen richtig`);
-  updateTotal();
+  showSB(5,ok,d6.length);updProg();
 }
 
-// ==============================
-// UTILS
-// ==============================
-function showSection(idx) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-  document.getElementById(`section${idx}`).classList.add('active');
-  document.getElementById(`tab${idx}`).classList.add('active');
-  updateProgressText(idx);
-  window.scrollTo(0, 0);
+// ─────────────────────────────
+// FINAL RESULT
+// ─────────────────────────────
+function showRes(){
+  const name=document.getElementById('sName').value.trim()||'Lernende/r';
+  const t=pts.reduce((a,b)=>a+b,0);
+  const m=maxP.reduce((a,b)=>a+b,0);
+  const p=Math.round(t/m*100);
+  document.getElementById('mE').textContent=p>=85?'🏆':p>=65?'🎉':p>=45?'👍':'💪';
+  document.getElementById('mN').textContent='📋 '+name;
+  document.getElementById('mS').textContent=t+' / '+m;
+  document.getElementById('mM').textContent=(p>=85?'Ausgezeichnet! Weiter so!':p>=65?'Sehr gut! Noch ein bisschen üben.':p>=45?'Gut! Üben Sie die schwachen Bereiche.':'Kein Problem – Übung macht den Meister!')+' ('+p+'%)';
+  document.getElementById('ov').classList.add('show');
 }
 
-function showSectionScore(idx, got, max, msg) {
-  const box = document.getElementById(`score${idx}box`);
-  const pct = Math.round(got/max*100);
-  let emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
-  box.innerHTML = `<div class="score-emoji">${emoji}</div><div class="score-big">${got}/${max}</div><div class="score-label">${msg} (${pct}%)</div>`;
-  box.classList.add('show');
-}
-
-function updateTotal() {
-  const total = sectionPoints.reduce((a, b) => a + b, 0);
-  const max = sectionMax.reduce((a, b) => a + b, 0);
-  totalPoints = total;
-  document.getElementById('totalScore').textContent = `${total} Punkte`;
-  document.getElementById('progressFill').style.width = `${(sectionDone.filter(Boolean).length / 6 * 100)}%`;
-}
-
-function updateProgressText(idx) {
-  document.getElementById('progressText').textContent = `Übung ${idx+1} von 6`;
-}
-
-function showFinalResult() {
-  const total = sectionPoints.reduce((a, b) => a + b, 0);
-  const max = sectionMax.reduce((a, b) => a + b, 0);
-  const pct = Math.round(total/max*100);
-  const modal = document.getElementById('finalModal');
-  const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : pct >= 40 ? '👍' : '💪';
-  const msg = pct >= 80 ? 'Ausgezeichnet! Sie haben sehr gut abgeschnitten!'
-    : pct >= 60 ? 'Gut gemacht! Weiter so!'
-    : pct >= 40 ? 'Nicht schlecht! Üben Sie noch einmal.'
-    : 'Keine Sorge – Übung macht den Meister!';
-  document.getElementById('modalEmoji').textContent = emoji;
-  document.getElementById('modalScore').textContent = `${total} / ${max}`;
-  document.getElementById('modalMsg').textContent = msg + ` (${pct}%)`;
-  modal.classList.add('show');
-}
-
-function closeModal() {
-  document.getElementById('finalModal').classList.remove('show');
-}
-
-// ==============================
+// ─────────────────────────────
 // INIT
-// ==============================
-window.onload = function() {
-  renderFill0();
-  renderMCQ(mcq1data, 'mcq1container', 2);
-  renderRewrite3();
-  renderMCQ(mcq4data, 'mcq4container', 4);
-  renderMCQ(mcq5data, 'mcq5container', 5);
-  renderNomen6();
+// ─────────────────────────────
+window.onload=()=>{
+  rndrF0();
+  rndrMCQ(d2,'mc2',2);
+  rndrRW3();
+  rndrMCQ(d4,'mc4',4);
+  rndrMCQ(d5,'mc5',5);
+  rndrN6();
 };
 </script>
 </body>
