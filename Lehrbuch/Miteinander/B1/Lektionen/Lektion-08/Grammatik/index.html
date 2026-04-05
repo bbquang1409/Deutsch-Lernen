@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L08 Grammatik – Hoa: Der Glückspilz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --accent: #1a7f6e;
+    --accent-light: #e0f5f1;
+    --accent2: #2563a8;
+    --accent2-light: #ddeeff;
+    --yellow: #f5d000;
+    --yellow-light: #fffbe6;
+    --green: #22b573;
+    --green-light: #e6f9f2;
+    --red: #e84040;
+    --red-light: #ffeaea;
+    --dark: #1a2a2e;
+    --gray: #6b7280;
+    --bg: #f0faf8;
+    --card: #ffffff;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0f4c3a 0%, #1a7f6e 100%);
+    color: white;
+    padding: 20px 16px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 40%;
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 12px;
+  }
+  .header-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+  .header h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .header h1 span { color: var(--yellow); }
+  .header-sub {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 6px;
+  }
+
+  /* TABS NAV */
+  .tabs-wrap {
+    overflow-x: auto;
+    background: white;
+    padding: 0 12px;
+    border-bottom: 2px solid #e5f7f4;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tabs-wrap::-webkit-scrollbar { display: none; }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    min-width: max-content;
+    padding: 8px 0;
+  }
+  .tab-btn {
+    border: none;
+    background: #f0faf8;
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--gray);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { background: var(--accent); color: white; }
+
+  /* SECTIONS */
+  .section { display: none; padding: 16px; }
+  .section.active { display: block; }
+
+  /* GRAMMAR TABLE CARD */
+  .grammar-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--accent);
+    overflow-x: auto;
+  }
+  .grammar-card h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .grammar-card p {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 2px solid var(--accent);
+  }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f9fffe; }
+
+  .highlight { color: var(--accent); font-weight: 800; }
+  .highlight2 { color: var(--accent2); font-weight: 800; }
+
+  /* EXAMPLE BOX */
+  .example-box {
+    background: var(--yellow-light);
+    border: 2px solid var(--yellow);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .example-box strong { color: #7a4f00; }
+
+  /* EXERCISE CARD */
+  .ex-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .ex-num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .ex-question {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .ex-hint {
+    font-size: 12px;
+    color: var(--gray);
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s;
+    background: white;
+    color: var(--dark);
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"].correct { border-color: var(--green); background: var(--green-light); }
+  input[type="text"].wrong { border-color: var(--red); background: var(--red-light); }
+
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice-btn {
+    width: 100%;
+    text-align: left;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    color: var(--dark);
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+  .choice-btn.selected { border-color: var(--accent2); background: var(--accent2-light); color: var(--accent2); }
+  .choice-btn.correct { border-color: var(--green); background: var(--green-light); color: #166534; }
+  .choice-btn.wrong { border-color: var(--red); background: var(--red-light); color: #991b1b; }
+  .choice-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback.show { display: flex; }
+  .feedback.ok { background: var(--green-light); color: #166534; }
+  .feedback.err { background: var(--red-light); color: #991b1b; }
+
+  .btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    margin-top: 12px;
+  }
+  .btn-check { background: var(--accent); color: white; }
+  .btn-check:hover { background: #0f6357; transform: translateY(-1px); }
+  .btn-check:disabled { background: #ccc; color: #888; cursor: default; transform: none; }
+  .btn-next { background: var(--dark); color: white; }
+  .btn-reset { background: #f5f5f5; color: var(--gray); margin-top: 6px; }
+
+  .section-score-box {
+    background: linear-gradient(135deg, var(--accent) 0%, #0f6357 100%);
+    color: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+    display: none;
+  }
+  .section-score-box.show { display: block; }
+  .score-big { font-family: 'Nunito', sans-serif; font-size: 48px; font-weight: 900; line-height: 1; }
+  .score-label { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+  .score-emoji { font-size: 32px; margin-bottom: 8px; }
+
+  /* SENTENCE INLINE BLANKS */
+  .sent-line {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 2;
+    margin-bottom: 6px;
+  }
+  .blank-inp {
+    display: inline-block;
+    width: 130px;
+    border: none;
+    border-bottom: 3px solid var(--accent);
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark);
+    outline: none;
+    text-align: center;
+    padding: 0 4px;
+    margin: 0 4px;
+    vertical-align: bottom;
+    transition: border-color 0.2s;
+  }
+  .blank-inp:focus { border-bottom-color: var(--accent2); }
+  .blank-inp.correct { border-bottom-color: var(--green); color: var(--green); }
+  .blank-inp.wrong { border-bottom-color: var(--red); color: var(--red); }
+
+  /* MATCHING EXERCISE */
+  .match-col { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .match-item {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .match-item:hover:not(.used) { border-color: var(--accent); background: var(--accent-light); }
+  .match-item.selected { border-color: var(--accent); background: var(--accent); color: white; }
+  .match-item.used { opacity: 0.4; pointer-events: none; }
+  .match-pair { background: var(--green-light); border-color: var(--green); color: #166534; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-btn" href="../index.html">← Zurück</a>
+  <div class="header-label">Lektion 08 · Grammatik</div>
+  <h1>Hoa – <span>Der Glückspilz</span></h1>
+  <div class="header-sub">Adjektivdeklination · Komparativ &amp; Superlativ · Relativsatz</div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(0)" id="tab0">Nullartikel</button>
+    <button class="tab-btn" onclick="showTab(1)" id="tab1">Komparativ</button>
+    <button class="tab-btn" onclick="showTab(2)" id="tab2">Superlativ</button>
+    <button class="tab-btn" onclick="showTab(3)" id="tab3">Relativsatz</button>
+    <button class="tab-btn" onclick="showTab(4)" id="tab4">Übungen</button>
+  </div>
+</div>
+
+<!-- ===== TAB 0: Adjektivdeklination nach Nullartikel ===== -->
+<div class="section active" id="section0">
+  <div class="grammar-card">
+    <h2>Adjektivdeklination nach Nullartikel</h2>
+    <p>Wenn <strong>kein Artikel</strong> vor dem Adjektiv steht (Nullartikel), übernimmt das Adjektiv die Endung des bestimmten Artikels.</p>
+    <table>
+      <tr>
+        <th>Kasus</th>
+        <th>Maskulin</th>
+        <th>Neutrum</th>
+        <th>Feminin</th>
+        <th>Plural</th>
+      </tr>
+      <tr>
+        <td><strong>Nominativ</strong></td>
+        <td>total<span class="highlight">er</span> Neuanfang</td>
+        <td>groß<span class="highlight">es</span> Glück</td>
+        <td>richtig<span class="highlight">e</span> Entscheidung</td>
+        <td>gut<span class="highlight">e</span> Chancen</td>
+      </tr>
+      <tr>
+        <td><strong>Akkusativ</strong></td>
+        <td>total<span class="highlight">en</span> Neuanfang</td>
+        <td>groß<span class="highlight">es</span> Glück</td>
+        <td>richtig<span class="highlight">e</span> Entscheidung</td>
+        <td>gut<span class="highlight">e</span> Chancen</td>
+      </tr>
+      <tr>
+        <td><strong>Dativ</strong></td>
+        <td>total<span class="highlight">em</span> Neuanfang</td>
+        <td>groß<span class="highlight">em</span> Glück</td>
+        <td>richtig<span class="highlight">er</span> Entscheidung</td>
+        <td>gut<span class="highlight">en</span> Chancen</td>
+      </tr>
+    </table>
+  </div>
+  <div class="example-box">
+    <strong>Beispiele:</strong><br>
+    Mit <strong>großem Glück</strong> hat Hoa eine gute Stelle gefunden. (Dativ, Neutrum)<br>
+    Sie sucht <strong>qualifizierte Fachkräfte</strong>. (Akkusativ, Plural)<br>
+    Das ist ein Zeichen für <strong>gute Arbeit</strong>. (Dativ, Feminin)
+  </div>
+  <button class="btn btn-next" onclick="showTab(1)">Weiter: Komparativ →</button>
+</div>
+
+<!-- ===== TAB 1: Komparativ ===== -->
+<div class="section" id="section1">
+  <div class="grammar-card">
+    <h2>Adjektivdeklination im Komparativ (++)</h2>
+    <p>Der Komparativ wird gebildet: <strong>Adjektiv + -er + Deklinationsendung</strong></p>
+    <table>
+      <tr>
+        <th>Kasus</th>
+        <th>Maskulin</th>
+        <th>Neutrum</th>
+        <th>Feminin</th>
+      </tr>
+      <tr>
+        <td><strong>Nominativ</strong></td>
+        <td>der kürzere / ein kürzerer Weg</td>
+        <td>das höhere / ein höheres Einkommen</td>
+        <td>die wichtigere / eine wichtigere Stelle</td>
+      </tr>
+      <tr>
+        <td><strong>Akkusativ</strong></td>
+        <td>den kürzeren / einen kürzeren Weg</td>
+        <td>das höhere / ein höheres Einkommen</td>
+        <td>die wichtigere / eine wichtigere Stelle</td>
+      </tr>
+      <tr>
+        <td><strong>Dativ</strong></td>
+        <td>dem kürzeren / einem kürzeren Weg</td>
+        <td>dem höheren / einem höheren Einkommen</td>
+        <td>der wichtigeren / einer wichtigeren Stelle</td>
+      </tr>
+    </table>
+  </div>
+  <div class="example-box">
+    <strong>Häufige Komparativformen:</strong><br>
+    gut → <strong>besser</strong> &nbsp;|&nbsp; hoch → <strong>höher</strong> &nbsp;|&nbsp; groß → <strong>größer</strong><br>
+    kurz → <strong>kürzer</strong> &nbsp;|&nbsp; viel → <strong>mehr</strong><br><br>
+    <em>Mit einer Weiterbildung findet man eine <strong>interessantere</strong> Tätigkeit.</em><br>
+    <em>Sie hätte gern ein <strong>höheres</strong> Gehalt.</em>
+  </div>
+  <button class="btn btn-next" onclick="showTab(2)">Weiter: Superlativ →</button>
+</div>
+
+<!-- ===== TAB 2: Superlativ ===== -->
+<div class="section" id="section2">
+  <div class="grammar-card">
+    <h2>Adjektivdeklination im Superlativ (+++)</h2>
+    <p>Der Superlativ wird gebildet: <strong>Adjektiv + -(e)st + Deklinationsendung</strong></p>
+    <table>
+      <tr>
+        <th>Kasus</th>
+        <th>Maskulin</th>
+        <th>Neutrum</th>
+        <th>Feminin</th>
+      </tr>
+      <tr>
+        <td><strong>Nominativ</strong></td>
+        <td>der kürzeste Weg</td>
+        <td>das höchste Einkommen</td>
+        <td>die wichtigste Stelle</td>
+      </tr>
+      <tr>
+        <td><strong>Akkusativ</strong></td>
+        <td>den kürzesten Weg</td>
+        <td>das höchste Einkommen</td>
+        <td>die wichtigste Stelle</td>
+      </tr>
+      <tr>
+        <td><strong>Dativ</strong></td>
+        <td>dem kürzesten Weg</td>
+        <td>dem höchsten Einkommen</td>
+        <td>der wichtigsten Stelle</td>
+      </tr>
+    </table>
+  </div>
+  <div class="example-box">
+    <strong>Häufige Superlativformen:</strong><br>
+    gut → <strong>best-</strong> &nbsp;|&nbsp; hoch → <strong>höchst-</strong> &nbsp;|&nbsp; groß → <strong>größt-</strong><br>
+    kurz → <strong>kürzest-</strong> &nbsp;|&nbsp; viel → <strong>meist-</strong><br><br>
+    <em>Die <strong>besten</strong> Informationen bekommt man durch professionelle Beratung.</em><br>
+    <em>Das ist das <strong>schwierigste</strong> Problem bei der Weiterbildung.</em>
+  </div>
+  <button class="btn btn-next" onclick="showTab(3)">Weiter: Relativsatz →</button>
+</div>
+
+<!-- ===== TAB 3: Relativsatz mit Präpositionen ===== -->
+<div class="section" id="section3">
+  <div class="grammar-card">
+    <h2>Relativsatz mit Präpositionen</h2>
+    <p>Wenn ein Verb eine feste Präposition hat, steht diese <strong>vor dem Relativpronomen</strong>.</p>
+    <table>
+      <tr>
+        <th>Verb + Präposition</th>
+        <th>Beispielsatz</th>
+      </tr>
+      <tr>
+        <td><em>sich entscheiden <strong>für</strong></em></td>
+        <td>Ist es ein Kurs, <span class="highlight">für den</span> Sie sich entschieden haben?</td>
+      </tr>
+      <tr>
+        <td><em>träumen <strong>von</strong></em></td>
+        <td>Ist es ein Studium, <span class="highlight">von dem</span> Sie träumen?</td>
+      </tr>
+      <tr>
+        <td><em>sich interessieren <strong>für</strong></em></td>
+        <td>Ist es eine Umschulung, <span class="highlight">für die</span> Sie sich interessieren?</td>
+      </tr>
+      <tr>
+        <td><em>sich beschäftigen <strong>mit</strong></em></td>
+        <td>Es gibt Fragen, <span class="highlight">mit denen</span> Sie sich beschäftigen müssen.</td>
+      </tr>
+    </table>
+  </div>
+  <div class="example-box">
+    <strong>Formel:</strong> Präposition + Relativpronomen (im richtigen Kasus)<br><br>
+    Das ist die Stelle, <strong>auf die</strong> ich mich beworben habe. (sich bewerben <em>auf</em>)<br>
+    Das ist der Chef, <strong>mit dem</strong> ich gesprochen habe. (sprechen <em>mit</em>)<br>
+    Das ist die Firma, <strong>von der</strong> ich geträumt habe. (träumen <em>von</em>)
+  </div>
+  <button class="btn btn-next" onclick="showTab(4)">Weiter: Übungen →</button>
+</div>
+
+<!-- ===== TAB 4: Übungen ===== -->
+<div class="section" id="section4">
+
+  <!-- Übung 1: Komparativ/Superlativ Fill-in -->
+  <div class="ex-card">
+    <div class="ex-num">Übung 1 – Komparativ oder Superlativ?</div>
+    <p class="ex-question">Ergänzen Sie die Adjektivendung.</p>
+    <p class="ex-hint">Lesen Sie den Text und schreiben Sie die richtige Form in die Lücke.</p>
+
+    <p class="sent-line">1. Sie sucht eine <input class="blank-inp" id="ex1_1" data-ans="interessantere" placeholder="interessant ++"> (interessant ++) Tätigkeit.</p>
+    <p class="sent-line">2. Ein <input class="blank-inp" id="ex1_2" data-ans="höheres" placeholder="hoch ++"> (hoch ++) Gehalt wäre toll.</p>
+    <p class="sent-line">3. Das <input class="blank-inp" id="ex1_3" data-ans="Schwierigste" placeholder="schwierig +++"> (schwierig +++) ist die Auswahl.</p>
+    <p class="sent-line">4. Die Auswahl wird immer <input class="blank-inp" id="ex1_4" data-ans="größer" placeholder="groß ++"> (groß ++).</p>
+    <p class="sent-line">5. Die <input class="blank-inp" id="ex1_5" data-ans="besten" placeholder="gut +++"> (gut +++) Infos gibt es durch Beratung.</p>
+    <p class="sent-line">6. Je professioneller die Beratung, desto <input class="blank-inp" id="ex1_6" data-ans="kürzer" placeholder="kurz ++"> (kurz ++) ist der Weg.</p>
+
+    <button class="btn btn-check" id="ex1btn" onclick="checkEx1()">Antworten prüfen ✓</button>
+    <button class="btn btn-reset" onclick="resetEx1()">↺ Neu starten</button>
+    <div class="section-score-box" id="ex1score"></div>
+  </div>
+
+  <!-- Übung 2: Nullartikel MCQ -->
+  <div class="ex-card" id="ex2card">
+    <div class="ex-num">Übung 2 – Adjektiv nach Nullartikel</div>
+    <p class="ex-question">Wählen Sie die richtige Adjektivendung.</p>
+    <div id="ex2container"></div>
+    <div class="section-score-box" id="ex2score"></div>
+  </div>
+
+  <!-- Übung 3: Relativsatz mit Präpositionen -->
+  <div class="ex-card" id="ex3card">
+    <div class="ex-num">Übung 3 – Relativsatz mit Präpositionen</div>
+    <p class="ex-question">Ergänzen Sie das Relativpronomen (mit Präposition).</p>
+    <div id="ex3container"></div>
+    <button class="btn btn-check" id="ex3btn" onclick="checkEx3()">Antworten prüfen ✓</button>
+    <div class="section-score-box" id="ex3score"></div>
+  </div>
+
+</div>
+
+<script>
+function showTab(idx) {
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('section' + idx).classList.add('active');
+  document.getElementById('tab' + idx).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ========== ÜBUNG 1 ==========
+function normalize(s) { return s.trim().toLowerCase(); }
+
+function checkEx1() {
+  var ids = ['ex1_1','ex1_2','ex1_3','ex1_4','ex1_5','ex1_6'];
+  var correct = 0;
+  ids.forEach(function(id) {
+    var inp = document.getElementById(id);
+    var val = normalize(inp.value);
+    var ans = normalize(inp.getAttribute('data-ans'));
+    if (val === ans) {
+      inp.className = 'blank-inp correct';
+      correct++;
+    } else {
+      inp.className = 'blank-inp wrong';
+    }
+  });
+  document.getElementById('ex1btn').disabled = true;
+  var pct = Math.round(correct / ids.length * 100);
+  var emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
+  var box = document.getElementById('ex1score');
+  box.innerHTML = '<div class="score-emoji">' + emoji + '</div><div class="score-big">' + correct + '/' + ids.length + '</div><div class="score-label">' + pct + '% richtig</div>';
+  box.classList.add('show');
+}
+
+function resetEx1() {
+  var ids = ['ex1_1','ex1_2','ex1_3','ex1_4','ex1_5','ex1_6'];
+  ids.forEach(function(id) {
+    var inp = document.getElementById(id);
+    inp.value = '';
+    inp.className = 'blank-inp';
+  });
+  document.getElementById('ex1btn').disabled = false;
+  document.getElementById('ex1score').classList.remove('show');
+}
+
+// ========== ÜBUNG 2: MCQ Nullartikel ==========
+var ex2data = [
+  {
+    q: "In Deutschland findet man ___ qualifiziert___ Fachkräfte. (Pl., Akk.)",
+    choices: ["qualifizierten", "qualifizierter", "qualifizierte", "qualifiziertes"],
+    answer: 2,
+    expl: "Plural Akkusativ nach Nullartikel: -e"
+  },
+  {
+    q: "Hoa hat mit ___ groß___ Glück eine Stelle gefunden. (Neutr., Dat.)",
+    choices: ["großem", "großen", "großes", "große"],
+    answer: 0,
+    expl: "Neutrum Dativ nach Nullartikel: -em"
+  },
+  {
+    q: "Das ist ein Zeichen für ___ gut___ Arbeit. (Fem., Akk.)",
+    choices: ["guten", "guter", "gutes", "gute"],
+    answer: 3,
+    expl: "Feminin Akkusativ nach Nullartikel: -e"
+  },
+  {
+    q: "Sie hat ___ staatlich___ Unterstützung bekommen. (Fem., Nom.)",
+    choices: ["staatlicher", "staatlichen", "staatliches", "staatliche"],
+    answer: 3,
+    expl: "Feminin Nominativ nach Nullartikel: -e"
+  },
+  {
+    q: "Er kommt aus ___ klassisch___ Ausbildung. (Fem., Dat.)",
+    choices: ["klassische", "klassisches", "klassischer", "klassischen"],
+    answer: 2,
+    expl: "Feminin Dativ nach Nullartikel: -er"
+  }
+];
+
+var ex2selected = new Array(ex2data.length).fill(-1);
+var ex2done = false;
+
+function renderEx2() {
+  var cont = document.getElementById('ex2container');
+  cont.innerHTML = '';
+  ex2data.forEach(function(item, i) {
+    var div = document.createElement('div');
+    div.style.marginBottom = '14px';
+    div.innerHTML = '<div class="ex-hint" style="font-style:normal;font-weight:700;margin-bottom:6px;">' + (i+1) + '. ' + item.q + '</div><div class="choices" id="choices2_' + i + '"></div><div class="feedback" id="fb2_' + i + '"></div>';
+    cont.appendChild(div);
+
+    var choicesCont = div.querySelector('#choices2_' + i);
+    item.choices.forEach(function(c, ci) {
+      var btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c;
+      btn.addEventListener('click', function() {
+        if (ex2done) return;
+        ex2selected[i] = ci;
+        var btns = choicesCont.querySelectorAll('.choice-btn');
+        btns.forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        checkEx2Auto();
+      });
+      choicesCont.appendChild(btn);
+    });
+  });
+}
+
+function checkEx2Auto() {
+  if (ex2selected.indexOf(-1) === -1) {
+    ex2done = true;
+    var correct = 0;
+    ex2data.forEach(function(item, i) {
+      var btns = document.querySelectorAll('#choices2_' + i + ' .choice-btn');
+      var fb = document.getElementById('fb2_' + i);
+      btns.forEach(function(b, bi) {
+        if (bi === item.answer) { b.classList.add('correct'); b.classList.remove('selected'); }
+        else if (bi === ex2selected[i] && bi !== item.answer) { b.classList.add('wrong'); b.classList.remove('selected'); }
+        b.disabled = true;
+      });
+      if (ex2selected[i] === item.answer) {
+        correct++;
+        fb.className = 'feedback show ok';
+        fb.innerHTML = '✓ Richtig! ' + item.expl;
+      } else {
+        fb.className = 'feedback show err';
+        fb.innerHTML = '✗ Falsch. ' + item.expl;
+      }
+    });
+    var pct = Math.round(correct / ex2data.length * 100);
+    var emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
+    var box = document.getElementById('ex2score');
+    box.innerHTML = '<div class="score-emoji">' + emoji + '</div><div class="score-big">' + correct + '/' + ex2data.length + '</div><div class="score-label">' + pct + '% richtig</div>';
+    box.classList.add('show');
+  }
+}
+
+// ========== ÜBUNG 3: Relativsatz mit Präpositionen ==========
+var ex3data = [
+  { sent: 'Das ist der Kurs, ___ ich mich bewerbe. (sich bewerben um)', ans: 'um den', hint: 'sich bewerben um + Mask. Akk.' },
+  { sent: 'Das ist die Stelle, ___ Hoa geträumt hat. (träumen von)', ans: 'von der', hint: 'träumen von + Fem. Dat.' },
+  { sent: 'Das ist die Firma, ___ sie sich interessiert. (sich interessieren für)', ans: 'für die', hint: 'sich interessieren für + Fem. Akk.' },
+  { sent: 'Das sind die Fragen, ___ wir uns beschäftigen. (sich beschäftigen mit)', ans: 'mit denen', hint: 'sich beschäftigen mit + Pl. Dat.' },
+  { sent: 'Das ist der Chef, ___ ich gesprochen habe. (sprechen mit)', ans: 'mit dem', hint: 'sprechen mit + Mask. Dat.' }
+];
+
+function renderEx3() {
+  var cont = document.getElementById('ex3container');
+  cont.innerHTML = '';
+  ex3data.forEach(function(item, i) {
+    var div = document.createElement('div');
+    div.style.marginBottom = '12px';
+    div.innerHTML =
+      '<div class="sent-line">' + (i+1) + '. ' + item.sent.replace('___', '<input class="blank-inp" id="ex3_' + i + '" placeholder="Präp. + Pron.">') + '</div>' +
+      '<div class="feedback" id="fb3_' + i + '"></div>';
+    cont.appendChild(div);
+  });
+}
+
+function checkEx3() {
+  var correct = 0;
+  ex3data.forEach(function(item, i) {
+    var inp = document.getElementById('ex3_' + i);
+    var val = normalize(inp.value);
+    var ans = normalize(item.ans);
+    var fb = document.getElementById('fb3_' + i);
+    if (val === ans) {
+      inp.className = 'blank-inp correct';
+      fb.className = 'feedback show ok';
+      fb.innerHTML = '✓ Richtig! (' + item.hint + ')';
+      correct++;
+    } else {
+      inp.className = 'blank-inp wrong';
+      fb.className = 'feedback show err';
+      fb.innerHTML = '✗ Richtig: <strong>' + item.ans + '</strong> – ' + item.hint;
+    }
+  });
+  document.getElementById('ex3btn').disabled = true;
+  var pct = Math.round(correct / ex3data.length * 100);
+  var emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
+  var box = document.getElementById('ex3score');
+  box.innerHTML = '<div class="score-emoji">' + emoji + '</div><div class="score-big">' + correct + '/' + ex3data.length + '</div><div class="score-label">' + pct + '% richtig</div>';
+  box.classList.add('show');
+}
+
+window.onload = function() {
+  renderEx2();
+  renderEx3();
+};
+</script>
+</body>
+</html>

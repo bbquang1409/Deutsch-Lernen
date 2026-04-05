@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L08 Übungen – Hoa: Der Glückspilz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --accent: #1a7f6e;
+    --accent-light: #e0f5f1;
+    --accent2: #2563a8;
+    --accent2-light: #ddeeff;
+    --yellow: #f5d000;
+    --yellow-light: #fffbe6;
+    --green: #22b573;
+    --green-light: #e6f9f2;
+    --red: #e84040;
+    --red-light: #ffeaea;
+    --dark: #1a2a2e;
+    --gray: #6b7280;
+    --bg: #f0faf8;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0f4c3a 0%, #1a7f6e 100%);
+    color: white;
+    padding: 20px 16px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; background:rgba(255,255,255,0.1); border-radius:50%; }
+  .header::after { content:''; position:absolute; bottom:-20px; left:40%; width:80px; height:80px; background:rgba(255,255,255,0.07); border-radius:50%; }
+
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.2); color: white;
+    border: none; border-radius: 20px; padding: 6px 14px;
+    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; text-decoration: none; margin-bottom: 12px;
+  }
+  .header-label { font-family:'Nunito',sans-serif; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; opacity:0.85; margin-bottom:4px; }
+  .header h1 { font-family:'Nunito',sans-serif; font-size:22px; font-weight:900; line-height:1.2; }
+  .header h1 span { color: var(--yellow); }
+  .header-sub { font-size:13px; opacity:0.9; margin-top:6px; }
+
+  .progress-wrap {
+    background: white; padding: 14px 16px; border-bottom: 1px solid #eee;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .progress-info { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .progress-text { font-family:'Nunito',sans-serif; font-size:12px; font-weight:700; color:var(--gray); }
+  .progress-score { font-family:'Nunito',sans-serif; font-size:13px; font-weight:800; color:var(--accent); }
+  .progress-bar-bg { background:#eee; border-radius:10px; height:8px; overflow:hidden; }
+  .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent),#22b573); border-radius:10px; transition:width 0.5s ease; width:0%; }
+
+  .tabs-wrap { overflow-x:auto; background:white; padding:0 12px; border-bottom:2px solid #e5f7f4; scrollbar-width:none; }
+  .tabs-wrap::-webkit-scrollbar { display:none; }
+  .tabs { display:flex; gap:4px; min-width:max-content; padding:8px 0; }
+  .tab-btn {
+    border:none; background:#f0faf8; border-radius:20px; padding:7px 14px;
+    font-family:'Nunito',sans-serif; font-size:12px; font-weight:700;
+    cursor:pointer; color:var(--gray); transition:all 0.2s; white-space:nowrap; position:relative;
+  }
+  .tab-btn.active { background:var(--accent); color:white; }
+  .tab-btn .tab-check { display:none; width:16px; height:16px; background:var(--green); border-radius:50%; color:white; font-size:9px; margin-left:4px; align-items:center; justify-content:center; }
+  .tab-btn.done .tab-check { display:inline-flex; }
+
+  .section { display:none; padding:16px; }
+  .section.active { display:block; }
+
+  .section-header {
+    background:white; border-radius:var(--radius); padding:16px; margin-bottom:16px;
+    box-shadow:var(--shadow); border-left:5px solid var(--accent);
+  }
+  .section-num { font-family:'Nunito',sans-serif; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+  .section-title { font-family:'Nunito',sans-serif; font-size:17px; font-weight:900; margin-bottom:6px; }
+  .section-desc { font-size:13px; color:var(--gray); line-height:1.5; }
+  .tag { display:inline-block; background:var(--accent-light); color:var(--accent); font-family:'Nunito',sans-serif; font-size:10px; font-weight:800; padding:3px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:1px; }
+  .tag.gram { background:var(--accent2-light); color:var(--accent2); }
+  .tag.kom { background:var(--yellow-light); color:#b08800; }
+
+  .card { background:white; border-radius:var(--radius); padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .question-num { font-family:'Nunito',sans-serif; font-size:11px; font-weight:800; color:var(--gray); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+  .question-text { font-size:15px; line-height:1.6; margin-bottom:12px; font-weight:600; }
+  .question-example { font-size:13px; color:var(--gray); line-height:1.5; margin-bottom:10px; padding:8px 12px; background:#f9f9f9; border-radius:8px; font-style:italic; }
+
+  input[type="text"] {
+    width:100%; border:2px solid #ddd; border-radius:12px; padding:12px 14px;
+    font-family:'Nunito',sans-serif; font-size:15px; font-weight:600;
+    outline:none; transition:all 0.2s; background:white; color:var(--dark);
+  }
+  input[type="text"]:focus { border-color:var(--accent); }
+  input[type="text"].correct { border-color:var(--green); background:var(--green-light); }
+  input[type="text"].wrong { border-color:var(--red); background:var(--red-light); }
+
+  textarea {
+    width:100%; border:2px solid #ddd; border-radius:12px; padding:12px 14px;
+    font-family:'Nunito',sans-serif; font-size:14px; font-weight:600; outline:none;
+    resize:vertical; min-height:80px; transition:border-color 0.2s; line-height:1.5;
+  }
+  textarea:focus { border-color:var(--accent); }
+  textarea.correct { border-color:var(--green); background:var(--green-light); }
+  textarea.wrong { border-color:var(--red); background:var(--red-light); }
+
+  .choices { display:flex; flex-direction:column; gap:8px; }
+  .choice-btn {
+    width:100%; text-align:left; border:2px solid #e5e7eb; border-radius:12px;
+    padding:12px 14px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
+    cursor:pointer; background:white; color:var(--dark); transition:all 0.15s; line-height:1.4;
+  }
+  .choice-btn:hover:not(:disabled) { border-color:var(--accent); background:var(--accent-light); }
+  .choice-btn.selected { border-color:var(--accent2); background:var(--accent2-light); color:var(--accent2); }
+  .choice-btn.correct { border-color:var(--green); background:var(--green-light); color:#166534; }
+  .choice-btn.wrong { border-color:var(--red); background:var(--red-light); color:#991b1b; }
+  .choice-btn:disabled { cursor:default; }
+
+  .word-bank { display:flex; flex-wrap:wrap; gap:8px; padding:12px; background:#f9f9f9; border-radius:12px; min-height:50px; margin-bottom:12px; border:2px dashed #ddd; }
+  .drag-word {
+    background:white; border:2px solid #ddd; border-radius:20px; padding:6px 14px;
+    font-family:'Nunito',sans-serif; font-size:13px; font-weight:700; cursor:pointer;
+    transition:all 0.15s; color:var(--dark); user-select:none;
+  }
+  .drag-word:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+  .drag-word.used { opacity:0.3; pointer-events:none; }
+  .drag-word.selected-word { border-color:var(--accent); background:var(--accent); color:white; }
+
+  .blank-inline {
+    display:inline-block; min-width:120px; border-bottom:3px solid var(--accent);
+    margin:0 4px; cursor:pointer; font-family:'Nunito',sans-serif; font-weight:700;
+    font-size:15px; color:var(--accent); text-align:center; padding:2px 8px;
+    vertical-align:bottom; transition:all 0.2s;
+  }
+  .blank-inline.filled { color:var(--dark); border-bottom-color:var(--accent2); }
+  .blank-inline.correct-blank { border-bottom-color:var(--green); color:var(--green); }
+  .blank-inline.wrong-blank { border-bottom-color:var(--red); color:var(--red); }
+
+  .sentence-given { background:#f9f9f9; border-radius:10px; padding:10px 14px; font-size:14px; margin-bottom:10px; line-height:1.5; }
+  .sentence-connector { background:var(--yellow-light); border:2px solid var(--yellow); border-radius:8px; padding:3px 10px; font-family:'Nunito',sans-serif; font-weight:800; font-size:13px; color:#92600a; display:inline-block; margin-bottom:8px; }
+
+  .feedback { margin-top:10px; padding:10px 14px; border-radius:10px; font-family:'Nunito',sans-serif; font-size:13px; font-weight:700; display:none; align-items:center; gap:8px; }
+  .feedback.show { display:flex; }
+  .feedback.ok { background:var(--green-light); color:#166534; }
+  .feedback.err { background:var(--red-light); color:#991b1b; }
+
+  .btn { border:none; border-radius:12px; padding:12px 20px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:800; cursor:pointer; transition:all 0.15s; letter-spacing:0.3px; }
+  .btn-check { background:var(--accent); color:white; width:100%; margin-top:12px; }
+  .btn-check:hover { background:#0f6357; transform:translateY(-1px); }
+  .btn-check:disabled { background:#ddd; color:#aaa; cursor:default; transform:none; }
+  .btn-next { background:var(--dark); color:white; width:100%; margin-top:8px; }
+  .btn-reset { background:#f5f5f5; color:var(--gray); width:100%; margin-top:8px; }
+
+  .section-score-box { background:linear-gradient(135deg,var(--accent) 0%,#0f6357 100%); color:white; border-radius:var(--radius); padding:20px; margin-bottom:16px; text-align:center; display:none; }
+  .section-score-box.show { display:block; }
+  .score-big { font-family:'Nunito',sans-serif; font-size:48px; font-weight:900; line-height:1; }
+  .score-label { font-size:13px; opacity:0.9; margin-top:4px; }
+  .score-emoji { font-size:32px; margin-bottom:8px; }
+
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal-overlay.show { display:flex; }
+  .modal { background:white; border-radius:24px; padding:28px 24px; max-width:340px; width:100%; text-align:center; animation:popIn 0.3s ease; }
+  @keyframes popIn { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+  .modal-emoji { font-size:56px; margin-bottom:12px; }
+  .modal-title { font-family:'Nunito',sans-serif; font-size:22px; font-weight:900; margin-bottom:8px; }
+  .modal-score { font-family:'Nunito',sans-serif; font-size:44px; font-weight:900; color:var(--accent); margin:12px 0; }
+  .modal-msg { font-size:14px; color:var(--gray); line-height:1.5; }
+  .modal-btn { background:var(--accent); color:white; border:none; border-radius:14px; padding:14px 28px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; cursor:pointer; margin-top:20px; width:100%; }
+
+  .submit-all-wrap { padding:16px 16px 24px; }
+  .btn-submit-all { background:linear-gradient(135deg,var(--accent),#0f6357); color:white; border:none; border-radius:16px; padding:16px; font-family:'Nunito',sans-serif; font-size:16px; font-weight:900; cursor:pointer; width:100%; letter-spacing:0.5px; box-shadow:0 4px 20px rgba(26,127,110,0.35); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-btn" href="index.html">← Zurück</a>
+  <div class="header-label">Lektion 08 · Übungen</div>
+  <h1>Hoa – <span>Der Glückspilz</span></h1>
+  <div class="header-sub">6 Übungstypen · Wortschatz &amp; Grammatik</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-info">
+    <span class="progress-text" id="progressText">Übung 1 von 6</span>
+    <span class="progress-score" id="totalScore">0 Punkte</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" id="tab0" onclick="showSection(0)">Ü1 <span class="tab-check">✓</span></button>
+    <button class="tab-btn" id="tab1" onclick="showSection(1)">Ü2 <span class="tab-check">✓</span></button>
+    <button class="tab-btn" id="tab2" onclick="showSection(2)">Ü3 <span class="tab-check">✓</span></button>
+    <button class="tab-btn" id="tab3" onclick="showSection(3)">Ü4 <span class="tab-check">✓</span></button>
+    <button class="tab-btn" id="tab4" onclick="showSection(4)">Ü5 <span class="tab-check">✓</span></button>
+    <button class="tab-btn" id="tab5" onclick="showSection(5)">Ü6 <span class="tab-check">✓</span></button>
+  </div>
+</div>
+
+<!-- ===== ÜBUNG 1: Wortschatz Lückentext ===== -->
+<div class="section active" id="section0">
+  <div class="section-header">
+    <div class="section-num">Übung 1</div>
+    <div class="section-title">Was passt? Wählen Sie das richtige Wort.</div>
+    <div class="section-desc">Tippen Sie auf ein Wort aus der Liste, dann auf die Lücke.</div>
+    <br><span class="tag">Wörter</span>
+  </div>
+
+  <div class="card">
+    <div class="question-num">Wortliste – tippen zum Auswählen</div>
+    <div class="word-bank" id="wordBank0">
+      <span class="drag-word" data-word="Ausbildung" onclick="selectWord(this)">Ausbildung</span>
+      <span class="drag-word" data-word="Fachkräfte" onclick="selectWord(this)">Fachkräfte</span>
+      <span class="drag-word" data-word="Gastronomie" onclick="selectWord(this)">Gastronomie</span>
+      <span class="drag-word" data-word="leiden" onclick="selectWord(this)">leiden</span>
+      <span class="drag-word" data-word="tauschen" onclick="selectWord(this)">tauschen</span>
+      <span class="drag-word" data-word="Aussichten" onclick="selectWord(this)">Aussichten</span>
+      <span class="drag-word" data-word="Kaufleute" onclick="selectWord(this)">Kaufleute</span>
+      <span class="drag-word" data-word="Tätigkeit" onclick="selectWord(this)">Tätigkeit</span>
+    </div>
+  </div>
+
+  <div class="card" id="fillCard0">
+    <div class="question-num">Sätze ergänzen</div>
+    <div id="fillSentences0"></div>
+    <button class="btn btn-check" id="checkFill0btn" onclick="checkFill0()">Antworten prüfen ✓</button>
+    <button class="btn btn-reset" onclick="resetFill0()">↺ Neu starten</button>
+  </div>
+
+  <div class="section-score-box" id="score0box"></div>
+  <button class="btn btn-next" onclick="showSection(1)" style="margin: 0 0 16px 0;">Weiter zu Übung 2 →</button>
+</div>
+
+<!-- ===== ÜBUNG 2: Komparativ / Superlativ MCQ ===== -->
+<div class="section" id="section1">
+  <div class="section-header">
+    <div class="section-num">Übung 2</div>
+    <div class="section-title">Komparativ oder Superlativ?</div>
+    <div class="section-desc">Wählen Sie die grammatisch richtige Form des Adjektivs.</div>
+    <br><span class="tag gram">Grammatik</span>
+  </div>
+  <div id="mcq2container"></div>
+  <div class="section-score-box" id="score1box"></div>
+  <button class="btn btn-next" onclick="showSection(2)" style="margin: 0 0 16px 0;">Weiter zu Übung 3 →</button>
+</div>
+
+<!-- ===== ÜBUNG 3: Adjektivdeklination Sätze umschreiben ===== -->
+<div class="section" id="section2">
+  <div class="section-header">
+    <div class="section-num">Übung 3</div>
+    <div class="section-title">Adjektivdeklination nach Nullartikel</div>
+    <div class="section-desc">Schreiben Sie das Adjektiv in der richtigen Form. Achten Sie auf Kasus und Genus!</div>
+    <br><span class="tag gram">Grammatik</span>
+  </div>
+  <div id="rewrite3container"></div>
+  <div class="section-score-box" id="score2box"></div>
+  <button class="btn btn-next" onclick="showSection(3)" style="margin: 0 0 16px 0;">Weiter zu Übung 4 →</button>
+</div>
+
+<!-- ===== ÜBUNG 4: Relativsatz mit Präpositionen MCQ ===== -->
+<div class="section" id="section3">
+  <div class="section-header">
+    <div class="section-num">Übung 4</div>
+    <div class="section-title">Relativsatz mit Präpositionen</div>
+    <div class="section-desc">Wählen Sie das richtige Relativpronomen mit Präposition.</div>
+    <br><span class="tag gram">Grammatik</span>
+  </div>
+  <div id="mcq4container"></div>
+  <div class="section-score-box" id="score3box"></div>
+  <button class="btn btn-next" onclick="showSection(4)" style="margin: 0 0 16px 0;">Weiter zu Übung 5 →</button>
+</div>
+
+<!-- ===== ÜBUNG 5: Kommunikation MCQ ===== -->
+<div class="section" id="section4">
+  <div class="section-header">
+    <div class="section-num">Übung 5</div>
+    <div class="section-title">Kommunikation: Was bedeutet das Gleiche?</div>
+    <div class="section-desc">Wählen Sie die passende Bedeutung oder Reaktion.</div>
+    <br><span class="tag kom">Kommunikation</span>
+  </div>
+  <div id="mcq5container"></div>
+  <div class="section-score-box" id="score4box"></div>
+  <button class="btn btn-next" onclick="showSection(5)" style="margin: 0 0 16px 0;">Weiter zu Übung 6 →</button>
+</div>
+
+<!-- ===== ÜBUNG 6: Wortbildung Nomen aus Verben ===== -->
+<div class="section" id="section5">
+  <div class="section-header">
+    <div class="section-num">Übung 6</div>
+    <div class="section-title">Wortbildung: Nomen aus Verben</div>
+    <div class="section-desc">Schreiben Sie das Nomen zum Verb (das + Infinitiv).</div>
+    <br><span class="tag gram">Grammatik</span>
+  </div>
+  <div id="nomen6container"></div>
+  <div class="section-score-box" id="score5box"></div>
+
+  <div class="submit-all-wrap">
+    <button class="btn-submit-all" onclick="showFinalResult()">🏆 Gesamtergebnis anzeigen</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="finalModal">
+  <div class="modal">
+    <div class="modal-emoji" id="modalEmoji"></div>
+    <div class="modal-title">Ergebnis</div>
+    <div class="modal-score" id="modalScore"></div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <button class="modal-btn" onclick="closeModal()">Schließen</button>
+  </div>
+</div>
+
+<script>
+var sectionPoints = [0,0,0,0,0,0];
+var sectionMax = [8,5,5,5,7,6];
+var sectionDone = [false,false,false,false,false,false];
+var totalPoints = 0;
+
+// ========== UTILS ==========
+function norm(s) { return s.trim().toLowerCase(); }
+
+function showSection(idx) {
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('section' + idx).classList.add('active');
+  document.getElementById('tab' + idx).classList.add('active');
+  document.getElementById('progressText').textContent = 'Uebung ' + (idx+1) + ' von 6';
+  window.scrollTo(0, 0);
+}
+
+function showSectionScore(idx, got, max, msg) {
+  var pct = Math.round(got/max*100);
+  var emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
+  var box = document.getElementById('score' + idx + 'box');
+  box.innerHTML = '<div class="score-emoji">' + emoji + '</div><div class="score-big">' + got + '/' + max + '</div><div class="score-label">' + msg + ' (' + pct + '%)</div>';
+  box.classList.add('show');
+}
+
+function updateTotal() {
+  var total = sectionPoints.reduce(function(a,b){ return a+b; }, 0);
+  document.getElementById('totalScore').textContent = total + ' Punkte';
+  var done = sectionDone.filter(Boolean).length;
+  document.getElementById('progressFill').style.width = (done/6*100) + '%';
+}
+
+function showFinalResult() {
+  var total = sectionPoints.reduce(function(a,b){ return a+b; }, 0);
+  var max = sectionMax.reduce(function(a,b){ return a+b; }, 0);
+  var pct = Math.round(total/max*100);
+  var emoji = pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : pct >= 40 ? '👍' : '💪';
+  var msg = pct >= 80 ? 'Ausgezeichnet! Sehr gut gemacht!'
+    : pct >= 60 ? 'Gut gemacht! Weiter so!'
+    : pct >= 40 ? 'Nicht schlecht! Ueben Sie noch einmal.'
+    : 'Keine Sorge – Uebung macht den Meister!';
+  document.getElementById('modalEmoji').textContent = emoji;
+  document.getElementById('modalScore').textContent = total + ' / ' + max;
+  document.getElementById('modalMsg').textContent = msg + ' (' + pct + '%)';
+  document.getElementById('finalModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('finalModal').classList.remove('show'); }
+
+// ========== ÜBUNG 1: Wortschatz Lückentext ==========
+var fill0data = [
+  { sent: ['Guten Tag, ich interessiere mich für eine ', ' zur Mechatronikerin.'], ans: 'Ausbildung' },
+  { sent: ['', ' arbeiten in einem Geschäft und verkaufen Waren.'], ans: 'Kaufleute' },
+  { sent: ['In vielen Bereichen fehlen qualifizierte ', '.'], ans: 'Fachkräfte' },
+  { sent: ['Qualifiziertes Personal fehlt unter anderem in der ', ', also in Restaurants und Hotels.'], ans: 'Gastronomie' },
+  { sent: ['Unter dem Mangel ', ' auch die Handwerksbetriebe.'], ans: 'leiden' },
+  { sent: ['Es gibt einen Film, in dem Chef und Mitarbeiterin für einen Tag die Rollen ', '.'], ans: 'tauschen' },
+  { sent: ['Mit einer Weiterbildung haben ältere Bewerber sehr gute ', '.'], ans: 'Aussichten' },
+  { sent: ['So findet man auch eine interessante ', '.'], ans: 'Tätigkeit' }
+];
+
+var fill0blanks = [];
+var fill0selectedWord = null;
+
+function renderFill0() {
+  var cont = document.getElementById('fillSentences0');
+  cont.innerHTML = '';
+  fill0blanks = [];
+  fill0data.forEach(function(item, i) {
+    var p = document.createElement('p');
+    p.style.cssText = 'font-size:15px;font-weight:600;line-height:2;margin-bottom:8px;';
+    p.innerHTML = item.sent[0] + '<span class="blank-inline" id="blank0_' + i + '" onclick="fillBlank(' + i + ')">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>' + item.sent[1];
+    cont.appendChild(p);
+    fill0blanks.push({ el: document.getElementById('blank0_' + i), ans: item.ans, filled: '' });
+  });
+}
+
+function selectWord(el) {
+  if (el.classList.contains('used')) return;
+  document.querySelectorAll('.drag-word').forEach(function(w){ w.classList.remove('selected-word'); });
+  el.classList.add('selected-word');
+  fill0selectedWord = el;
+}
+
+function fillBlank(idx) {
+  if (!fill0selectedWord) return;
+  var word = fill0selectedWord.getAttribute('data-word');
+  var blank = fill0blanks[idx];
+  if (blank.filled) {
+    document.querySelectorAll('[data-word="' + blank.filled + '"]').forEach(function(w){ w.classList.remove('used'); });
+  }
+  blank.filled = word;
+  blank.el.textContent = word;
+  blank.el.classList.add('filled');
+  fill0selectedWord.classList.add('used');
+  fill0selectedWord.classList.remove('selected-word');
+  fill0selectedWord = null;
+}
+
+function checkFill0() {
+  var correct = 0;
+  fill0blanks.forEach(function(blank) {
+    if (norm(blank.filled) === norm(blank.ans)) {
+      blank.el.classList.add('correct-blank');
+      blank.el.classList.remove('wrong-blank');
+      correct++;
+    } else {
+      blank.el.classList.add('wrong-blank');
+      blank.el.classList.remove('correct-blank');
+      blank.el.textContent = blank.filled || '?';
+    }
+  });
+  document.getElementById('checkFill0btn').disabled = true;
+  sectionPoints[0] = correct;
+  sectionDone[0] = true;
+  document.getElementById('tab0').classList.add('done');
+  showSectionScore(0, correct, 8, correct + ' von 8 Wörtern richtig');
+  updateTotal();
+}
+
+function resetFill0() {
+  fill0selectedWord = null;
+  document.querySelectorAll('.drag-word').forEach(function(w){ w.classList.remove('used','selected-word'); });
+  fill0blanks.forEach(function(blank){
+    blank.filled = '';
+    blank.el.textContent = '\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0';
+    blank.el.className = 'blank-inline';
+  });
+  document.getElementById('checkFill0btn').disabled = false;
+}
+
+// ========== ÜBUNG 2: Komparativ/Superlativ MCQ ==========
+var mcq2data = [
+  { q: 'Sie sucht eine ___ (interessant ++) Taetigkeit.', choices: ['interessanteren', 'interessantere', 'interessanteres', 'interessantester'], answer: 1, explanation: 'Feminin Akkusativ nach unbestimmtem Artikel: -e' },
+  { q: 'Das ist das ___ (schwierig +++) Problem dabei.', choices: ['schwierigste', 'schwierigstem', 'schwierigsten', 'schwierigster'], answer: 0, explanation: 'Neutrum Nominativ mit best. Artikel: -e' },
+  { q: 'Die Auswahl wird immer ___ (gross ++).',  choices: ['groesserem', 'groesster', 'groesser', 'groessere'], answer: 2, explanation: 'Praedikativ: kein Deklinationsendung' },
+  { q: 'Die ___ (gut +++) Informationen gibt es durch Beratung.', choices: ['besten', 'beste', 'bestem', 'bester'], answer: 0, explanation: 'Plural Nominativ mit best. Artikel: -en' },
+  { q: 'Je professioneller die Beratung, desto ___ (kurz ++) ist der Weg.', choices: ['kuerzer', 'kuerzerer', 'kuerzeste', 'kuerzes'], answer: 0, explanation: 'Praedikativ in je...desto: kein Endung' }
+];
+
+// ========== ÜBUNG 4: Relativsatz MCQ ==========
+var mcq4data = [
+  { q: 'Das ist der Beruf, ___ Hoa sich interessiert. (sich interessieren fuer)', choices: ['fuer den', 'von dem', 'mit dem', 'fuer die'], answer: 0, explanation: 'sich interessieren fuer + Mask. Akk. -> fuer den' },
+  { q: 'Das ist die Hochschule, ___ sie getraeumt hat. (traeumen von)', choices: ['mit der', 'von der', 'fuer die', 'auf der'], answer: 1, explanation: 'traeumen von + Fem. Dat. -> von der' },
+  { q: 'Das sind die Stellen, ___ sie sich beworben hat. (sich bewerben auf)', choices: ['fuer die', 'mit denen', 'auf die', 'von denen'], answer: 2, explanation: 'sich bewerben auf + Pl. Akk. -> auf die' },
+  { q: 'Das ist der Chef, ___ sie gesprochen hat. (sprechen mit)', choices: ['fuer den', 'von dem', 'mit dem', 'auf den'], answer: 2, explanation: 'sprechen mit + Mask. Dat. -> mit dem' },
+  { q: 'Das ist die Firma, ___ sie beschaeftigt ist. (beschaeftigt sein bei)', choices: ['bei der', 'mit der', 'fuer die', 'von der'], answer: 0, explanation: 'beschaeftigt sein bei + Fem. Dat. -> bei der' }
+];
+
+// ========== ÜBUNG 5: Kommunikation ==========
+var mcq5data = [
+  { q: '"Hast du das verstanden?"', choices: ['Verstehst du?', 'Wie viel Prozent?', 'Das war eine Ueberraschung.', 'Ich traeueme davon.'], answer: 0, explanation: '"Hast du verstanden?" = "Verstehst du?" – gleichbedeutend' },
+  { q: '"Wie viel Prozent der Fachkraefte kommen aus dem Ausland?"', choices: ['Wie hoch ist der Anteil der Fachkraefte aus dem Ausland?', 'Was bedeutet Fachkraft?', 'Kann ich mitarbeiten?', 'Ich habe nicht damit gerechnet.'], answer: 0, explanation: '"Wie viel Prozent" = "Wie hoch ist der Anteil"' },
+  { q: '"Hier hinten hoert man leider ueberhaupt nichts."', choices: ['Das war eine Ueberraschung.', 'Ich kann Sie sehr schlecht verstehen.', 'Das interessiert mich nicht.', 'Verstehst du?'], answer: 1, explanation: '"Hinten nichts hoeren" = "schlecht verstehen" im Kontext einer Praesentation' },
+  { q: '"Damit habe ich ueberhaupt nicht gerechnet."', choices: ['Das ist langweilig.', 'Das traeueme ich schon lange.', 'Das war wirklich eine Ueberraschung.', 'Ich kann nicht hoeren.'], answer: 2, explanation: '"Nicht damit gerechnet" = "eine Ueberraschung"' },
+  { q: '"Man hat mir geraten, mich fortzubilden."', choices: ['Man hat mir eine Weiterbildung empfohlen.', 'Ich traeueme von Fortbildung.', 'Das war eine Ueberraschung.', 'Ich verstehe das nicht.'], answer: 0, explanation: '"raten + zu" = "empfehlen"' },
+  { q: '"Es waere toll, ein besseres Gehalt zu haben."', choices: ['Das interessiert mich nicht.', 'Ich wuerde gern mehr Geld verdienen.', 'Ich habe nicht damit gerechnet.', 'Das ist die beste Loesung.'], answer: 1, explanation: '"besseres Gehalt" = "mehr Geld verdienen"' },
+  { q: '"Ich traeueme schon lange von einer Stelle im Ausland."', choices: ['Ich habe nicht damit gerechnet.', 'Ich wollte immer schon im Ausland arbeiten.', 'Ich kann Sie nicht verstehen.', 'Das war wirklich toll.'], answer: 1, explanation: '"traeumen von" = "immer schon wollen"' }
+];
+
+// ========== ÜBUNG 3: Adjektiv Nullartikel Fill-in ==========
+var rewrite3data = [
+  { sent: 'Er hat ___ (gut, Pl., Akk.) Chancen auf dem Arbeitsmarkt.', ans: 'gute', hint: 'Plural Akkusativ nach Nullartikel: -e' },
+  { sent: 'Mit ___ (gross, Neutr., Dat.) Glueck hat sie die Stelle bekommen.', ans: 'grossem', hint: 'Neutrum Dativ nach Nullartikel: -em' },
+  { sent: 'Das ist ___ (total, Mask., Nom.) Neuanfang fuer sie.', ans: 'totaler', hint: 'Maskulin Nominativ nach Nullartikel: -er' },
+  { sent: 'Sie sucht ___ (qualifiziert, Pl., Akk.) Fachkraefte.', ans: 'qualifizierte', hint: 'Plural Akkusativ nach Nullartikel: -e' },
+  { sent: 'Er braucht ___ (staatlich, Fem., Akk.) Unterstuetzung.', ans: 'staatliche', hint: 'Feminin Akkusativ nach Nullartikel: -e' }
+];
+
+function renderRewrite3() {
+  var cont = document.getElementById('rewrite3container');
+  cont.innerHTML = '';
+  rewrite3data.forEach(function(item, i) {
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML =
+      '<div class="question-num">Aufgabe ' + (i+1) + ' von ' + rewrite3data.length + '</div>' +
+      '<div class="sentence-given">' + item.sent + '</div>' +
+      '<input type="text" id="rew3_' + i + '" placeholder="Adjektiv eingeben..." autocomplete="off" autocorrect="off" spellcheck="false">' +
+      '<div class="feedback" id="rewFb3_' + i + '"></div>';
+    cont.appendChild(div);
+  });
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-check';
+  btn.textContent = 'Antworten pruefen';
+  btn.addEventListener('click', function(){ checkRewrite3(btn); });
+  cont.appendChild(btn);
+}
+
+function checkRewrite3(btn) {
+  var correct = 0;
+  rewrite3data.forEach(function(item, i) {
+    var inp = document.getElementById('rew3_' + i);
+    var fb = document.getElementById('rewFb3_' + i);
+    var val = norm(inp.value);
+    var ans = norm(item.ans);
+    if (val === ans || val === norm(item.ans.toLowerCase())) {
+      inp.className = 'correct';
+      fb.className = 'feedback show ok';
+      fb.innerHTML = '✓ Richtig! (' + item.hint + ')';
+      correct++;
+    } else {
+      inp.className = 'wrong';
+      fb.className = 'feedback show err';
+      fb.innerHTML = '✗ Richtig: <strong>' + item.ans + '</strong> – ' + item.hint;
+    }
+  });
+  btn.disabled = true;
+  sectionPoints[2] = correct;
+  sectionDone[2] = true;
+  document.getElementById('tab2').classList.add('done');
+  showSectionScore(2, correct, rewrite3data.length, correct + ' von ' + rewrite3data.length + ' richtig');
+  updateTotal();
+}
+
+// ========== RENDER MCQ GENERIC ==========
+function renderMCQ(data, containerId, sectionIdx) {
+  var cont = document.getElementById(containerId);
+  cont.innerHTML = '';
+  var selected = new Array(data.length).fill(-1);
+  var done = false;
+
+  data.forEach(function(item, i) {
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="question-num">Frage ' + (i+1) + ' von ' + data.length + '</div>' +
+      '<div class="question-text">' + item.q + '</div>' +
+      '<div class="choices" id="choices_' + containerId + '_' + i + '"></div>' +
+      '<div class="feedback" id="fb_' + containerId + '_' + i + '"></div>';
+    cont.appendChild(card);
+
+    var choicesCont = card.querySelector('#choices_' + containerId + '_' + i);
+    item.choices.forEach(function(c, ci) {
+      var btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c;
+      btn.addEventListener('click', function() {
+        if (done) return;
+        selected[i] = ci;
+        choicesCont.querySelectorAll('.choice-btn').forEach(function(b){ b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        checkAllSelected();
+      });
+      choicesCont.appendChild(btn);
+    });
+  });
+
+  function checkAllSelected() {
+    if (selected.indexOf(-1) !== -1) return;
+    done = true;
+    var correct = 0;
+    data.forEach(function(item, i) {
+      var btns = document.querySelectorAll('#choices_' + containerId + '_' + i + ' .choice-btn');
+      var fb = document.getElementById('fb_' + containerId + '_' + i);
+      btns.forEach(function(b, bi) {
+        b.disabled = true;
+        if (bi === item.answer) { b.classList.add('correct'); b.classList.remove('selected'); }
+        else if (bi === selected[i] && bi !== item.answer) { b.classList.add('wrong'); b.classList.remove('selected'); }
+      });
+      if (selected[i] === item.answer) {
+        correct++;
+        fb.className = 'feedback show ok';
+        fb.innerHTML = '✓ Richtig! ' + item.explanation;
+      } else {
+        fb.className = 'feedback show err';
+        fb.innerHTML = '✗ Richtig: <strong>' + item.choices[item.answer] + '</strong>. ' + item.explanation;
+      }
+    });
+    sectionPoints[sectionIdx] = correct;
+    sectionDone[sectionIdx] = true;
+    document.getElementById('tab' + sectionIdx).classList.add('done');
+    showSectionScore(sectionIdx, correct, data.length, correct + ' von ' + data.length + ' richtig');
+    updateTotal();
+  }
+}
+
+// ========== ÜBUNG 6: Nomen aus Verben ==========
+var nomen6data = [
+  { verb: 'arbeiten', nomen: 'das Arbeiten', example: '___ in Deutschland erfordert gute Sprachkenntnisse.' },
+  { verb: 'lernen', nomen: 'das Lernen', example: '___ faellt am Anfang schwer, aber es wird leichter.' },
+  { verb: 'ausbilden', nomen: 'das Ausbilden', example: '___ von Lehrlingen kostet Zeit und Geld.' },
+  { verb: 'beraten', nomen: 'das Beraten', example: '___ von Kunden ist eine wichtige Taetigkeit.' },
+  { verb: 'verdienen', nomen: 'das Verdienen', example: '___ ist nicht das Einzige, was zaehlt.' },
+  { verb: 'studieren', nomen: 'das Studieren', example: '___ an einer deutschen Hochschule ist ein Traum vieler.' }
+];
+
+function renderNomen6() {
+  var cont = document.getElementById('nomen6container');
+  cont.innerHTML = '';
+  nomen6data.forEach(function(item, i) {
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="question-num">Aufgabe ' + (i+1) + ' von ' + nomen6data.length + '</div>' +
+      '<div class="question-text">Verb: <strong>' + item.verb + '</strong></div>' +
+      '<div class="question-example">' + item.example + '</div>' +
+      '<input type="text" id="nomen6_' + i + '" placeholder="das + Infinitiv..." autocomplete="off" autocorrect="off" spellcheck="false">' +
+      '<div class="feedback" id="nomenFb6_' + i + '"></div>';
+    cont.appendChild(card);
+  });
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-check';
+  btn.textContent = 'Antworten pruefen';
+  btn.style.cssText = 'margin: 0 0 12px 0;';
+  btn.addEventListener('click', function(){ checkNomen6(btn); });
+  cont.appendChild(btn);
+}
+
+function checkNomen6(btn) {
+  var correct = 0;
+  nomen6data.forEach(function(item, i) {
+    var inp = document.getElementById('nomen6_' + i);
+    var val = norm(inp.value);
+    var expected = norm(item.nomen);
+    var fb = document.getElementById('nomenFb6_' + i);
+    var isOk = val === expected || val === item.verb.toLowerCase() || val === 'das ' + item.verb.toLowerCase();
+    if (isOk) {
+      inp.className = 'correct';
+      fb.className = 'feedback show ok';
+      fb.innerHTML = '✓ Richtig! <strong>' + item.nomen + '</strong>';
+      correct++;
+    } else {
+      inp.className = 'wrong';
+      fb.className = 'feedback show err';
+      fb.innerHTML = '✗ Falsch. Richtig: <strong>' + item.nomen + '</strong>';
+    }
+  });
+  btn.disabled = true;
+  sectionPoints[5] = correct;
+  sectionDone[5] = true;
+  document.getElementById('tab5').classList.add('done');
+  showSectionScore(5, correct, nomen6data.length, correct + ' von ' + nomen6data.length + ' richtig');
+  updateTotal();
+}
+
+// ========== INIT ==========
+window.onload = function() {
+  renderFill0();
+  renderMCQ(mcq2data, 'mcq2container', 1);
+  renderRewrite3();
+  renderMCQ(mcq4data, 'mcq4container', 3);
+  renderMCQ(mcq5data, 'mcq5container', 4);
+  renderNomen6();
+};
+</script>
+</body>
+</html>

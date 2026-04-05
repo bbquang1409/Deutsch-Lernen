@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taeglicher Test – Lektion 08</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1b2a;--surface:#132236;--card:#1a2f47;--card2:#1f3855;
+  --ink:#e8f4fd;--muted:#6b9ab8;--border:#2a4a6b;
+  --gold:#f59e0b;--blue:#38bdf8;--green:#34d399;
+  --rose:#fb7185;--purple:#a78bfa;--orange:#fb923c;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:80px;}
+.modal{position:fixed;inset:0;background:rgba(5,12,22,.88);z-index:999;display:flex;align-items:center;justify-content:center;}
+.modal.hidden{display:none;}
+.mbox{background:var(--surface);border-radius:20px;padding:36px 28px;width:min(92vw,400px);text-align:center;border:1px solid var(--border);}
+.mbox h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;}
+.mbox p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:18px;}
+.mbox p strong{color:var(--gold);}
+.type-list{text-align:left;background:var(--card);border-radius:10px;padding:12px 16px;margin-bottom:18px;}
+.type-list .tlt{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
+.ti{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.d1{background:var(--blue)}.d2{background:var(--green)}.d3{background:var(--gold)}.d4{background:var(--purple)}.d5{background:var(--orange)}
+.minp{width:100%;background:var(--card);border:2px solid var(--border);border-radius:10px;padding:12px 16px;font-size:16px;font-family:'Sora',sans-serif;font-weight:600;color:var(--ink);outline:none;text-align:center;margin-bottom:14px;}
+.minp:focus{border-color:var(--blue);}
+.mbtn{width:100%;background:var(--blue);color:#0d1b2a;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Sora',sans-serif;opacity:.3;transition:opacity .2s;}
+.mbtn.ready{opacity:1;}
+header{background:linear-gradient(135deg,#0d1b2a,#132236,#1a2f47);padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.htag{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+header h1{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:var(--muted);}
+.hback{display:inline-block;margin-top:12px;background:rgba(56,189,248,.1);border-radius:99px;color:var(--blue);font-size:12px;font-weight:700;padding:6px 16px;text-decoration:none;border:1px solid rgba(56,189,248,.25);}
+.tbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:0;z-index:10;}
+.tinner{max-width:560px;margin:0 auto;}
+.trow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.tdisp{font-size:24px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;}
+.tdisp.warn{color:var(--rose);}
+.tlbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.tcnt{font-size:12px;font-weight:700;color:var(--muted);}
+.ptrack{background:var(--border);border-radius:99px;height:4px;margin-top:2px;}
+.pfill{height:4px;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .3s;}
+.sbadge{display:none;background:rgba(245,158,11,.15);border:1px solid var(--gold);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--gold);margin-top:6px;}
+.sbadge.on{display:inline-block;}
+.qwrap{max-width:560px;margin:0 auto;padding:20px 16px;}
+.qcard{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:22px;margin-bottom:14px;}
+.qnum{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.qtype{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:99px;padding:2px 10px;margin-left:8px;}
+.qt1{background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.3);}
+.qt2{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3);}
+.qt3{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);}
+.qt4{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3);}
+.qt5{background:rgba(251,146,60,.15);color:var(--orange);border:1px solid rgba(251,146,60,.3);}
+.qtext{font-size:16px;font-weight:700;color:var(--ink);margin:10px 0 14px;line-height:1.55;}
+.qtext b{color:var(--gold);}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opts1{display:grid;grid-template-columns:1fr;gap:8px;}
+.opt{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Sora',sans-serif;font-weight:600;cursor:pointer;text-align:left;color:var(--ink);line-height:1.4;transition:border-color .15s;}
+.opt:hover{border-color:var(--blue);}
+.opt.ok{background:rgba(52,211,153,.13);border-color:var(--green);color:var(--green);cursor:default;}
+.opt.no{background:rgba(251,113,133,.13);border-color:var(--rose);color:var(--rose);cursor:default;}
+.opt.show{background:rgba(52,211,153,.13);border-color:var(--green);color:var(--green);opacity:.7;cursor:default;}
+.opt.lock{opacity:.3;cursor:default;}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic;}
+.wfnote{font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.result{display:none;max-width:560px;margin:30px auto;padding:0 16px;}
+.result.on{display:block;}
+.rcard{background:var(--surface);border-radius:20px;padding:32px 24px;text-align:center;border:1px solid var(--border);}
+.remoji{font-size:52px;display:block;margin-bottom:10px;}
+.rscore{font-family:'Playfair Display',serif;font-size:50px;color:var(--gold);}
+.rpct{font-size:17px;color:var(--muted);margin-top:2px;}
+.rmsg{font-size:16px;font-weight:700;margin:10px 0 4px;}
+.rstu{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.medals{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.medal{background:var(--card);border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;border:1px solid var(--border);}
+.bdsec{text-align:left;margin-bottom:24px;}
+.bdtitle{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px;}
+.bdrow{margin-bottom:12px;}
+.bdtop{display:flex;justify-content:space-between;margin-bottom:4px;}
+.bdname{font-size:13px;font-weight:700;}
+.bdstat{font-size:13px;font-weight:800;}
+.bdtrack{background:var(--border);border-radius:99px;height:6px;}
+.bdbar{height:6px;border-radius:99px;}
+.b1{background:var(--blue)}.b2{background:var(--green)}.b3{background:var(--gold)}.b4{background:var(--purple)}.b5{background:var(--orange)}
+.rbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rbtn1{background:var(--blue);color:#0d1b2a;border:none;border-radius:12px;padding:13px 26px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Sora',sans-serif;text-decoration:none;display:inline-block;}
+.rbtn2{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:12px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;text-decoration:none;display:inline-block;}
+.footer{text-align:center;padding:20px;font-size:11px;color:#2a4a6b;}
+</style>
+</head>
+<body>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <div style="font-size:44px;margin-bottom:10px;">🍀</div>
+    <h2>Taeglicher Test</h2>
+    <p>Lektion 08 &bull; <strong>50 Fragen &bull; 5 Typen &bull; 10 Min</strong><br>Schwellenwert: 85%</p>
+    <div class="type-list">
+      <div class="tlt">Fragetypen</div>
+      <div class="ti"><span class="dot d1"></span>DE &rarr; VI</div>
+      <div class="ti"><span class="dot d2"></span>VI &rarr; DE</div>
+      <div class="ti"><span class="dot d3"></span>Artikel der/die/das</div>
+      <div class="ti"><span class="dot d4"></span>Lueckentext</div>
+      <div class="ti"><span class="dot d5"></span>Wortfeld</div>
+    </div>
+    <input class="minp" id="nameInp" type="text" placeholder="Ihr Name ..." maxlength="40">
+    <button class="mbtn" id="nameBtn">Starten</button>
+  </div>
+</div>
+
+<header>
+  <div class="htag">LEKTION 08 &bull; TAEGLICHER TEST</div>
+  <h1>Hoa &ndash; Der Glueckspilz</h1>
+  <p>50 Fragen &bull; 5 Typen</p>
+  <a href="index.html" class="hback">&larr; Zurueck</a>
+</header>
+
+<div class="tbar" id="tbar">
+  <div class="tinner">
+    <div class="trow">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="tlbl">Zeit</span>
+        <span class="tdisp" id="tdisp">10:00</span>
+      </div>
+      <span class="tcnt" id="tcnt">0 / 50</span>
+    </div>
+    <div class="ptrack"><div class="pfill" id="pfill" style="width:0%"></div></div>
+    <div style="height:28px;padding-top:4px;"><span class="sbadge" id="sbadge"></span></div>
+  </div>
+</div>
+
+<div class="qwrap" id="qwrap"></div>
+
+<div class="result" id="result">
+  <div class="rcard">
+    <span class="remoji" id="remoji"></span>
+    <div class="rscore" id="rscore"></div>
+    <div class="rpct" id="rpct"></div>
+    <div class="rmsg" id="rmsg"></div>
+    <div class="rstu" id="rstu"></div>
+    <div class="medals" id="medals"></div>
+    <div class="bdsec"><div class="bdtitle">Ergebnis nach Fragetyp</div><div id="bdrows"></div></div>
+    <div class="rbtns">
+      <a href="index.html" class="rbtn1">&larr; Zurueck</a>
+      <a href="taeglicher-test.html" class="rbtn2">Nochmal</a>
+    </div>
+  </div>
+</div>
+<div class="footer">Made with love by BBQ</div>
+
+<script>
+var WORDS = [
+  {de:"tauschen",           art:"",    vi:"hoán đổi / trao đổi"},
+  {de:"der Versuch",        art:"der", vi:"lần thử / thí nghiệm"},
+  {de:"der Metzger",        art:"der", vi:"người bán thịt / thợ làm thịt"},
+  {de:"das Tier",           art:"das", vi:"con vật / động vật"},
+  {de:"das Kraftfahrzeug",  art:"das", vi:"xe có động cơ / phương tiện cơ giới"},
+  {de:"der Spezialist",     art:"der", vi:"chuyên gia"},
+  {de:"der Bereich",        art:"der", vi:"lĩnh vực / khu vực"},
+  {de:"die Fachkraft",      art:"die", vi:"lao động có chuyên môn"},
+  {de:"die Gaststätte",     art:"die", vi:"quán ăn / nhà hàng"},
+  {de:"leiden",             art:"",    vi:"chịu đựng / thiếu hụt"},
+  {de:"klassisch",          art:"",    vi:"cổ điển / truyền thống"},
+  {de:"der Lehrling",       art:"der", vi:"học nghề / thực tập sinh"},
+  {de:"die Aussicht",       art:"die", vi:"triển vọng / viễn cảnh"},
+  {de:"staatlich",          art:"",    vi:"thuộc nhà nước / công lập"},
+  {de:"die Tätigkeit",      art:"die", vi:"hoạt động / công việc"},
+  {de:"das Bundesland",     art:"das", vi:"tiểu bang liên bang"},
+  {de:"die Grafik",         art:"die", vi:"biểu đồ / đồ thị"},
+  {de:"das Einkommen",      art:"das", vi:"thu nhập"},
+  {de:"die Stelle",         art:"die", vi:"vị trí / chỗ làm"},
+  {de:"der Wissenschaftler",art:"der", vi:"nhà khoa học"},
+  {de:"der Architekt",      art:"der", vi:"kiến trúc sư"},
+  {de:"der Hase",           art:"der", vi:"con thỏ"},
+  {de:"das Wissen",         art:"das", vi:"kiến thức / tri thức"},
+  {de:"betragen",           art:"",    vi:"đạt / lên đến (số lượng)"},
+  {de:"die Verbesserung",   art:"die", vi:"sự cải thiện / cải tiến"},
+  {de:"der Wert",           art:"der", vi:"giá trị / con số"},
+  {de:"der Link",           art:"der", vi:"đường dẫn / liên kết"},
+  {de:"die Seite",          art:"die", vi:"trang web / trang sách"},
+  {de:"garantieren",        art:"",    vi:"đảm bảo / bảo đảm"},
+  {de:"der Zweifel",        art:"der", vi:"sự nghi ngờ / hoài nghi"},
+  {de:"das Semester",       art:"das", vi:"học kỳ"},
+  {de:"die Hochschule",     art:"die", vi:"trường đại học / cao đẳng"},
+  {de:"das Labor",          art:"das", vi:"phòng thí nghiệm"},
+  {de:"die Nachfrage",      art:"die", vi:"nhu cầu / sự hỏi thăm"},
+  {de:"erscheinen",         art:"",    vi:"xuất hiện / được xuất bản"},
+  {de:"die Krippe",         art:"die", vi:"nhà trẻ"},
+  {de:"der Reiseführer",    art:"der", vi:"hướng dẫn viên du lịch"},
+  {de:"schließlich",        art:"",    vi:"cuối cùng / rốt cuộc"},
+  {de:"der Kaufmann",       art:"der", vi:"thương nhân / nhân viên kinh doanh"},
+  {de:"das Institut",       art:"das", vi:"viện / học viện"},
+  {de:"die Studierende",    art:"die", vi:"sinh viên đại học"},
+  {de:"die Technologie",    art:"die", vi:"công nghệ"},
+  {de:"die Kompetenz",      art:"die", vi:"năng lực / khả năng"},
+  {de:"technisch",          art:"",    vi:"thuộc kỹ thuật / kỹ thuật"},
+  {de:"sich beschäftigen",  art:"",    vi:"bận rộn / bận tâm"},
+  {de:"die Terrasse",       art:"die", vi:"sân thượng / hiên nhà"},
+  {de:"sich eignen",        art:"",    vi:"phù hợp / thích hợp"},
+  {de:"usw.",               art:"",    vi:"vân vân / v.v."},
+  {de:"der Lehrling",       art:"der", vi:"học nghề / thực tập sinh"},
+];
+
+var LUECKEN = [
+  {s:"Sie tauschen heute die [_].",a:"Rollen",d:["Berufe","Stellen","Versuche"]},
+  {s:"In vielen Bereichen fehlen [_].",a:"Fachkräfte",d:["Lehrlinge","Studenten","Wissenschaftler"]},
+  {s:"Er wollte immer schon [_] für Elektromotoren werden.",a:"Spezialist",d:["Lehrling","Kaufmann","Architekt"]},
+  {s:"Fast die Hälfte bekommt sofort eine bessere [_].",a:"Stelle",d:["Grafik","Seite","Tätigkeit"]},
+  {s:"Er studiert im 3. [_] Elektrotechnik an einer Hochschule.",a:"Semester",d:["Labor","Wissen","Institut"]},
+  {s:"Als Handwerker bekommt man nach der Ausbildung [_] einen Job.",a:"garantiert",d:["schließlich","staatlich","klassisch"]},
+  {s:"Jetzt gibt es keine [_] mehr, denn es passt genau.",a:"Zweifel",d:["Versuch","Wert","Nachfrage"]},
+  {s:"80 Prozent geben an, dass sie mehr [_] im Beruf haben.",a:"Wissen",d:["Einkommen","Technologie","Kompetenz"]},
+  {s:"Der Anteil der Leute, die mehr Gehalt bekommen, [_] 34 Prozent.",a:"beträgt",d:["erscheint","garantiert","leidet"]},
+  {s:"Auch das Handwerk [_] sehr unter dem Fachkräftemangel.",a:"leidet",d:["garantiert","betrachtet","erscheint"]},
+  {s:"Die meisten wissen nicht, dass es [_] Unterstützung gibt.",a:"staatliche",d:["klassische","technische","neue"]},
+  {s:"[_] habe ich mich für eine Umschulung entschieden.",a:"Schließlich",d:["Garantiert","Staatlich","Klassisch"]},
+  {s:"In meinem Heimatland war ich [_].",a:"Kaufmann",d:["Lehrling","Spezialist","Reiseführer"]},
+  {s:"Kompetenzen sind das Wissen und die Fähigkeiten im [_].",a:"Beruf",d:["Labor","Institut","Semester"]},
+  {s:"Eine Fortbildung bringt neue Kenntnisse zu [_] Geräten.",a:"technischen",d:["staatlichen","klassischen","neuen"]},
+  {s:"Sie arbeitet jetzt als Zahntechnikerin in einem [_].",a:"Labor",d:["Institut","Semester","Krippe"]},
+  {s:"Große [_] nach Nachhilfe: Katalog erschienen.",a:"Nachfrage",d:["Aussicht","Verbesserung","Grafik"]},
+  {s:"Für die sich die teure Fortbildung wirklich [_].",a:"eignet",d:["garantiert","erscheint","beteiligt"]},
+  {s:"Die Grafik zeigt, welche [_] eine Weiterbildung bringt.",a:"Verbesserungen",d:["Versuche","Stellen","Werte"]},
+  {s:"Ein [_] ist eine Bildungs- oder Forschungseinrichtung.",a:"Institut",d:["Labor","Semester","Bundesland"]}
+];
+
+var WORTFELD = [
+  {q:"Synonym von SCHLIESSLICH?",a:"am Ende",o:["am Ende","staatlich","klassisch","anfangs"],n:"Synonym"},
+  {q:"Gegenteil von STAATLICH?",a:"privat",o:["privat","technisch","garantiert","klassisch"],n:"Antonym"},
+  {q:"Welche Kollokation ist korrekt?",a:"Zweifel haben",o:["Zweifel haben","Zweifel machen","Zweifel nehmen","Zweifel geben"],n:"Kollokation"},
+  {q:"Welche Kollokation ist korrekt?",a:"eine Stelle finden",o:["eine Stelle finden","eine Stelle nehmen","eine Stelle geben","eine Stelle machen"],n:"Kollokation"},
+  {q:"Synonym von FACHKRAFT?",a:"Spezialist",o:["Spezialist","Lehrling","Kaufmann","Reiseführer"],n:"Synonym"},
+  {q:"Welche Kollokation ist korrekt?",a:"Wissen erwerben",o:["Wissen erwerben","Wissen geben","Wissen machen","Wissen nehmen"],n:"Kollokation"},
+  {q:"Was bedeutet BETRAGEN?",a:"eine bestimmte Menge/Zahl sein",o:["eine bestimmte Menge/Zahl sein","kaufen","bezahlen","nehmen"],n:"Definition"},
+  {q:"Gegenteil von VERBESSERUNG?",a:"Verschlechterung",o:["Verschlechterung","Technologie","Kompetenz","Wissen"],n:"Antonym"},
+  {q:"Welche Kollokation ist korrekt?",a:"Kompetenz entwickeln",o:["Kompetenz entwickeln","Kompetenz kaufen","Kompetenz werfen","Kompetenz schreiben"],n:"Kollokation"},
+  {q:"Synonym von HOCHSCHULE?",a:"Universität",o:["Universität","Krippe","Labor","Gaststätte"],n:"Synonym"},
+  {q:"Welche Kollokation ist korrekt?",a:"einen Versuch machen",o:["einen Versuch machen","einen Versuch geben","einen Versuch nehmen","einen Versuch kaufen"],n:"Kollokation"},
+  {q:"Was bedeutet SICH EIGNEN?",a:"geeignet / passend sein",o:["geeignet / passend sein","erscheinen","leiden","tauschen"],n:"Definition"},
+  {q:"Welche Kollokation ist korrekt?",a:"Einkommen erzielen",o:["Einkommen erzielen","Einkommen machen","Einkommen geben","Einkommen nehmen"],n:"Kollokation"},
+  {q:"Synonym von ERSCHEINEN?",a:"veröffentlicht werden",o:["veröffentlicht werden","betragen","leiden","garantieren"],n:"Synonym"}
+];
+
+var score = 0;
+var answered = 0;
+var streak = 0;
+var maxStreak = 0;
+var secondsLeft = 600;
+var timerID = null;
+var TOTAL = 50;
+var typeStats = {1:[0,0],2:[0,0],3:[0,0],4:[0,0],5:[0,0]};
+var studentName = "";
+
+var nameInp = document.getElementById("nameInp");
+var nameBtn = document.getElementById("nameBtn");
+
+nameInp.addEventListener("input", function() {
+  nameBtn.classList.toggle("ready", nameInp.value.trim().length >= 1);
+});
+nameInp.addEventListener("keydown", function(e) {
+  if (e.key === "Enter" && nameInp.value.trim().length >= 1) doStart();
+});
+nameBtn.addEventListener("click", function() {
+  if (nameInp.value.trim().length >= 1) doStart();
+});
+
+function doStart() {
+  studentName = nameInp.value.trim();
+  document.getElementById("modal").className = "modal hidden";
+  try { buildAll(); } catch(e) { console.error("buildAll error:", e); }
+  runTimer();
+}
+
+function shuffle(a) {
+  var b = a.slice(), i, j, t;
+  for (i = b.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    t = b[i]; b[i] = b[j]; b[j] = t;
+  }
+  return b;
+}
+
+function lockAll(grid, correctVal) {
+  var btns = grid.querySelectorAll(".opt");
+  for (var k = 0; k < btns.length; k++) {
+    btns[k].style.pointerEvents = "none";
+    if (btns[k].getAttribute("data-v") === correctVal) {
+      if (!btns[k].classList.contains("ok")) btns[k].classList.add("show");
+    } else if (!btns[k].classList.contains("ok") && !btns[k].classList.contains("no")) {
+      btns[k].classList.add("lock");
+    }
+  }
+}
+
+function record(t, ok) {
+  typeStats[t][1]++;
+  if (ok) { score++; typeStats[t][0]++; }
+  answered++;
+  streak = ok ? streak + 1 : 0;
+  if (streak > maxStreak) maxStreak = streak;
+  var sb = document.getElementById("sbadge");
+  if (streak >= 3) { sb.textContent = "Streak x" + streak; sb.className = "sbadge on"; }
+  else { sb.className = "sbadge"; }
+  document.getElementById("tcnt").textContent = answered + " / " + TOTAL;
+  document.getElementById("pfill").style.width = Math.round(answered / TOTAL * 100) + "%";
+  if (answered >= TOTAL) endTest();
+}
+
+function hdr(qn, cls, lbl) {
+  var d = document.createElement("div");
+  d.style.marginBottom = "8px";
+  var s = document.createElement("span"); s.className = "qnum"; s.textContent = "Frage " + qn + " / " + TOTAL;
+  var b = document.createElement("span"); b.className = "qtype " + cls; b.textContent = lbl;
+  d.appendChild(s); d.appendChild(b);
+  return d;
+}
+
+function qtxt(html) {
+  var d = document.createElement("div"); d.className = "qtext"; d.innerHTML = html; return d;
+}
+
+function grid2() { var g = document.createElement("div"); g.className = "opts2"; return g; }
+function grid1() { var g = document.createElement("div"); g.className = "opts1"; return g; }
+
+function btn(label, val) {
+  var b = document.createElement("button");
+  b.className = "opt"; b.textContent = label; b.setAttribute("data-v", val); return b;
+}
+
+function cardDEVI(w, qn) {
+  var c = document.createElement("div"); c.className = "qcard";
+  c.appendChild(hdr(qn, "qt1", "DE > VI"));
+  c.appendChild(qtxt("Was bedeutet: <b>" + w.de + "</b> ?"));
+  var g = grid2();
+  var wrong = shuffle(WORDS.filter(function(x) { return x.de !== w.de; })).slice(0, 3);
+  shuffle([w].concat(wrong)).forEach(function(o) {
+    var b2 = btn(o.vi, o.vi);
+    b2.addEventListener("click", function() {
+      var ok = o.de === w.de;
+      b2.classList.add(ok ? "ok" : "no");
+      lockAll(g, w.vi); record(1, ok);
+    });
+    g.appendChild(b2);
+  });
+  c.appendChild(g); return c;
+}
+
+function cardVIDE(w, qn) {
+  var c = document.createElement("div"); c.className = "qcard";
+  c.appendChild(hdr(qn, "qt2", "VI > DE"));
+  c.appendChild(qtxt("\"<b>" + w.vi + "</b>\" - welches Wort?"));
+  var g = grid2();
+  var wrong = shuffle(WORDS.filter(function(x) { return x.de !== w.de; })).slice(0, 3);
+  var corr = w.de;
+  shuffle([w].concat(wrong)).forEach(function(o) {
+    var b2 = btn(o.de, o.de);
+    b2.addEventListener("click", function() {
+      var ok = o.de === w.de;
+      b2.classList.add(ok ? "ok" : "no");
+      lockAll(g, corr); record(2, ok);
+    });
+    g.appendChild(b2);
+  });
+  c.appendChild(g); return c;
+}
+
+function cardArt(w, qn) {
+  if (!w.art || (w.art !== "der" && w.art !== "die" && w.art !== "das")) return cardDEVI(w, qn);
+  var c = document.createElement("div"); c.className = "qcard";
+  c.appendChild(hdr(qn, "qt3", "Artikel"));
+  var base = w.de.replace(/^(der|die|das) /, "");
+  c.appendChild(qtxt("Welcher Artikel gehört zu: <b>" + base + "</b> ?"));
+  var g = grid2();
+  var corr = w.art;
+  var pool = ["der","die","das"].filter(function(x) { return x !== corr; });
+  shuffle([corr].concat(pool)).forEach(function(a) {
+    var b2 = btn(a, a);
+    b2.addEventListener("click", function() {
+      var ok = a === corr;
+      b2.classList.add(ok ? "ok" : "no");
+      lockAll(g, corr); record(3, ok);
+    });
+    g.appendChild(b2);
+  });
+  var hint = document.createElement("div");
+  hint.className = "hint"; hint.style.display = "none"; hint.textContent = "Vollform: " + w.de;
+  c.appendChild(g); c.appendChild(hint); return c;
+}
+
+function cardLuecke(lq, qn) {
+  var c = document.createElement("div"); c.className = "qcard";
+  c.appendChild(hdr(qn, "qt4", "Lueckentext"));
+  c.appendChild(qtxt(lq.s.replace("[_]", "<b>______</b>")));
+  var g = grid2();
+  shuffle([lq.a].concat(lq.d)).forEach(function(o) {
+    var b2 = btn(o, o);
+    b2.addEventListener("click", function() {
+      var ok = o === lq.a;
+      b2.classList.add(ok ? "ok" : "no");
+      lockAll(g, lq.a); record(4, ok);
+    });
+    g.appendChild(b2);
+  });
+  c.appendChild(g); return c;
+}
+
+function cardWortfeld(wf, qn) {
+  var c = document.createElement("div"); c.className = "qcard";
+  c.appendChild(hdr(qn, "qt5", "Wortfeld"));
+  var note = document.createElement("div"); note.className = "wfnote"; note.textContent = wf.n;
+  c.appendChild(note);
+  c.appendChild(qtxt(wf.q));
+  var g = grid1();
+  shuffle(wf.o.slice()).forEach(function(o) {
+    var b2 = btn(o, o);
+    b2.addEventListener("click", function() {
+      var ok = o === wf.a;
+      b2.classList.add(ok ? "ok" : "no");
+      lockAll(g, wf.a); record(5, ok);
+    });
+    g.appendChild(b2);
+  });
+  c.appendChild(g); return c;
+}
+
+function buildAll() {
+  var wrap = document.getElementById("qwrap");
+  wrap.innerHTML = "";
+  var allW = shuffle(WORDS.slice());
+  var allNouns = WORDS.filter(function(w) { return w.art === "der" || w.art === "die" || w.art === "das"; });
+  var used = {};
+
+  var p1 = allW.slice(0, 14);
+  p1.forEach(function(w) { used[w.de] = true; });
+
+  var p2 = allW.filter(function(w) { return !used[w.de]; }).slice(0, 11);
+  p2.forEach(function(w) { used[w.de] = true; });
+
+  var availNouns = allNouns.filter(function(w) { return !used[w.de]; });
+  if (availNouns.length < 4) availNouns = shuffle(allNouns.slice());
+  var p3 = availNouns.slice(0, Math.min(8, availNouns.length));
+
+  var p4 = shuffle(LUECKEN.slice()).slice(0, Math.min(9, LUECKEN.length));
+  var p5 = shuffle(WORTFELD.slice()).slice(0, Math.min(8, WORTFELD.length));
+
+  var fns = [];
+  p1.forEach(function(w) { fns.push(function(n) { return cardDEVI(w, n); }); });
+  p2.forEach(function(w) { fns.push(function(n) { return cardVIDE(w, n); }); });
+  p3.forEach(function(w) { fns.push(function(n) { return cardArt(w, n); }); });
+  p4.forEach(function(lq) { fns.push(function(n) { return cardLuecke(lq, n); }); });
+  p5.forEach(function(wf) { fns.push(function(n) { return cardWortfeld(wf, n); }); });
+
+  var ei = 0;
+  var ex = shuffle(WORDS.slice());
+  var safety = 0;
+  while (fns.length < TOTAL && safety < 200) {
+    var ww = ex[ei % ex.length]; ei++; safety++;
+    (function(w) { fns.push(function(n) { return cardDEVI(w, n); }); })(ww);
+  }
+
+  shuffle(fns).slice(0, TOTAL).forEach(function(fn, i) {
+    wrap.appendChild(fn(i + 1));
+  });
+}
+
+function runTimer() {
+  timerID = setInterval(function() {
+    secondsLeft--;
+    var m = Math.floor(secondsLeft / 60);
+    var s = secondsLeft % 60;
+    var d = document.getElementById("tdisp");
+    d.textContent = (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    d.className = secondsLeft <= 60 ? "tdisp warn" : "tdisp";
+    if (secondsLeft <= 0) { clearInterval(timerID); endTest(); }
+  }, 1000);
+}
+
+function endTest() {
+  clearInterval(timerID);
+  document.getElementById("qwrap").style.display = "none";
+  document.getElementById("tbar").style.display = "none";
+  var pct = Math.round(score / TOTAL * 100);
+  document.getElementById("remoji").textContent = pct >= 85 ? "🏆" : pct >= 70 ? "⭐" : pct >= 55 ? "👍" : "💪";
+  document.getElementById("rscore").textContent = score + "/" + TOTAL;
+  document.getElementById("rpct").textContent = pct + "%";
+  document.getElementById("rmsg").textContent =
+    pct >= 85 ? "Ausgezeichnet!" : pct >= 70 ? "Gut gemacht!" : pct >= 55 ? "Nicht schlecht!" : "Weiter ueben!";
+  document.getElementById("rstu").textContent = studentName + " – Lektion 08";
+
+  var med = document.getElementById("medals");
+  var mlist = [
+    [pct >= 85, "Ausgezeichnet"],
+    [maxStreak >= 5, "Streak x" + maxStreak],
+    [typeStats[3][1] > 0 && typeStats[3][0] === typeStats[3][1], "Artikel-Meister"],
+    [typeStats[5][1] > 0 && typeStats[5][0] / typeStats[5][1] >= 0.75, "Wortfeld-Profi"]
+  ];
+  mlist.forEach(function(m) {
+    if (m[0]) {
+      var d = document.createElement("div"); d.className = "medal"; d.textContent = m[1]; med.appendChild(d);
+    }
+  });
+
+  var names = {1:"DE > VI",2:"VI > DE",3:"Artikel",4:"Lueckentext",5:"Wortfeld"};
+  var cols = {1:"b1",2:"b2",3:"b3",4:"b4",5:"b5"};
+  var tcols = {1:"var(--blue)",2:"var(--green)",3:"var(--gold)",4:"var(--purple)",5:"var(--orange)"};
+  var bdr = document.getElementById("bdrows");
+  [1,2,3,4,5].forEach(function(t) {
+    var c2 = typeStats[t][0], tot = typeStats[t][1];
+    if (tot === 0) return;
+    var p = Math.round(c2 / tot * 100);
+    var row = document.createElement("div"); row.className = "bdrow";
+    var top2 = document.createElement("div"); top2.className = "bdtop";
+    var nm = document.createElement("span"); nm.className = "bdname"; nm.textContent = names[t];
+    var st = document.createElement("span"); st.className = "bdstat"; st.style.color = tcols[t];
+    st.textContent = c2 + "/" + tot + "  " + p + "%";
+    top2.appendChild(nm); top2.appendChild(st);
+    var tr = document.createElement("div"); tr.className = "bdtrack";
+    var br = document.createElement("div"); br.className = "bdbar " + cols[t];
+    br.style.width = p + "%";
+    tr.appendChild(br);
+    row.appendChild(top2); row.appendChild(tr);
+    bdr.appendChild(row);
+  });
+
+  document.getElementById("result").className = "result on";
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

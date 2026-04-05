@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Übungen – Lektion 08</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;
+  --rose:#e11d48;--rose-lt:#ffe4e6;--gold:#d97706;--gold-lt:#fef3c7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;padding:28px 20px 22px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+/* tab nav */
+.tab-nav{max-width:680px;margin:20px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;}
+.tab-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap;}
+.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+/* panels */
+.panel{display:none;max-width:680px;margin:20px auto;padding:0 16px 20px;}
+.panel.active{display:block;}
+.panel-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);margin-bottom:4px;}
+.panel-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+/* exercise cards */
+.ex-card{background:var(--card);border-radius:14px;border:2px solid var(--border);padding:20px;margin-bottom:14px;}
+.ex-q{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+.ex-q em{color:var(--blue);font-style:normal;font-weight:800;}
+/* multiple choice */
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mc-opt{background:#fafafa;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Outfit',sans-serif;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--ink);}
+.mc-opt:hover:not(:disabled){border-color:var(--blue);background:var(--blue-lt);}
+.mc-opt.ok{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;}
+.mc-opt.no{background:var(--rose-lt)!important;border-color:var(--rose)!important;color:var(--rose)!important;pointer-events:none;}
+.mc-opt.reveal{background:var(--green-lt)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none;opacity:.7;}
+.mc-opt.locked{pointer-events:none;opacity:.4;}
+/* single column MC */
+.mc-opts1{display:grid;grid-template-columns:1fr;gap:8px;}
+/* input exercises */
+.inp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.inp-field{border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;font-family:'Outfit',sans-serif;font-weight:600;color:var(--ink);outline:none;min-width:160px;flex:1;}
+.inp-field:focus{border-color:var(--blue);}
+.inp-field.ok{border-color:var(--green);background:var(--green-lt);color:var(--green);}
+.inp-field.no{border-color:var(--rose);background:var(--rose-lt);color:var(--rose);}
+.check-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;}
+.check-btn:disabled{opacity:.4;}
+.feedback{font-size:13px;margin-top:8px;font-weight:600;display:none;}
+.feedback.ok{color:var(--green);display:block;}
+.feedback.no{color:var(--rose);display:block;}
+/* score bar */
+.score-bar{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.score-label{font-size:13px;font-weight:700;color:var(--muted);}
+.score-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--blue);}
+.reset-btn{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;}
+.reset-btn:hover{border-color:var(--blue);color:var(--blue);}
+/* zuordnung */
+.zuord-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;align-items:center;}
+.zuord-label{font-size:14px;font-weight:700;color:var(--ink);background:var(--blue-lt);border-radius:8px;padding:10px 14px;}
+.zuord-sel{border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Outfit',sans-serif;font-weight:600;color:var(--ink);background:#fafafa;cursor:pointer;appearance:none;-webkit-appearance:none;outline:none;}
+.zuord-sel:focus{border-color:var(--blue);}
+.zuord-sel.ok{border-color:var(--green);background:var(--green-lt);color:var(--green);}
+.zuord-sel.no{border-color:var(--rose);background:var(--rose-lt);color:var(--rose);}
+.zuord-btn{display:block;margin-top:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;}
+.zuord-btn:disabled{opacity:.4;}
+.footer{text-align:center;padding:24px;font-size:11px;color:#8aa3bc;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 08 · ÜBUNGEN</div>
+    <h1>Hoa – Der Glückspilz</h1>
+    <p>7 Übungstypen · Interaktiv</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab(0)">1 · Bedeutung</button>
+  <button class="tab-btn" onclick="showTab(1)">2 · Artikel</button>
+  <button class="tab-btn" onclick="showTab(2)">3 · Lückentext</button>
+  <button class="tab-btn" onclick="showTab(3)">4 · Wortfeld</button>
+  <button class="tab-btn" onclick="showTab(4)">5 · Berufe</button>
+  <button class="tab-btn" onclick="showTab(5)">6 · Komparativ</button>
+  <button class="tab-btn" onclick="showTab(6)">7 · Wortbildung</button>
+</div>
+
+<!-- Panel 1: Bedeutung -->
+<div class="panel active" id="panel0">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc0">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(0)">↺ Neu</button></div>
+  <div class="panel-title">Übung 1 · Bedeutung</div>
+  <div class="panel-sub">Wählen Sie die richtige vietnamesische Übersetzung.</div>
+  <div id="p0items"></div>
+</div>
+
+<!-- Panel 2: Artikel -->
+<div class="panel" id="panel1">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc1">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(1)">↺ Neu</button></div>
+  <div class="panel-title">Übung 2 · Artikel</div>
+  <div class="panel-sub">Welcher Artikel passt? Wählen Sie der, die oder das.</div>
+  <div id="p1items"></div>
+</div>
+
+<!-- Panel 3: Lückentext -->
+<div class="panel" id="panel2">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc2">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(2)">↺ Neu</button></div>
+  <div class="panel-title">Übung 3 · Lückentext</div>
+  <div class="panel-sub">Ergänzen Sie das fehlende Wort.</div>
+  <div id="p2items"></div>
+</div>
+
+<!-- Panel 4: Wortfeld -->
+<div class="panel" id="panel3">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc3">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(3)">↺ Neu</button></div>
+  <div class="panel-title">Übung 4 · Wortfeld</div>
+  <div class="panel-sub">Synonyme, Antonyme und Kollokationen.</div>
+  <div id="p3items"></div>
+</div>
+
+<!-- Panel 5: Berufe-Zuordnung -->
+<div class="panel" id="panel4">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc4">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(4)">↺ Neu</button></div>
+  <div class="panel-title">Übung 5 · Berufe &amp; Tätigkeiten</div>
+  <div class="panel-sub">Welcher Beruf oder welche Tätigkeit passt zum Satz?</div>
+  <div id="p4items"></div>
+</div>
+
+<!-- Panel 6: Komparativ -->
+<div class="panel" id="panel5">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc5">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(5)">↺ Neu</button></div>
+  <div class="panel-title">Übung 6 · Komparativ mit Weiterbildung</div>
+  <div class="panel-sub">Wählen Sie die grammatisch korrekte Aussage.</div>
+  <div id="p5items"></div>
+</div>
+
+<!-- Panel 7: Wortbildung -->
+<div class="panel" id="panel6">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc6">0 / 0</div></div><button class="reset-btn" onclick="resetPanel(6)">↺ Neu</button></div>
+  <div class="panel-title">Übung 7 · Wortbildung</div>
+  <div class="panel-sub">Welches Wort passt zur Definition?</div>
+  <div id="p6items"></div>
+</div>
+
+<div class="footer">Made with love by BBQ</div>
+
+<script>
+// ── SCORE ────────────────────────────────────────────────────────────────────
+const scores = [0,0,0,0,0,0,0];
+const totals = [0,0,0,0,0,0,0];
+function addScore(panel, correct) {
+  totals[panel]++;
+  if (correct) scores[panel]++;
+  document.getElementById('sc'+panel).textContent = scores[panel]+' / '+totals[panel];
+}
+function resetPanel(panel) {
+  scores[panel]=0; totals[panel]=0;
+  document.getElementById('sc'+panel).textContent='0 / 0';
+  buildPanel(panel);
+}
+function showTab(n) {
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+}
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+// ── WIDGET FACTORIES ─────────────────────────────────────────────────────────
+function makeMC(container, panelIdx, question, correctAns, wrongAnswers, wide=false) {
+  const card=document.createElement('div'); card.className='ex-card';
+  const q=document.createElement('div'); q.className='ex-q'; q.innerHTML=question;
+  const grid=document.createElement('div'); grid.className=wide?'mc-opts1':'mc-opts';
+  const opts=shuffle([correctAns,...wrongAnswers]);
+  let done=false;
+  opts.forEach(o=>{
+    const btn=document.createElement('button'); btn.className='mc-opt'; btn.textContent=o;
+    btn.onclick=()=>{
+      if(done)return; done=true;
+      const ok=(o===correctAns);
+      btn.classList.add(ok?'ok':'no');
+      [...grid.children].forEach(b=>{if(b!==btn){b.classList.add(b.textContent===correctAns?'reveal':'locked');}});
+      addScore(panelIdx, ok);
+    };
+    grid.appendChild(btn);
+  });
+  card.append(q,grid); container.appendChild(card);
+}
+
+function makeInput(container, panelIdx, question, correctAns, hint='') {
+  const card=document.createElement('div'); card.className='ex-card';
+  const q=document.createElement('div'); q.className='ex-q'; q.innerHTML=question;
+  const row=document.createElement('div'); row.className='inp-row';
+  const inp=document.createElement('input'); inp.className='inp-field'; inp.type='text'; inp.placeholder='Antwort…';
+  const btn=document.createElement('button'); btn.className='check-btn'; btn.textContent='Prüfen';
+  const fb=document.createElement('div'); fb.className='feedback';
+  let done=false;
+  btn.onclick=()=>{
+    if(done)return;
+    const val=inp.value.trim();
+    const ok=val.toLowerCase()===correctAns.toLowerCase();
+    inp.classList.add(ok?'ok':'no');
+    fb.textContent=ok?'✓ Richtig!':'✗ Richtig wäre: '+correctAns+(hint?' ('+hint+')':'');
+    fb.className='feedback '+(ok?'ok':'no');
+    btn.disabled=true; done=true;
+    addScore(panelIdx, ok);
+  };
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+  row.append(inp,btn);
+  card.append(q,row,fb); container.appendChild(card);
+}
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+
+const p0data = [
+  {q:'Was bedeutet <em>die Fachkraft</em>?', ans:'lao động có chuyên môn', wrong:['người học việc','thương nhân','kiến trúc sư']},
+  {q:'Was bedeutet <em>der Lehrling</em>?', ans:'học nghề / thực tập sinh', wrong:['nhà khoa học','hướng dẫn viên','chuyên gia']},
+  {q:'Was bedeutet <em>die Aussicht</em>?', ans:'triển vọng / viễn cảnh', wrong:['biểu đồ','thu nhập','chỗ làm']},
+  {q:'Was bedeutet <em>betragen</em>?', ans:'đạt / lên đến (số lượng)', wrong:['đảm bảo','xuất hiện','chịu đựng']},
+  {q:'Was bedeutet <em>schließlich</em>?', ans:'cuối cùng / rốt cuộc', wrong:['lúc đầu','do đó','kể từ đó']},
+  {q:'Was bedeutet <em>die Verbesserung</em>?', ans:'sự cải thiện / cải tiến', wrong:['sự nghi ngờ','nhu cầu','giá trị']},
+  {q:'Was bedeutet <em>staatlich</em>?', ans:'thuộc nhà nước / công lập', wrong:['cổ điển','kỹ thuật','đảm bảo']},
+  {q:'Was bedeutet <em>garantieren</em>?', ans:'đảm bảo / bảo đảm', wrong:['xuất hiện','chịu đựng','hoán đổi']},
+  {q:'Was bedeutet <em>die Kompetenz</em>?', ans:'năng lực / khả năng', wrong:['công nghệ','kiến thức','thu nhập']},
+  {q:'Was bedeutet <em>sich eignen</em>?', ans:'phù hợp / thích hợp', wrong:['bận rộn','trao đổi','xuất hiện']},
+  {q:'Was bedeutet <em>der Zweifel</em>?', ans:'sự nghi ngờ / hoài nghi', wrong:['lần thử','giá trị','trang web']},
+  {q:'Was bedeutet <em>die Tätigkeit</em>?', ans:'hoạt động / công việc', wrong:['vị trí chỗ làm','tiểu bang','biểu đồ']},
+];
+
+const p1data = [
+  {word:'Versuch',art:'der',wrong:['die','das']},
+  {word:'Fachkraft',art:'die',wrong:['der','das']},
+  {word:'Gaststätte',art:'die',wrong:['der','das']},
+  {word:'Lehrling',art:'der',wrong:['die','das']},
+  {word:'Aussicht',art:'die',wrong:['der','das']},
+  {word:'Bundesland',art:'das',wrong:['der','die']},
+  {word:'Einkommen',art:'das',wrong:['der','die']},
+  {word:'Stelle',art:'die',wrong:['der','das']},
+  {word:'Wissen',art:'das',wrong:['der','die']},
+  {word:'Verbesserung',art:'die',wrong:['der','das']},
+  {word:'Zweifel',art:'der',wrong:['die','das']},
+  {word:'Semester',art:'das',wrong:['der','die']},
+  {word:'Hochschule',art:'die',wrong:['der','das']},
+  {word:'Labor',art:'das',wrong:['der','die']},
+  {word:'Institut',art:'das',wrong:['der','die']},
+  {word:'Kompetenz',art:'die',wrong:['der','das']},
+  {word:'Technologie',art:'die',wrong:['der','das']},
+  {word:'Nachfrage',art:'die',wrong:['der','das']},
+  {word:'Bereich',art:'der',wrong:['die','das']},
+  {word:'Wert',art:'der',wrong:['die','das']},
+];
+
+const p2data = [
+  {sent:'Sie ___ heute die Rollen.', ans:'tauschen', hint:'Präsens'},
+  {sent:'In vielen Bereichen fehlen ___.', ans:'Fachkräfte', hint:'Plural von die Fachkraft'},
+  {sent:'Als Handwerker bekommt man nach der Ausbildung ___ einen Job.', ans:'garantiert', hint:'Adverb'},
+  {sent:'Fast die Hälfte bekommt sofort eine bessere ___.', ans:'Stelle', hint:'Nomen'},
+  {sent:'___ habe ich mich für eine Umschulung entschieden.', ans:'Schließlich', hint:'Temporaladverb'},
+  {sent:'Der Anteil der Leute, die mehr Gehalt bekommen, ___ 34 Prozent.', ans:'beträgt', hint:'Präsens von betragen'},
+  {sent:'Er studiert im 3. ___ Elektrotechnik an einer Hochschule.', ans:'Semester', hint:'Nomen'},
+  {sent:'Auch das Handwerk ___ sehr unter dem Fachkräftemangel.', ans:'leidet', hint:'Präsens von leiden'},
+  {sent:'Zu den Kursen sind nur die Mitarbeiter eingeladen, für die sich die Fortbildung wirklich ___.', ans:'eignet', hint:'Präsens von sich eignen'},
+  {sent:'80 Prozent geben an, dass sie mehr ___ und bessere Kenntnisse im Beruf haben.', ans:'Wissen', hint:'Nomen'},
+];
+
+const p3data = [
+  {q:'Welches Wort ist das Synonym von <em>der Spezialist</em>?', ans:'der Fachmann', wrong:['der Lehrling','der Kaufmann','der Reiseführer']},
+  {q:'Welches Wort ist das Antonym von <em>die Verbesserung</em>?', ans:'die Verschlechterung', wrong:['die Nachfrage','die Kompetenz','die Aussicht']},
+  {q:'Welches Wort ist das Antonym von <em>staatlich</em>?', ans:'privat', wrong:['klassisch','technisch','garantiert']},
+  {q:'Welche Kollokation ist korrekt?', ans:'Zweifel haben', wrong:['Zweifel machen','Zweifel geben','Zweifel nehmen']},
+  {q:'Welche Kollokation ist korrekt?', ans:'Wissen erwerben', wrong:['Wissen machen','Wissen nehmen','Wissen geben']},
+  {q:'Welche Kollokation ist korrekt?', ans:'eine Stelle finden', wrong:['eine Stelle machen','eine Stelle kaufen','eine Stelle geben']},
+  {q:'Welches Wort ist das Synonym von <em>erscheinen</em>?', ans:'veröffentlicht werden', wrong:['betragen','leiden','garantieren']},
+  {q:'Welche Kollokation ist korrekt?', ans:'Kompetenz entwickeln', wrong:['Kompetenz kaufen','Kompetenz geben','Kompetenz schreiben']},
+  {q:'Welches Wort ist das Synonym von <em>schließlich</em>?', ans:'am Ende', wrong:['staatlich','klassisch','anfangs']},
+  {q:'Welche Kollokation ist korrekt?', ans:'einen Versuch machen', wrong:['einen Versuch geben','einen Versuch nehmen','einen Versuch kaufen']},
+];
+
+const p4data = [
+  {q:'„Er ist für elektrische Anlagen zuständig und hat eine Ausbildung als Elektriker gemacht." → Beruf?', ans:'Elektriker / Kfz-Mechatroniker', wrong:['Metzger','Reiseführer','Bäcker']},
+  {q:'„Sie verkauft Fleischprodukte in einem Geschäft." → Beruf?', ans:'Metzgerin', wrong:['Kauffrau','Architektin','Wissenschaftlerin']},
+  {q:'„Er studiert und ist an einer Hochschule eingeschrieben." → Wie nennt man ihn?', ans:'Studierender', wrong:['Lehrling','Kaufmann','Spezialist']},
+  {q:'„Sie plant und entwirft Gebäude." → Beruf?', ans:'Architektin', wrong:['Wissenschaftlerin','Spezialistin','Metzgerin']},
+  {q:'„Er forscht an einer Universität und publiziert wissenschaftliche Artikel." → Beruf?', ans:'Wissenschaftler', wrong:['Architekt','Kaufmann','Reiseführer']},
+  {q:'„In meinem Heimatland habe ich im Handel gearbeitet und Waren ge- und verkauft." → Beruf?', ans:'Kaufmann / Kauffrau', wrong:['Wissenschaftler','Elektriker','Bäcker']},
+  {q:'„Er begleitet Touristen und zeigt ihnen Sehenswürdigkeiten." → Beruf?', ans:'Reiseführer', wrong:['Kaufmann','Spezialist','Lehrling']},
+  {q:'„Sie macht gerade eine Berufsausbildung in einem Betrieb." → Wie nennt man sie?', ans:'Lehrling / Auszubildende', wrong:['Studentin','Kauffrau','Spezialistin']},
+];
+
+const p5data = [
+  {q:'Man macht eine Weiterbildung. Das Einkommen wird höher. → <em>Je …</em>', ans:'Je mehr Weiterbildung man macht, desto höher wird das Einkommen.', wrong:['Je viel Weiterbildung man macht, desto höher wird das Einkommen.','Je mehr Weiterbildung man macht, umso das Einkommen höher wird.','Je mehr man Weiterbildung macht, desto das Einkommen ist höher.'], wide:true},
+  {q:'Man hat mehr Kenntnisse. Man bekommt bessere Stellen. → <em>Je …</em>', ans:'Je mehr Kenntnisse man hat, desto bessere Stellen bekommt man.', wrong:['Je viel Kenntnisse man hat, desto besser Stellen bekommt man.','Je mehr Kenntnisse man hat, umso besser Stellen man bekommt.','Je mehr man Kenntnisse hat, desto die Stellen werden besser.'], wide:true},
+  {q:'Was ist bei „je … desto" grammatisch korrekt?', ans:'je + Komparativ, desto + Komparativ + Verb', wrong:['je + Positiv, desto + Verb + Adjektiv','je + Verb, desto + Nomen','je + Adjektiv, umso + Infinitiv']},
+  {q:'Man lernt früh Deutsch. Man findet leichter Arbeit. → <em>Je … umso …</em>', ans:'Je früher man Deutsch lernt, umso leichter findet man Arbeit.', wrong:['Je früh man Deutsch lernt, umso leichter findet man Arbeit.','Je früher man Deutsch lernt, desto man findet leichter Arbeit.','Je mehr man früher Deutsch lernt, umso leichter Arbeit findet man.'], wide:true},
+  {q:'Was drückt die Struktur „je … desto / umso" aus?', ans:'Je stärker A ist, desto / umso stärker ist B.', wrong:['Je mehr A, desto weniger B.','Je weniger A, desto mehr B ist.','A und B sind unabhängig voneinander.']},
+];
+
+const p6data = [
+  {q:'„Ein Betrieb, in dem man essen und trinken kann" – welches Wort passt?', ans:'die Gaststätte', wrong:['die Hochschule','die Krippe','das Labor']},
+  {q:'„Das Geld, das man monatlich verdient" – welches Wort passt?', ans:'das Einkommen', wrong:['die Stelle','der Wert','die Grafik']},
+  {q:'„Eine Person mit besonderen Fähigkeiten in einem Fachgebiet" – welches Wort passt?', ans:'der Spezialist / die Spezialistin', wrong:['der Lehrling','der Kaufmann','der Reiseführer']},
+  {q:'„Ein halbes Schuljahr an der Universität" – welches Wort passt?', ans:'das Semester', wrong:['das Institut','das Labor','das Bundesland']},
+  {q:'„Die Fähigkeiten, die man im Beruf braucht – sowohl fachlich als auch sozial" – welches Wort passt?', ans:'die Kompetenz', wrong:['die Technologie','das Wissen','die Verbesserung']},
+  {q:'„Methoden und Geräte, die in Industrie und Alltag genutzt werden" – welches Wort passt?', ans:'die Technologie', wrong:['die Kompetenz','die Grafik','das Semester']},
+  {q:'„Wenn etwas in einer Zeitung oder online erscheint" – welches Verb passt?', ans:'erscheinen', wrong:['betragen','garantieren','leiden']},
+  {q:'„Wenn man für eine bestimmte Aufgabe oder Stelle geeignet ist" – welches Verb passt?', ans:'sich eignen', wrong:['tauschen','betragen','erscheinen']},
+];
+
+// ── BUILD ────────────────────────────────────────────────────────────────────
+function buildPanel(panel) {
+  const containers = ['p0items','p1items','p2items','p3items','p4items','p5items','p6items'];
+  const c = document.getElementById(containers[panel]);
+  c.innerHTML = '';
+
+  if (panel===0) {
+    shuffle(p0data).slice(0,10).forEach(d=>makeMC(c,0,d.q,d.ans,d.wrong));
+
+  } else if (panel===1) {
+    shuffle(p1data).slice(0,12).forEach(d=>{
+      makeMC(c,1,'Welcher Artikel gehört zu: <em>'+d.word+'</em>?',d.art,d.wrong);
+    });
+
+  } else if (panel===2) {
+    shuffle(p2data).forEach(d=>makeInput(c,2,d.sent.replace('___','<em>______</em>'),d.ans,d.hint));
+
+  } else if (panel===3) {
+    shuffle(p3data).forEach(d=>makeMC(c,3,d.q,d.ans,d.wrong));
+
+  } else if (panel===4) {
+    shuffle(p4data).forEach(d=>makeMC(c,4,d.q,d.ans,d.wrong,true));
+
+  } else if (panel===5) {
+    shuffle(p5data).forEach(d=>makeMC(c,5,d.q,d.ans,d.wrong,d.wide||false));
+
+  } else if (panel===6) {
+    shuffle(p6data).forEach(d=>makeMC(c,6,d.q,d.ans,d.wrong));
+  }
+}
+
+[0,1,2,3,4,5,6].forEach(i=>buildPanel(i));
+</script>
+</body>
+</html>
