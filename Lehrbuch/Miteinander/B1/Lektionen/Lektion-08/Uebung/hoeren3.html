@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L08 Hören 3 – Berufliche Wege</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+  :root {
+    --teal:#1a7f6e; --teal-d:#0f4c3a; --teal-l:#e0f5f1; --teal-m:#a7dfd6;
+    --gold:#f5d000; --blue:#2563a8; --blue-l:#ddeeff;
+    --green:#22b573; --green-l:#e6f9f2; --red:#e84040; --red-l:#ffeaea;
+    --dark:#1a2a2e; --gray:#6b7280; --bg:#f0faf8; --radius:16px; --shadow:0 4px 24px rgba(0,0,0,0.09);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding-bottom:60px;}
+
+  .header{background:linear-gradient(135deg,var(--teal-d) 0%,var(--teal) 100%);color:white;padding:20px 16px 26px;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,0.08);border-radius:50%;}
+  .header::after{content:'';position:absolute;bottom:-20px;left:35%;width:90px;height:90px;background:rgba(245,208,0,0.12);border-radius:50%;}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);color:white;border:none;border-radius:20px;padding:6px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;margin-bottom:12px;}
+  .header-label{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:0.8;margin-bottom:4px;font-family:'Nunito',sans-serif;}
+  .header h1{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;line-height:1.2;}
+  .header h1 em{color:var(--gold);font-style:normal;}
+  .header-sub{font-size:13px;opacity:0.85;margin-top:6px;}
+
+  /* PLAYER */
+  .player-card{background:white;border-radius:var(--radius);margin:16px;box-shadow:var(--shadow);overflow:hidden;}
+  .player-top{background:linear-gradient(135deg,var(--teal-d),var(--teal));padding:14px 16px;display:flex;align-items:center;gap:12px;}
+  .p-icon{width:46px;height:46px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .p-title{font-family:'Nunito',sans-serif;font-weight:900;color:white;font-size:14px;}
+  .p-sub{font-size:12px;color:rgba(255,255,255,0.75);margin-top:1px;}
+  .p-ctrl{padding:12px 16px 12px;}
+  audio{display:none;}
+  .tl-bar{width:100%;height:6px;background:var(--teal-l);border-radius:10px;cursor:pointer;position:relative;overflow:hidden;margin-bottom:4px;}
+  .tl-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:10px;width:0%;transition:width 0.2s linear;pointer-events:none;}
+  .tl-times{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);font-family:'Nunito',sans-serif;font-weight:700;margin-bottom:10px;}
+  .ctrl-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;}
+  .cbtn{border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+  .csm{background:var(--teal-l);color:var(--teal);width:38px;height:38px;font-size:16px;border-radius:10px;}
+  .csm:hover{background:var(--teal-m);}
+  .cplay{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:white;width:52px;height:52px;border-radius:50%;font-size:20px;box-shadow:0 4px 14px rgba(26,127,110,0.4);}
+  .cplay:hover{transform:scale(1.06);}
+  .spd-row{display:flex;justify-content:center;gap:6px;}
+  .spdbtn{border:2px solid var(--teal-l);background:white;color:var(--teal);border-radius:20px;padding:4px 11px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.15s;}
+  .spdbtn.active,.spdbtn:hover{background:var(--teal);color:white;border-color:var(--teal);}
+
+  /* INTRO */
+  .intro-box{background:white;border-radius:var(--radius);margin:0 16px 14px;padding:14px 16px;box-shadow:var(--shadow);border-left:5px solid var(--gold);}
+  .intro-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;margin-bottom:4px;}
+  .intro-sub{font-size:13px;color:var(--gray);line-height:1.5;}
+
+  /* SPEAKER CARDS */
+  .speaker-section{margin:0 16px 16px;}
+  .speaker-badge{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .sp-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .sp0{background:#fff3e0;} .sp1{background:#e8f4fd;} .sp2{background:#f3e5f5;}
+  .sp-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:15px;}
+  .sp-role{font-size:12px;color:var(--gray);}
+
+  /* STATEMENT CARDS */
+  .stmt-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);}
+  .stmt-num{font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .stmt-text{font-size:14px;font-weight:600;line-height:1.5;margin-bottom:10px;}
+  .rf-row{display:flex;gap:8px;}
+  .rf-btn{flex:1;border:2px solid #e5e7eb;border-radius:10px;padding:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;background:white;color:var(--dark);transition:all 0.15s;text-align:center;}
+  .rf-btn:hover:not(:disabled){border-color:var(--teal);background:var(--teal-l);}
+  .rf-btn.sel-r{border-color:var(--blue);background:var(--blue-l);color:var(--blue);}
+  .rf-btn.sel-f{border-color:#f97316;background:#fff7ed;color:#c2410c;}
+  .rf-btn.correct{border-color:var(--green);background:var(--green-l);color:#166534;}
+  .rf-btn.wrong{border-color:var(--red);background:var(--red-l);color:#991b1b;}
+  .rf-btn:disabled{cursor:default;}
+  .fb{display:none;margin-top:8px;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;line-height:1.4;}
+  .fb.show{display:block;}
+  .fb.ok{background:var(--green-l);color:#166534;}
+  .fb.err{background:var(--red-l);color:#991b1b;}
+
+  /* DIVIDER */
+  .sdiv{display:flex;align-items:center;gap:10px;padding:0 16px;margin:8px 0 12px;}
+  .sdl{flex:1;height:2px;background:var(--teal-l);border-radius:2px;}
+  .sdlbl{font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--teal);text-transform:uppercase;letter-spacing:2px;white-space:nowrap;}
+
+  /* SUBMIT + RESULT */
+  .sub-wrap{padding:0 16px 8px;}
+  .btn-sub{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:white;border:none;border-radius:14px;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;width:100%;box-shadow:0 4px 18px rgba(26,127,110,0.35);transition:transform 0.15s;}
+  .btn-sub:hover{transform:translateY(-2px);}
+  .btn-sub:disabled{background:#ccc;box-shadow:none;cursor:default;transform:none;}
+  .result-card{background:linear-gradient(135deg,var(--teal-d),var(--teal));border-radius:var(--radius);margin:0 16px 24px;padding:24px;color:white;text-align:center;display:none;animation:popIn 0.4s ease;}
+  .result-card.show{display:block;}
+  @keyframes popIn{from{transform:scale(0.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .res-emoji{font-size:52px;margin-bottom:10px;}
+  .res-score{font-family:'Nunito',sans-serif;font-size:56px;font-weight:900;line-height:1;}
+  .res-max{font-size:14px;opacity:0.8;margin-bottom:8px;}
+  .res-msg{font-size:14px;line-height:1.5;opacity:0.9;}
+  .res-detail{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center;}
+  .res-pill{background:rgba(255,255,255,0.15);border-radius:10px;padding:7px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-btn" href="index.html">← Zurück</a>
+  <div class="header-label">Lektion 08 · Hören 3</div>
+  <h1>Aufgabe B1c – <em>Berufliche Wege</em></h1>
+  <div class="header-sub">3 Monologe · Goethe B1 Teil 3 Stil</div>
+</div>
+
+<div class="player-card">
+  <div class="player-top">
+    <div class="p-icon">🎧</div>
+    <div>
+      <div class="p-title">5_17 · Aufgabe B1c</div>
+      <div class="p-sub">Tom, Gianna &amp; Johanna erzählen</div>
+    </div>
+  </div>
+  <div class="p-ctrl">
+    <audio id="aud" src="5_17_Miteinander_B12_KB_L8_B1c.mp3" preload="auto"></audio>
+    <div class="tl-bar" id="bar"><div class="tl-fill" id="fill"></div></div>
+    <div class="tl-times"><span id="cur">0:00</span><span id="dur">—</span></div>
+    <div class="ctrl-row">
+      <button class="cbtn csm" onclick="sk(-10)">⏪</button>
+      <button class="cbtn cplay" id="playbtn" onclick="tog()">▶</button>
+      <button class="cbtn csm" onclick="sk(10)">⏩</button>
+    </div>
+    <div class="spd-row">
+      <button class="spdbtn" onclick="sp(0.5,this)">0.5×</button>
+      <button class="spdbtn" onclick="sp(0.75,this)">0.75×</button>
+      <button class="spdbtn active" onclick="sp(1,this)">1×</button>
+    </div>
+  </div>
+</div>
+
+<div class="sdiv"><div class="sdl"></div><div class="sdlbl">✏️ Aufgabe B1c</div><div class="sdl"></div></div>
+
+<div class="intro-box">
+  <div class="intro-title">Drei Personen berichten über ihren beruflichen Weg.</div>
+  <div class="intro-sub">Sie hören drei kurze Texte. Entscheiden Sie bei jeder Aussage: Richtig oder Falsch? Es gibt je 2 Aussagen pro Person (insgesamt 6).</div>
+</div>
+
+<div id="container"></div>
+
+<div class="sub-wrap">
+  <button class="btn-sub" id="subBtn" onclick="checkAll()">🏆 Antworten prüfen</button>
+</div>
+<div class="result-card" id="resCard">
+  <div class="res-emoji" id="rEmoji"></div>
+  <div class="res-score" id="rScore"></div>
+  <div class="res-max">von 6 Punkten</div>
+  <div class="res-msg" id="rMsg"></div>
+  <div class="res-detail" id="rDetail"></div>
+</div>
+
+<script>
+// ── AUDIO ──────────────────────────────────────────────────
+var aud = document.getElementById('aud');
+aud.addEventListener('loadedmetadata', function(){ document.getElementById('dur').textContent = fmt(aud.duration); });
+aud.addEventListener('timeupdate', function(){
+  document.getElementById('fill').style.width = (aud.duration ? aud.currentTime/aud.duration*100 : 0) + '%';
+  document.getElementById('cur').textContent = fmt(aud.currentTime);
+});
+aud.addEventListener('ended', function(){ document.getElementById('playbtn').textContent = '▶'; });
+document.getElementById('bar').addEventListener('click', function(e){
+  var r = this.getBoundingClientRect();
+  aud.currentTime = (e.clientX - r.left) / r.width * (aud.duration || 0);
+});
+function tog(){ if(aud.paused){aud.play();document.getElementById('playbtn').textContent='⏸';}else{aud.pause();document.getElementById('playbtn').textContent='▶';} }
+function sk(s){ aud.currentTime = Math.max(0, aud.currentTime + s); }
+function sp(s, btn){ aud.playbackRate = s; document.querySelectorAll('.spdbtn').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+function fmt(s){ var m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
+
+// ── DATA ────────────────────────────────────────────────────
+// Goethe B1 Teil 3: 3 Sprecher x 2 Aussagen = 6 Richtig/Falsch
+var speakers = [
+  { name:'Tom', icon:'👨‍🔧', bg:'sp0', role:'Elektriker → Elektrotechnik-Student' },
+  { name:'Gianna', icon:'👩‍💼', bg:'sp1', role:'Büroangestellte → Weiterbildung' },
+  { name:'Johanna', icon:'👩‍⚕️', bg:'sp2', role:'ZFA → Zahntechnikerin' }
+];
+
+var stmts = [
+  // Tom (idx 0–1)
+  { sp:0, num:1,
+    text: 'Tom hat nach der 9. Klasse studiert, weil ihm die Schule gut gefallen hat.',
+    ans: false,
+    expl: 'Falsch. Tom hat die Schule nicht gemocht und darum eine Ausbildung gemacht – kein Studium direkt nach der 9. Klasse.' },
+  { sp:0, num:2,
+    text: 'Tom hat herausgefunden, dass man an manchen Hochschulen auch ohne Abitur studieren kann.',
+    ans: true,
+    expl: 'Richtig. Ein Nachbar hat ihm erzählt, dass man mit Ausbildung und Berufserfahrung ohne Abitur studieren kann.' },
+  // Gianna (idx 2–3)
+  { sp:1, num:3,
+    text: 'Gianna war mit ihrer Arbeit im Büro zufrieden, weil sie mehr Verantwortung hatte.',
+    ans: false,
+    expl: 'Falsch. Gianna wollte mehr Verantwortung haben, hatte sie aber nicht – deshalb war sie unzufrieden.' },
+  { sp:1, num:4,
+    text: 'Giannas Weiterbildung fand zweimal pro Woche abends und jeden Samstag statt.',
+    ans: true,
+    expl: 'Richtig. Gianna sagt: „Der Unterricht war zweimal pro Woche am Abend. Außerdem musste ich jeden Samstag in den Kurs."' },
+  // Johanna (idx 4–5)
+  { sp:2, num:5,
+    text: 'Johanna hat zuerst in der Zahnarztpraxis ihrer Mutter gearbeitet, weil ihr der Patientenkontakt Spaß gemacht hat.',
+    ans: false,
+    expl: 'Falsch. Johanna mochte den Kontakt mit Patienten nicht gern, weil sie nicht gern Small Talk macht.' },
+  { sp:2, num:6,
+    text: 'Nach einem Praktikum und einer Umschulung arbeitet Johanna jetzt als Zahntechnikerin.',
+    ans: true,
+    expl: 'Richtig. Johanna hat ein Praktikum gemacht, dann eine Umschulung zur Zahntechnikerin und danach eine Stelle im Labor bekommen.' }
+];
+
+var sel = new Array(stmts.length).fill(null);
+var done = false;
+
+// ── RENDER ──────────────────────────────────────────────────
+var cont = document.getElementById('container');
+var currentSp = -1;
+
+stmts.forEach(function(s, i) {
+  if (s.sp !== currentSp) {
+    currentSp = s.sp;
+    var sp = speakers[s.sp];
+    var sec = document.createElement('div');
+    sec.className = 'speaker-section';
+    sec.innerHTML =
+      '<div class="speaker-badge">' +
+        '<div class="sp-icon ' + sp.bg + '">' + sp.icon + '</div>' +
+        '<div><div class="sp-name">' + sp.name + '</div><div class="sp-role">' + sp.role + '</div></div>' +
+      '</div>' +
+      '<div id="stmts_' + s.sp + '"></div>';
+    cont.appendChild(sec);
+  }
+
+  var card = document.createElement('div');
+  card.className = 'stmt-card';
+  card.innerHTML =
+    '<div class="stmt-num">Aussage ' + s.num + '</div>' +
+    '<div class="stmt-text">' + s.text + '</div>' +
+    '<div class="rf-row">' +
+      '<button class="rf-btn" id="r_' + i + '">&#10004; Richtig</button>' +
+      '<button class="rf-btn" id="f_' + i + '">&#10008; Falsch</button>' +
+    '</div>' +
+    '<div class="fb" id="fb_' + i + '"></div>';
+  document.getElementById('stmts_' + s.sp).appendChild(card);
+
+  document.getElementById('r_' + i).addEventListener('click', function(){ selRF(i, true); });
+  document.getElementById('f_' + i).addEventListener('click', function(){ selRF(i, false); });
+});
+
+function selRF(i, val) {
+  if (done) return;
+  sel[i] = val;
+  var r = document.getElementById('r_' + i), f = document.getElementById('f_' + i);
+  r.classList.remove('sel-r','sel-f'); f.classList.remove('sel-r','sel-f');
+  if (val) r.classList.add('sel-r'); else f.classList.add('sel-f');
+}
+
+function checkAll() {
+  if (done) return;
+  done = true;
+  document.getElementById('subBtn').disabled = true;
+  var total = 0;
+  stmts.forEach(function(s, i) {
+    var ok = sel[i] === s.ans;
+    if (ok) total++;
+    var r = document.getElementById('r_' + i), f = document.getElementById('f_' + i);
+    r.disabled = f.disabled = true;
+    r.classList.remove('sel-r','sel-f'); f.classList.remove('sel-r','sel-f');
+    if (s.ans) { r.classList.add('correct'); f.classList.add('wrong'); }
+    else       { f.classList.add('correct'); r.classList.add('wrong'); }
+    if (!ok && sel[i] !== null) {
+      var wb = sel[i] ? r : f;
+      wb.classList.remove('correct'); wb.classList.add('wrong');
+    }
+    var fb = document.getElementById('fb_' + i);
+    fb.className = 'fb show ' + (ok ? 'ok' : 'err');
+    fb.textContent = (ok ? '✓ ' : '✗ ') + s.expl;
+  });
+  var pct = Math.round(total/6*100);
+  var emoji = pct>=80?'🏆':pct>=60?'🎉':pct>=40?'👍':'💪';
+  var msg = pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':pct>=40?'Nicht schlecht – nochmal hören!':'Hören Sie noch einmal.';
+  document.getElementById('rEmoji').textContent = emoji;
+  document.getElementById('rScore').textContent = total;
+  document.getElementById('rMsg').textContent = msg + ' (' + pct + '%)';
+  var dd = document.getElementById('rDetail');
+  speakers.forEach(function(sp, si) {
+    var pts = stmts.filter(function(s,i){ return s.sp===si && sel[i]===s.ans; }).length;
+    var pill = document.createElement('div'); pill.className='res-pill';
+    pill.textContent = sp.name + ': ' + pts + '/2'; dd.appendChild(pill);
+  });
+  document.getElementById('resCard').classList.add('show');
+  document.getElementById('resCard').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

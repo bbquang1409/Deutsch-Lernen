@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L08 Hören 4 – Vortrag Weiterbildung</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap');
+  :root {
+    --teal:#1a7f6e;--teal-d:#0f4c3a;--teal-l:#e0f5f1;--teal-m:#a7dfd6;
+    --gold:#f5d000;--blue:#2563a8;--blue-l:#ddeeff;
+    --green:#22b573;--green-l:#e6f9f2;--red:#e84040;--red-l:#ffeaea;
+    --dark:#1a2a2e;--gray:#6b7280;--bg:#f0faf8;--radius:16px;--shadow:0 4px 24px rgba(0,0,0,0.09);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding-bottom:60px;}
+
+  .header{background:linear-gradient(135deg,var(--teal-d) 0%,var(--teal) 100%);color:white;padding:20px 16px 26px;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,0.08);border-radius:50%;}
+  .header::after{content:'';position:absolute;bottom:-20px;left:35%;width:90px;height:90px;background:rgba(245,208,0,0.12);border-radius:50%;}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);color:white;border:none;border-radius:20px;padding:6px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;margin-bottom:12px;}
+  .header-label{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:0.8;margin-bottom:4px;font-family:'Nunito',sans-serif;}
+  .header h1{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;line-height:1.2;}
+  .header h1 em{color:var(--gold);font-style:normal;}
+  .header-sub{font-size:13px;opacity:0.85;margin-top:6px;}
+
+  /* TAB NAV */
+  .tab-nav{background:white;border-bottom:2px solid var(--teal-l);position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;overflow-x:auto;scrollbar-width:none;}
+  .tab-nav::-webkit-scrollbar{display:none;}
+  .tnbtn{flex:1;min-width:0;border:none;background:white;padding:11px 6px 9px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--gray);cursor:pointer;transition:all 0.2s;border-bottom:3px solid transparent;white-space:nowrap;position:relative;}
+  .tnbtn.active{color:var(--teal);border-bottom-color:var(--teal);}
+  .done-dot{display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--green);border-radius:50%;}
+  .tnbtn.done .done-dot{display:block;}
+
+  /* PANELS */
+  .panel{display:none;} .panel.active{display:block;}
+
+  /* PLAYER */
+  .player-card{background:white;border-radius:var(--radius);margin:14px 16px;box-shadow:var(--shadow);overflow:hidden;}
+  .ptop{background:linear-gradient(135deg,var(--teal-d),var(--teal));padding:13px 16px;display:flex;align-items:center;gap:12px;}
+  .pico{width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .ptitle{font-family:'Nunito',sans-serif;font-weight:900;color:white;font-size:14px;}
+  .psub{font-size:11px;color:rgba(255,255,255,0.75);margin-top:1px;}
+  .pctrl{padding:12px 16px;}
+  audio{display:none;}
+  .tlb{width:100%;height:6px;background:var(--teal-l);border-radius:10px;cursor:pointer;position:relative;overflow:hidden;margin-bottom:4px;}
+  .tlf{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:10px;width:0%;transition:width 0.2s linear;pointer-events:none;}
+  .tlt{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);font-family:'Nunito',sans-serif;font-weight:700;margin-bottom:9px;}
+  .crow{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:9px;}
+  .cbtn{border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+  .csm{background:var(--teal-l);color:var(--teal);width:36px;height:36px;font-size:15px;border-radius:9px;}
+  .csm:hover{background:var(--teal-m);}
+  .cplay{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:white;width:50px;height:50px;border-radius:50%;font-size:19px;box-shadow:0 4px 14px rgba(26,127,110,0.4);}
+  .cplay:hover{transform:scale(1.06);}
+  .srow{display:flex;justify-content:center;gap:6px;}
+  .sbtn{border:2px solid var(--teal-l);background:white;color:var(--teal);border-radius:20px;padding:3px 11px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;transition:all 0.15s;}
+  .sbtn.active,.sbtn:hover{background:var(--teal);color:white;border-color:var(--teal);}
+
+  /* INTRO + QUESTION CARDS */
+  .intro-box{background:white;border-radius:var(--radius);margin:0 16px 12px;padding:13px 16px;box-shadow:var(--shadow);border-left:5px solid var(--gold);}
+  .ititle{font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;margin-bottom:3px;}
+  .isub{font-size:13px;color:var(--gray);line-height:1.5;}
+
+  .qcard{background:white;border-radius:var(--radius);margin:0 16px 12px;box-shadow:var(--shadow);overflow:hidden;}
+  .qhead{padding:11px 16px 9px;border-bottom:2px solid var(--teal-l);display:flex;align-items:flex-start;gap:10px;}
+  .qnum{background:var(--teal);color:white;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;min-width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .qstmt{font-size:14px;font-weight:700;line-height:1.5;flex:1;}
+  .qbody{padding:11px 16px 13px;}
+  .mclabel{font-size:11px;font-weight:800;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;font-family:'Nunito',sans-serif;}
+  .mc-choices{display:flex;flex-direction:column;gap:7px;}
+  .mcbtn{border:2px solid #e5e7eb;border-radius:10px;padding:9px 13px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:white;color:var(--dark);transition:all 0.15s;text-align:left;line-height:1.4;display:flex;align-items:center;gap:9px;}
+  .mcltr{background:var(--teal-l);color:var(--teal);font-family:'Nunito',sans-serif;font-weight:900;font-size:11px;width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .mcbtn:hover:not(:disabled){border-color:var(--teal);background:var(--teal-l);}
+  .mcbtn.sel{border-color:var(--blue);background:var(--blue-l);color:var(--blue);}
+  .mcbtn.sel .mcltr{background:var(--blue);color:white;}
+  .mcbtn.correct{border-color:var(--green);background:var(--green-l);color:#166534;}
+  .mcbtn.correct .mcltr{background:var(--green);color:white;}
+  .mcbtn.wrong{border-color:var(--red);background:var(--red-l);color:#991b1b;}
+  .mcbtn.wrong .mcltr{background:var(--red);color:white;}
+  .mcbtn:disabled{cursor:default;}
+  .fb{display:none;margin-top:8px;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;line-height:1.4;}
+  .fb.show{display:block;} .fb.ok{background:var(--green-l);color:#166534;} .fb.err{background:var(--red-l);color:#991b1b;}
+
+  /* SUBMIT */
+  .subwrap{padding:0 16px 6px;}
+  .btnsub{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:white;border:none;border-radius:14px;padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;width:100%;box-shadow:0 4px 18px rgba(26,127,110,0.3);transition:transform 0.15s;}
+  .btnsub:hover{transform:translateY(-2px);}
+  .btnsub:disabled{background:#ccc;box-shadow:none;cursor:default;transform:none;}
+  .rescard{background:linear-gradient(135deg,var(--teal-d),var(--teal));border-radius:var(--radius);margin:0 16px 24px;padding:22px;color:white;text-align:center;display:none;animation:popIn 0.4s ease;}
+  .rescard.show{display:block;}
+  @keyframes popIn{from{transform:scale(0.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .re{font-size:50px;margin-bottom:8px;} .rs{font-family:'Nunito',sans-serif;font-size:52px;font-weight:900;line-height:1;}
+  .rm{font-size:14px;opacity:0.8;margin-bottom:6px;} .rmsg{font-size:14px;line-height:1.5;opacity:0.9;}
+  .rdet{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center;}
+  .rpill{background:rgba(255,255,255,0.15);border-radius:10px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-btn" href="index.html">← Zurück</a>
+  <div class="header-label">Lektion 08 · Hören 4</div>
+  <h1>Aufgabe C1 – <em>Vortrag: Weiterbildung</em></h1>
+  <div class="header-sub">Martin Steffke · 4 Teile · Goethe B1 Teil 2 Stil</div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tnbtn active" id="nt0" onclick="sw(0)">C1a<br><small>Intro</small><span class="done-dot"></span></button>
+  <button class="tnbtn" id="nt1" onclick="sw(1)">C1b<br><small>Weiterb.</small><span class="done-dot"></span></button>
+  <button class="tnbtn" id="nt2" onclick="sw(2)">C1c<br><small>Fort/Umsch.</small><span class="done-dot"></span></button>
+  <button class="tnbtn" id="nt3" onclick="sw(3)">C1d<br><small>Kurs finden</small><span class="done-dot"></span></button>
+</div>
+
+<!-- panels generated by JS -->
+<div id="panelsWrap"></div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────
+// Goethe B1 Teil 2: Vortrag / Ansage → MCQ (a/b/c)
+var PARTS = [
+  {
+    id:0, file:'5_19_Miteinander_B12_KB_L8_C1a.mp3',
+    title:'5_19 · Aufgabe C1a', sub:'Einleitung des Vortrags',
+    intro:'Hören Sie den ersten Teil des Vortrags. Wählen Sie die richtige Antwort (a, b oder c).',
+    qs:[
+      { stmt:'Wo findet der Vortrag von Martin Steffke statt?',
+        mc:['Im Kino.','In einem Café.','In einem Vortragssaal / bei Herrn Steffke.'], ans:2,
+        expl:'Steffke sagt: „Sie sind nicht im Kino. Sie sind nicht im Café. Sie sind hier, bei mir, in meinem Vortrag."' },
+      { stmt:'Was ist das Thema des Vortrags?',
+        mc:['Wie man einen neuen Job findet.','Warum Weiterbildung wichtig ist und ob sie sich lohnt.','Wie man ein Studium finanziert.'], ans:1,
+        expl:'Steffke sagt: „Warum sich Lernen lohnt und warum Weiterbildung wichtig ist, genau das erkläre ich Ihnen."' },
+      { stmt:'Was kritisieren einige Zuhörer im Vortrag?',
+        mc:['Der Vortrag ist zu lang.','Sie können Herrn Steffke sehr schlecht verstehen.','Sie haben keine Stühle.'], ans:1,
+        expl:'Eine Frau und Kostja sagen: „Ich kann Sie sehr schlecht verstehen" / „Könnten Sie bitte etwas lauter sprechen?"' }
+    ]
+  },
+  {
+    id:1, file:'5_20_Miteinander_B12_KB_L8_C1b.mp3',
+    title:'5_20 · Aufgabe C1b', sub:'Warum ist Weiterbildung wichtig?',
+    intro:'Hören Sie den zweiten Teil. Wählen Sie die richtige Antwort.',
+    qs:[
+      { stmt:'Welche drei Bereiche nennt Steffke für Weiterbildung?',
+        mc:['Sprachen, Sport und Musik.','Fachkenntnisse, Technologie/IT und Softskills.','Mathematik, Geschichte und Kunst.'], ans:1,
+        expl:'Steffke nennt: Fachkenntnisse, Technologie/IT-Kenntnisse, und Softskills.' },
+      { stmt:'Was sagt Steffke über IT-Kenntnisse?',
+        mc:['Sie sind nur für junge Leute wichtig.','Gute IT-Kenntnisse sind sehr, sehr wichtig für alle.','Man braucht sie nur in der Industrie.'], ans:1,
+        expl:'Steffke sagt: „IT-Kenntnisse! Und ich sage sogar: sehr gute IT-Kenntnisse. Ganz, ganz wichtig."' },
+      { stmt:'Was sind laut Steffke Beispiele für Softskills?',
+        mc:['Excel und PowerPoint.','Interkulturelle Kompetenz und Teamfähigkeit.','Buchhaltung und Projektmanagement.'], ans:1,
+        expl:'Steffke nennt: „Interkulturelle Kompetenz und Teamfähigkeit. Das sind Softskills, die in jedem Beruf wichtig sind."' }
+    ]
+  },
+  {
+    id:2, file:'5_21_Miteinander_B12_KB_L8_C1c.mp3',
+    title:'5_21 · Aufgabe C1c', sub:'Fortbildung oder Umschulung?',
+    intro:'Hören Sie den dritten Teil. Wählen Sie die richtige Antwort.',
+    qs:[
+      { stmt:'Was ist laut Steffke der Unterschied zwischen Fortbildung und Umschulung?',
+        mc:['Fortbildung ist teurer als Umschulung.','Fortbildung: neue Kenntnisse – Umschulung: neue Tätigkeit.','Fortbildung dauert länger als Umschulung.'], ans:1,
+        expl:'Steffke sagt: „Fortbildung: neue Kenntnisse. Umschulung: neue Tätigkeit."' },
+      { stmt:'Wann empfiehlt Steffke eine Fortbildung?',
+        mc:['Wenn man einen ganz neuen Beruf lernen möchte.','Wenn man neue technische Geräte am Arbeitsplatz hat und neue Kenntnisse braucht.','Wenn man mehr Geld verdienen möchte.'], ans:1,
+        expl:'Steffke erklärt: „Es gibt neue Maschinen. Sie brauchen neue Kenntnisse. Dann meine Empfehlung: Machen Sie eine Fortbildung!"' },
+      { stmt:'Was passiert bei einer Umschulung?',
+        mc:['Man lernt nur neue Software.','Man macht eine kurze Prüfung.','Man wechselt von einem Beruf zu einem anderen.'], ans:2,
+        expl:'Steffke sagt: „Bei einer Umschulung lernen Sie eine neue Tätigkeit. Sie wechseln von Beruf 1 zu Beruf 2."' }
+    ]
+  },
+  {
+    id:3, file:'5_22_Miteinander_B12_KB_L8_C1d.mp3',
+    title:'5_22 · Aufgabe C1d', sub:'Den richtigen Kurs finden',
+    intro:'Hören Sie den vierten Teil. Wählen Sie die richtige Antwort.',
+    qs:[
+      { stmt:'Welche drei Fragen nennt Steffke bei der Kurssuche?',
+        mc:['Sprache, Ort und Niveau.','Zeit (Voll-/Teilzeit), Dauer und Kosten.','Alter, Beruf und Abschluss.'], ans:1,
+        expl:'Steffke nennt: Frage 1: Zeit (Vollzeit/Teilzeit), Frage 2: Dauer, Frage 3: Kosten.' },
+      { stmt:'Was bedeutet laut Steffke ein Kurs in Teilzeit?',
+        mc:['Der Kurs findet nur am Wochenende statt.','Der Kurs läuft neben dem normalen Beruf.','Man bezahlt nur die Hälfte.'], ans:1,
+        expl:'Steffke sagt: „Teilzeit bedeutet, dass der Kurs neben Ihrem normalen Beruf läuft."' },
+      { stmt:'Wo kann man laut Steffke Beratung und Informationen zur Finanzierung bekommen?',
+        mc:['Nur beim Finanzamt.','Bei der Bundesagentur für Arbeit, Handwerkskammern oder IHK.','Im Internet, aber nicht persönlich.'], ans:1,
+        expl:'Steffke nennt: „Die Bundesagentur für Arbeit, die Handwerkskammern und die Industrie- und Handelskammern."' }
+    ]
+  }
+];
+
+// ── STATE ────────────────────────────────────────────────────
+// sel[partIdx][qIdx], done[partIdx]
+var SEL = [[null,null,null],[null,null,null],[null,null,null],[null,null,null]];
+var DONE = [false,false,false,false];
+var LETTERS = ['a','b','c'];
+
+// ── BUILD PANELS ─────────────────────────────────────────────
+var wrap = document.getElementById('panelsWrap');
+
+PARTS.forEach(function(part) {
+  var pi = part.id;
+  var panel = document.createElement('div');
+  panel.className = 'panel' + (pi===0?' active':'');
+  panel.id = 'pan' + pi;
+
+  // player
+  panel.innerHTML =
+    '<div class="player-card">' +
+      '<div class="ptop"><div class="pico">🎧</div>' +
+        '<div><div class="ptitle">'+part.title+'</div><div class="psub">'+part.sub+'</div></div>' +
+      '</div>' +
+      '<div class="pctrl">' +
+        '<audio id="aud'+pi+'" src="'+part.file+'" preload="auto"></audio>' +
+        '<div class="tlb" id="bar'+pi+'"><div class="tlf" id="fill'+pi+'"></div></div>' +
+        '<div class="tlt"><span id="cur'+pi+'">0:00</span><span id="dur'+pi+'">—</span></div>' +
+        '<div class="crow">' +
+          '<button class="cbtn csm" onclick="sk('+pi+',-10)">⏪</button>' +
+          '<button class="cbtn cplay" id="pb'+pi+'" onclick="tog('+pi+')">▶</button>' +
+          '<button class="cbtn csm" onclick="sk('+pi+',10)">⏩</button>' +
+        '</div>' +
+        '<div class="srow" id="spd'+pi+'">' +
+          '<button class="sbtn" onclick="sp('+pi+',0.5,this)">0.5×</button>' +
+          '<button class="sbtn" onclick="sp('+pi+',0.75,this)">0.75×</button>' +
+          '<button class="sbtn active" onclick="sp('+pi+',1,this)">1×</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="intro-box"><div class="ititle">'+part.title.split('·')[1].trim()+'</div><div class="isub">'+part.intro+'</div></div>' +
+    '<div id="qc'+pi+'"></div>' +
+    '<div class="subwrap"><button class="btnsub" id="sb'+pi+'" onclick="chk('+pi+')">🏆 Antworten prüfen</button></div>' +
+    '<div class="rescard" id="rc'+pi+'">' +
+      '<div class="re" id="re'+pi+'"></div>' +
+      '<div class="rs" id="rs'+pi+'"></div>' +
+      '<div class="rm">von 3 Punkten</div>' +
+      '<div class="rmsg" id="rmsg'+pi+'"></div>' +
+      '<div class="rdet" id="rd'+pi+'"></div>' +
+    '</div>';
+  wrap.appendChild(panel);
+
+  // render questions
+  var qc = document.getElementById('qc' + pi);
+  part.qs.forEach(function(q, qi) {
+    var card = document.createElement('div');
+    card.className = 'qcard';
+    card.innerHTML =
+      '<div class="qhead"><div class="qnum">'+(qi+1)+'</div><div class="qstmt">'+q.stmt+'</div></div>' +
+      '<div class="qbody">' +
+        '<div class="mclabel">Wählen Sie a, b oder c:</div>' +
+        '<div class="mc-choices" id="mc'+pi+'_'+qi+'"></div>' +
+        '<div class="fb" id="fb'+pi+'_'+qi+'"></div>' +
+      '</div>';
+    qc.appendChild(card);
+
+    var mcc = document.getElementById('mc'+pi+'_'+qi);
+    q.mc.forEach(function(opt, oi) {
+      var btn = document.createElement('button');
+      btn.className = 'mcbtn';
+      btn.id = 'mb'+pi+'_'+qi+'_'+oi;
+      btn.innerHTML = '<span class="mcltr">'+LETTERS[oi]+'</span><span>'+opt+'</span>';
+      btn.addEventListener('click', function(){ selMC(pi, qi, oi); });
+      mcc.appendChild(btn);
+    });
+  });
+
+  // attach audio events
+  var a = document.getElementById('aud' + pi);
+  a.addEventListener('loadedmetadata', (function(i){ return function(){ document.getElementById('dur'+i).textContent = fmt(a.duration); }; })(pi));
+  a.addEventListener('timeupdate', (function(i){ return function(){
+    document.getElementById('fill'+i).style.width = (a.duration ? a.currentTime/a.duration*100 : 0)+'%';
+    document.getElementById('cur'+i).textContent = fmt(a.currentTime);
+  }; })(pi));
+  a.addEventListener('ended', (function(i){ return function(){ document.getElementById('pb'+i).textContent='▶'; }; })(pi));
+  document.getElementById('bar'+pi).addEventListener('click', (function(i){ return function(e){
+    var r = this.getBoundingClientRect();
+    document.getElementById('aud'+i).currentTime = (e.clientX-r.left)/r.width*(document.getElementById('aud'+i).duration||0);
+  }; })(pi));
+});
+
+// ── AUDIO CONTROLS ───────────────────────────────────────────
+function fmt(s){ var m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
+function tog(i){
+  var a=document.getElementById('aud'+i), btn=document.getElementById('pb'+i);
+  [0,1,2,3].forEach(function(j){ if(j!==i&&!document.getElementById('aud'+j).paused){ document.getElementById('aud'+j).pause(); document.getElementById('pb'+j).textContent='▶'; } });
+  if(a.paused){a.play();btn.textContent='⏸';}else{a.pause();btn.textContent='▶';}
+}
+function sk(i,s){ var a=document.getElementById('aud'+i); a.currentTime=Math.max(0,a.currentTime+s); }
+function sp(i,s,btn){ document.getElementById('aud'+i).playbackRate=s; document.querySelectorAll('#spd'+i+' .sbtn').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+
+// ── TAB SWITCH ───────────────────────────────────────────────
+function sw(i){
+  [0,1,2,3].forEach(function(j){
+    var a=document.getElementById('aud'+j);
+    if(!a.paused){a.pause();document.getElementById('pb'+j).textContent='▶';}
+    document.getElementById('pan'+j).classList.remove('active');
+    document.getElementById('nt'+j).classList.remove('active');
+  });
+  document.getElementById('pan'+i).classList.add('active');
+  document.getElementById('nt'+i).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── INTERACT ─────────────────────────────────────────────────
+function selMC(pi,qi,oi){
+  if(DONE[pi])return;
+  SEL[pi][qi]=oi;
+  document.querySelectorAll('#mc'+pi+'_'+qi+' .mcbtn').forEach(function(b){b.classList.remove('sel');});
+  document.getElementById('mb'+pi+'_'+qi+'_'+oi).classList.add('sel');
+}
+
+// ── CHECK ────────────────────────────────────────────────────
+function chk(pi){
+  if(DONE[pi])return;
+  DONE[pi]=true;
+  document.getElementById('sb'+pi).disabled=true;
+  var part=PARTS[pi], total=0;
+  part.qs.forEach(function(q,qi){
+    var ok=SEL[pi][qi]===q.ans;
+    if(ok)total++;
+    document.querySelectorAll('#mc'+pi+'_'+qi+' .mcbtn').forEach(function(b){b.disabled=true;b.classList.remove('sel');});
+    document.getElementById('mb'+pi+'_'+qi+'_'+q.ans).classList.add('correct');
+    if(!ok&&SEL[pi][qi]>=0) document.getElementById('mb'+pi+'_'+qi+'_'+SEL[pi][qi]).classList.add('wrong');
+    var fb=document.getElementById('fb'+pi+'_'+qi);
+    fb.className='fb show '+(ok?'ok':'err');
+    fb.textContent=(ok?'✓ ':'✗ ')+q.expl;
+  });
+  var pct=Math.round(total/3*100);
+  var emoji=pct===100?'🏆':pct>=60?'🎉':pct>=33?'👍':'💪';
+  var msg=pct===100?'Perfekt! Alles richtig!':pct>=60?'Gut gemacht!':pct>=33?'Fast – nochmal hören!':'Hören Sie nochmal.';
+  document.getElementById('re'+pi).textContent=emoji;
+  document.getElementById('rs'+pi).textContent=total;
+  document.getElementById('rmsg'+pi).textContent=msg+' ('+pct+'%)';
+  document.getElementById('rc'+pi).classList.add('show');
+  document.getElementById('nt'+pi).classList.add('done');
+  document.getElementById('rc'+pi).scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
