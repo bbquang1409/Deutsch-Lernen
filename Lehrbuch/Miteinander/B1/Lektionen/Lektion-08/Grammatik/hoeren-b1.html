@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goethe B1 – Hören Teil 3 & 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-light: #243159;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f5f0e8;
+    --cream-dark: #ede6d6;
+    --text: #1a1a2e;
+    --muted: #6b6b7b;
+    --correct: #2d7a4f;
+    --correct-bg: #e8f5ee;
+    --wrong: #b83232;
+    --wrong-bg: #fdeaea;
+    --shadow: 0 4px 24px rgba(26,39,68,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    color: white;
+    padding: 28px 24px 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(201,168,76,0.04) 20px,
+      rgba(201,168,76,0.04) 40px
+    );
+  }
+  header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    position: relative;
+  }
+  header .subtitle {
+    font-size: 0.82rem;
+    color: var(--gold-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    position: relative;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--navy-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.18);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 14px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+  }
+  .tab-btn.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold);
+    background: rgba(201,168,76,0.07);
+  }
+  .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.8); }
+
+  /* CONTENT */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .section {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  /* INSTRUCTION BOX */
+  .instruction {
+    background: var(--navy);
+    color: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    border-left: 4px solid var(--gold);
+  }
+  .instruction strong { color: var(--gold-light); }
+
+  /* AUDIO PLAYER */
+  .player-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .player-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  audio { width: 100%; margin-bottom: 12px; outline: none; }
+  audio::-webkit-media-controls-panel { background: var(--cream-dark); }
+
+  .speed-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .speed-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .speed-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 2px solid var(--cream-dark);
+    background: var(--cream);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--navy);
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .speed-btn:hover { border-color: var(--navy); }
+  .speed-btn.active {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+
+  /* TRANSCRIPT */
+  .transcript-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-top: 14px;
+    padding: 0;
+    transition: color 0.15s;
+  }
+  .transcript-toggle:hover { color: var(--navy); }
+  .transcript-toggle .chevron { transition: transform 0.2s; font-size: 0.7rem; }
+  .transcript-toggle.open .chevron { transform: rotate(180deg); }
+
+  .transcript-box {
+    background: var(--cream-dark);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 12px;
+    display: none;
+    font-size: 0.88rem;
+    line-height: 1.9;
+  }
+  .transcript-box.visible { display: block; }
+
+  .transcript-line {
+    display: block;
+    padding: 3px 8px;
+    border-radius: 5px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .transcript-line.highlight {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 600;
+  }
+  .transcript-line .ts {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-right: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .transcript-line.highlight .ts { color: var(--navy-light); }
+
+  /* QUESTIONS */
+  .questions-label {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.05rem;
+    color: var(--navy);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--cream-dark);
+  }
+
+  /* TEIL 3 – R/F */
+  .rf-item {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rf-text {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .rf-num {
+    font-weight: 700;
+    color: var(--navy);
+    margin-right: 8px;
+    font-family: 'Libre Baskerville', serif;
+  }
+  .rf-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .rf-btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 8px;
+    border: 2px solid var(--cream-dark);
+    background: var(--cream);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+    color: var(--navy);
+  }
+  .rf-btn:hover:not(:disabled) { border-color: var(--navy); background: var(--cream-dark); }
+  .rf-btn.selected-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+  .rf-btn.selected-wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: var(--wrong);
+  }
+  .rf-btn.reveal-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+  .rf-btn:disabled { cursor: default; }
+
+  /* TEIL 4 – MCQ */
+  .mcq-item {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(26,39,68,0.07);
+  }
+  .mcq-q {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .mcq-num {
+    font-weight: 700;
+    color: var(--navy);
+    font-family: 'Libre Baskerville', serif;
+    margin-right: 6px;
+  }
+  .mcq-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mcq-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--cream-dark);
+    background: var(--cream);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    text-align: left;
+    width: 100%;
+  }
+  .mcq-opt:hover:not(:disabled) { border-color: var(--navy); background: var(--cream-dark); }
+  .opt-label {
+    font-weight: 700;
+    color: var(--navy);
+    min-width: 20px;
+    font-family: 'Libre Baskerville', serif;
+  }
+  .mcq-opt.selected-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+  .mcq-opt.selected-correct .opt-label { color: var(--correct); }
+  .mcq-opt.selected-wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: var(--wrong);
+  }
+  .mcq-opt.selected-wrong .opt-label { color: var(--wrong); }
+  .mcq-opt.reveal-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+  .mcq-opt.reveal-correct .opt-label { color: var(--correct); }
+  .mcq-opt:disabled { cursor: default; }
+
+  /* SCORE BAR */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .btn-check, .btn-reset, .btn-losung {
+    padding: 11px 22px;
+    border-radius: 25px;
+    border: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+  .btn-check {
+    background: var(--navy);
+    color: white;
+  }
+  .btn-check:hover { background: var(--navy-light); transform: translateY(-1px); }
+  .btn-losung {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .btn-losung:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-reset {
+    background: none;
+    border: 2px solid var(--cream-dark);
+    color: var(--muted);
+  }
+  .btn-reset:hover { border-color: var(--navy); color: var(--navy); }
+
+  .score-card {
+    background: var(--navy);
+    color: white;
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-top: 18px;
+    display: none;
+    text-align: center;
+  }
+  .score-card.visible { display: block; }
+  .score-big {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 2.2rem;
+    color: var(--gold-light);
+  }
+  .score-sub { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+  /* LOSUNG MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,39,68,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    overflow: hidden;
+  }
+  .modal-header {
+    background: var(--navy);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-header h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1rem;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    opacity: 0.7;
+    line-height: 1;
+  }
+  .modal-close:hover { opacity: 1; }
+  .modal-body { padding: 20px 24px 24px; }
+  .losung-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .losung-col h4 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.9rem;
+    color: var(--navy);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--cream-dark);
+  }
+  .losung-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--cream-dark);
+  }
+  .losung-num {
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 22px;
+    font-family: 'Libre Baskerville', serif;
+  }
+  .losung-ans {
+    font-weight: 700;
+    color: var(--navy);
+    background: var(--cream-dark);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 24px 16px;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Goethe-Institut B1</div>
+  <h1>Hören – Teil 3 & Teil 4</h1>
+  <div class="subtitle">Prüfungsvorbereitung · Übungsaufgaben</div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('t3')">Teil 3</button>
+  <button class="tab-btn" onclick="switchTab('t4')">Teil 4</button>
+</div>
+
+<!-- ═══════════════ TEIL 3 ═══════════════ -->
+<div id="tab-t3" class="tab-content active">
+  <div class="section">
+
+    <div class="instruction">
+      <strong>Aufgabe:</strong> Sie hören einen Bericht. Entscheiden Sie bei jedem Satz: Ist das <strong>Richtig</strong> oder <strong>Falsch</strong>?<br>
+      Hören Sie den Text zweimal.
+    </div>
+
+    <div class="player-card">
+      <div class="player-label">▶ Audio – Teil 3</div>
+      <audio id="audio3" src="Hören_Teil_3.mp3" controls preload="metadata"></audio>
+      <div class="speed-controls">
+        <span class="speed-label">Geschwindigkeit:</span>
+        <button class="speed-btn active" onclick="setSpeed('audio3',1.0,this)">1×</button>
+        <button class="speed-btn" onclick="setSpeed('audio3',0.75,this)">0.75×</button>
+        <button class="speed-btn" onclick="setSpeed('audio3',0.5,this)">0.5×</button>
+      </div>
+      <button class="transcript-toggle" id="tog3" onclick="toggleTranscript('trans3','tog3')">
+        <span>Transkript anzeigen</span> <span class="chevron">▼</span>
+      </button>
+      <div class="transcript-box" id="trans3">
+        <!-- Bạn thay thế các dòng này bằng transcript thực từ audio -->
+        <span class="transcript-line" data-start="0" data-end="8"><span class="ts">0:00</span>Moderator: Herzlich willkommen zu unserem Beitrag über das Leben in der Großstadt.</span>
+        <span class="transcript-line" data-start="8" data-end="17"><span class="ts">0:08</span>Interviewte: Ich wohne seit fünf Jahren in München und bin sehr zufrieden mit meiner Situation.</span>
+        <span class="transcript-line" data-start="17" data-end="26"><span class="ts">0:17</span>Moderator: Haben Sie Probleme mit der Wohnungssuche gehabt?</span>
+        <span class="transcript-line" data-start="26" data-end="38"><span class="ts">0:26</span>Interviewte: Ja, die Wohnungssuche war wirklich schwierig. Es hat fast ein Jahr gedauert.</span>
+        <span class="transcript-line" data-start="38" data-end="50"><span class="ts">0:38</span>Moderator: Und wie ist die Verkehrssituation in Ihrer Gegend?</span>
+        <span class="transcript-line" data-start="50" data-end="65"><span class="ts">0:50</span>Interviewte: Der öffentliche Nahverkehr ist ausgezeichnet. Ich brauche kein Auto mehr.</span>
+        <span class="transcript-line" data-start="65" data-end="80"><span class="ts">1:05</span>Moderator: Was gefällt Ihnen am besten an der Stadt?</span>
+        <span class="transcript-line" data-start="80" data-end="98"><span class="ts">1:20</span>Interviewte: Das kulturelle Angebot ist fantastisch – Theater, Museen, Konzerte. Man kann immer etwas unternehmen.</span>
+        <span class="transcript-line" data-start="98" data-end="116"><span class="ts">1:38</span>Moderator: Haben Sie Nachteile festgestellt?</span>
+        <span class="transcript-line" data-start="116" data-end="138"><span class="ts">1:56</span>Interviewte: Die Lebenshaltungskosten sind hoch, besonders die Miete. Aber dafür hat man viele Möglichkeiten.</span>
+        <span class="transcript-line" data-start="138" data-end="160"><span class="ts">2:18</span>Moderator: Würden Sie anderen empfehlen, in die Stadt zu ziehen?</span>
+        <span class="transcript-line" data-start="160" data-end="185"><span class="ts">2:40</span>Interviewte: Ja, auf jeden Fall. Man muss sich nur gut vorbereiten und ein bisschen Geduld mitbringen.</span>
+      </div>
+    </div>
+
+    <div class="questions-label">Aufgaben 1–5</div>
+
+    <div id="rf-container">
+      <!-- Fragen Teil 3 (Richtig/Falsch) – Antworten: F, R, F, R, R -->
+    </div>
+
+    <div class="action-row">
+      <button class="btn-check" onclick="checkT3()">Auswertung</button>
+      <button class="btn-losung" onclick="showLosung()">Lösung anzeigen</button>
+      <button class="btn-reset" onclick="resetT3()">Neu beginnen</button>
+    </div>
+    <div class="score-card" id="score3">
+      <div class="score-big" id="score3-text">–</div>
+      <div class="score-sub" id="score3-sub"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ TEIL 4 ═══════════════ -->
+<div id="tab-t4" class="tab-content">
+  <div class="section">
+
+    <div class="instruction">
+      <strong>Aufgabe:</strong> Sie hören ein Gespräch. Wer sagt was?<br>
+      Wählen Sie für jede Aussage die richtige Person: <strong>a</strong> = Moderatorin, <strong>b</strong> = Gast 1, <strong>c</strong> = Gast 2.
+    </div>
+
+    <div class="player-card">
+      <div class="player-label">▶ Audio – Teil 4</div>
+      <audio id="audio4" src="Hören_Teil_4.mp3" controls preload="metadata"></audio>
+      <div class="speed-controls">
+        <span class="speed-label">Geschwindigkeit:</span>
+        <button class="speed-btn active" onclick="setSpeed('audio4',1.0,this)">1×</button>
+        <button class="speed-btn" onclick="setSpeed('audio4',0.75,this)">0.75×</button>
+        <button class="speed-btn" onclick="setSpeed('audio4',0.5,this)">0.5×</button>
+      </div>
+      <button class="transcript-toggle" id="tog4" onclick="toggleTranscript('trans4','tog4')">
+        <span>Transkript anzeigen</span> <span class="chevron">▼</span>
+      </button>
+      <div class="transcript-box" id="trans4">
+        <!-- Bạn thay thế các dòng này bằng transcript thực từ audio -->
+        <span class="transcript-line" data-start="0" data-end="10"><span class="ts">0:00</span>Moderatorin: Herzlich willkommen zu unserer heutigen Sendung. Wir sprechen heute über das Thema Digitalisierung.</span>
+        <span class="transcript-line" data-start="10" data-end="22"><span class="ts">0:10</span>Gast 1: Die Digitalisierung hat mein Leben komplett verändert. Ich arbeite jetzt hauptsächlich von zu Hause.</span>
+        <span class="transcript-line" data-start="22" data-end="36"><span class="ts">0:22</span>Gast 2: Ich sehe das ein bisschen anders. Man verliert den sozialen Kontakt mit den Kollegen.</span>
+        <span class="transcript-line" data-start="36" data-end="50"><span class="ts">0:36</span>Moderatorin: Wie sehen Sie die Entwicklung in den nächsten zehn Jahren?</span>
+        <span class="transcript-line" data-start="50" data-end="66"><span class="ts">0:50</span>Gast 1: Ich glaube, dass wir noch mehr automatisieren werden. Viele Berufe werden sich stark verändern.</span>
+        <span class="transcript-line" data-start="66" data-end="82"><span class="ts">1:06</span>Gast 2: Ja, da stimme ich zu. Aber ich mache mir Sorgen um diejenigen, die sich nicht anpassen können.</span>
+        <span class="transcript-line" data-start="82" data-end="96"><span class="ts">1:22</span>Moderatorin: Welche Maßnahmen sollte die Politik ergreifen?</span>
+        <span class="transcript-line" data-start="96" data-end="114"><span class="ts">1:36</span>Gast 2: Es braucht mehr Weiterbildungsangebote und finanzielle Unterstützung für ältere Arbeitnehmer.</span>
+        <span class="transcript-line" data-start="114" data-end="132"><span class="ts">1:54</span>Gast 1: Ich denke, die Unternehmen sollten auch Verantwortung übernehmen und ihre Mitarbeiter schulen.</span>
+        <span class="transcript-line" data-start="132" data-end="150"><span class="ts">2:12</span>Moderatorin: Vielen Dank für diese interessante Diskussion. Das war unser Beitrag für heute.</span>
+      </div>
+    </div>
+
+    <div class="questions-label">Aufgaben 1–8</div>
+    <div id="mcq-container"></div>
+
+    <div class="action-row">
+      <button class="btn-check" onclick="checkT4()">Auswertung</button>
+      <button class="btn-losung" onclick="showLosung()">Lösung anzeigen</button>
+      <button class="btn-reset" onclick="resetT4()">Neu beginnen</button>
+    </div>
+    <div class="score-card" id="score4">
+      <div class="score-big" id="score4-text">–</div>
+      <div class="score-sub" id="score4-sub"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LÖSUNG MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Lösung – Hören Teil 3 & 4</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="losung-grid">
+        <div class="losung-col">
+          <h4>Teil 3</h4>
+          <div class="losung-row"><span class="losung-num">1.</span><span class="losung-ans">F</span></div>
+          <div class="losung-row"><span class="losung-num">2.</span><span class="losung-ans">R</span></div>
+          <div class="losung-row"><span class="losung-num">3.</span><span class="losung-ans">F</span></div>
+          <div class="losung-row"><span class="losung-num">4.</span><span class="losung-ans">R</span></div>
+          <div class="losung-row"><span class="losung-num">5.</span><span class="losung-ans">R</span></div>
+        </div>
+        <div class="losung-col">
+          <h4>Teil 4</h4>
+          <div class="losung-row"><span class="losung-num">1.</span><span class="losung-ans">b</span></div>
+          <div class="losung-row"><span class="losung-num">2.</span><span class="losung-ans">a</span></div>
+          <div class="losung-row"><span class="losung-num">3.</span><span class="losung-ans">c</span></div>
+          <div class="losung-row"><span class="losung-num">4.</span><span class="losung-ans">a</span></div>
+          <div class="losung-row"><span class="losung-num">5.</span><span class="losung-ans">b</span></div>
+          <div class="losung-row"><span class="losung-num">6.</span><span class="losung-ans">b</span></div>
+          <div class="losung-row"><span class="losung-num">7.</span><span class="losung-ans">c</span></div>
+          <div class="losung-row"><span class="losung-num">8.</span><span class="losung-ans">c</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>Made with ♥ by BBQ &nbsp;·&nbsp; Goethe-Institut B1 Prüfungsvorbereitung</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────
+
+// Teil 3: Richtig/Falsch — Antworten: F, R, F, R, R
+// ⚠️ Thay câu hỏi bên dưới bằng câu thực từ đề thi của bạn
+const t3Data = [
+  { id: 1, text: "Die Person wohnt seit mehr als zehn Jahren in München.", answer: "F" },
+  { id: 2, text: "Die Wohnungssuche hat sehr lange gedauert.", answer: "R" },
+  { id: 3, text: "Die Person braucht täglich das Auto für die Arbeit.", answer: "F" },
+  { id: 4, text: "Das kulturelle Angebot in der Stadt ist sehr gut.", answer: "R" },
+  { id: 5, text: "Die Person würde anderen empfehlen, in die Stadt zu ziehen.", answer: "R" },
+];
+
+// Teil 4: MCQ a/b/c — Antworten: b, a, c, a, b, b, c, c
+// a = Moderatorin, b = Gast 1, c = Gast 2
+// ⚠️ Thay câu hỏi bên dưới bằng câu thực từ đề thi của bạn
+const t4Data = [
+  { id: 1, text: "Die Digitalisierung hat das Leben dieser Person komplett verändert.", answer: "b" },
+  { id: 2, text: "Diese Person leitet das Gespräch und stellt Fragen.", answer: "a" },
+  { id: 3, text: "Diese Person macht sich Sorgen um Menschen, die sich nicht anpassen können.", answer: "c" },
+  { id: 4, text: "Diese Person fragt nach der zukünftigen Entwicklung.", answer: "a" },
+  { id: 5, text: "Diese Person denkt, dass noch mehr automatisiert werden wird.", answer: "b" },
+  { id: 6, text: "Diese Person glaubt, dass Unternehmen Verantwortung übernehmen sollen.", answer: "b" },
+  { id: 7, text: "Diese Person fordert mehr Weiterbildung und finanzielle Hilfe.", answer: "c" },
+  { id: 8, text: "Diese Person sieht den Verlust sozialer Kontakte als Problem.", answer: "c" },
+];
+
+const t4Labels = { a: "a – Moderatorin", b: "b – Gast 1", c: "c – Gast 2" };
+
+// ─── BUILD UI ───────────────────────────────────────────────────────
+
+function buildT3() {
+  const c = document.getElementById('rf-container');
+  c.innerHTML = '';
+  t3Data.forEach(q => {
+    c.innerHTML += `
+      <div class="rf-item" id="rf-${q.id}">
+        <div class="rf-text"><span class="rf-num">${q.id}.</span>${q.text}</div>
+        <div class="rf-btns">
+          <button class="rf-btn" id="rf-${q.id}-R" onclick="selectRF(${q.id},'R')">✓ Richtig</button>
+          <button class="rf-btn" id="rf-${q.id}-F" onclick="selectRF(${q.id},'F')">✗ Falsch</button>
+        </div>
+      </div>`;
+  });
+}
+
+function buildT4() {
+  const c = document.getElementById('mcq-container');
+  c.innerHTML = '';
+  t4Data.forEach(q => {
+    c.innerHTML += `
+      <div class="mcq-item" id="mcq-${q.id}">
+        <div class="mcq-q"><span class="mcq-num">${q.id}.</span>${q.text}</div>
+        <div class="mcq-options">
+          ${['a','b','c'].map(opt => `
+            <button class="mcq-opt" id="mcq-${q.id}-${opt}" onclick="selectMCQ(${q.id},'${opt}')">
+              <span class="opt-label">${opt}</span>
+              <span>${t4Labels[opt]}</span>
+            </button>`).join('')}
+        </div>
+      </div>`;
+  });
+}
+
+buildT3(); buildT4();
+
+// ─── SELECTION ──────────────────────────────────────────────────────
+
+const t3Selected = {};
+const t4Selected = {};
+
+function selectRF(id, val) {
+  if (t3Selected[id] === 'locked') return;
+  t3Selected[id] = val;
+  ['R','F'].forEach(v => {
+    document.getElementById(`rf-${id}-${v}`).className = 'rf-btn' + (v === val ? ' selected-pending' : '');
+    document.getElementById(`rf-${id}-${v}`).style.borderColor = v === val ? '#1a2744' : '';
+    document.getElementById(`rf-${id}-${v}`).style.background = v === val ? '#e8eaf5' : '';
+    document.getElementById(`rf-${id}-${v}`).style.color = v === val ? '#1a2744' : '';
+  });
+}
+
+function selectMCQ(id, val) {
+  if (t4Selected[id] === 'locked') return;
+  t4Selected[id] = val;
+  ['a','b','c'].forEach(v => {
+    const btn = document.getElementById(`mcq-${id}-${v}`);
+    btn.className = 'mcq-opt' + (v === val ? ' selected-pending' : '');
+    if (v === val) {
+      btn.style.borderColor = '#1a2744';
+      btn.style.background = '#e8eaf5';
+    } else {
+      btn.style.borderColor = '';
+      btn.style.background = '';
+    }
+  });
+}
+
+// ─── CHECK ──────────────────────────────────────────────────────────
+
+function checkT3() {
+  let correct = 0;
+  t3Data.forEach(q => {
+    const chosen = t3Selected[q.id];
+    if (!chosen) return;
+    t3Selected[q.id] = 'locked';
+    ['R','F'].forEach(v => {
+      const btn = document.getElementById(`rf-${q.id}-${v}`);
+      btn.style.borderColor = ''; btn.style.background = ''; btn.style.color = '';
+      btn.disabled = true;
+      if (v === q.answer) btn.className = 'rf-btn reveal-correct';
+      else if (v === chosen && chosen !== q.answer) btn.className = 'rf-btn selected-wrong';
+      else btn.className = 'rf-btn';
+    });
+    if (chosen === q.answer) correct++;
+  });
+  const answered = Object.values(t3Selected).filter(v => v !== 'locked' || true).length;
+  document.getElementById('score3').classList.add('visible');
+  document.getElementById('score3-text').textContent = `${correct} / ${t3Data.length}`;
+  const pct = Math.round(correct / t3Data.length * 100);
+  document.getElementById('score3-sub').textContent =
+    pct >= 60 ? `✓ Bestanden (${pct}%)` : `✗ Nicht bestanden (${pct}%)`;
+}
+
+function checkT4() {
+  let correct = 0;
+  t4Data.forEach(q => {
+    const chosen = t4Selected[q.id];
+    if (!chosen) return;
+    t4Selected[q.id] = 'locked';
+    ['a','b','c'].forEach(v => {
+      const btn = document.getElementById(`mcq-${q.id}-${v}`);
+      btn.style.borderColor = ''; btn.style.background = '';
+      btn.disabled = true;
+      if (v === q.answer) btn.className = 'mcq-opt reveal-correct';
+      else if (v === chosen && chosen !== q.answer) btn.className = 'mcq-opt selected-wrong';
+      else btn.className = 'mcq-opt';
+    });
+    if (chosen === q.answer) correct++;
+  });
+  document.getElementById('score4').classList.add('visible');
+  document.getElementById('score4-text').textContent = `${correct} / ${t4Data.length}`;
+  const pct = Math.round(correct / t4Data.length * 100);
+  document.getElementById('score4-sub').textContent =
+    pct >= 60 ? `✓ Bestanden (${pct}%)` : `✗ Nicht bestanden (${pct}%)`;
+}
+
+// ─── RESET ──────────────────────────────────────────────────────────
+
+function resetT3() {
+  Object.keys(t3Selected).forEach(k => delete t3Selected[k]);
+  buildT3();
+  document.getElementById('score3').classList.remove('visible');
+}
+function resetT4() {
+  Object.keys(t4Selected).forEach(k => delete t4Selected[k]);
+  buildT4();
+  document.getElementById('score4').classList.remove('visible');
+}
+
+// ─── SPEED ──────────────────────────────────────────────────────────
+
+function setSpeed(audioId, rate, btn) {
+  document.getElementById(audioId).playbackRate = rate;
+  btn.closest('.speed-controls').querySelectorAll('.speed-btn')
+    .forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── TRANSCRIPT KARAOKE ─────────────────────────────────────────────
+
+function toggleTranscript(boxId, togId) {
+  const box = document.getElementById(boxId);
+  const tog = document.getElementById(togId);
+  const isOpen = box.classList.toggle('visible');
+  tog.classList.toggle('open', isOpen);
+  tog.querySelector('span').textContent = isOpen ? 'Transkript verbergen' : 'Transkript anzeigen';
+}
+
+function setupKaraoke(audioId, boxId) {
+  const audio = document.getElementById(audioId);
+  const lines = document.querySelectorAll(`#${boxId} .transcript-line`);
+  audio.addEventListener('timeupdate', () => {
+    const t = audio.currentTime;
+    lines.forEach(line => {
+      const s = parseFloat(line.dataset.start);
+      const e = parseFloat(line.dataset.end);
+      line.classList.toggle('highlight', t >= s && t < e);
+    });
+  });
+}
+
+setupKaraoke('audio3', 'trans3');
+setupKaraoke('audio4', 'trans4');
+
+// ─── TABS ────────────────────────────────────────────────────────────
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── LÖSUNG MODAL ────────────────────────────────────────────────────
+
+function showLosung() {
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('visible');
+}
+</script>
+</body>
+</html>
