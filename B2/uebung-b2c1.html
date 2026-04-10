@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Übungen B2–C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fb;--card:#fff;--card2:#f0f3fa;--bd:#e2e6f3;
+  --blue:#2f5de8;--blue-l:#eef1fd;--blue-m:#c7d3fb;
+  --teal:#0f766e;--teal-l:#f0fdfa;--teal-m:#5eead4;
+  --indigo:#4338ca;--indigo-l:#eef2ff;
+  --purple:#7c3aed;--purple-l:#f5f3ff;
+  --amber:#b45309;--amber-l:#fef3c7;--amber-m:#fcd34d;
+  --rose:#be185d;--rose-l:#fdf2f8;
+  --ok:#15803d;--ok-bg:#f0fdf4;--ok-bd:#86efac;
+  --er:#b91c1c;--er-bg:#fef2f2;--er-bd:#fca5a5;
+  --tx:#111827;--tx2:#4b5563;--mu:#9ca3af;
+  --shadow:0 1px 4px rgba(30,60,200,.07),0 4px 18px rgba(30,60,200,.06);
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:15px;min-height:100vh}
+
+/* ── STICKY HEADER ── */
+.hdr{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.hdr-t{font-family:'Playfair Display',serif;font-size:19px;color:var(--blue);flex:none}
+.hdr-badge{font-size:10px;font-weight:700;background:var(--blue);color:#fff;padding:3px 10px;border-radius:99px;flex:none}
+.name-inp{flex:1;border:1.5px solid var(--bd);border-radius:8px;padding:7px 11px;font-family:'Inter',sans-serif;font-size:13px;color:var(--tx);outline:none;min-width:0;transition:border-color .18s}
+.name-inp:focus{border-color:var(--blue)}
+.name-inp::placeholder{color:var(--mu)}
+
+/* ── TAB BAR ── */
+.tab-wrap{background:#fff;border-bottom:1px solid var(--bd);padding:9px 12px;overflow-x:auto;display:flex;gap:5px;scrollbar-width:none;position:sticky;top:57px;z-index:190}
+.tab-wrap::-webkit-scrollbar{display:none}
+.tab-btn{flex:none;font-size:11.5px;font-weight:600;padding:7px 13px;border-radius:99px;border:1.5px solid var(--bd);background:#fff;color:var(--tx2);cursor:pointer;white-space:nowrap;transition:all .18s;display:flex;align-items:center;gap:5px}
+.tab-btn.on{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(47,93,232,.22)}
+.tab-btn .tab-score{font-size:10px;background:rgba(255,255,255,.25);border-radius:99px;padding:1px 6px;display:none}
+.tab-btn.on .tab-score{display:inline}
+
+/* ── MAIN ── */
+.main{max-width:680px;margin:0 auto;padding:16px 13px 48px}
+.sec{display:none}.sec.on{display:block;animation:fu .22s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{margin-bottom:16px}
+.sec-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--tx);margin-bottom:4px}
+.sec-desc{font-size:12.5px;color:var(--mu);line-height:1.5}
+.score-bar{display:none;background:var(--card);border:1.5px solid var(--bd);border-radius:10px;padding:11px 14px;margin-bottom:14px;align-items:center;gap:12px}
+.score-bar.show{display:flex}
+.sc-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--tx)}
+.sc-lbl{font-size:12px;color:var(--mu)}
+.sc-emo{font-size:24px;margin-left:auto}
+
+/* ── EXERCISE CARD ── */
+.ex-group{margin-bottom:22px}
+.ex-group-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.ex-group-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+.ex-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:9px;box-shadow:var(--shadow)}
+.ex-head{background:var(--card2);padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.ex-tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:99px;flex:none}
+.tag-inp{background:var(--blue-l);color:var(--blue)}
+.tag-mc{background:var(--purple-l);color:var(--purple)}
+.tag-dd{background:var(--amber-l);color:var(--amber)}
+.tag-tr{background:var(--teal-l);color:var(--teal)}
+.tag-fe{background:var(--rose-l);color:var(--rose)}
+.tag-sp{background:var(--indigo-l);color:var(--indigo)}
+.ex-htitle{font-size:13px;font-weight:600;color:var(--tx);flex:1}
+.ex-count{font-size:11px;color:var(--mu);flex:none}
+.ex-body{padding:11px 12px}
+
+/* ── ITEM ── */
+.xi{background:var(--card2);border:1.5px solid var(--bd);border-radius:10px;padding:11px 12px;margin-bottom:7px;transition:border-color .18s,background .18s}
+.xi.ok{border-color:var(--ok-bd);background:var(--ok-bg)}
+.xi.er{border-color:var(--er-bd);background:var(--er-bg)}
+.xi-num{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
+.xi-q{font-size:13.5px;color:var(--tx);margin-bottom:8px;line-height:1.65}
+.xi-q b{color:var(--blue)}
+.xi-q del{color:var(--er);text-decoration:line-through}
+
+/* Lückentext input */
+.xinp{width:100%;background:#fff;border:1.5px solid var(--bd);border-radius:8px;color:var(--tx);font-family:'Inter',sans-serif;font-size:15px;padding:9px 12px;outline:none;transition:border-color .18s}
+.xinp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,93,232,.1)}
+.xi.ok .xinp{border-color:var(--ok-bd);color:var(--ok)}
+.xi.er .xinp{border-color:var(--er-bd);color:var(--er)}
+
+/* MC */
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mc-btn{background:#fff;border:1.5px solid var(--bd);border-radius:9px;color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;padding:9px 10px;cursor:pointer;text-align:left;transition:all .15s;line-height:1.35}
+.mc-btn.sel{background:var(--blue-l);border-color:var(--blue);color:var(--blue)}
+.mc-btn.cc{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok);font-weight:600}
+.mc-btn.cw{background:var(--er-bg);border-color:var(--er-bd);color:var(--er)}
+.mc-btn.rc{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok)}
+.mc-btn.dis{pointer-events:none;opacity:.55}
+
+/* Drag & Drop */
+.dd-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);margin-bottom:4px}
+.dd-zone{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;background:#fff;border:2px dashed var(--bd);border-radius:9px;padding:7px;margin-bottom:6px;transition:border-color .15s}
+.dd-zone.ov{border-color:var(--blue);background:var(--blue-l)}
+.dd-bank{display:flex;flex-wrap:wrap;gap:5px;min-height:30px}
+.dd-chip{background:var(--blue-l);color:var(--blue);border:1.5px solid var(--blue-m);border-radius:7px;padding:5px 11px;font-size:13px;font-weight:500;cursor:grab;user-select:none;transition:opacity .15s;touch-action:none}
+.dd-chip.placed{background:#f1f5f9;border-color:#cbd5e1;color:var(--tx2)}
+.dd-chip.drag{opacity:.3}
+
+/* Transformation */
+.tr-prompt{font-size:13px;color:var(--tx2);font-style:italic;margin-bottom:6px;line-height:1.5;padding:8px 10px;background:var(--indigo-l);border-radius:8px;border-left:3px solid var(--indigo)}
+.tr-inp{width:100%;background:#fff;border:1.5px solid var(--bd);border-radius:8px;color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;padding:9px 12px;outline:none;resize:vertical;min-height:52px;transition:border-color .18s}
+.tr-inp:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
+.xi.ok .tr-inp{border-color:var(--ok-bd);color:var(--ok)}
+.xi.er .tr-inp{border-color:var(--er-bd);color:var(--er)}
+
+/* Fehlerkorrektur */
+.fe-sentence{font-size:14px;line-height:1.8;margin-bottom:8px;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid var(--bd)}
+.fe-sentence b{color:var(--er);text-decoration:underline;text-decoration-color:var(--er);cursor:pointer}
+
+/* Satzpuzzle */
+.sp-pieces{display:flex;flex-wrap:wrap;gap:5px;min-height:36px;background:#fff;border:2px dashed var(--bd);border-radius:9px;padding:7px;margin-bottom:6px;transition:border-color .15s}
+.sp-pieces.ov{border-color:var(--indigo);background:var(--indigo-l)}
+.sp-chip{background:var(--indigo-l);color:var(--indigo);border:1.5px solid var(--indigo-m);border-radius:7px;padding:5px 11px;font-size:13px;font-weight:500;cursor:grab;user-select:none;touch-action:none}
+.sp-chip.placed{background:#f1f5f9;border-color:#cbd5e1;color:var(--tx2)}
+.sp-chip.drag{opacity:.3}
+
+/* Feedback */
+.fb{margin-top:7px;font-size:13px;border-radius:8px;padding:8px 11px;display:none;font-weight:500;line-height:1.5}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}
+.fb.er{background:var(--er-bg);color:var(--er)}
+
+/* Buttons */
+.chk-btn{width:100%;margin-top:10px;padding:12px;border-radius:9px;border:none;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(47,93,232,.18);transition:opacity .18s}
+.chk-btn:active{opacity:.82}
+.rst-btn{width:100%;margin-top:6px;padding:9px;border-radius:9px;border:1.5px solid var(--bd);background:#fff;color:var(--tx2);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:none}
+.rst-btn:hover{border-color:var(--blue);color:var(--blue)}
+.auswerten-btn{width:100%;margin-top:16px;padding:14px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(47,93,232,.25);letter-spacing:.02em}
+
+/* Gemischt shuffle */
+.shuffle-btn{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:9px 16px;border-radius:99px;border:1.5px solid var(--blue);background:var(--blue-l);color:var(--blue);cursor:pointer;margin-bottom:14px;transition:all .18s}
+.shuffle-btn:active{background:var(--blue);color:#fff}
+
+.copy{text-align:center;padding:20px 16px 40px;opacity:.3}
+.copy-main{font-family:'Playfair Display',serif;font-size:17px}
+.copy-sub{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-t">Übungen</div>
+  <div class="hdr-badge">B2 · C1</div>
+  <input class="name-inp" id="nameInp" type="text" placeholder="Dein Name …" autocomplete="off">
+</div>
+<div class="tab-wrap" id="tabWrap"></div>
+<div class="main" id="mainArea"></div>
+<div class="copy">
+  <div class="copy-main">Made with ♥ by Bảo Quang</div>
+  <div class="copy-sub">Deutsch Lernen unterwegs</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════
+var TABS = [
+  {id:"gr",lb:"🧠 Grammatik",
+   desc:"Konjunktiv II, Passiv, Relativsatz, Satzbau — B2/C1 Kerngrammatik",
+   groups:[
+    {title:"Konjunktiv II Vergangenheit",tag:"inp",items:[
+      {q:"Er ist nicht gekommen. → Wenn er früher ___ (kommen), hätten wir Zeit gehabt.",a:"gekommen wäre",h:"sein-Verb → wäre + Partizip II"},
+      {q:"Ich habe nicht gelernt. → Wenn ich mehr gelernt ___, hätte ich bestanden.",a:"hätte",h:"haben → hätte"},
+      {q:"Sie hat nicht angerufen. → Wenn sie angerufen ___, wäre ich geblieben.",a:"hätte",h:"anrufen → hätte angerufen"},
+      {q:"Wir hatten keine Zeit. → Wenn wir Zeit ___ (haben), hätten wir geholfen.",a:"gehabt hätten",h:"haben → gehabt hätten"},
+    ]},
+    {title:"Passiv — richtige Form",tag:"mc",items:[
+      {q:"Man hat das Auto repariert. →",op:["Das Auto ist repariert worden.","Das Auto hat repariert werden.","Das Auto wird repariert worden.","Das Auto ist repariert geworden."],a:0},
+      {q:"Man muss den Bericht abgeben. →",op:["Der Bericht ist abzugeben.","Der Bericht muss abgegeben werden.","Der Bericht muss abgegeben worden.","Der Bericht hat abgegeben werden."],a:1},
+      {q:"'Das lässt sich lösen' bedeutet:",op:["Das muss gelöst werden.","Das ist zu lösen.","Das kann gelöst werden.","Das sollte gelöst werden."],a:2},
+      {q:"Zustandspassiv: Das Fenster ___ geschlossen.",op:["wird","worden","ist","hat"],a:2},
+    ]},
+    {title:"Relativsatz — Genitiv & Präposition",tag:"inp",items:[
+      {q:"Der Mann, ___ Auto kaputt ist, wartet draußen.",a:"dessen",h:"Mask. Genitiv → dessen"},
+      {q:"Die Stadt, in ___ ich aufgewachsen bin, liegt im Norden.",a:"der",h:"Fem. Dativ → der"},
+      {q:"Das Problem, ___ wir diskutiert haben, ist komplex.",a:"worüber",h:"worüber = über das (abstrakt)"},
+      {q:"Die Kolleginnen, mit ___ ich arbeite, sind sehr kompetent.",a:"denen",h:"Plural Dativ → denen"},
+    ]},
+    {title:"Satzbau — Satz korrekt ordnen",tag:"sp",items:[
+      {q:"Nebensatz mit Modalverb (Perfekt):",pieces:["weil","er","nicht","kommen","gekonnt","hat"],ans:"weil er nicht kommen gekonnt hat"},
+      {q:"Topikalisierung — betontes Element vorn:",pieces:["Dieses","Buch","lese","ich","sehr","gern"],ans:"Dieses Buch lese ich sehr gern"},
+      {q:"Mittelfeld: Zeit → Weise → Ort:",pieces:["Er","hat","gestern","schnell","in","Berlin","gearbeitet"],ans:"Er hat gestern schnell in Berlin gearbeitet"},
+    ]},
+    {title:"Fehler finden & korrigieren",tag:"fe",items:[
+      {q:"Wenn ich das gewusst <b>habe</b>, hätte ich anders entschieden.",correct:"hätte",explanation:"Konjunktiv II Vg. → hätte gewusst"},
+      {q:"Das Haus ist letztes Jahr renoviert <b>geworden</b>.",correct:"worden",explanation:"Passiv Perfekt → worden (nicht geworden)"},
+      {q:"Der Kollege, <b>der</b> Meinung ich schätze, ist sehr erfahren.",correct:"dessen",explanation:"Genitiv Relativpronomen mask. → dessen"},
+    ]},
+  ]},
+
+  {id:"pr",lb:"🔗 Präpositionen",
+   desc:"Adjektiv, Nomen und Verb + Präposition — typische B2-Verbindungen",
+   groups:[
+    {title:"Verb + Präposition — Lückentext",tag:"inp",items:[
+      {q:"Ich freue mich sehr ___ dein Geschenk. (Reaktion auf Vergangenes)",a:"über",h:"sich freuen über = positiv auf etwas reagieren"},
+      {q:"Alle nehmen ___ der Veranstaltung teil.",a:"an",h:"teilnehmen an + Dativ"},
+      {q:"Er zweifelt ___ der Richtigkeit dieser Information.",a:"an",h:"zweifeln an + Dativ"},
+      {q:"Wir rechnen ___ Komplikationen bei diesem Projekt.",a:"mit",h:"rechnen mit = einkalkulieren"},
+      {q:"Sie verzichtet ___ Fleisch aus ethischen Gründen.",a:"auf",h:"verzichten auf + Akk."},
+      {q:"Der Minister wies ___ die neuen Regelungen hin.",a:"auf",h:"hinweisen auf + Akk."},
+    ]},
+    {title:"Adjektiv + Präposition — Multiple Choice",tag:"mc",items:[
+      {q:"Er ist sehr ___ Kritik empfindlich.",op:["für","gegenüber","über","an"],a:1},
+      {q:"Sie ist ___ ihre Leistung stolz.",op:["für","von","auf","an"],a:2},
+      {q:"Wir sind ___ der neuen Methode überzeugt.",op:["mit","an","für","von"],a:3},
+      {q:"Ich bin ___ der Entscheidung einverstanden.",op:["zu","mit","an","für"],a:1},
+      {q:"Er ist ___ seine Familie besorgt.",op:["über","für","um","an"],a:2},
+    ]},
+    {title:"Nomen + Präposition — Lückentext",tag:"inp",items:[
+      {q:"Es gibt einen großen Mangel ___ Fachkräften in dieser Branche.",a:"an",h:"Mangel an + Dativ"},
+      {q:"Die Nachfrage ___ Elektroautos steigt jedes Jahr.",a:"nach",h:"Nachfrage nach + Dativ"},
+      {q:"Wir haben Verständnis ___ deine schwierige Situation.",a:"für",h:"Verständnis für + Akk."},
+      {q:"Es besteht ein enger Zusammenhang ___ Stress und Krankheit.",a:"zwischen",h:"Zusammenhang zwischen + Dativ"},
+    ]},
+    {title:"Präposition richtig zuordnen",tag:"dd",items:[
+      {q:"sich bewerben ___ die Stelle / ___ einer Firma / ___ den Job",words:["um","bei","für","an","in"],ans:"um bei für"},
+      {q:"Einfluss nehmen ___ die Entscheidung / verfügen ___ gute Kenntnisse",words:["auf","über","an","für","mit"],ans:"auf über"},
+      {q:"bestehen ___ zehn Personen / bestehen ___ diesem Recht",words:["aus","auf","in","von","zu"],ans:"aus auf"},
+    ]},
+  ]},
+
+  {id:"no",lb:"📋 Nominalstil",
+   desc:"Verbalisierung, Nominalisierung, Funktionsverbgefüge — C1 Kernkompetenz",
+   groups:[
+    {title:"Verb → Nomen (Nominalisierung)",tag:"tr",items:[
+      {q:"Wir analysieren das Problem.",prompt:"→ Umschreiben mit Nomen: Die ___ des Problems …",a:"Analyse",h:"analysieren → die Analyse"},
+      {q:"Er entscheidet schnell.",prompt:"→ Funktionsverbgefüge: Er trifft eine schnelle ___.",a:"Entscheidung",h:"entscheiden → eine Entscheidung treffen"},
+      {q:"Sie kritisiert den Plan offen.",prompt:"→ FVG: Sie übt ___ am Plan.",a:"Kritik",h:"kritisieren → Kritik üben"},
+      {q:"Das kann erklärt werden.",prompt:"→ FVG mit 'lassen': Das ___ sich erklären.",a:"lässt",h:"lassen + sich + Inf. = können-Passiv"},
+    ]},
+    {title:"Nomen → Verb (Verbalisierung)",tag:"mc",items:[
+      {q:"'die Durchführung der Maßnahme' → verbal:",op:["die Maßnahme führen","die Maßnahme durchführen","mit der Maßnahme führen","die Maßnahme ausführen lassen"],a:1},
+      {q:"'zur Verfügung stehen' bedeutet:",op:["fehlen","verfügbar sein","benötigen","suchen"],a:1},
+      {q:"'in Betracht ziehen' bedeutet:",op:["vergessen","ablehnen","berücksichtigen","ignorieren"],a:2},
+      {q:"'eine Rolle spielen' bedeutet:",op:["Theater spielen","relevant sein","unwichtig sein","eine Funktion übernehmen"],a:1},
+    ]},
+    {title:"FVG einsetzen — Lückentext",tag:"inp",items:[
+      {q:"Bitte ___ Sie auf andere Fahrgäste Rücksicht. (Rücksicht nehmen)",a:"nehmen",h:"Rücksicht nehmen auf"},
+      {q:"Mehrere Kandidaten ___ für diese Stelle in Frage.",a:"kommen",h:"in Frage kommen = möglich sein"},
+      {q:"Das Produkt wurde weltweit auf den Markt ___.",a:"gebracht",h:"auf den Markt bringen = launchen"},
+      {q:"Ich ___ Bezug auf Ihren Brief vom 3. März.",a:"nehme",h:"Bezug nehmen auf (formeller Brief)"},
+    ]},
+    {title:"Nominalstil ↔ Verbalstil",tag:"fe",items:[
+      {q:"Die Durchführung des Plans <b>liegt bei uns vor</b>.",correct:"liegt bei uns",explanation:"'liegt bei uns vor' ist falsch — richtig: 'liegt bei uns' oder 'führen wir durch'"},
+      {q:"Wir bringen unsere Zufriedenheit <b>aus</b>.",correct:"zum Ausdruck",explanation:"zum Ausdruck bringen — nicht 'aus bringen'"},
+      {q:"Er nimmt die Verantwortung für den Fehler <b>an</b>.",correct:"übernimmt",explanation:"Verantwortung übernehmen — nicht 'annehmen'"},
+    ]},
+  ]},
+
+  {id:"re",lb:"💬 Redemittel",
+   desc:"Diskussion, Präsentation, Argumentation — typische B2/C1-Wendungen",
+   groups:[
+    {title:"Redemittel zuordnen — Funktion",tag:"mc",items:[
+      {q:"'Meiner Meinung nach sollten wir …' — Funktion?",op:["Zustimmen","Widersprechen","Meinung äußern","Abschließen"],a:2},
+      {q:"'Das stimmt zwar, aber man muss bedenken, dass …' — Funktion?",op:["Vollständig zustimmen","Einschränkend widersprechen","Thema wechseln","Frage stellen"],a:1},
+      {q:"'Abschließend lässt sich sagen, dass …' — Funktion?",op:["Einleitung","Beispiel geben","Zusammenfassung","Frage stellen"],a:2},
+      {q:"'Was meinen Sie dazu?' — Funktion?",op:["Meinung äußern","Gesprächspartner einbeziehen","Ablehnen","Begründen"],a:1},
+      {q:"'Einerseits … andererseits …' — Funktion?",op:["Zwei Seiten abwägen","Zustimmen","Widersprechen","Beispiel geben"],a:0},
+    ]},
+    {title:"Redemittel ergänzen — Lückentext",tag:"inp",items:[
+      {q:"Ich ___ dieser Aussage nicht zu. Ich bin der Meinung, dass …",a:"stimme",h:"zustimmen → ich stimme … zu (Gegenteil: nicht zustimmen)"},
+      {q:"Das ___ zwar richtig, aber man darf nicht vergessen, dass …",a:"stimmt",h:"Das stimmt zwar, aber … (konzessiv + Gegenargument)"},
+      {q:"___ ich das richtig verstehe, meinen Sie, dass …",a:"Wenn",h:"Wenn ich das richtig verstehe, … (Rückfrage/Vergewisserung)"},
+      {q:"Ich möchte noch ___ hinzufügen, dass dieses Problem komplex ist.",a:"ergänzend",h:"ergänzend hinzufügen = etwas Weiteres sagen"},
+    ]},
+    {title:"Sätze korrekt aufbauen",tag:"sp",items:[
+      {q:"Meinung mit Begründung:",pieces:["Ich","bin","der","Ansicht,","dass","Bildung","wichtiger","ist","als","Geld"],ans:"Ich bin der Ansicht, dass Bildung wichtiger ist als Geld"},
+      {q:"Einschränkende Zustimmung:",pieces:["Das","mag","sein,","dennoch","sollte","man","die","Risiken","beachten"],ans:"Das mag sein, dennoch sollte man die Risiken beachten"},
+      {q:"Beispiel einführen:",pieces:["Als","Beispiel","lässt","sich","hier","die","Digitalisierung","nennen"],ans:"Als Beispiel lässt sich hier die Digitalisierung nennen"},
+    ]},
+    {title:"Falsche Redemittel erkennen",tag:"fe",items:[
+      {q:"Ich <b>stimme damit überein</b>, dass dieses Thema wichtig ist.",correct:"stimme dem zu / bin damit einverstanden",explanation:"'stimme damit überein' ist ein direkter Anglizismus — besser: 'stimme dem zu'"},
+      {q:"<b>Auf der anderen Seite</b>, gibt es auch Nachteile.",correct:"Auf der anderen Seite gibt es",explanation:"Nach 'Auf der anderen Seite' kommt kein Komma — es ist kein Einschub"},
+      {q:"Meiner Ansicht <b>nach mir</b> ist das eine gute Lösung.",correct:"Meiner Ansicht nach",explanation:"'Meiner Ansicht nach' = fertige Wendung, kein 'mir' dazwischen"},
+    ]},
+  ]},
+
+  {id:"ws",lb:"📝 Wortschatz",
+   desc:"Adjektive, Verben, Kollokationen und Wortfeld-Erweiterung B2/C1",
+   groups:[
+    {title:"Adjektive — Antonyme & Nuancen",tag:"mc",items:[
+      {q:"Das Gegenteil von 'eindeutig' ist:",op:["klar","mehrdeutig","offensichtlich","direkt"],a:1},
+      {q:"'beharrlich' bedeutet:",op:["schnell aufgeben","hartnäckig weitermachen","unsicher sein","laut sprechen"],a:1},
+      {q:"'überwiegend' = fast dasselbe wie:",op:["vollständig","selten","größtenteils","manchmal"],a:2},
+      {q:"'nachhaltig' bedeutet im Kontext Umwelt:",op:["kurzfristig","dauerhaft ökologisch","sehr teuer","modern"],a:1},
+      {q:"'maßgeblich' = fast dasselbe wie:",op:["unwichtig","entscheidend","zufällig","klein"],a:1},
+    ]},
+    {title:"Kollokationen — welches Verb passt?",tag:"mc",items:[
+      {q:"eine Entscheidung ___",op:["machen","treffen","haben","gehen"],a:1},
+      {q:"___ Rücksicht auf jemanden",op:["haben","geben","nehmen","machen"],a:2},
+      {q:"Kritik ___ an etwas",op:["sagen","üben","machen","haben"],a:1},
+      {q:"Einfluss ___ auf etwas",op:["nehmen","geben","haben","sein"],a:0},
+      {q:"einen Beitrag ___ zu etwas",op:["machen","geben","leisten","nehmen"],a:2},
+    ]},
+    {title:"Wortfamilien erweitern",tag:"inp",items:[
+      {q:"entwickeln → die ___",a:"Entwicklung",h:"entwickeln → Entwicklung (-ung Suffix)"},
+      {q:"verantwortlich → die ___",a:"Verantwortung",h:"verantworten → Verantwortung"},
+      {q:"kommunizieren → die ___",a:"Kommunikation",h:"kommunizieren → Kommunikation (-tion Suffix)"},
+      {q:"nachhaltig → die ___",a:"Nachhaltigkeit",h:"nachhaltig → Nachhaltigkeit (-keit Suffix)"},
+      {q:"integrieren → die ___",a:"Integration",h:"integrieren → Integration (-tion Suffix)"},
+    ]},
+    {title:"Sätze mit Wortschatz vervollständigen",tag:"dd",items:[
+      {q:"Im Beruf muss man oft ___ Druck ___ und ___ Verantwortung ___.",words:["unter","setzen","übernehmen","nehmen","stehen","Rücksicht"],ans:"unter Druck setzen übernehmen"},
+      {q:"Sie ___ großen Einfluss ___ die Entscheidung und ___ dabei Rücksicht ___ alle.",words:["nahm","auf","nimmt","auf","für"],ans:"nimmt auf nimmt auf"},
+    ]},
+  ]},
+
+  {id:"gm",lb:"🔀 Gemischt",
+   desc:"Alle Themen gemischt — zufällige Aufgaben bei jedem Laden",
+   groups:[] /* wird dynamisch befüllt */
+  }
+];
+
+// ═══════════════════════════════════════════════════════════
+//  GEMISCHT — pick 3 random items per type from all tabs
+// ═══════════════════════════════════════════════════════════
+function buildGemischt(){
+  var pool = [];
+  TABS.slice(0,5).forEach(function(tab){
+    tab.groups.forEach(function(gr){
+      gr.items.forEach(function(item){
+        pool.push({tag:gr.tag,title:gr.title,tabName:tab.lb.replace(/./u,'').trim(),item:item});
+      });
+    });
+  });
+  // shuffle
+  for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+  var picked = pool.slice(0,18);
+  // group by tag
+  var byTag = {};
+  picked.forEach(function(p){
+    if(!byTag[p.tag]) byTag[p.tag]=[];
+    byTag[p.tag].push(p.item);
+  });
+  var tagNames = {inp:"Lückentext",mc:"Multiple Choice",dd:"Zuordnung",tr:"Transformation",fe:"Fehlerkorrektur",sp:"Satzpuzzle"};
+  var groups = [];
+  Object.keys(byTag).forEach(function(tag){
+    groups.push({title:tagNames[tag],tag:tag,items:byTag[tag]});
+  });
+  TABS[5].groups = groups;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+var ST = {}; // ST[tabId][groupIdx][itemIdx] = {done, sel}
+var SCORES = {}; // SCORES[tabId] = {ok,total}
+
+function gs(tid,gi,ii){
+  if(!ST[tid])ST[tid]={};
+  if(!ST[tid][gi])ST[tid][gi]={};
+  if(!ST[tid][gi][ii])ST[tid][gi][ii]={done:false,sel:-1};
+  return ST[tid][gi][ii];
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DOM HELPERS
+// ═══════════════════════════════════════════════════════════
+function el(tag,cls,html){
+  var e=document.createElement(tag);
+  if(cls)e.className=cls;
+  if(html!==undefined)e.innerHTML=html;
+  return e;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DRAG & DROP (shared for dd + sp)
+// ═══════════════════════════════════════════════════════════
+var dragSrc=null,touchWd=null,touchCl=null;
+
+function setupChip(chip,zone,bank,chipClass){
+  chip.draggable=true;
+  chip.addEventListener("dragstart",function(e){dragSrc=chip;chip.classList.add("drag");e.dataTransfer.effectAllowed="move";});
+  chip.addEventListener("dragend",function(){chip.classList.remove("drag");dragSrc=null;document.querySelectorAll(".dd-zone,.sp-pieces").forEach(function(z){z.classList.remove("ov");});});
+  [zone,bank].forEach(function(tgt){
+    tgt.addEventListener("dragover",function(e){e.preventDefault();tgt.classList.add("ov");});
+    tgt.addEventListener("dragleave",function(){tgt.classList.remove("ov");});
+    tgt.addEventListener("drop",function(e){
+      e.preventDefault();tgt.classList.remove("ov");
+      if(dragSrc){tgt.appendChild(dragSrc);var isZone=tgt.classList.contains("dd-zone")||tgt.classList.contains("sp-pieces");if(isZone)dragSrc.classList.add("placed");else dragSrc.classList.remove("placed");}
+    });
+  });
+  chip.addEventListener("touchstart",function(e){
+    touchWd=chip;var cl=chip.cloneNode(true);cl.style.cssText="position:fixed;opacity:.6;pointer-events:none;z-index:9999;";document.body.appendChild(cl);touchCl=cl;
+    var t=e.touches[0];cl.style.left=(t.clientX-40)+"px";cl.style.top=(t.clientY-20)+"px";e.preventDefault();
+  },{passive:false});
+  chip.addEventListener("touchmove",function(e){
+    if(!touchCl)return;var t=e.touches[0];touchCl.style.left=(t.clientX-40)+"px";touchCl.style.top=(t.clientY-20)+"px";
+    document.querySelectorAll(".dd-zone,.sp-pieces").forEach(function(z){z.classList.remove("ov");});
+    var hit=document.elementFromPoint(t.clientX,t.clientY);if(hit){var z=hit.closest(".dd-zone,.sp-pieces");if(z)z.classList.add("ov");}
+    e.preventDefault();
+  },{passive:false});
+  chip.addEventListener("touchend",function(e){
+    if(touchCl&&touchCl.parentNode)touchCl.parentNode.removeChild(touchCl);touchCl=null;
+    if(!touchWd)return;var t=e.changedTouches[0];
+    var hit=document.elementFromPoint(t.clientX,t.clientY);
+    if(hit){
+      var z=hit.closest(".dd-zone,.sp-pieces"),bk=hit.closest(".dd-bank,.sp-bank");
+      if(z){z.appendChild(touchWd);touchWd.classList.add("placed");z.classList.remove("ov");}
+      else if(bk){bk.appendChild(touchWd);touchWd.classList.remove("placed");}
+    }
+    touchWd=null;e.preventDefault();
+  },{passive:false});
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BUILD ITEM
+// ═══════════════════════════════════════════════════════════
+function buildItem(tab,ti,gi,item,ii){
+  var sid=ti+"-"+gi+"-"+ii;
+  var xi=el("div","xi");xi.id="xi-"+sid;
+  xi.appendChild(el("div","xi-num","Aufgabe "+(ii+1)));
+
+  if(tab.groups[gi].tag==="fe"){
+    // Fehlerkorrektur
+    var qd=el("div","xi-q");qd.innerHTML=item.q;xi.appendChild(qd);
+    var hint=el("div","",);hint.style.cssText="font-size:12px;color:var(--mu);margin-bottom:6px";hint.textContent="→ Finde den Fehler (fett markiert) und gib die korrekte Form ein:";xi.appendChild(hint);
+    var inp=document.createElement("input");inp.className="xinp";inp.id="inp-"+sid;inp.type="text";inp.placeholder="Korrekte Form …";inp.autocomplete="off";inp.setAttribute("autocorrect","off");inp.setAttribute("spellcheck","false");xi.appendChild(inp);
+
+  } else if(tab.groups[gi].tag==="inp"){
+    xi.appendChild(el("div","xi-q",item.q));
+    var inp=document.createElement("input");inp.className="xinp";inp.id="inp-"+sid;inp.type="text";inp.placeholder="Antwort …";inp.autocomplete="off";inp.setAttribute("autocorrect","off");inp.setAttribute("spellcheck","false");xi.appendChild(inp);
+
+  } else if(tab.groups[gi].tag==="mc"){
+    xi.appendChild(el("div","xi-q",item.q));
+    var mc=el("div","mc-grid");
+    item.op.forEach(function(opt,oi){
+      var btn=el("button","mc-btn",opt);btn.id="mc-"+sid+"-"+oi;
+      btn.addEventListener("click",(function(a,b,c,d){return function(){selMC(a,b,c,d);};})(ti,gi,ii,oi));
+      mc.appendChild(btn);
+    });xi.appendChild(mc);
+
+  } else if(tab.groups[gi].tag==="dd"){
+    xi.appendChild(el("div","xi-q",item.q));
+    xi.appendChild(el("div","dd-lbl","Wörterbank:"));
+    var bank=el("div","dd-bank");bank.id="bank-"+sid;
+    var zone=el("div","dd-zone");zone.id="zone-"+sid;
+    xi.appendChild(el("div","dd-lbl","Dein Satz:"));xi.appendChild(zone);
+    var words=item.words.slice().sort(function(){return Math.random()-.5;});
+    words.forEach(function(w){var chip=el("div","dd-chip",w);chip.setAttribute("data-w",w);setupChip(chip,zone,bank);bank.appendChild(chip);});
+    xi.appendChild(bank);
+
+  } else if(tab.groups[gi].tag==="tr"){
+    xi.appendChild(el("div","xi-q",item.q));
+    if(item.prompt)xi.appendChild(el("div","tr-prompt",item.prompt));
+    var inp=document.createElement("input");inp.className="xinp";inp.id="inp-"+sid;inp.type="text";inp.placeholder="Antwort …";inp.autocomplete="off";inp.setAttribute("autocorrect","off");inp.setAttribute("spellcheck","false");xi.appendChild(inp);
+
+  } else if(tab.groups[gi].tag==="sp"){
+    xi.appendChild(el("div","xi-q",item.q));
+    xi.appendChild(el("div","dd-lbl","Satz zusammenbauen:"));
+    var zone=el("div","sp-pieces");zone.id="zone-"+sid;zone.classList.add("sp-pieces");
+    xi.appendChild(zone);
+    xi.appendChild(el("div","dd-lbl","Wörter:"));
+    var bank=el("div","dd-bank");bank.id="bank-"+sid;bank.classList.add("sp-bank");
+    var pieces=item.pieces.slice().sort(function(){return Math.random()-.5;});
+    pieces.forEach(function(w){var chip=el("div","sp-chip dd-chip",w);chip.setAttribute("data-w",w);setupChip(chip,zone,bank);bank.appendChild(chip);});
+    xi.appendChild(bank);
+  }
+
+  var fb=el("div","fb");fb.id="fb-"+sid;xi.appendChild(fb);
+  return xi;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BUILD EXERCISE CARD
+// ═══════════════════════════════════════════════════════════
+var tagLbl={inp:"Lückentext",mc:"Multiple Choice",dd:"Zuordnung",tr:"Transformation",fe:"Fehlerkorrektur",sp:"Satzpuzzle"};
+var tagCls={inp:"tag-inp",mc:"tag-mc",dd:"tag-dd",tr:"tag-tr",fe:"tag-fe",sp:"tag-sp"};
+
+function buildGroup(tab,ti,gr,gi){
+  var wrap=el("div","ex-group");
+  var gtitle=el("div","ex-group-title",tagLbl[gr.tag]+" — "+gr.title);wrap.appendChild(gtitle);
+  var card=el("div","ex-card");
+  var head=el("div","ex-head");
+  head.appendChild(el("div","ex-tag "+tagCls[gr.tag],tagLbl[gr.tag]));
+  head.appendChild(el("div","ex-htitle",gr.title));
+  head.appendChild(el("div","ex-count",gr.items.length+" Aufg."));
+  card.appendChild(head);
+  var body=el("div","ex-body");
+  gr.items.forEach(function(item,ii){body.appendChild(buildItem(tab,ti,gi,item,ii));});
+
+  // check button
+  var cb=el("button","chk-btn","Antworten prüfen ✓");
+  cb.id="cb-"+ti+"-"+gi;
+  cb.addEventListener("click",(function(a,b){return function(){checkGroup(a,b);};})(ti,gi));
+  body.appendChild(cb);
+
+  var rb=el("button","rst-btn","↺ Neu versuchen");
+  rb.id="rb-"+ti+"-"+gi;
+  rb.addEventListener("click",(function(a,b){return function(){resetGroup(a,b);};})(ti,gi));
+  body.appendChild(rb);
+
+  card.appendChild(body);wrap.appendChild(card);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BUILD TAB SECTION
+// ═══════════════════════════════════════════════════════════
+function buildSection(tab,ti){
+  var w=el("div");
+  w.appendChild(el("div","sec-hdr","<div class='sec-title'>"+tab.lb+"</div><div class='sec-desc'>"+tab.desc+"</div>"));
+
+  // Gemischt shuffle button
+  if(tab.id==="gm"){
+    var sb=el("button","shuffle-btn","🔀 Neue Mischung");
+    sb.addEventListener("click",function(){buildGemischt();var sec=document.getElementById("s"+ti);sec.innerHTML="";sec.appendChild(buildSection(TABS[ti],ti));});
+    w.appendChild(sb);
+  }
+
+  var sc=el("div","score-bar");sc.id="sc-"+ti;
+  var sl=el("div");var sn=el("div","sc-num","");sn.id="scn-"+ti;sl.appendChild(sn);sl.appendChild(el("div","sc-lbl","Ergebnis"));sc.appendChild(sl);
+  var se=el("div","sc-emo","");se.id="sce-"+ti;sc.appendChild(se);w.appendChild(sc);
+
+  tab.groups.forEach(function(gr,gi){w.appendChild(buildGroup(tab,ti,gr,gi));});
+  return w;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CHECKING
+// ═══════════════════════════════════════════════════════════
+function selMC(ti,gi,ii,oi){
+  var sid=ti+"-"+gi+"-"+ii,st=gs(ti,gi,ii);
+  if(st.done)return;st.sel=oi;
+  var tab=TABS[ti],gr=tab.groups[gi];
+  gr.items[ii].op.forEach(function(_,o){
+    var b=document.getElementById("mc-"+sid+"-"+o);if(b)b.className="mc-btn"+(o===oi?" sel":"");
+  });
+}
+
+function normalize(s){return s.trim().toLowerCase().replace(/\s+/g," ").replace(/[.,!?;:]/g,"");}
+
+function checkGroup(ti,gi){
+  var tab=TABS[ti],gr=tab.groups[gi],ok=0,total=gr.items.length;
+  gr.items.forEach(function(item,ii){
+    var sid=ti+"-"+gi+"-"+ii;
+    var xi=document.getElementById("xi-"+sid);
+    var fb=document.getElementById("fb-"+sid);
+    var st=gs(ti,gi,ii);
+    var correct=false;
+
+    if(gr.tag==="inp"||gr.tag==="tr"||gr.tag==="fe"){
+      var inp=document.getElementById("inp-"+sid);
+      var val=normalize(inp.value);
+      var exp=normalize(gr.tag==="fe"?item.correct:item.a);
+      correct=(val===exp);
+      inp.disabled=true;
+      if(correct){fb.textContent="✓ Richtig!";fb.className="fb ok show";}
+      else{fb.innerHTML="✗ Richtig: <b>"+( gr.tag==="fe"?item.correct:item.a)+"</b>"+(item.h?" — "+item.h:"")+(item.explanation?" — "+item.explanation:"");fb.className="fb er show";}
+
+    } else if(gr.tag==="mc"){
+      var chosen=st.sel;correct=(chosen===item.a);
+      item.op.forEach(function(_,o){
+        var b=document.getElementById("mc-"+sid+"-"+o);if(!b)return;
+        b.className="mc-btn dis";
+        if(o===item.a)b.classList.add(correct&&o===chosen?"cc":"rc");
+        else if(o===chosen)b.classList.add("cw");
+      });
+      if(correct){fb.textContent="✓ Richtig!";fb.className="fb ok show";}
+      else{var d=document.createElement("div");d.innerHTML=item.op[item.a];fb.textContent="✗ Richtig: "+d.textContent;fb.className="fb er show";}
+
+    } else if(gr.tag==="dd"||gr.tag==="sp"){
+      var zone=document.getElementById("zone-"+sid);
+      if(zone){
+        var got=Array.from(zone.children).map(function(c){var d=document.createElement("div");d.innerHTML=c.getAttribute("data-w")||c.textContent;return d.textContent.trim().toLowerCase();}).join(" ").replace(/\s+/g," ").trim();
+        var exp=(gr.tag==="sp"?normalize(item.ans):normalize(item.ans));
+        correct=(got===exp);
+        Array.from(zone.children).forEach(function(c){c.style.pointerEvents="none";});
+      }
+      if(correct){fb.textContent="✓ Richtig!";fb.className="fb ok show";}
+      else{fb.textContent="✗ Richtig: "+(item.ans||"");fb.className="fb er show";}
+    }
+
+    if(correct)ok++;
+    xi.className="xi "+(correct?"ok":"er");
+    st.done=true;
+  });
+
+  document.getElementById("cb-"+ti+"-"+gi).style.display="none";
+  document.getElementById("rb-"+ti+"-"+gi).style.display="block";
+  updateScore(ti);
+}
+
+function resetGroup(ti,gi){
+  var tab=TABS[ti],gr=tab.groups[gi];
+  if(ST[ti])delete ST[ti][gi];
+  gr.items.forEach(function(item,ii){
+    var sid=ti+"-"+gi+"-"+ii;
+    var xi=document.getElementById("xi-"+sid);if(xi)xi.className="xi";
+    var fb=document.getElementById("fb-"+sid);if(fb){fb.className="fb";fb.textContent="";}
+    if(gr.tag==="inp"||gr.tag==="tr"||gr.tag==="fe"){
+      var inp=document.getElementById("inp-"+sid);if(inp){inp.value="";inp.disabled=false;}
+    } else if(gr.tag==="mc"){
+      item.op.forEach(function(_,o){var b=document.getElementById("mc-"+sid+"-"+o);if(b){b.className="mc-btn";b.style.cssText="";}});
+    } else if(gr.tag==="dd"||gr.tag==="sp"){
+      var zone=document.getElementById("zone-"+sid),bank=document.getElementById("bank-"+sid);
+      if(zone&&bank){Array.from(zone.children).forEach(function(c){c.classList.remove("placed");c.style.pointerEvents="";bank.appendChild(c);});}
+    }
+  });
+  document.getElementById("cb-"+ti+"-"+gi).style.display="block";
+  document.getElementById("rb-"+ti+"-"+gi).style.display="none";
+  updateScore(ti);
+}
+
+function updateScore(ti){
+  var tab=TABS[ti];var totalOk=0,totalAll=0;
+  tab.groups.forEach(function(gr,gi){
+    gr.items.forEach(function(item,ii){
+      var st=gs(ti,gi,ii);if(st.done){totalAll++;if(document.getElementById("xi-"+ti+"-"+gi+"-"+ii)&&document.getElementById("xi-"+ti+"-"+gi+"-"+ii).classList.contains("ok"))totalOk++;}
+    });
+  });
+  if(totalAll>0){
+    var bar=document.getElementById("sc-"+ti);if(bar){bar.className="score-bar show";}
+    var sn=document.getElementById("scn-"+ti);if(sn)sn.textContent=totalOk+"/"+totalAll;
+    var se=document.getElementById("sce-"+ti);if(se){var p=totalOk/totalAll;se.textContent=p===1?"🏆":p>=.8?"🎯":p>=.5?"📚":"💪";}
+    // update tab badge
+    var tbtn=document.querySelectorAll(".tab-btn")[ti];
+    var badge=tbtn.querySelector(".tab-score");if(badge)badge.textContent=totalOk+"/"+totalAll;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════
+function showTab(i){
+  document.querySelectorAll(".sec").forEach(function(s,idx){s.classList.toggle("on",idx===i);});
+  document.querySelectorAll(".tab-btn").forEach(function(b,idx){b.classList.toggle("on",idx===i);});
+  document.querySelectorAll(".tab-btn")[i].scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function init(){
+  buildGemischt();
+  var wrap=document.getElementById("tabWrap");
+  var area=document.getElementById("mainArea");
+  TABS.forEach(function(tab,ti){
+    var btn=el("button","tab-btn"+(ti===0?" on":""),tab.lb+'<span class="tab-score"></span>');
+    btn.addEventListener("click",function(){showTab(ti);});
+    wrap.appendChild(btn);
+    var sec=el("div","sec"+(ti===0?" on":""));sec.id="s"+ti;
+    sec.appendChild(buildSection(tab,ti));
+    area.appendChild(sec);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
