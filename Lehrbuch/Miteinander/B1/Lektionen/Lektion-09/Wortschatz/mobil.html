@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mobil Lernen – Lektion 09</title>
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;color:#fff;padding:28px 20px 24px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:Georgia,serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+.mode-wrap{max-width:440px;margin:24px auto 0;padding:0 16px;display:flex;gap:10px;}
+.mode-btn{flex:1;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--card);font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.mode-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.fc-wrap{max-width:440px;margin:0 auto;padding:20px 16px;}
+.fc-progress{background:var(--border);border-radius:99px;height:6px;margin-bottom:6px;}
+.fc-progress-bar{background:var(--blue);height:6px;border-radius:99px;transition:width .4s;}
+.fc-counter{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;}
+.fc-card{background:var(--card);border-radius:20px;box-shadow:0 4px 24px rgba(37,99,235,.13);padding:36px 24px;text-align:center;min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform .1s;border:2px solid var(--border);}
+.fc-card:active{transform:scale(.98);}
+.fc-art{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:4px 12px;border-radius:99px;}
+.fc-de{font-family:Georgia,serif;font-size:26px;color:var(--ink);line-height:1.2;}
+.fc-vi{font-size:18px;color:var(--muted);display:none;}
+.fc-ex{font-size:13px;color:#64748b;font-style:italic;display:none;line-height:1.5;max-width:320px;}
+.fc-tap{font-size:13px;color:#94a3b8;margin-top:4px;}
+.fc-card.flipped .fc-vi{display:block;}
+.fc-card.flipped .fc-ex{display:block;}
+.fc-card.flipped .fc-tap{display:none;}
+.tts-btn{background:var(--blue-lt);border:none;border-radius:99px;width:44px;height:44px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;transition:background .15s;flex-shrink:0;}
+.tts-btn:hover{background:#bfdbfe;}
+.fc-btns{display:flex;gap:12px;margin-top:16px;}
+.fc-btn{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .1s;}
+.fc-btn:active{transform:scale(.97);}
+.fc-btn-wrong{background:var(--rose-lt);color:var(--rose);}
+.fc-btn-ok{background:var(--green-lt);color:var(--green);}
+.main-hidden{display:none;}
+.score-screen{display:none;max-width:440px;margin:40px auto;padding:0 16px;text-align:center;}
+.score-screen.show{display:block;}
+.score-emoji{font-size:56px;margin-bottom:12px;}
+.score-big{font-family:Georgia,serif;font-size:48px;color:var(--blue);}
+.score-msg{font-size:16px;color:var(--muted);margin:8px 0 24px;}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;margin:6px;}
+.btn-back{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:14px;padding:12px 24px;font-size:14px;font-weight:700;text-decoration:none;display:inline-block;margin:6px;}
+.footer{text-align:center;padding:20px;font-size:11px;color:#8aa3bc;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 09 · MOBIL LERNEN</div>
+    <h1>Samir – Ein neuer Job?</h1>
+    <p id="modeLabel">Alle Vokabeln lernen</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+<div class="mode-wrap">
+  <button class="mode-btn active" id="btnLearn" onclick="setMode('learn')">📚 Vokabeln lernen</button>
+  <button class="mode-btn" id="btnTest" onclick="setMode('test')">🎯 Wortschatztest</button>
+</div>
+<div class="fc-wrap" id="fcWrap">
+  <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+  <div class="fc-counter" id="fcCounter">1 / —</div>
+  <div class="fc-card" id="fcCard" onclick="flipCard()">
+    <button class="tts-btn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
+    <div class="fc-art" id="fcArt"></div>
+    <div class="fc-de" id="fcDe">Lade…</div>
+    <div class="fc-vi" id="fcVi"></div>
+    <div class="fc-ex" id="fcEx"></div>
+    <div class="fc-tap" id="fcTap">Tippen zum Umdrehen</div>
+  </div>
+  <div class="fc-btns main-hidden" id="fcBtns">
+    <button class="fc-btn fc-btn-wrong" onclick="answer(false)">✗ Nochmal</button>
+    <button class="fc-btn fc-btn-ok" onclick="answer(true)">✓ Gewusst</button>
+  </div>
+</div>
+<div class="score-screen" id="scoreScreen">
+  <div class="score-emoji" id="scoreEmoji">⭐</div>
+  <div class="score-big" id="scoreBig"></div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <button class="btn-restart" onclick="restartTest()">🔄 Nochmal</button>
+  <a href="index.html" class="btn-back">← Zurück</a>
+</div>
+<div class="footer">Made with love by BBQ</div>
+<script>
+const WORDS=[
+  {de:"husten",art:"",vi:"ho / húng hắng",ex:"Ludmilla geht es nicht gut. Vielleicht hustet sie."},
+  {de:"das Chaos",art:"das",vi:"sự hỗn loạn / lộn xộn",ex:"Die beste Bezahlung hilft kaum, wenn es im Unternehmen ständig Chaos gibt."},
+  {de:"die Baustelle",art:"die",vi:"công trường xây dựng",ex:"Auf dem Foto sind Männer, die auf einer Baustelle arbeiten."},
+  {de:"kaum",art:"",vi:"hầu như không / gần như không",ex:"Samir und Ludmilla bekommen kaum Schlaf in den Nächten."},
+  {de:"berufstätig",art:"",vi:"đang đi làm / có việc làm",ex:"Samir ist ganztags berufstätig."},
+  {de:"knapp",art:"",vi:"gần / vừa đủ / chưa tới",ex:"Er braucht eine knappe Stunde."},
+  {de:"die Rente",art:"die",vi:"lương hưu / tiền hưu",ex:"Bruno möchte endlich in Rente gehen."},
+  {de:"der Tarif",art:"der",vi:"mức lương theo thỏa thuận / biểu giá",ex:"Sein Chef zahlt nach Tarif."},
+  {de:"das Inserat",art:"das",vi:"mẩu quảng cáo / tin đăng",ex:"Samir hat ein Inserat aufgegeben."},
+  {de:"aufgeben",art:"",vi:"đăng (quảng cáo) / từ bỏ",ex:"Er hat ein Inserat aufgegeben, um einen neuen Job zu finden."},
+  {de:"ausgebildet",art:"",vi:"có bằng cấp / được đào tạo tốt",ex:"Bruno meint, dass Samir sehr gut ausgebildet ist."},
+  {de:"die Atmosphäre",art:"die",vi:"bầu không khí / môi trường",ex:"Eine angenehme Atmosphäre finde ich im Job sehr wichtig."},
+  {de:"elektrisch",art:"",vi:"thuộc điện / chạy điện",ex:"Ihre Aufgabe ist die Überprüfung von elektrischen Anlagen."},
+  {de:"die Gelegenheit",art:"die",vi:"cơ hội / dịp thuận lợi",ex:"Dies ist auch die passende Gelegenheit, um über ein höheres Gehalt zu sprechen."},
+  {de:"die Frist",art:"die",vi:"thời hạn / kỳ hạn",ex:"Meine Kündigungsfrist beträgt vier Wochen."},
+  {de:"mailen",art:"",vi:"gửi email",ex:"Wie soll man die Unterlagen mailen?"},
+  {de:"einzeln",art:"",vi:"riêng lẻ / từng cái một",ex:"Sollen die Dateien einzeln oder zusammen gesendet werden?"},
+  {de:"die Annonce",art:"die",vi:"mẩu quảng cáo / tin tuyển dụng",ex:"Ihre Annonce auf dem Jobportal hat mein Interesse geweckt."},
+  {de:"tätig",art:"",vi:"đang làm việc / hoạt động",ex:"Ich war bei der Firma LichtWert tätig."},
+  {de:"der Stau",art:"der",vi:"ùn tắc giao thông / kẹt xe",ex:"Samir hat im Stau gestanden."},
+  {de:"überholen",art:"",vi:"vượt qua / vượt mặt",ex:"Samir hat alle überholt."},
+  {de:"die Viertelstunde",art:"die",vi:"một phần tư giờ / 15 phút",ex:"Sie müsste eine Viertelstunde früher losfahren."},
+  {de:"besitzen",art:"",vi:"sở hữu / có",ex:"Herr Wendel besitzt kein Fahrrad."},
+  {de:"die Strecke",art:"die",vi:"đoạn đường / quãng đường",ex:"Kurze Strecken läuft er."},
+  {de:"die Gegend",art:"die",vi:"khu vực / vùng lân cận",ex:"Er wohnt in einer Gegend ohne Bus und Bahn."},
+  {de:"die Jahreszeit",art:"die",vi:"mùa trong năm",ex:"Er kann sich nicht zu jeder Jahreszeit motivieren."},
+  {de:"motivieren",art:"",vi:"thúc đẩy / tạo động lực",ex:"Samir kann sich nicht zum Radfahren motivieren."},
+  {de:"die Lehrstelle",art:"die",vi:"chỗ học nghề",ex:"Er hatte für den Weg zur Lehrstelle eine Fahrgemeinschaft."},
+  {de:"anwenden",art:"",vi:"áp dụng / ứng dụng",ex:"Sie können Gelerntes aus dem Schulunterricht anwenden."},
+  {de:"die Lehre",art:"die",vi:"quá trình học nghề / bài học",ex:"Ich habe eine Lehre als Zahntechniker gemacht."},
+  {de:"aussuchen",art:"",vi:"tự chọn / lựa chọn",ex:"Nur junge Arbeitnehmer:innen können sich ihren Arbeitsplatz aussuchen."},
+  {de:"das Sprichwort",art:"das",vi:"tục ngữ / câu nói dân gian",ex:"Was bedeutet das Sprichwort „Reisende soll man nicht aufhalten"?"},
+  {de:"die Bedeutung",art:"die",vi:"ý nghĩa / nghĩa của từ",ex:"Jetzt habe ich die Bedeutung verstanden."},
+  {de:"die Zusage",art:"die",vi:"lời đồng ý / sự chấp thuận",ex:"Ist das schon die Zusage für den neuen Job?"},
+  {de:"verpflichten",art:"",vi:"cam kết / có nghĩa vụ",ex:"Er verpflichtet sich, andere Arbeiten auszuführen."},
+  {de:"der Zeitrahmen",art:"der",vi:"khung thời gian",ex:"In diesem Zeitrahmen darf er seine Arbeitszeit frei einteilen."},
+  {de:"das Ermessen",art:"das",vi:"sự tùy ý / quyết định tự do",ex:"Er darf nach eigenem Ermessen entscheiden."},
+  {de:"der Beweis",art:"der",vi:"bằng chứng / chứng minh",ex:"Man muss ein Zeugnis als Beweis zeigen."},
+  {de:"ausstellen",art:"",vi:"cấp / phát hành (giấy tờ)",ex:"Ich bitte Sie, mir ein Arbeitszeugnis auszustellen."},
+  {de:"fristgerecht",art:"",vi:"đúng hạn / trong thời hạn quy định",ex:"Ich kündige fristgerecht zum nächstmöglichen Zeitpunkt."},
+  {de:"der Zeitpunkt",art:"der",vi:"thời điểm",ex:"Ich kündige zum nächstmöglichen Zeitpunkt."},
+];
+let mode='learn',queue=[],current=0,flipped=false,correct=0;
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function setMode(m){
+  mode=m;
+  document.getElementById('btnLearn').classList.toggle('active',m==='learn');
+  document.getElementById('btnTest').classList.toggle('active',m==='test');
+  document.getElementById('modeLabel').textContent=m==='learn'?'Alle Vokabeln lernen':'Wortschatztest – 10 Karten';
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('fcWrap').style.display='block';
+  initDeck();
+}
+function initDeck(){queue=mode==='learn'?shuffle(WORDS):shuffle(WORDS).slice(0,10);current=0;correct=0;flipped=false;updateCard();}
+function updateCard(){
+  if(current>=queue.length){endSession();return;}
+  const w=queue[current];flipped=false;
+  document.getElementById('fcCard').classList.remove('flipped');
+  const artEl=document.getElementById('fcArt');
+  artEl.textContent=w.art||'';artEl.style.display=w.art?'inline-block':'none';
+  document.getElementById('fcDe').textContent=w.de;
+  document.getElementById('fcVi').textContent=w.vi;
+  document.getElementById('fcEx').textContent=w.ex||'';
+  document.getElementById('fcTap').style.display='block';
+  document.getElementById('fcBtns').classList.toggle('main-hidden',mode==='learn');
+  const pct=Math.round(current/queue.length*100);
+  document.getElementById('fcBar').style.width=pct+'%';
+  document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
+  setTimeout(()=>speakCurrent(),300);
+}
+function flipCard(){if(flipped)return;flipped=true;document.getElementById('fcCard').classList.add('flipped');if(mode==='learn')document.getElementById('fcBtns').classList.remove('main-hidden');}
+function speakCurrent(){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(queue[current].de.replace(/[()\/]/g,' '));u.lang='de-DE';u.rate=0.85;window.speechSynthesis.speak(u);}
+function answer(ok){if(ok){correct++;current++;updateCard();}else{const w=queue.splice(current,1)[0];const pos=Math.min(current+3,queue.length);queue.splice(pos,0,w);updateCard();}}
+function endSession(){
+  document.getElementById('fcWrap').style.display='none';
+  const screen=document.getElementById('scoreScreen');screen.classList.add('show');
+  if(mode==='learn'){document.getElementById('scoreEmoji').textContent='🎉';document.getElementById('scoreBig').textContent='Fertig!';document.getElementById('scoreMsg').textContent='Sie haben alle '+WORDS.length+' Vokabeln durchgelernt.';}
+  else{const pct=Math.round(correct/10*100);document.getElementById('scoreEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';document.getElementById('scoreBig').textContent=correct+'/10 ('+pct+'%)';document.getElementById('scoreMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';}
+}
+function restartTest(){setMode(mode);}
+initDeck();
+</script>
+</body>
+</html>
