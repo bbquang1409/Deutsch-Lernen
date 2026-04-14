@@ -121,7 +121,7 @@ const WORDS=[
   {de:"anwenden",art:"",vi:"áp dụng / ứng dụng",ex:"Sie können Gelerntes aus dem Schulunterricht anwenden."},
   {de:"die Lehre",art:"die",vi:"quá trình học nghề / bài học",ex:"Ich habe eine Lehre als Zahntechniker gemacht."},
   {de:"aussuchen",art:"",vi:"tự chọn / lựa chọn",ex:"Nur junge Arbeitnehmer:innen können sich ihren Arbeitsplatz aussuchen."},
-  {de:"das Sprichwort",art:"das",vi:"tục ngữ / câu nói dân gian",ex:"Was bedeutet das Sprichwort „Reisende soll man nicht aufhalten"?"},
+  {de:"das Sprichwort",art:"das",vi:"tục ngữ / câu nói dân gian",ex:"Was bedeutet das Sprichwort 'Reisende soll man nicht aufhalten'?"},
   {de:"die Bedeutung",art:"die",vi:"ý nghĩa / nghĩa của từ",ex:"Jetzt habe ich die Bedeutung verstanden."},
   {de:"die Zusage",art:"die",vi:"lời đồng ý / sự chấp thuận",ex:"Ist das schon die Zusage für den neuen Job?"},
   {de:"verpflichten",art:"",vi:"cam kết / có nghĩa vụ",ex:"Er verpflichtet sich, andere Arbeiten auszuführen."},
@@ -158,9 +158,8 @@ function updateCard(){
   const pct=Math.round(current/queue.length*100);
   document.getElementById('fcBar').style.width=pct+'%';
   document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
-  setTimeout(()=>speakCurrent(),300);
 }
-function flipCard(){if(flipped)return;flipped=true;document.getElementById('fcCard').classList.add('flipped');if(mode==='learn')document.getElementById('fcBtns').classList.remove('main-hidden');}
+function flipCard(){if(flipped)return;flipped=true;document.getElementById('fcCard').classList.add('flipped');if(mode==='learn')document.getElementById('fcBtns').classList.remove('main-hidden');speakCurrent();}
 function speakCurrent(){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(queue[current].de.replace(/[()\/]/g,' '));u.lang='de-DE';u.rate=0.85;window.speechSynthesis.speak(u);}
 function answer(ok){if(ok){correct++;current++;updateCard();}else{const w=queue.splice(current,1)[0];const pos=Math.min(current+3,queue.length);queue.splice(pos,0,w);updateCard();}}
 function endSession(){
@@ -170,7 +169,7 @@ function endSession(){
   else{const pct=Math.round(correct/10*100);document.getElementById('scoreEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';document.getElementById('scoreBig').textContent=correct+'/10 ('+pct+'%)';document.getElementById('scoreMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';}
 }
 function restartTest(){setMode(mode);}
-initDeck();
+document.addEventListener('DOMContentLoaded', function(){ initDeck(); });
 </script>
 </body>
 </html>
