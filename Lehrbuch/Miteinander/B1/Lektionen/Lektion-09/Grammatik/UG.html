@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammatik Übungen B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --teal-mid: #5eead4;
+    --teal-dark: #0f766e;
+    --navy: #1e293b;
+    --slate: #475569;
+    --muted: #94a3b8;
+    --bg: #f0fdfa;
+    --white: #ffffff;
+    --correct: #16a34a;
+    --wrong: #dc2626;
+    --warn: #d97706;
+    --border: #cbd5e1;
+    --card: #ffffff;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--teal);
+    color: white;
+    padding: 20px 16px 0;
+    text-align: center;
+  }
+  header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.3px; }
+  header p { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; font-weight: 300; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    padding: 16px 16px 0;
+  }
+  .tab-btn {
+    flex: 1;
+    max-width: 220px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px 10px 0 0;
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--bg);
+    color: var(--teal-dark);
+    font-weight: 700;
+  }
+
+  /* MAIN */
+  main { max-width: 680px; margin: 0 auto; padding: 20px 16px; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SCORE BAR */
+  .score-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 8px;
+    z-index: 10;
+    box-shadow: 0 2px 12px rgba(13,148,136,0.08);
+  }
+  .score-label { font-size: 0.8rem; color: var(--slate); font-weight: 500; }
+  .score-num { font-size: 1.1rem; font-weight: 700; color: var(--teal); }
+  .progress-wrap { flex: 1; height: 8px; background: var(--teal-light); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--teal); border-radius: 99px; transition: width 0.4s ease; }
+  .btn-reset {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--teal-light);
+    color: var(--teal-dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-reset:hover { background: var(--teal-mid); }
+
+  /* EXERCISE CARD */
+  .ex-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .ex-card.correct { border-color: var(--correct); background: #f0fdf4; }
+  .ex-card.wrong { border-color: var(--wrong); background: #fff5f5; }
+
+  .ex-num {
+    display: inline-block;
+    width: 24px; height: 24px;
+    background: var(--teal);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 24px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+  .ex-prompt { font-size: 0.9rem; color: var(--slate); margin-bottom: 10px; line-height: 1.55; }
+  .ex-prompt strong { color: var(--navy); }
+  .konnektor-tag {
+    display: inline-block;
+    background: var(--teal-light);
+    color: var(--teal-dark);
+    border-radius: 6px;
+    padding: 1px 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  /* SELECT */
+  .select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  select.konnektor-select {
+    padding: 6px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: var(--navy);
+    background: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  select.konnektor-select:focus { border-color: var(--teal); }
+  .select-hint { font-size: 0.78rem; color: var(--muted); }
+
+  /* TEXT INPUT */
+  input.answer-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    color: var(--navy);
+    outline: none;
+    transition: border-color 0.2s;
+    background: white;
+  }
+  input.answer-input:focus { border-color: var(--teal); }
+  input.answer-input.correct-input { border-color: var(--correct); background: #f0fdf4; }
+  input.answer-input.wrong-input { border-color: var(--wrong); background: #fff5f5; }
+
+  /* FILL BLANK (Adjektiv) */
+  .sentence-wrap {
+    font-size: 0.9rem;
+    line-height: 2;
+    color: var(--navy);
+  }
+  input.blank {
+    display: inline-block;
+    width: 130px;
+    padding: 2px 8px;
+    border: none;
+    border-bottom: 2px solid var(--teal);
+    border-radius: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    color: var(--navy);
+    background: transparent;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+    vertical-align: middle;
+  }
+  input.blank:focus { border-bottom-color: var(--teal-dark); }
+  input.blank.correct-input { border-bottom-color: var(--correct); color: var(--correct); }
+  input.blank.wrong-input { border-bottom-color: var(--wrong); color: var(--wrong); }
+  .adj-hint { font-size: 0.75rem; color: var(--muted); font-style: italic; margin-left: 4px; }
+
+  /* CHECK BUTTONS */
+  .btn-check {
+    margin-top: 10px;
+    padding: 7px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--teal);
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-check:hover { background: var(--teal-dark); }
+  .btn-hint {
+    margin-top: 10px;
+    margin-left: 6px;
+    padding: 7px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--slate);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-hint:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 6px 10px;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #dcfce7; color: var(--correct); }
+  .feedback.err { background: #fee2e2; color: var(--wrong); }
+  .feedback.tip { background: #fef9c3; color: var(--warn); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--teal-dark);
+    margin: 24px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--teal-light);
+  }
+  .intro-box {
+    background: var(--teal-light);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--teal-dark);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .intro-box b { font-weight: 700; }
+
+  /* FOOTER */
+  .copyright {
+    text-align: center;
+    margin-top: 40px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.7rem;
+    color: var(--muted);
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🖊️ Grammatik Übungen B1</h1>
+  <p>Konnektoren • Adjektiv-Steigerung</p>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(1)">📎 Übung 1 – Konnektoren</button>
+    <button class="tab-btn" onclick="switchTab(2)">📊 Übung 2 – Komparativ & Superlativ</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ===================== TAB 1: KONNEKTOREN ===================== -->
+<div class="tab-panel active" id="tab1">
+  <div class="score-bar">
+    <span class="score-label">Richtig:</span>
+    <span class="score-num" id="score1">0 / 20</span>
+    <div class="progress-wrap"><div class="progress-fill" id="prog1" style="width:0%"></div></div>
+    <button class="btn-reset" onclick="resetTab1()">↺ Reset</button>
+  </div>
+
+  <div class="intro-box">
+    Verbinden Sie die zwei Sätze mit dem angegebenen Konnektor. <b>Achten Sie auf die Wortstellung!</b><br>
+    <b>daher / darum / deswegen</b> → Hauptsatz + Konnektor + Verb-2-Stellung<br>
+    <b>weil / da / obwohl</b> → Nebensatz → Verb am Ende<br>
+    <b>denn / aber / und</b> → Hauptsatz + Hauptsatz
+  </div>
+
+  <div id="ex1-container"></div>
+</div>
+
+<!-- ===================== TAB 2: ADJEKTIV ===================== -->
+<div class="tab-panel" id="tab2">
+  <div class="score-bar">
+    <span class="score-label">Richtig:</span>
+    <span class="score-num" id="score2">0 / 30</span>
+    <div class="progress-wrap"><div class="progress-fill" id="prog2" style="width:0%"></div></div>
+    <button class="btn-reset" onclick="resetTab2()">↺ Reset</button>
+  </div>
+
+  <div class="intro-box">
+    Ergänzen Sie das Adjektiv in der richtigen Form (Positiv, Komparativ oder Superlativ).<br>
+    <b>(+)</b> = Positiv &nbsp;|&nbsp; <b>(++)</b> = Komparativ &nbsp;|&nbsp; <b>(+++)</b> = Superlativ<br>
+    Achten Sie auf: Adjektivendungen, <i>als</i> beim Komparativ, <i>am -sten</i> beim Superlativ (prädikativ).
+  </div>
+
+  <div id="ex2-container"></div>
+</div>
+
+</main>
+
+<p class="copyright">Made with love by Bảo Quang</p>
+
+<script>
+// ==================== TAB SWITCH ====================
+function switchTab(n) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+// ==================== SCORE ====================
+let score1 = 0, done1 = 0;
+let score2 = 0, done2 = 0;
+
+function updateScore1() {
+  document.getElementById('score1').textContent = score1 + ' / 20';
+  document.getElementById('prog1').style.width = (score1/20*100) + '%';
+}
+function updateScore2() {
+  document.getElementById('score2').textContent = score2 + ' / 30';
+  document.getElementById('prog2').style.width = (score2/30*100) + '%';
+}
+
+// ==================== TAB 1 DATA ====================
+const ex1Data = [
+  {
+    s1: "Du schaust Serien auf Deutsch.",
+    s2: "Du verstehst schon viel.",
+    konnektor: "daher",
+    answers: ["Du schaust Serien auf Deutsch. Daher verstehst du schon viel."],
+    hint: "Nach 'daher' kommt das Verb, dann das Subjekt: Daher verstehst DU..."
+  },
+  {
+    s1: "Tim muss zurücklaufen.",
+    s2: "Er hat etwas vergessen.",
+    konnektor: "deswegen",
+    answers: ["Er hat etwas vergessen. Deswegen muss Tim zurücklaufen.", "Er hat etwas vergessen, deswegen muss Tim zurücklaufen."],
+    hint: "Der Grund kommt zuerst, dann 'deswegen' + Verb + Subjekt."
+  },
+  {
+    s1: "Erhan hat den Bus verpasst.",
+    s2: "Sie konnten nicht zusammen fahren.",
+    konnektor: "weil",
+    answers: ["Sie konnten nicht zusammen fahren, weil Erhan den Bus verpasst hat.", "Sie konnten nicht zusammen fahren, weil Erhan den Bus verpasst hatte."],
+    hint: "'weil' leitet einen Nebensatz ein → Verb ans Ende: ...weil Erhan den Bus verpasst HAT."
+  },
+  {
+    s1: "Simon musste heute zu Fuß gehen.",
+    s2: "Er kam zu spät zur Arbeit.",
+    konnektor: "darum",
+    answers: ["Simon musste heute zu Fuß gehen. Darum kam er zu spät zur Arbeit.", "Simon musste heute zu Fuß gehen, darum kam er zu spät zur Arbeit."],
+    hint: "Darum → Verb-2-Stellung: Darum KAM er..."
+  },
+  {
+    s1: "Lena hat nicht geschlafen.",
+    s2: "Sie ist sehr müde.",
+    konnektor: "deshalb",
+    answers: ["Lena hat nicht geschlafen. Deshalb ist sie sehr müde.", "Lena hat nicht geschlafen, deshalb ist sie sehr müde."],
+    hint: "deshalb → Verb-2-Stellung: Deshalb IST sie..."
+  },
+  {
+    s1: "Das Wetter ist schön.",
+    s2: "Wir machen einen Ausflug.",
+    konnektor: "da",
+    answers: ["Da das Wetter schön ist, machen wir einen Ausflug.", "Wir machen einen Ausflug, da das Wetter schön ist."],
+    hint: "'da' wie 'weil' → Verb ans Ende des Nebensatzes."
+  },
+  {
+    s1: "Marco ist krank.",
+    s2: "Er kommt nicht zur Party.",
+    konnektor: "denn",
+    answers: ["Marco kommt nicht zur Party, denn er ist krank."],
+    hint: "'denn' verbindet zwei Hauptsätze. Die Wortstellung bleibt normal."
+  },
+  {
+    s1: "Anna hat viel gelernt.",
+    s2: "Sie hat die Prüfung nicht bestanden.",
+    konnektor: "obwohl",
+    answers: ["Anna hat die Prüfung nicht bestanden, obwohl sie viel gelernt hat.", "Obwohl Anna viel gelernt hat, hat sie die Prüfung nicht bestanden."],
+    hint: "'obwohl' drückt einen Widerspruch aus. Verb am Ende: ...obwohl sie viel gelernt HAT."
+  },
+  {
+    s1: "Es regnet stark.",
+    s2: "Die Kinder spielen draußen.",
+    konnektor: "trotzdem",
+    answers: ["Es regnet stark. Trotzdem spielen die Kinder draußen.", "Es regnet stark, trotzdem spielen die Kinder draußen."],
+    hint: "'trotzdem' ist ein Adverb → Verb-2-Stellung danach."
+  },
+  {
+    s1: "Felix hat Hunger.",
+    s2: "Er hat kein Geld dabei.",
+    konnektor: "aber",
+    answers: ["Felix hat Hunger, aber er hat kein Geld dabei.", "Felix hat Hunger, aber er hat kein Geld."],
+    hint: "'aber' verbindet zwei Hauptsätze mit Kontrast."
+  },
+  {
+    s1: "Die Miete ist sehr teuer.",
+    s2: "Sie suchen eine billigere Wohnung.",
+    konnektor: "deswegen",
+    answers: ["Die Miete ist sehr teuer. Deswegen suchen sie eine billigere Wohnung.", "Die Miete ist sehr teuer, deswegen suchen sie eine billigere Wohnung."],
+    hint: "Grund zuerst, dann 'deswegen' + Verb: Deswegen SUCHEN sie..."
+  },
+  {
+    s1: "Ich habe das Buch nicht gelesen.",
+    s2: "Ich kann nicht mitdiskutieren.",
+    konnektor: "daher",
+    answers: ["Ich habe das Buch nicht gelesen. Daher kann ich nicht mitdiskutieren.", "Ich habe das Buch nicht gelesen, daher kann ich nicht mitdiskutieren."],
+    hint: "daher + Verb-2: Daher KANN ich..."
+  },
+  {
+    s1: "Mia möchte Ärztin werden.",
+    s2: "Sie studiert sehr fleißig.",
+    konnektor: "weil",
+    answers: ["Mia studiert sehr fleißig, weil sie Ärztin werden möchte.", "Weil Mia Ärztin werden möchte, studiert sie sehr fleißig."],
+    hint: "Ziel/Grund im weil-Satz → Verb ans Ende."
+  },
+  {
+    s1: "Die Heizung ist kaputt.",
+    s2: "Es ist sehr kalt in der Wohnung.",
+    konnektor: "darum",
+    answers: ["Die Heizung ist kaputt. Darum ist es sehr kalt in der Wohnung.", "Die Heizung ist kaputt, darum ist es sehr kalt in der Wohnung."],
+    hint: "darum + Verb-2: Darum IST es sehr kalt..."
+  },
+  {
+    s1: "Paul hat lange gearbeitet.",
+    s2: "Er ist sehr erschöpft.",
+    konnektor: "deshalb",
+    answers: ["Paul hat lange gearbeitet. Deshalb ist er sehr erschöpft.", "Paul hat lange gearbeitet, deshalb ist er sehr erschöpft."],
+    hint: "deshalb + Verb: Deshalb IST er..."
+  },
+  {
+    s1: "Das Konzert war ausverkauft.",
+    s2: "Wir konnten keine Karten kaufen.",
+    konnektor: "weil",
+    answers: ["Wir konnten keine Karten kaufen, weil das Konzert ausverkauft war.", "Weil das Konzert ausverkauft war, konnten wir keine Karten kaufen."],
+    hint: "weil-Satz → Verb ganz ans Ende: ...ausverkauft WAR."
+  },
+  {
+    s1: "Jana hat Kopfschmerzen.",
+    s2: "Sie geht trotzdem joggen.",
+    konnektor: "obwohl",
+    answers: ["Jana geht joggen, obwohl sie Kopfschmerzen hat.", "Obwohl Jana Kopfschmerzen hat, geht sie joggen."],
+    hint: "Widerspruch: ...obwohl sie Kopfschmerzen HAT."
+  },
+  {
+    s1: "Das Restaurant ist geschlossen.",
+    s2: "Wir kochen zu Hause.",
+    konnektor: "daher",
+    answers: ["Das Restaurant ist geschlossen. Daher kochen wir zu Hause.", "Das Restaurant ist geschlossen, daher kochen wir zu Hause."],
+    hint: "daher + Verb-2: Daher KOCHEN wir..."
+  },
+  {
+    s1: "Klara spricht sehr gut Deutsch.",
+    s2: "Sie hat einen Job in Berlin gefunden.",
+    konnektor: "darum",
+    answers: ["Klara spricht sehr gut Deutsch. Darum hat sie einen Job in Berlin gefunden.", "Klara spricht sehr gut Deutsch, darum hat sie einen Job in Berlin gefunden."],
+    hint: "darum + Verb-2: Darum HAT sie..."
+  },
+  {
+    s1: "Der Zug hat Verspätung.",
+    s2: "Wir kommen später an.",
+    konnektor: "deswegen",
+    answers: ["Der Zug hat Verspätung. Deswegen kommen wir später an.", "Der Zug hat Verspätung, deswegen kommen wir später an."],
+    hint: "deswegen + Verb-2: Deswegen KOMMEN wir..."
+  }
+];
+
+// ==================== TAB 2 DATA ====================
+// {sentence, blank placeholder, baseform, level, answers[], hint}
+const ex2Data = [
+  // POSITIV attributiv
+  { sentence: "Sie suchen nach einer ___ (interessant +) Tätigkeit.", answers: ["interessanten"], hint: "Positiv, nach 'einer' → schwache Deklination: -en" },
+  { sentence: "Das ist ein ___ (wichtig +) Termin.", answers: ["wichtiger"], hint: "nach 'ein' (maskulin) → -er" },
+  { sentence: "Er wohnt in einem ___ (ruhig +) Viertel.", answers: ["ruhigen"], hint: "nach 'einem' (Dativ) → -en" },
+  { sentence: "Wir brauchen ___ (frisch +) Gemüse.", answers: ["frisches"], hint: "Neutrum Akkusativ, unbestimmter Artikel → -es" },
+
+  // KOMPARATIV prädikativ (kein Adjektivendung)
+  { sentence: "Das neue Handy ist ___ (teuer ++) als das alte.", answers: ["teurer"], hint: "Komparativ prädikativ: kein Adjektivendung. teuer → teuer+er (aber: teu-rer!)" },
+  { sentence: "Im Sommer ist es ___ (warm ++) als im Frühling.", answers: ["wärmer"], hint: "warm → wärmer (Umlaut!)" },
+  { sentence: "Die neue Wohnung ist ___ (groß ++) als die alte.", answers: ["größer"], hint: "groß → größer (Umlaut + Superlativ: am größten)" },
+  { sentence: "Er lernt jetzt ___ (viel ++) als früher.", answers: ["mehr"], hint: "viel → mehr (unregelmäßig!)" },
+  { sentence: "Das Buch ist ___ (gut ++) als der Film.", answers: ["besser"], hint: "gut → besser (unregelmäßig!)" },
+  { sentence: "Die Aufgabe ist ___ (einfach ++) als ich dachte.", answers: ["einfacher"], hint: "einfach → einfacher, kein Umlaut" },
+
+  // KOMPARATIV attributiv
+  { sentence: "Ich möchte ein ___ (hoch ++) Gehalt bekommen.", answers: ["höheres"], hint: "hoch → höher (Umlaut). Neutrum Akkusativ nach 'ein' → höheres" },
+  { sentence: "Wir suchen eine ___ (groß ++) Wohnung.", answers: ["größere"], hint: "groß → größer. nach 'eine' (feminin) → größere" },
+  { sentence: "Er hat einen ___ (gut ++) Job als vorher.", answers: ["besseren"], hint: "gut → besser. nach 'einen' (Akk. mask.) → besseren" },
+  { sentence: "Sie hat ___ (lang ++) Haare als ihre Schwester.", answers: ["längere"], hint: "lang → länger (Umlaut). Plural → längere" },
+
+  // SUPERLATIV prädikativ (am + -sten / -esten)
+  { sentence: "Das ___ (schwierig +++) bei der Prüfung ist der Hörteil.", answers: ["Schwierigste"], hint: "Superlativ als Substantiv (nominalisiert) → großschreiben: das Schwierigste" },
+  { sentence: "Im Winter ist es am ___ (kalt +++).","answers": ["kältesten"], hint: "kalt → am kältesten (Umlaut + -esten nach t)" },
+  { sentence: "Sie singt am ___ (schön +++).", answers: ["schönsten"], hint: "schön → am schönsten" },
+  { sentence: "Dieses Restaurant ist am ___ (billig +++).", answers: ["billigsten"], hint: "billig → am billigsten" },
+  { sentence: "Er läuft am ___ (schnell +++).", answers: ["schnellsten"], hint: "schnell → am schnellsten" },
+  { sentence: "Hier ist es am ___ (dunkel +++).", answers: ["dunkelsten"], hint: "dunkel → am dunkelsten (kein extra -e-)" },
+
+  // SUPERLATIV attributiv
+  { sentence: "Das ist die ___ (gut +++) Nachricht seit Wochen.", answers: ["beste"], hint: "gut → best-. feminin nach 'die' → beste" },
+  { sentence: "Er ist der ___ (jung +++) Teilnehmer im Kurs.", answers: ["jüngste"], hint: "jung → jüngst- (Umlaut). nach 'der' → jüngste" },
+  { sentence: "Wir nehmen den ___ (kurz +++) Weg.", answers: ["kürzesten"], hint: "kurz → kürzest- (Umlaut + -esten nach z). Akk. mask. → kürzesten" },
+  { sentence: "Das ist das ___ (teuer +++) Produkt im Laden.", answers: ["teuerste"], hint: "teuer → teuerst- (kein extra Umlaut). Neutrum → teuerste" },
+
+  // je...desto Konstruktion
+  { sentence: "Je ___ (professionell ++) die Beratung, desto ___ (gut ++) sind Sie informiert.", answers: ["professioneller", "besser"], hint: "Je + Komparativ, desto + Komparativ. Beide ohne Adjektivendung (prädikativ)" },
+  { sentence: "Je ___ (viel ++) du übst, desto ___ (schnell ++) lernst du.", answers: ["mehr", "schneller"], hint: "viel → mehr; schnell → schneller" },
+  { sentence: "Je ___ (früh ++) wir anfangen, desto ___ (lang ++) haben wir Zeit.", answers: ["früher", "länger"], hint: "früh → früher; lang → länger (Umlaut)" },
+
+  // Nominalisierter Superlativ
+  { sentence: "Das ___ (wichtig +++) ist, dass du gesund bleibst.", answers: ["Wichtigste"], hint: "Nominalisierter Superlativ → Großschreibung: das Wichtigste" },
+  { sentence: "Das ___ (schön +++) an Berlin ist die Vielfalt.", answers: ["Schönste"], hint: "Nominalisierter Superlativ → das Schönste" },
+  { sentence: "Das ___ (interessant +++) an der Ausstellung waren die alten Fotos.", answers: ["Interessanteste"], hint: "Nominalisierter Superlativ → das Interessanteste" }
+];
+
+// ==================== BUILD TAB 1 ====================
+function buildTab1() {
+  const container = document.getElementById('ex1-container');
+  container.innerHTML = '';
+  score1 = 0; updateScore1();
+
+  ex1Data.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'ex-card';
+    card.id = 'ex1-' + i;
+
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="ex-num">${i+1}</span>
+        <span class="konnektor-tag">${item.konnektor}</span>
+      </div>
+      <div class="ex-prompt">
+        <strong>${item.s1}</strong> &nbsp;+&nbsp; <strong>${item.s2}</strong>
+      </div>
+      <input class="answer-input" id="inp1-${i}" type="text" placeholder="Schreiben Sie den Satz mit '${item.konnektor}'..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <div>
+        <button class="btn-check" onclick="checkEx1(${i})">✔ Prüfen</button>
+        <button class="btn-hint" onclick="showHint1(${i})">💡 Hinweis</button>
+      </div>
+      <div class="feedback" id="fb1-${i}"></div>
+    `;
+    container.appendChild(card);
+
+    // Enter key check
+    card.querySelector('input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkEx1(i);
+    });
+  });
+}
+
+function normalize(s) {
+  return s.trim().toLowerCase()
+    .replace(/[,\.\!\?]/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+let checked1 = {};
+function checkEx1(i) {
+  if (checked1[i]) return;
+  const inp = document.getElementById('inp1-' + i);
+  const val = normalize(inp.value);
+  const correct = ex2Item_checkAnswer(val, ex1Data[i].answers.map(normalize));
+  const card = document.getElementById('ex1-' + i);
+  const fb = document.getElementById('fb1-' + i);
+
+  if (correct) {
+    card.classList.add('correct');
+    inp.classList.add('correct-input');
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Richtig!';
+    score1++;
+    checked1[i] = true;
+    updateScore1();
+  } else {
+    card.classList.add('wrong');
+    inp.classList.add('wrong-input');
+    fb.className = 'feedback show err';
+    fb.innerHTML = `❌ Nicht ganz. Versuchen Sie es nochmal! <br><small>Tipp: ${ex1Data[i].hint}</small>`;
+    setTimeout(() => {
+      card.classList.remove('wrong');
+      inp.classList.remove('wrong-input');
+    }, 1500);
+  }
+}
+
+function showHint1(i) {
+  const fb = document.getElementById('fb1-' + i);
+  fb.className = 'feedback show tip';
+  fb.textContent = '💡 ' + ex1Data[i].hint;
+}
+
+function ex2Item_checkAnswer(val, correctArr) {
+  return correctArr.some(c => val === c);
+}
+
+function resetTab1() {
+  checked1 = {};
+  score1 = 0;
+  updateScore1();
+  buildTab1();
+}
+
+// ==================== BUILD TAB 2 ====================
+function buildTab2() {
+  const container = document.getElementById('ex2-container');
+  container.innerHTML = '';
+  score2 = 0; updateScore2();
+
+  // Group je...desto specially
+  let itemIdx = 0;
+  ex2Data.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'ex-card';
+    card.id = 'ex2-' + i;
+
+    // Build sentence with blank(s)
+    const isDouble = item.answers && item.answers.length === 2 && item.sentence.indexOf('___') !== item.sentence.lastIndexOf('___');
+    let sentenceHTML = item.sentence;
+    let blankCount = (sentenceHTML.match(/___/g) || []).length;
+
+    for (let b = 0; b < blankCount; b++) {
+      sentenceHTML = sentenceHTML.replace('___',
+        `<input class="blank" id="blank-${i}-${b}" type="text" autocomplete="off" autocorrect="off" spellcheck="false" size="12">`
+      );
+    }
+
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+        <span class="ex-num">${i+1}</span>
+        <div class="sentence-wrap">${sentenceHTML}</div>
+      </div>
+      <div>
+        <button class="btn-check" onclick="checkEx2(${i},${blankCount})">✔ Prüfen</button>
+        <button class="btn-hint" onclick="showHint2(${i})">💡 Hinweis</button>
+      </div>
+      <div class="feedback" id="fb2-${i}"></div>
+    `;
+    container.appendChild(card);
+
+    // Enter key
+    for (let b = 0; b < blankCount; b++) {
+      const inp = card.querySelector(`#blank-${i}-${b}`);
+      if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkEx2(i, blankCount); });
+    }
+  });
+}
+
+let checked2 = {};
+function checkEx2(i, blankCount) {
+  if (checked2[i]) return;
+  const item = ex2Data[i];
+  const card = document.getElementById('ex2-' + i);
+  const fb = document.getElementById('fb2-' + i);
+
+  let allCorrect = true;
+  for (let b = 0; b < blankCount; b++) {
+    const inp = document.getElementById(`blank-${i}-${b}`);
+    if (!inp) continue;
+    const val = inp.value.trim();
+    const correctVal = item.answers[b];
+    const isOk = val.toLowerCase() === correctVal.toLowerCase();
+    if (isOk) {
+      inp.classList.add('correct-input');
+      inp.classList.remove('wrong-input');
+    } else {
+      inp.classList.add('wrong-input');
+      inp.classList.remove('correct-input');
+      allCorrect = false;
+    }
+  }
+
+  if (allCorrect) {
+    card.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Richtig!';
+    score2++;
+    checked2[i] = true;
+    updateScore2();
+  } else {
+    card.classList.add('wrong');
+    fb.className = 'feedback show err';
+    fb.innerHTML = `❌ Nicht ganz. <small>${item.hint}</small>`;
+    setTimeout(() => {
+      card.classList.remove('wrong');
+      document.querySelectorAll(`#ex2-${i} .wrong-input`).forEach(el => {
+        el.classList.remove('wrong-input');
+      });
+    }, 2000);
+  }
+}
+
+function showHint2(i) {
+  const fb = document.getElementById('fb2-' + i);
+  fb.className = 'feedback show tip';
+  fb.textContent = '💡 ' + ex2Data[i].hint;
+}
+
+function resetTab2() {
+  checked2 = {};
+  score2 = 0;
+  updateScore2();
+  buildTab2();
+}
+
+// ==================== INIT ====================
+buildTab1();
+buildTab2();
+</script>
+</body>
+</html>
