@@ -63,7 +63,11 @@ header p{font-size:13px;color:rgba(255,255,255,.55);}
 .fc-counter{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;}
 
 /* 3-D flip card */
-.fc-scene{perspective:900px;margin-bottom:16px;}
+.fc-nav-row{display:flex;align-items:stretch;gap:10px;margin-bottom:16px;}
+.fc-nav-btn{flex-shrink:0;width:52px;background:var(--card);border:2px solid var(--border);border-radius:16px;font-size:26px;cursor:pointer;color:var(--muted);transition:all .18s;display:flex;align-items:center;justify-content:center;}
+.fc-nav-btn:hover:not(:disabled){background:var(--blue);border-color:var(--blue);color:#fff;}
+.fc-nav-btn:disabled{opacity:.25;cursor:default;}
+.fc-scene{perspective:900px;flex:1;}
 .fc-card-wrap{position:relative;width:100%;min-height:240px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);cursor:pointer;}
 .fc-card-wrap.flipped{transform:rotateY(180deg);}
 .fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;box-shadow:0 4px 24px rgba(37,99,235,.13);border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px 24px;text-align:center;background:var(--card);}
@@ -142,21 +146,25 @@ header p{font-size:13px;color:rgba(255,255,255,.55);}
     <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
     <div class="fc-counter" id="fcCounter">1 / —</div>
 
-    <div class="fc-scene">
-      <div class="fc-card-wrap" id="fcCardWrap" onclick="flipCard()">
-        <!-- FRONT -->
-        <div class="fc-face front">
-          <button class="tts-btn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
-          <div class="fc-art" id="fcArt"></div>
-          <div class="fc-de" id="fcDe">Lade …</div>
-          <div class="fc-tap">Tippen zum Umdrehen</div>
-        </div>
-        <!-- BACK -->
-        <div class="fc-face back">
-          <div class="fc-vi" id="fcVi"></div>
-          <div class="fc-ex" id="fcEx"></div>
+    <div class="fc-nav-row">
+      <button class="fc-nav-btn" id="fcPrev" onclick="navCard(-1)" disabled>&#8592;</button>
+      <div class="fc-scene">
+        <div class="fc-card-wrap" id="fcCardWrap" onclick="flipCard()">
+          <!-- FRONT -->
+          <div class="fc-face front">
+            <button class="tts-btn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
+            <div class="fc-art" id="fcArt"></div>
+            <div class="fc-de" id="fcDe">Lade …</div>
+            <div class="fc-tap">Tippen zum Umdrehen</div>
+          </div>
+          <!-- BACK -->
+          <div class="fc-face back">
+            <div class="fc-vi" id="fcVi"></div>
+            <div class="fc-ex" id="fcEx"></div>
+          </div>
         </div>
       </div>
+      <button class="fc-nav-btn" id="fcNext" onclick="navCard(1)">&#8594;</button>
     </div>
 
     <div class="fc-btns fc-btns-hidden" id="fcBtns">
@@ -315,6 +323,17 @@ function updateCard(){
   const pct=Math.round(current/queue.length*100);
   document.getElementById('fcBar').style.width=pct+'%';
   document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
+  document.getElementById('fcPrev').disabled=current===0;
+  document.getElementById('fcNext').disabled=current===queue.length-1;
+}
+
+function navCard(dir){
+  const next=current+dir;
+  if(next<0||next>=queue.length)return;
+  current=next;
+  flipped=false;
+  document.getElementById('fcBtns').classList.add('fc-btns-hidden');
+  updateCard();
 }
 
 function flipCard(){
