@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammatik Übungen B1+ | Lernen unterwegs</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --teal-mid: #5eead4;
+  --teal-dark: #0f766e;
+  --navy: #1e293b;
+  --slate: #475569;
+  --muted: #94a3b8;
+  --bg: #f0fdfa;
+  --white: #ffffff;
+  --correct: #16a34a;
+  --wrong: #dc2626;
+  --warn: #d97706;
+  --border: #cbd5e1;
+  --radius: 12px;
+  --timer-ok: #0d9488;
+  --timer-warn: #d97706;
+  --timer-danger: #dc2626;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--navy); min-height: 100vh; padding-bottom: 80px; }
+
+/* HEADER */
+header { background: var(--teal); color: white; padding: 16px 16px 0; text-align: center; }
+header h1 { font-size: 1.25rem; font-weight: 700; }
+header p { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; font-weight: 300; }
+
+/* TABS */
+.tabs { display: flex; gap: 3px; justify-content: center; padding: 14px 12px 0; }
+.tab-btn {
+  flex: 1; max-width: 200px; padding: 9px 10px;
+  border: none; border-radius: 9px 9px 0 0;
+  background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.8);
+  font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; line-height: 1.3;
+}
+.tab-btn.active { background: var(--bg); color: var(--teal-dark); font-weight: 700; }
+.tab-btn.done { background: rgba(255,255,255,0.35); }
+
+/* MAIN */
+main { max-width: 700px; margin: 0 auto; padding: 18px 14px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* TIMER BAR */
+.timer-bar {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  position: sticky; top: 6px; z-index: 20;
+  box-shadow: 0 2px 12px rgba(13,148,136,0.1);
+}
+.timer-display {
+  font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  min-width: 60px; color: var(--timer-ok); transition: color 0.3s;
+}
+.timer-display.warn { color: var(--timer-warn); }
+.timer-display.danger { color: var(--timer-danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.5 } }
+.timer-track { flex: 1; height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+.timer-fill { height: 100%; border-radius: 99px; transition: width 1s linear, background 0.3s; }
+.score-box { display: flex; align-items: center; gap: 6px; }
+.score-label { font-size: 0.75rem; color: var(--slate); }
+.score-num { font-size: 1rem; font-weight: 700; color: var(--teal); }
+.btn-sm {
+  padding: 5px 12px; border: none; border-radius: 7px;
+  font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-reset { background: var(--teal-light); color: var(--teal-dark); }
+.btn-reset:hover { background: var(--teal-mid); }
+
+/* INTRO BOX */
+.intro-box {
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: 0 8px 8px 0; padding: 11px 14px;
+  font-size: 0.82rem; color: var(--teal-dark); margin-bottom: 18px; line-height: 1.65;
+}
+.intro-box b { font-weight: 700; }
+
+/* EXERCISE CARD */
+.ex-card {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.ex-card.correct { border-color: var(--correct); background: #f0fdf4; }
+.ex-card.wrong { border-color: var(--wrong); background: #fff5f5; }
+.ex-card.locked { opacity: 0.7; }
+
+.ex-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.ex-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; background: var(--teal); color: white;
+  border-radius: 50%; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.ex-num.correct-num { background: var(--correct); }
+.ex-num.wrong-num { background: var(--wrong); }
+.tag {
+  display: inline-block; background: var(--teal-light); color: var(--teal-dark);
+  border-radius: 5px; padding: 1px 7px; font-size: 0.72rem; font-weight: 600;
+}
+.tag.t2 { background: #fef9c3; color: #92400e; }
+.tag.t3 { background: #ede9fe; color: #5b21b6; }
+
+.ex-prompt { font-size: 0.88rem; color: var(--slate); line-height: 1.6; }
+.ex-prompt strong { color: var(--navy); }
+
+/* ANSWER INPUT (Tab 1 full line) */
+input.answer-input {
+  width: 100%; padding: 8px 11px; margin-top: 8px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 0.86rem; color: var(--navy);
+  outline: none; transition: border-color 0.2s; background: white;
+}
+input.answer-input:focus { border-color: var(--teal); }
+input.answer-input.correct-input { border-color: var(--correct); background: #f0fdf4; }
+input.answer-input.wrong-input { border-color: var(--wrong); }
+
+/* BLANK INPUT (inline) */
+.sentence-wrap { font-size: 0.88rem; line-height: 2.1; color: var(--navy); }
+input.blank {
+  display: inline-block; width: 120px; padding: 1px 6px;
+  border: none; border-bottom: 2px solid var(--teal); border-radius: 0;
+  font-family: 'Outfit', sans-serif; font-size: 0.86rem; color: var(--navy);
+  background: transparent; outline: none; text-align: center;
+  transition: border-color 0.2s; vertical-align: middle;
+}
+input.blank.wide { width: 160px; }
+input.blank:focus { border-bottom-color: var(--teal-dark); }
+input.blank.correct-input { border-bottom-color: var(--correct); color: var(--correct); font-weight: 600; }
+input.blank.wrong-input { border-bottom-color: var(--wrong); color: var(--wrong); }
+
+/* BUTTONS ROW */
+.btn-row { margin-top: 9px; display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-check {
+  padding: 6px 14px; border: none; border-radius: 7px;
+  background: var(--teal); color: white;
+  font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.btn-check:hover { background: var(--teal-dark); }
+.btn-check:disabled { background: var(--muted); cursor: default; }
+.btn-check.btn-locked { background: var(--muted); cursor: default; pointer-events: none; }
+.btn-hint {
+  padding: 6px 11px; border: 1.5px solid var(--border); border-radius: 7px;
+  background: white; color: var(--slate);
+  font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-hint:hover { border-color: var(--teal); color: var(--teal); }
+
+/* FEEDBACK */
+.feedback {
+  margin-top: 7px; font-size: 0.79rem; font-weight: 500;
+  border-radius: 6px; padding: 5px 9px; display: none;
+}
+.feedback.show { display: block; }
+.feedback.ok { background: #dcfce7; color: var(--correct); }
+.feedback.err { background: #fee2e2; color: var(--wrong); }
+.feedback.tip { background: #fef9c3; color: var(--warn); }
+
+/* SECTION DIVIDER */
+.section-title {
+  font-size: 0.9rem; font-weight: 700; color: var(--teal-dark);
+  margin: 22px 0 10px; padding-bottom: 5px;
+  border-bottom: 2px solid var(--teal-light);
+}
+
+/* ==================== RESULTS OVERLAY ==================== */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,23,42,0.65); backdrop-filter: blur(4px);
+  z-index: 100; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay.show { display: flex; }
+.result-card {
+  background: white; border-radius: 16px;
+  width: 100%; max-width: 560px; max-height: 90vh;
+  overflow-y: auto; padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.35s ease;
+}
+@keyframes slideUp { from { transform:translateY(30px); opacity:0 } to { transform:translateY(0); opacity:1 } }
+.result-header { text-align: center; margin-bottom: 20px; }
+.result-title { font-size: 1.3rem; font-weight: 700; color: var(--navy); }
+.result-sub { font-size: 0.82rem; color: var(--slate); margin-top: 4px; }
+.result-stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px;
+}
+.stat-box {
+  background: var(--bg); border-radius: 10px; padding: 12px 8px; text-align: center;
+}
+.stat-val { font-size: 1.4rem; font-weight: 700; color: var(--teal); }
+.stat-label { font-size: 0.72rem; color: var(--slate); margin-top: 2px; }
+.result-divider { height: 1px; background: var(--border); margin: 16px 0; }
+.errors-title { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.error-item {
+  background: #fff5f5; border-left: 3px solid var(--wrong);
+  border-radius: 0 8px 8px 0; padding: 8px 12px; margin-bottom: 8px;
+}
+.error-item .ei-num { font-size: 0.7rem; color: var(--muted); margin-bottom: 2px; }
+.error-item .ei-prompt { font-size: 0.82rem; color: var(--navy); font-weight: 500; margin-bottom: 3px; }
+.error-item .ei-your { font-size: 0.78rem; color: var(--wrong); }
+.error-item .ei-correct { font-size: 0.78rem; color: var(--correct); margin-top: 1px; }
+.no-errors { text-align:center; padding: 16px; font-size:0.88rem; color: var(--correct); font-weight:600; }
+.btn-close-result {
+  display: block; width: 100%; margin-top: 18px;
+  padding: 11px; border: none; border-radius: 10px;
+  background: var(--teal); color: white;
+  font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.btn-close-result:hover { background: var(--teal-dark); }
+.score-ring {
+  width: 90px; height: 90px; margin: 0 auto 12px;
+  position: relative;
+}
+.score-ring svg { width: 90px; height: 90px; transform: rotate(-90deg); }
+.score-ring .ring-bg { fill: none; stroke: var(--teal-light); stroke-width: 8; }
+.score-ring .ring-fill { fill: none; stroke: var(--teal); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+.ring-text {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ring-pct { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+.ring-label { font-size: 0.62rem; color: var(--muted); }
+
+/* FOOTER */
+.copyright {
+  text-align: center; margin-top: 40px;
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 0.68rem; color: var(--muted); opacity: 0.45;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📝 Grammatik Übungen B1+</h1>
+  <p>Konnektoren • Adjektivsteigerung • Partizip</p>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(1)" id="tbtn1">📎 Übung 1<br><small>Konnektoren</small></button>
+    <button class="tab-btn" onclick="switchTab(2)" id="tbtn2">📊 Übung 2<br><small>Komparativ &amp; Superlativ</small></button>
+    <button class="tab-btn" onclick="switchTab(3)" id="tbtn3">🔤 Übung 3<br><small>Partizip</small></button>
+  </div>
+</header>
+
+<main>
+<!-- TAB 1 -->
+<div class="tab-panel active" id="tab1">
+  <div class="timer-bar">
+    <span class="timer-display" id="timer1">15:00</span>
+    <div class="timer-track"><div class="timer-fill" id="tfill1" style="width:100%;background:var(--teal)"></div></div>
+    <div class="score-box">
+      <span class="score-label">✓</span>
+      <span class="score-num" id="sc1">0/30</span>
+    </div>
+    <button class="btn-sm btn-reset" onclick="resetTab(1)">↺</button>
+  </div>
+  <div class="intro-box">
+    Verbinden Sie die zwei Sätze mit dem angegebenen Konnektor. <b>Achtung auf die Wortstellung!</b><br>
+    💡 Konnektoren wie <b>daher, darum, deswegen, dennoch, trotzdem, stattdessen</b> → Verb-2-Stellung<br>
+    💡 Subjunktoren wie <b>weil, obwohl, damit, bevor, nachdem, falls, während, da, sodass</b> → Verb am Ende<br>
+    💡 <b>nachdem</b> → Plusquamperfekt im Nebensatz!
+  </div>
+  <div id="c1"></div>
+</div>
+
+<!-- TAB 2 -->
+<div class="tab-panel" id="tab2">
+  <div class="timer-bar">
+    <span class="timer-display" id="timer2">15:00</span>
+    <div class="timer-track"><div class="timer-fill" id="tfill2" style="width:100%;background:var(--teal)"></div></div>
+    <div class="score-box">
+      <span class="score-label">✓</span>
+      <span class="score-num" id="sc2">0/30</span>
+    </div>
+    <button class="btn-sm btn-reset" onclick="resetTab(2)">↺</button>
+  </div>
+  <div class="intro-box">
+    Ergänzen Sie das Adjektiv in der richtigen Form. <b>(+)</b> Positiv &nbsp;|&nbsp; <b>(++)</b> Komparativ &nbsp;|&nbsp; <b>(+++)</b> Superlativ<br>
+    💡 Achtung auf Umlaute: <b>alt → älter, groß → größer, lang → länger</b><br>
+    💡 Unregelmäßig: <b>gut → besser → am besten &nbsp;|&nbsp; viel → mehr &nbsp;|&nbsp; nah → nächst-</b><br>
+    💡 Nominalisierter Superlativ → <b>großschreiben</b>: das Beste, das Wichtigste
+  </div>
+  <div id="c2"></div>
+</div>
+
+<!-- TAB 3 -->
+<div class="tab-panel" id="tab3">
+  <div class="timer-bar">
+    <span class="timer-display" id="timer3">15:00</span>
+    <div class="timer-track"><div class="timer-fill" id="tfill3" style="width:100%;background:var(--teal)"></div></div>
+    <div class="score-box">
+      <span class="score-label">✓</span>
+      <span class="score-num" id="sc3">0/30</span>
+    </div>
+    <button class="btn-sm btn-reset" onclick="resetTab(3)">↺</button>
+  </div>
+  <div class="intro-box">
+    Ergänzen Sie die richtige Partizipform — attributiv, adverbial oder nominalisiert.<br>
+    💡 Partizip I attributiv → Adjektivendung; adverbial → <b>keine Endung</b><br>
+    💡 Partizip II attributiv → wie normales Adjektiv deklinieren<br>
+    💡 Nominalisierte Partizipien → <b>großschreiben</b>: der Reisende, die Verletzten
+  </div>
+  <div id="c3"></div>
+</div>
+</main>
+
+<!-- RESULTS OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="result-card" id="result-card">
+    <div class="result-header">
+      <div class="score-ring">
+        <svg viewBox="0 0 90 90"><circle class="ring-bg" cx="45" cy="45" r="37"/><circle class="ring-fill" id="ring-fill" cx="45" cy="45" r="37" stroke-dasharray="232.5" stroke-dashoffset="232.5"/></svg>
+        <div class="ring-text"><span class="ring-pct" id="ring-pct">0%</span><span class="ring-label">Ergebnis</span></div>
+      </div>
+      <div class="result-title" id="res-title">Übung abgeschlossen!</div>
+      <div class="result-sub" id="res-sub"></div>
+    </div>
+    <div class="result-stats">
+      <div class="stat-box"><div class="stat-val" id="res-correct">0</div><div class="stat-label">Richtig</div></div>
+      <div class="stat-box"><div class="stat-val" id="res-wrong">0</div><div class="stat-label">Falsch</div></div>
+      <div class="stat-box"><div class="stat-val" id="res-time">0:00</div><div class="stat-label">Verbrauchte Zeit</div></div>
+    </div>
+    <div class="result-divider"></div>
+    <div class="errors-title">❌ Fehleranalyse</div>
+    <div id="res-errors"></div>
+    <button class="btn-close-result" onclick="closeResult()">✔ Schließen & weiterüben</button>
+  </div>
+</div>
+
+<p class="copyright">Made with love by Bảo Quang</p>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const D1 = [
+  { s1:"Lena hat monatelang intensiv für die Prüfung gelernt.", s2:"Sie hat leider keinen einzigen Fehler vermieden.", k:"obwohl",
+    ans:["Lena hat monatelang intensiv für die Prüfung gelernt, obwohl sie leider keinen einzigen Fehler vermieden hat.","Obwohl Lena monatelang intensiv gelernt hat, hat sie leider keinen einzigen Fehler vermieden."],
+    hint:"obwohl → Verb ans Ende des Nebensatzes. Widerspruch!" },
+  { s1:"Der letzte Zug ist bereits abgefahren.", s2:"Wir müssen ein Taxi nehmen.", k:"daher",
+    ans:["Der letzte Zug ist bereits abgefahren. Daher müssen wir ein Taxi nehmen.","Der letzte Zug ist bereits abgefahren, daher müssen wir ein Taxi nehmen."],
+    hint:"daher → Verb-2-Stellung: Daher MÜSSEN wir..." },
+  { s1:"Das neue Projekt braucht viel mehr Budget.", s2:"Der Chef hat es trotzdem genehmigt.", k:"obwohl",
+    ans:["Das neue Projekt braucht viel mehr Budget, obwohl der Chef es trotzdem genehmigt hat.","Obwohl das neue Projekt viel mehr Budget braucht, hat der Chef es trotzdem genehmigt."],
+    hint:"obwohl: Verb am Ende – ...genehmigt HAT." },
+  { s1:"Klara hat die E-Mail nicht rechtzeitig gelesen.", s2:"Sie hat den wichtigen Termin verpasst.", k:"deswegen",
+    ans:["Klara hat die E-Mail nicht rechtzeitig gelesen. Deswegen hat sie den wichtigen Termin verpasst.","Klara hat die E-Mail nicht rechtzeitig gelesen, deswegen hat sie den wichtigen Termin verpasst."],
+    hint:"deswegen + Verb-2: Deswegen HAT sie..." },
+  { s1:"Man sollte täglich mindestens eine Stunde Sport treiben.", s2:"Die meisten Menschen bewegen sich kaum.", k:"jedoch",
+    ans:["Man sollte täglich mindestens eine Stunde Sport treiben, jedoch bewegen sich die meisten Menschen kaum.","Man sollte täglich mindestens eine Stunde Sport treiben. Jedoch bewegen sich die meisten Menschen kaum."],
+    hint:"jedoch: Verb-2-Stellung oder HS + jedoch + HS." },
+  { s1:"Felix hat den Bewerbungsbrief dreimal korrigiert.", s2:"Er hat die Stelle nicht bekommen.", k:"dennoch",
+    ans:["Felix hat den Bewerbungsbrief dreimal korrigiert. Dennoch hat er die Stelle nicht bekommen.","Felix hat den Bewerbungsbrief dreimal korrigiert, dennoch hat er die Stelle nicht bekommen."],
+    hint:"dennoch → Verb-2: Dennoch HAT er..." },
+  { s1:"Du musst dich vorher anmelden.", s2:"Du kannst an dem Workshop teilnehmen.", k:"bevor",
+    ans:["Du musst dich vorher anmelden, bevor du an dem Workshop teilnehmen kannst.","Bevor du an dem Workshop teilnehmen kannst, musst du dich vorher anmelden."],
+    hint:"bevor → Nebensatz, Verb am Ende: ...teilnehmen KANNST." },
+  { s1:"Der Arzt hat ihr geraten, mehr Wasser zu trinken.", s2:"Sie trinkt weiterhin nur Kaffee.", k:"trotzdem",
+    ans:["Der Arzt hat ihr geraten, mehr Wasser zu trinken. Trotzdem trinkt sie weiterhin nur Kaffee.","Der Arzt hat ihr geraten, mehr Wasser zu trinken, trotzdem trinkt sie weiterhin nur Kaffee."],
+    hint:"trotzdem → Verb-2: Trotzdem TRINKT sie..." },
+  { s1:"Das Unternehmen hat alle Stellen gestrichen.", s2:"Die Mitarbeiter wurden nicht informiert.", k:"ohne dass",
+    ans:["Das Unternehmen hat alle Stellen gestrichen, ohne dass die Mitarbeiter informiert wurden."],
+    hint:"ohne dass → Nebensatz, Verb am Ende: ...informiert WURDEN." },
+  { s1:"Anna spart seit zwei Jahren sehr konsequent.", s2:"Sie möchte eine eigene Wohnung kaufen.", k:"damit",
+    ans:["Anna spart seit zwei Jahren sehr konsequent, damit sie eine eigene Wohnung kaufen kann.","Damit sie eine eigene Wohnung kaufen kann, spart Anna seit zwei Jahren sehr konsequent."],
+    hint:"damit → Verb am Ende (anderes Subjekt): ...kaufen KANN." },
+  { s1:"Er hat die ganze Nacht an dem Bericht gearbeitet.", s2:"Er konnte ihn pünktlich abgeben.", k:"sodass",
+    ans:["Er hat die ganze Nacht an dem Bericht gearbeitet, sodass er ihn pünktlich abgeben konnte."],
+    hint:"sodass → Nebensatz, Verb am Ende: ...abgeben KONNTE." },
+  { s1:"Maria hat ihren Pass nicht dabei.", s2:"Sie darf nicht ins Flugzeug einsteigen.", k:"da",
+    ans:["Da Maria ihren Pass nicht dabei hat, darf sie nicht ins Flugzeug einsteigen.","Maria darf nicht ins Flugzeug einsteigen, da sie ihren Pass nicht dabei hat."],
+    hint:"da (= weil) → Verb ans Ende: ...dabei HAT." },
+  { s1:"Wir wollten ursprünglich nach Rom fliegen.", s2:"Wir haben uns für Barcelona entschieden.", k:"stattdessen",
+    ans:["Wir wollten ursprünglich nach Rom fliegen. Stattdessen haben wir uns für Barcelona entschieden.","Wir wollten ursprünglich nach Rom fliegen, stattdessen haben wir uns für Barcelona entschieden."],
+    hint:"stattdessen → Verb-2: Stattdessen HABEN wir uns..." },
+  { s1:"Der Schüler versteht die Aufgabe nicht.", s2:"Er fragt seinen Lehrer um Hilfe.", k:"falls",
+    ans:["Falls der Schüler die Aufgabe nicht versteht, fragt er seinen Lehrer um Hilfe.","Der Schüler fragt seinen Lehrer um Hilfe, falls er die Aufgabe nicht versteht."],
+    hint:"falls → Nebensatz, Verb am Ende: ...versteht → fragt er..." },
+  { s1:"Die Renovierung der Küche hat viel länger gedauert.", s2:"Es gab unerwartete Probleme mit der Wasserleitung.", k:"weil",
+    ans:["Die Renovierung der Küche hat viel länger gedauert, weil es unerwartete Probleme mit der Wasserleitung gab.","Weil es unerwartete Probleme mit der Wasserleitung gab, hat die Renovierung der Küche viel länger gedauert."],
+    hint:"weil → Verb am Ende: ...gab." },
+  { s1:"Paul spricht fließend Chinesisch.", s2:"Er hat noch nie in China gelebt.", k:"obwohl",
+    ans:["Paul spricht fließend Chinesisch, obwohl er noch nie in China gelebt hat.","Obwohl Paul noch nie in China gelebt hat, spricht er fließend Chinesisch."],
+    hint:"obwohl → Verb ans Ende: ...gelebt HAT." },
+  { s1:"Der Hund muss jeden Tag ausgeführt werden.", s2:"Er bekommt genug Bewegung.", k:"damit",
+    ans:["Der Hund muss jeden Tag ausgeführt werden, damit er genug Bewegung bekommt.","Damit der Hund genug Bewegung bekommt, muss er jeden Tag ausgeführt werden."],
+    hint:"damit → anderes Subjekt OK, Verb ans Ende: ...bekommt." },
+  { s1:"Die Konferenz wurde kurzfristig abgesagt.", s2:"Die Teilnehmer hatten ihre Reise bereits gebucht.", k:"nachdem",
+    ans:["Die Konferenz wurde kurzfristig abgesagt, nachdem die Teilnehmer ihre Reise bereits gebucht hatten.","Nachdem die Teilnehmer ihre Reise bereits gebucht hatten, wurde die Konferenz kurzfristig abgesagt."],
+    hint:"nachdem → Plusquamperfekt im Nebensatz! ...gebucht HATTEN." },
+  { s1:"Sofia wollte eigentlich Medizin studieren.", s2:"Sie hat sich für ein Studium der Informatik entschieden.", k:"aber",
+    ans:["Sofia wollte eigentlich Medizin studieren, aber sie hat sich für ein Studium der Informatik entschieden."],
+    hint:"aber → zwei Hauptsätze: HS, aber HS." },
+  { s1:"Das Restaurant hat ausgezeichnetes Essen.", s2:"Der Service lässt leider zu wünschen übrig.", k:"jedoch",
+    ans:["Das Restaurant hat ausgezeichnetes Essen, jedoch lässt der Service leider zu wünschen übrig.","Das Restaurant hat ausgezeichnetes Essen. Jedoch lässt der Service leider zu wünschen übrig."],
+    hint:"jedoch → Verb-2 oder HS + , jedoch + HS (Verb-2)." },
+  { s1:"Beate hat sich sofort für den Kurs angemeldet.", s2:"Er sehr teuer war.", k:"obwohl",
+    ans:["Beate hat sich sofort für den Kurs angemeldet, obwohl er sehr teuer war.","Obwohl der Kurs sehr teuer war, hat Beate sich sofort angemeldet."],
+    hint:"obwohl → Verb ans Ende: ...war." },
+  { s1:"Das Gespräch mit dem Chef verlief besser als erwartet.", s2:"Er erhielt trotzdem keine Gehaltserhöhung.", k:"dennoch",
+    ans:["Das Gespräch mit dem Chef verlief besser als erwartet. Dennoch erhielt er keine Gehaltserhöhung.","Das Gespräch mit dem Chef verlief besser als erwartet, dennoch erhielt er keine Gehaltserhöhung."],
+    hint:"dennoch → Verb-2: Dennoch ERHIELT er..." },
+  { s1:"Ich habe das Formular korrekt ausgefüllt.", s2:"Es wurde trotzdem abgelehnt.", k:"obwohl",
+    ans:["Ich habe das Formular korrekt ausgefüllt, obwohl es trotzdem abgelehnt wurde.","Obwohl ich das Formular korrekt ausgefüllt hatte, wurde es trotzdem abgelehnt."],
+    hint:"obwohl → Verb ans Ende: ...abgelehnt WURDE." },
+  { s1:"Du möchtest fit bleiben.", s2:"Du solltest regelmäßig schlafen und gesund essen.", k:"falls",
+    ans:["Falls du fit bleiben möchtest, solltest du regelmäßig schlafen und gesund essen.","Du solltest regelmäßig schlafen und gesund essen, falls du fit bleiben möchtest."],
+    hint:"falls → Nebensatz: ...möchtest → solltest du..." },
+  { s1:"Die neue Software wurde erfolgreich installiert.", s2:"Es traten noch einige Fehler auf.", k:"trotzdem",
+    ans:["Die neue Software wurde erfolgreich installiert. Trotzdem traten noch einige Fehler auf.","Die neue Software wurde erfolgreich installiert, trotzdem traten noch einige Fehler auf."],
+    hint:"trotzdem → Verb-2: Trotzdem TRATEN noch..." },
+  { s1:"Wir haben stundenlang verhandelt.", s2:"Wir haben keine Einigung erzielt.", k:"ohne dass",
+    ans:["Wir haben stundenlang verhandelt, ohne dass wir eine Einigung erzielt haben.","Wir haben stundenlang verhandelt, ohne dass eine Einigung erzielt wurde."],
+    hint:"ohne dass → Nebensatz, Verb am Ende." },
+  { s1:"Der Film hat viele Preise gewonnen.", s2:"Er wurde im Kino ein Misserfolg.", k:"dennoch",
+    ans:["Der Film hat viele Preise gewonnen. Dennoch wurde er im Kino ein Misserfolg.","Der Film hat viele Preise gewonnen, dennoch wurde er im Kino ein Misserfolg."],
+    hint:"dennoch → Verb-2: Dennoch WURDE er..." },
+  { s1:"Klaus räumt die Küche auf.", s2:"Seine Frau schläft noch.", k:"während",
+    ans:["Klaus räumt die Küche auf, während seine Frau noch schläft.","Während seine Frau noch schläft, räumt Klaus die Küche auf."],
+    hint:"während → Nebensatz, Verb am Ende: ...schläft." },
+  { s1:"Sie hat alle Unterlagen vollständig eingereicht.", s2:"Ihre Bewerbung wurde sofort bearbeitet.", k:"sodass",
+    ans:["Sie hat alle Unterlagen vollständig eingereicht, sodass ihre Bewerbung sofort bearbeitet wurde."],
+    hint:"sodass → Nebensatz: ...bearbeitet WURDE." },
+  { s1:"Das Kind wollte nicht schlafen gehen.", s2:"Es war schon sehr müde.", k:"obwohl",
+    ans:["Das Kind wollte nicht schlafen gehen, obwohl es schon sehr müde war.","Obwohl das Kind schon sehr müde war, wollte es nicht schlafen gehen."],
+    hint:"obwohl → Widerspruch, Verb ans Ende: ...müde WAR." }
+];
+
+const D2 = [
+  { s:"Sie suchen nach einer ___ (interessant ++) Stelle als bisher.", ans:["interessanteren"], hint:"Komparativ nach 'einer' → -en" },
+  { s:"Er wohnt jetzt in einem ___ (ruhig +) Stadtteil.", ans:["ruhigen"], hint:"Positiv, Dativ nach 'einem' → -en" },
+  { s:"Das ___ (schwierig +++) an dem Kurs ist die Grammatik.", ans:["Schwierigste"], hint:"Nominalisierter Superlativ → großschreiben!" },
+  { s:"Im Vergleich zu früher ist das Leben heute ___ (teuer ++).", ans:["teurer"], hint:"teuer → teurer (prädikativ, kein -e- erg.)" },
+  { s:"Wir suchen eine ___ (groß ++) Wohnung als die jetzige.", ans:["größere"], hint:"groß → größer + Umlaut. nach 'eine' → -e" },
+  { s:"Er hat einen ___ (gut ++) Abschluss gemacht als sein Bruder.", ans:["besseren"], hint:"gut → besser. Akk. mask. nach 'einen' → -en" },
+  { s:"Das ist das ___ (preiswert +++) Angebot im ganzen Katalog.", ans:["preiswerteste"], hint:"Superlativ attributiv, Neutrum → -e" },
+  { s:"Je ___ (professionell ++) die Beratung, desto ___ (schnell ++) findet man einen Job.", ans:["professioneller","schneller"], hint:"je/desto + Komparativ, beide prädikativ → keine Endung" },
+  { s:"Der ___ (alt +++) Teilnehmer im Kurs ist 72 Jahre alt.", ans:["älteste"], hint:"alt → ältest- + Umlaut. mask. → -e" },
+  { s:"Ich möchte gern ein ___ (hoch ++) Gehalt haben.", ans:["höheres"], hint:"hoch → höher + Umlaut. Neutrum Akk. → -es" },
+  { s:"Das war die ___ (lang +++) Reise meines Lebens.", ans:["längste"], hint:"lang → längst- + Umlaut. feminin → -e" },
+  { s:"Das neue Modell ist ___ (leicht ++) als das alte.", ans:["leichter"], hint:"Komparativ prädikativ → kein Adjektivendung" },
+  { s:"Er ist ___ (gut +++) Schüler in der Klasse.", ans:["der beste","der beste"], hint:"Superlativ: der best-e (mit bestimmtem Artikel)" },
+  { s:"Das Wasser ist heute ___ (kalt ++) als gestern.", ans:["kälter"], hint:"kalt → kälter + Umlaut, prädikativ" },
+  { s:"Sie haben das ___ (teuer +++) Auto im Showroom gekauft.", ans:["teuerste"], hint:"teuer → teuerst-. Neutrum → -e" },
+  { s:"Je ___ (viel ++) er übt, desto ___ (gut ++) wird er.", ans:["mehr","besser"], hint:"viel→mehr, gut→besser (unregelmäßig!)" },
+  { s:"Das ist ein ___ (dunkel +) Zimmer, aber es ist gemütlich.", ans:["dunkles"], hint:"Positiv, Neutrum Nom. nach 'ein' → -es; dunkel bleibt dunkel-" },
+  { s:"Sie hat ___ (viel ++) Erfahrung als ihre Kollegin.", ans:["mehr"], hint:"viel→mehr (unregelmäßig), prädikativ" },
+  { s:"Das ___ (wichtig +++) ist, dass du ehrlich bist.", ans:["Wichtigste"], hint:"Nominalisierter Superlativ → großschreiben" },
+  { s:"Er trägt immer einen ___ (teuer +) Anzug zur Arbeit.", ans:["teuren"], hint:"Positiv, mask. Akk. nach 'einen' → -en" },
+  { s:"Das neue Büro ist ___ (hell ++) als das alte.", ans:["heller"], hint:"hell → heller, prädikativ" },
+  { s:"Mit einem ___ (gut ++) Abschluss findet man leichter einen Job.", ans:["guten"], hint:"Positiv, mask. Dativ nach 'einem' → -en" },
+  { s:"Das ___ (interessant +++) an dem Film war das Ende.", ans:["Interessanteste"], hint:"Nominalisierter Superlativ → großschreiben" },
+  { s:"Je ___ (früh ++) du anfängst, desto ___ (lang ++) hast du Zeit.", ans:["früher","länger"], hint:"früh→früher; lang→länger (Umlaut)" },
+  { s:"Das ist die ___ (nah +++) Bushaltestelle hier in der Nähe.", ans:["nächste"], hint:"nah → nächst- (unregelmäßig!)" },
+  { s:"Er hat ein ___ (klein +) Büro, aber er arbeitet gern dort.", ans:["kleines"], hint:"Positiv, Neutrum Nom. nach 'ein' → -es" },
+  { s:"Mit ___ (wenig ++) Aufwand hätten wir bessere Ergebnisse erzielt.", ans:["weniger"], hint:"wenig → weniger (prädikativ/attributiv ohne Endung)" },
+  { s:"Das war der ___ (schlecht +++) Film, den ich je gesehen habe.", ans:["schlechteste"], hint:"schlecht → schlechtest-. mask. → -e" },
+  { s:"Sie hat eine ___ (groß ++) Verantwortung als ich.", ans:["größere"], hint:"groß→größer+Umlaut. feminin nach 'eine' → -e" },
+  { s:"Das ___ (gut +++) daran ist die frische Luft.", ans:["Beste"], hint:"Nominalisierter Superlativ: das Best-e → großschreiben" }
+];
+
+const D3 = [
+  // Partizip I als Attribut
+  { s:"Der ___ (schlafen, Ptz.I) Hund sollte nicht geweckt werden.", ans:["schlafende"], hint:"schlafend + maskulin Nom. nach 'Der' (bestimmter Artikel) → -e", tag:"Ptz. I attr." },
+  { s:"Die ___ (wachsen, Ptz.I) Wirtschaft schafft neue Arbeitsplätze.", ans:["wachsende"], hint:"wachsend + feminin Nom. → -e", tag:"Ptz. I attr." },
+  { s:"Ein ___ (lächeln, Ptz.I) Gesicht wirkt immer sympathisch.", ans:["lächelndes"], hint:"lächelnd + Neutrum Nom. nach 'Ein' → -es", tag:"Ptz. I attr." },
+  { s:"Die ___ (steigen, Ptz.I) Preise machen das Leben schwerer.", ans:["steigenden"], hint:"steigend + Plural Akk. → -en", tag:"Ptz. I attr." },
+  { s:"Er hörte eine ___ (schreien, Ptz.I) Frau auf der Straße.", ans:["schreiende"], hint:"schreiend + feminin Akk. → -e", tag:"Ptz. I attr." },
+  // Partizip I prädikativ / adverbial
+  { s:"Sie saß ___ (schweigen, Ptz.I) in der Ecke.", ans:["schweigend"], hint:"Adverbial (wie?) → keine Endung", tag:"Ptz. I adv." },
+  { s:"Er verließ das Büro ___ (fluchen, Ptz.I).", ans:["fluchend"], hint:"Adverbial → keine Endung", tag:"Ptz. I adv." },
+  { s:"___ (nachdenken, Ptz.I) ging er durch den Park.", ans:["Nachdenkend"], hint:"Adverbial am Satzanfang → großschreiben!", tag:"Ptz. I adv." },
+  // Partizip II als Attribut
+  { s:"Das ___ (reparieren, Ptz.II) Fahrrad steht vor der Tür.", ans:["reparierte"], hint:"repariert + Neutrum Nom. nach 'Das' → -e", tag:"Ptz. II attr." },
+  { s:"Die ___ (einladen, Ptz.II) Gäste kamen pünktlich.", ans:["eingeladenen"], hint:"eingeladen + Plural Nom. → -en", tag:"Ptz. II attr." },
+  { s:"Ein ___ (verlieren, Ptz.II) Koffer kann beim Fundbüro abgeholt werden.", ans:["verlorener"], hint:"verloren + mask. Nom. nach 'Ein' → -er", tag:"Ptz. II attr." },
+  { s:"Das war ein gut ___ (vorbereiten, Ptz.II) Vortrag.", ans:["vorbereiteter"], hint:"vorbereitet + mask. Nom. nach 'ein' → -er", tag:"Ptz. II attr." },
+  { s:"Die ___ (bestellen, Ptz.II) Ware ist bereits unterwegs.", ans:["bestellte"], hint:"bestellt + feminin Nom. nach 'Die' → -e", tag:"Ptz. II attr." },
+  { s:"Alle ___ (zulassen, Ptz.II) Fahrzeuge haben eine Plakette.", ans:["zugelassenen"], hint:"zugelassen + Plural Nom. → -en", tag:"Ptz. II attr." },
+  // Partizip II als Nomen (nominalisiert)
+  { s:"Der ___ (anstellen, Ptz.II als Nomen) bekam seinen Vertrag per Post.", ans:["Angestellte"], hint:"Nominalisiert: mask. nach 'Der' → der Angestellte", tag:"Ptz. II nominalisiert" },
+  { s:"Die ___ (verletzen, Ptz.II als Nomen, Pl.) wurden sofort ins Krankenhaus gebracht.", ans:["Verletzten"], hint:"Nominalisiert Plural: die Verletzten", tag:"Ptz. II nominalisiert" },
+  { s:"Ein ___ (bekannt, Ptz.II als Nomen) von mir arbeitet bei Siemens.", ans:["Bekannter"], hint:"Nominalisiert: mask. nach 'Ein' → ein Bekannter", tag:"Ptz. II nominalisiert" },
+  { s:"Das ___ (überraschen, Ptz.II als Nomen) war seine ruhige Reaktion.", ans:["Überraschende"], hint:"Nominalisiert Neutrum: das Überraschende", tag:"Ptz. II nominalisiert" },
+  { s:"Die ___ (reisen, Ptz.I als Nomen) warteten am Bahnsteig.", ans:["Reisenden"], hint:"Ptz. I nominalisiert Plural: die Reisenden", tag:"Ptz. I nominalisiert" },
+  { s:"Ein ___ (reisen, Ptz.I als Nomen) fragte mich nach dem Weg.", ans:["Reisender"], hint:"Ptz. I nominalisiert, mask. nach 'Ein' → Reisender", tag:"Ptz. I nominalisiert" },
+  // Partizip II in Passiv-Konstruktionen
+  { s:"Das Fenster wurde gestern ___ (reparieren, Ptz.II).", ans:["repariert"], hint:"Passiv mit 'wurde': Ptz. II ohne Endung", tag:"Passiv" },
+  { s:"Der Brief ist noch nicht ___ (verschicken, Ptz.II).", ans:["verschickt"], hint:"Zustandspassiv: ist + Ptz. II", tag:"Passiv" },
+  { s:"Die Prüfung wird morgen ___ (schreiben, Ptz.II).", ans:["geschrieben"], hint:"Vorgangspassiv: wird + Ptz. II", tag:"Passiv" },
+  { s:"Das Gebäude wurde vollständig ___ (abreißen, Ptz.II).", ans:["abgerissen"], hint:"abreißen → abgerissen (stark)", tag:"Passiv" },
+  // Partizip I/II in erweiterten Partizipialkonstruktionen
+  { s:"Das seit Jahren ___ (diskutieren, Ptz. Präsens) Problem ist immer noch ungelöst.", ans:["diskutierte"], hint:"Erweitertes Ptz. II: diskutiert + Neutrum Nom. nach 'Das' → -e → diskutierte", tag:"Erweitertes Ptz." },
+  { s:"Die von allen ___ (erwarten, Ptz.II) Ergebnisse wurden endlich veröffentlicht.", ans:["erwarteten"], hint:"Ptz. II attributiv, Plural Nom. → -en", tag:"Erweitertes Ptz." },
+  { s:"Der durch den Sturm ___ (beschädigen, Ptz.II) Dachstuhl muss erneuert werden.", ans:["beschädigte"], hint:"Ptz. II, mask. Nom. nach 'Der' → -e", tag:"Erweitertes Ptz." },
+  { s:"Die ___ (zunehmen, Ptz.I) Digitalisierung verändert viele Berufe.", ans:["zunehmende"], hint:"Ptz. I, feminin Nom. → -e", tag:"Ptz. I attr." },
+  { s:"Er ist ein ___ (erfahren, Ptz.II als Adj.) Arzt mit 20 Jahren Berufserfahrung.", ans:["erfahrener"], hint:"Ptz. II als normales Adjektiv: erfahren + mask. Nom. nach 'ein' → -er", tag:"Ptz. II als Adj." },
+  { s:"Das war eine gut ___ (durchdenken, Ptz.II) Strategie.", ans:["durchdachte"], hint:"durchdenken → durchdacht (stark). feminin Nom. nach 'eine' → -e", tag:"Ptz. II attr." }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  timers: [null, null, null],
+  seconds: [900, 900, 900],
+  started: [false, false, false],
+  checked: [{}, {}, {}],
+  scores: [0, 0, 0],
+  totals: [30, 30, 30],
+  userAnswers: [{}, {}, {}],
+  finished: [false, false, false],
+  startTimestamps: [null, null, null]
+};
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer(t) {
+  if (state.started[t-1] || state.finished[t-1]) return;
+  state.started[t-1] = true;
+  state.startTimestamps[t-1] = Date.now();
+  state.timers[t-1] = setInterval(() => tickTimer(t), 1000);
+}
+
+function tickTimer(t) {
+  state.seconds[t-1]--;
+  renderTimer(t);
+  if (state.seconds[t-1] <= 0) {
+    clearInterval(state.timers[t-1]);
+    state.finished[t-1] = true;
+    showResult(t, true);
+  }
+}
+
+function renderTimer(t) {
+  const s = state.seconds[t-1];
+  const m = Math.floor(s/60), sec = s%60;
+  const el = document.getElementById('timer'+t);
+  el.textContent = m + ':' + String(sec).padStart(2,'0');
+  const pct = s/900*100;
+  const fill = document.getElementById('tfill'+t);
+  fill.style.width = pct+'%';
+  if (s <= 60) { el.className='timer-display danger'; fill.style.background='var(--timer-danger)'; }
+  else if (s <= 180) { el.className='timer-display warn'; fill.style.background='var(--timer-warn)'; }
+  else { el.className='timer-display'; fill.style.background='var(--teal)'; }
+}
+
+function usedSeconds(t) {
+  return 900 - state.seconds[t-1];
+}
+
+// ============================================================
+// BUILD TABS
+// ============================================================
+function buildTab1() {
+  const c = document.getElementById('c1');
+  c.innerHTML = '';
+  D1.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'ex-card'; card.id = 'c1-'+i;
+    card.innerHTML = `
+      <div class="ex-header">
+        <span class="ex-num" id="n1-${i}">${i+1}</span>
+        <span class="tag">${item.k}</span>
+      </div>
+      <div class="ex-prompt"><strong>${item.s1}</strong><br><strong>${item.s2}</strong></div>
+      <input class="answer-input" id="a1-${i}" type="text" placeholder="Schreiben Sie mit '${item.k}'..." autocomplete="off" spellcheck="false">
+      <div class="btn-row">
+        <button class="btn-check" id="bc1-${i}" onclick="check1(${i})">✔ Prüfen</button>
+        <button class="btn-hint" onclick="hint1(${i})">💡</button>
+      </div>
+      <div class="feedback" id="fb1-${i}"></div>`;
+    c.appendChild(card);
+    card.querySelector('input').addEventListener('focus', () => startTimer(1));
+    card.querySelector('input').addEventListener('keydown', e => { if(e.key==='Enter') check1(i); });
+  });
+}
+
+function buildTab2() {
+  const c = document.getElementById('c2');
+  c.innerHTML = '';
+  D2.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'ex-card'; card.id = 'c2-'+i;
+    const blanks = (item.s.match(/___/g)||[]).length;
+    let sent = item.s;
+    for (let b=0; b<blanks; b++) {
+      sent = sent.replace('___', `<input class="blank${blanks>1?' wide':''}" id="a2-${i}-${b}" type="text" autocomplete="off" spellcheck="false" size="${blanks>1?14:12}">`);
+    }
+    card.innerHTML = `
+      <div class="ex-header">
+        <span class="ex-num" id="n2-${i}">${i+1}</span>
+        <span class="tag t2">${item.ans.length>1?'je…desto':'Adjektiv'}</span>
+      </div>
+      <div class="sentence-wrap">${sent}</div>
+      <div class="btn-row">
+        <button class="btn-check" id="bc2-${i}" onclick="check2(${i},${blanks})">✔ Prüfen</button>
+        <button class="btn-hint" onclick="hint2(${i})">💡</button>
+      </div>
+      <div class="feedback" id="fb2-${i}"></div>`;
+    c.appendChild(card);
+    for (let b=0; b<blanks; b++) {
+      const inp = document.getElementById(`a2-${i}-${b}`);
+      if (inp) {
+        inp.addEventListener('focus', () => startTimer(2));
+        inp.addEventListener('keydown', e => { if(e.key==='Enter') check2(i,blanks); });
+      }
+    }
+  });
+}
+
+function buildTab3() {
+  const c = document.getElementById('c3');
+  c.innerHTML = '';
+  D3.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'ex-card'; card.id = 'c3-'+i;
+    let sent = item.s.replace('___', `<input class="blank wide" id="a3-${i}" type="text" autocomplete="off" spellcheck="false" size="16">`);
+    card.innerHTML = `
+      <div class="ex-header">
+        <span class="ex-num" id="n3-${i}">${i+1}</span>
+        <span class="tag t3">${item.tag}</span>
+      </div>
+      <div class="sentence-wrap">${sent}</div>
+      <div class="btn-row">
+        <button class="btn-check" id="bc3-${i}" onclick="check3(${i})">✔ Prüfen</button>
+        <button class="btn-hint" onclick="hint3(${i})">💡</button>
+      </div>
+      <div class="feedback" id="fb3-${i}"></div>`;
+    c.appendChild(card);
+    const inp = document.getElementById(`a3-${i}`);
+    if (inp) {
+      inp.addEventListener('focus', () => startTimer(3));
+      inp.addEventListener('keydown', e => { if(e.key==='Enter') check3(i); });
+    }
+  });
+}
+
+// ============================================================
+// CHECK FUNCTIONS
+// ============================================================
+function norm(s) { return s.trim().toLowerCase().replace(/[,\.!?]/g,'').replace(/\s+/g,' '); }
+
+function markCard(tabN, i, ok) {
+  const card = document.getElementById(`c${tabN}-${i}`);
+  const num = document.getElementById(`n${tabN}-${i}`);
+  card.classList.remove('correct','wrong');
+  num.classList.remove('correct-num','wrong-num');
+  if (ok) { card.classList.add('correct'); num.classList.add('correct-num'); }
+  else { card.classList.add('wrong'); num.classList.add('wrong-num'); }
+}
+
+function check1(i) {
+  if (state.checked[0][i]) return;
+  const inp = document.getElementById('a1-'+i);
+  const val = norm(inp.value);
+  const ok = D1[i].ans.some(a => norm(a)===val);
+  state.userAnswers[0][i] = inp.value;
+  const fb = document.getElementById('fb1-'+i);
+  if (ok) {
+    state.checked[0][i] = true; state.scores[0]++;
+    inp.classList.add('correct-input'); markCard(1,i,true);
+    fb.className='feedback show ok'; fb.textContent='✅ Richtig!';
+    document.getElementById('bc1-'+i).classList.add('btn-locked');
+    updateScore(1);
+  } else {
+    inp.classList.add('wrong-input'); markCard(1,i,false);
+    fb.className='feedback show err'; fb.innerHTML=`❌ Nicht ganz richtig. <small>${D1[i].hint}</small>`;
+    setTimeout(()=>{ inp.classList.remove('wrong-input'); card_clear_wrong(1,i); },1800);
+  }
+}
+
+function hint1(i) {
+  const fb=document.getElementById('fb1-'+i);
+  fb.className='feedback show tip'; fb.textContent='💡 '+D1[i].hint;
+}
+
+function check2(i, blanks) {
+  if (state.checked[1][i]) return;
+  let allOk = true, userVals = [];
+  for (let b=0; b<blanks; b++) {
+    const inp = document.getElementById(`a2-${i}-${b}`);
+    if (!inp) continue;
+    const val = inp.value.trim();
+    userVals.push(val);
+    const correct = D2[i].ans[b];
+    if (val.toLowerCase() === correct.toLowerCase()) {
+      inp.classList.add('correct-input'); inp.classList.remove('wrong-input');
+    } else {
+      inp.classList.add('wrong-input'); inp.classList.remove('correct-input'); allOk=false;
+    }
+  }
+  state.userAnswers[1][i] = userVals.join(' / ');
+  const fb=document.getElementById('fb2-'+i);
+  if (allOk) {
+    state.checked[1][i]=true; state.scores[1]++;
+    markCard(2,i,true);
+    fb.className='feedback show ok'; fb.textContent='✅ Richtig!';
+    document.getElementById('bc2-'+i).classList.add('btn-locked');
+    updateScore(2);
+  } else {
+    markCard(2,i,false);
+    fb.className='feedback show err'; fb.innerHTML=`❌ <small>${D2[i].hint}</small>`;
+    setTimeout(()=>{ document.querySelectorAll(`#c2-${i} .wrong-input`).forEach(el=>el.classList.remove('wrong-input')); card_clear_wrong(2,i); },2000);
+  }
+}
+
+function hint2(i) {
+  const fb=document.getElementById('fb2-'+i);
+  fb.className='feedback show tip'; fb.textContent='💡 '+D2[i].hint;
+}
+
+function check3(i) {
+  if (state.checked[2][i]) return;
+  const inp=document.getElementById('a3-'+i);
+  const val=inp.value.trim();
+  state.userAnswers[2][i]=val;
+  const ok=D3[i].ans.some(a=>a.toLowerCase()===val.toLowerCase());
+  const fb=document.getElementById('fb3-'+i);
+  if (ok) {
+    state.checked[2][i]=true; state.scores[2]++;
+    inp.classList.add('correct-input'); markCard(3,i,true);
+    fb.className='feedback show ok'; fb.textContent='✅ Richtig!';
+    document.getElementById('bc3-'+i).classList.add('btn-locked');
+    updateScore(3);
+  } else {
+    inp.classList.add('wrong-input'); markCard(3,i,false);
+    fb.className='feedback show err'; fb.innerHTML=`❌ <small>${D3[i].hint}</small>`;
+    setTimeout(()=>{ inp.classList.remove('wrong-input'); card_clear_wrong(3,i); },1800);
+  }
+}
+
+function hint3(i) {
+  const fb=document.getElementById('fb3-'+i);
+  fb.className='feedback show tip'; fb.textContent='💡 '+D3[i].hint;
+}
+
+function card_clear_wrong(t, i) {
+  const card=document.getElementById(`c${t}-${i}`);
+  card.classList.remove('wrong');
+  const num=document.getElementById(`n${t}-${i}`);
+  num.classList.remove('wrong-num');
+}
+
+// ============================================================
+// SCORE
+// ============================================================
+function updateScore(t) {
+  document.getElementById('sc'+t).textContent = state.scores[t-1]+'/'+state.totals[t-1];
+}
+
+// ============================================================
+// RESULT OVERLAY
+// ============================================================
+function showResult(t, timedOut) {
+  clearInterval(state.timers[t-1]);
+  state.finished[t-1]=true;
+
+  const score=state.scores[t-1];
+  const total=state.totals[t-1];
+  const pct=Math.round(score/total*100);
+  const used=usedSeconds(t);
+  const usedMin=Math.floor(used/60), usedSec=used%60;
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+
+  // Ring animation
+  const circumference=232.5;
+  const offset=circumference-(pct/100)*circumference;
+  document.getElementById('ring-fill').setAttribute('stroke-dashoffset',offset);
+  document.getElementById('ring-pct').textContent=pct+'%';
+
+  // Title
+  const tabNames=['Konnektoren','Adjektivsteigerung','Partizip'];
+  document.getElementById('res-title').textContent=(timedOut?'⏰ Zeit abgelaufen – ':'✅ ')+tabNames[t-1];
+  document.getElementById('res-sub').textContent=`${dateStr} um ${timeStr}`;
+
+  document.getElementById('res-correct').textContent=score;
+  document.getElementById('res-wrong').textContent=(total-score);
+  document.getElementById('res-time').textContent=usedMin+':'+String(usedSec).padStart(2,'0');
+
+  // Errors
+  const errDiv=document.getElementById('res-errors');
+  errDiv.innerHTML='';
+  const datasets=[D1,D2,D3];
+  const DS=datasets[t-1];
+  let errCount=0;
+
+  for (let i=0;i<total;i++) {
+    if (!state.checked[t-1][i]) {
+      errCount++;
+      const item=DS[i];
+      const userAns=state.userAnswers[t-1][i]||'(keine Antwort)';
+      let correctStr='';
+      if (t===1) correctStr=item.ans[0];
+      else if (t===2) correctStr=item.ans.join(' / ');
+      else correctStr=item.ans.join(' / ');
+
+      const prompt=t===1?`${item.s1} + ${item.s2} (${item.k})`
+                  :t===2?item.s.replace(/<[^>]*>/g,'__').substring(0,80)
+                  :item.s.replace(/<[^>]*>/g,'__').substring(0,80);
+
+      errDiv.innerHTML+=`<div class="error-item">
+        <div class="ei-num">Nr. ${i+1} &nbsp;|&nbsp; ${t===3?item.tag:t===2?(item.ans.length>1?'je…desto':'Adjektiv'):'Konnektor: '+item.k}</div>
+        <div class="ei-prompt">${prompt}</div>
+        <div class="ei-your">✘ Ihre Antwort: ${userAns}</div>
+        <div class="ei-correct">✔ Lösung: ${correctStr}</div>
+      </div>`;
+    }
+  }
+  if (errCount===0) errDiv.innerHTML='<div class="no-errors">🎉 Keine Fehler – perfektes Ergebnis!</div>';
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeResult() {
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ============================================================
+// TAB SWITCH
+// ============================================================
+function switchTab(n) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetTab(t) {
+  clearInterval(state.timers[t-1]);
+  state.timers[t-1]=null;
+  state.seconds[t-1]=900;
+  state.started[t-1]=false;
+  state.checked[t-1]={};
+  state.scores[t-1]=0;
+  state.userAnswers[t-1]={};
+  state.finished[t-1]=false;
+  state.startTimestamps[t-1]=null;
+  renderTimer(t);
+  updateScore(t);
+  if (t===1) buildTab1();
+  else if (t===2) buildTab2();
+  else buildTab3();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+buildTab1(); buildTab2(); buildTab3();
+</script>
+</body>
+</html>
