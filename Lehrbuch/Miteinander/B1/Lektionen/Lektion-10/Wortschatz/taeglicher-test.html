@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taeglicher Test - Lektion 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1b2a;--surface:#132236;--card:#1a2f47;--card2:#1f3855;--ink:#e8f4fd;--muted:#6b9ab8;--border:#2a4a6b;--gold:#f59e0b;--blue:#38bdf8;--green:#34d399;--rose:#fb7185;--purple:#a78bfa;--orange:#fb923c;--teal:#2dd4bf;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:80px;}
+.modal{position:fixed;inset:0;background:rgba(5,12,22,.88);z-index:999;display:flex;align-items:center;justify-content:center;}
+.modal.hidden{display:none;}
+.mbox{background:var(--surface);border-radius:20px;padding:32px 24px;width:min(92vw,400px);text-align:center;border:1px solid var(--border);}
+.mbox h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;}
+.mbox p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.mbox p strong{color:var(--gold);}
+.lvl-list{text-align:left;background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:16px;}
+.lvl-item{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.05);}
+.lvl-item:last-child{border-bottom:none;}
+.lbadge{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:99px;padding:2px 9px;white-space:nowrap;flex-shrink:0;}
+.lv1{background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.3);}
+.lv2{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3);}
+.lv3{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);}
+.lv4{background:rgba(251,113,133,.15);color:var(--rose);border:1px solid rgba(251,113,133,.3);}
+.minp{width:100%;background:var(--card);border:2px solid var(--border);border-radius:10px;padding:12px 16px;font-size:16px;font-family:'Sora',sans-serif;font-weight:600;color:var(--ink);outline:none;text-align:center;margin-bottom:12px;}
+.minp:focus{border-color:var(--blue);}
+.mbtn{width:100%;background:var(--blue);color:#0d1b2a;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Sora',sans-serif;opacity:.3;transition:opacity .2s;}
+.mbtn.ready{opacity:1;}
+header{background:linear-gradient(135deg,#0d1b2a,#132236,#1a2f47);padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.htag{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+header h1{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:var(--muted);}
+.hback{display:inline-block;margin-top:12px;background:rgba(56,189,248,.1);border-radius:99px;color:var(--blue);font-size:12px;font-weight:700;padding:6px 16px;text-decoration:none;border:1px solid rgba(56,189,248,.25);}
+.tbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:0;z-index:10;}
+.tinner{max-width:560px;margin:0 auto;}
+.trow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.tdisp{font-size:24px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;}
+.tdisp.warn{color:var(--rose);}
+.tlbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.tcnt{font-size:12px;font-weight:700;color:var(--muted);}
+.ptrack{background:var(--border);border-radius:99px;height:4px;margin-top:2px;}
+.pfill{height:4px;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .3s;}
+.sbadge{display:none;background:rgba(245,158,11,.15);border:1px solid var(--gold);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--gold);margin-top:6px;}
+.sbadge.on{display:inline-block;}
+.qwrap{max-width:560px;margin:0 auto;padding:20px 16px;}
+.qcard{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:22px;margin-bottom:14px;}
+.qcard.hard{border-color:rgba(245,158,11,.3);}
+.qcard.vhard{border-color:rgba(251,113,133,.3);}
+.qhead{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.qnum{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.qtag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:99px;padding:2px 10px;}
+.qt1{background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.3);}
+.qt2{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3);}
+.qt3{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);}
+.qt4{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3);}
+.qt5{background:rgba(251,146,60,.15);color:var(--orange);border:1px solid rgba(251,146,60,.3);}
+.qt6{background:rgba(251,113,133,.15);color:var(--rose);border:1px solid rgba(251,113,133,.3);}
+.qt7{background:rgba(45,212,191,.15);color:var(--teal);border:1px solid rgba(45,212,191,.3);}
+.dlvl{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:99px;padding:2px 8px;margin-left:auto;}
+.qtext{font-size:16px;font-weight:700;color:var(--ink);margin:0 0 14px;line-height:1.55;}
+.qtext b{color:var(--gold);}
+.qctx{font-size:12px;color:var(--muted);font-style:italic;background:rgba(56,189,248,.06);border-left:3px solid var(--border);padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.6;}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opts1{display:grid;grid-template-columns:1fr;gap:8px;}
+.opt{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Sora',sans-serif;font-weight:600;cursor:pointer;text-align:left;color:var(--ink);line-height:1.4;transition:border-color .15s;}
+.opt:hover{border-color:var(--blue);}
+.opt.ok{background:rgba(52,211,153,.13);border-color:var(--green);color:var(--green);cursor:default;}
+.opt.no{background:rgba(251,113,133,.13);border-color:var(--rose);color:var(--rose);cursor:default;}
+.opt.show{background:rgba(52,211,153,.13);border-color:var(--green);color:var(--green);opacity:.7;cursor:default;}
+.opt.lock{opacity:.3;cursor:default;}
+.wfnote{font-size:11px;font-weight:800;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.expl{font-size:11px;color:var(--muted);margin-top:10px;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px;line-height:1.6;display:none;}
+.expl.on{display:block;}
+.result{display:none;max-width:560px;margin:30px auto;padding:0 16px;}
+.result.on{display:block;}
+.rcard{background:var(--surface);border-radius:20px;padding:32px 24px;text-align:center;border:1px solid var(--border);}
+.remoji{font-size:52px;display:block;margin-bottom:10px;}
+.rscore{font-family:'Playfair Display',serif;font-size:50px;color:var(--gold);}
+.rpct{font-size:17px;color:var(--muted);margin-top:2px;}
+.rmsg{font-size:16px;font-weight:700;margin:10px 0 4px;}
+.rstu{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.medals{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.medal{background:var(--card);border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;border:1px solid var(--border);}
+.bdsec{text-align:left;margin-bottom:20px;}
+.bdtitle{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px;}
+.bdrow{margin-bottom:12px;}
+.bdtop{display:flex;justify-content:space-between;margin-bottom:4px;}
+.bdname{font-size:13px;font-weight:700;}
+.bdstat{font-size:13px;font-weight:800;}
+.bdtrack{background:var(--border);border-radius:99px;height:6px;}
+.bdbar{height:6px;border-radius:99px;}
+.rbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rbtn1{background:var(--blue);color:#0d1b2a;border:none;border-radius:12px;padding:13px 26px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Sora',sans-serif;text-decoration:none;display:inline-block;}
+.rbtn2{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:12px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;text-decoration:none;display:inline-block;}
+.footer{text-align:center;padding:20px;font-size:11px;color:#2a4a6b;}
+</style>
+</head>
+<body>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <div style="font-size:44px;margin-bottom:10px;">🚗</div>
+    <h2>Taeglicher Test</h2>
+    <p>Lektion 10 &bull; <strong>60 Fragen &bull; 14 Min</strong><br>Schwellenwert: 85%</p>
+    <div class="lvl-list">
+      <div class="lvl-item"><span class="lbadge lv1">Leicht</span>30 Fragen &ndash; Vokabeln &amp; Artikel</div>
+      <div class="lvl-item"><span class="lbadge lv2">Mittel</span>10 Fragen &ndash; Lueckentext</div>
+      <div class="lvl-item"><span class="lbadge lv3">Schwer</span>10 Fragen &ndash; Synonym, Antonym, Wortfeld</div>
+      <div class="lvl-item"><span class="lbadge lv4">Sehr schwer</span>10 Fragen &ndash; Kontext &amp; Logik</div>
+    </div>
+    <input class="minp" id="nameInp" type="text" placeholder="Ihr Name ..." maxlength="40">
+    <button class="mbtn" id="nameBtn">Starten</button>
+  </div>
+</div>
+
+<header>
+  <div class="htag">LEKTION 10 &bull; TAEGLICHER TEST</div>
+  <h1>Zeuge eines Unfalls</h1>
+  <p>60 Fragen &bull; 4 Schwierigkeitsstufen</p>
+  <a href="index.html" class="hback">&larr; Zurueck</a>
+</header>
+
+<div class="tbar" id="tbar">
+  <div class="tinner">
+    <div class="trow">
+      <div style="display:flex;align-items:center;gap:10px;"><span class="tlbl">Zeit</span><span class="tdisp" id="tdisp">14:00</span></div>
+      <span class="tcnt" id="tcnt">0 / 60</span>
+    </div>
+    <div class="ptrack"><div class="pfill" id="pfill" style="width:0%"></div></div>
+    <div style="height:28px;padding-top:4px;"><span class="sbadge" id="sbadge"></span></div>
+  </div>
+</div>
+
+<div class="qwrap" id="qwrap"></div>
+
+<div class="result" id="result">
+  <div class="rcard">
+    <span class="remoji" id="remoji"></span>
+    <div class="rscore" id="rscore"></div>
+    <div class="rpct" id="rpct"></div>
+    <div class="rmsg" id="rmsg"></div>
+    <div class="rstu" id="rstu"></div>
+    <div class="medals" id="medals"></div>
+    <div class="bdsec"><div class="bdtitle">Nach Fragetyp</div><div id="bdrows"></div></div>
+    <div class="bdsec"><div class="bdtitle">Nach Schwierigkeitsstufe</div><div id="lvlrows"></div></div>
+    <div class="rbtns">
+      <a href="index.html" class="rbtn1">&larr; Zurueck</a>
+      <a href="taeglicher-test.html" class="rbtn2">Nochmal</a>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Made with love by BBQ</div>
+
+<script>
+var WORDS = [
+  {de:"erschrecken",        art:"",    vi:"giật mình / hoảng sợ"},
+  {de:"hupen",              art:"",    vi:"bóp còi / bấm còi"},
+  {de:"abbiegen",           art:"",    vi:"rẽ / quẹo"},
+  {de:"ärgerlich",          art:"",    vi:"tức giận / bực bội"},
+  {de:"durcheinander",      art:"",    vi:"lộn xộn / hỗn loạn"},
+  {de:"bremsen",            art:"",    vi:"phanh / đạp thắng"},
+  {de:"der Lastkraftwagen", art:"der", vi:"xe tải hạng nặng / Lkw"},
+  {de:"stehen bleiben",     art:"",    vi:"đứng lại / dừng hẳn"},
+  {de:"stoßen",             art:"",    vi:"đâm vào / va chạm"},
+  {de:"der Zeuge",          art:"der", vi:"nhân chứng"},
+  {de:"der Schaden",        art:"der", vi:"thiệt hại / hư hỏng"},
+  {de:"anhalten",           art:"",    vi:"dừng lại / cho dừng"},
+  {de:"hungrig",            art:"",    vi:"đói / đang đói"},
+  {de:"die Verabredung",    art:"die", vi:"cuộc hẹn / thỏa thuận"},
+  {de:"bereits",            art:"",    vi:"đã / rồi"},
+  {de:"beschädigen",        art:"",    vi:"làm hỏng / gây hư hại"},
+  {de:"bevor",              art:"",    vi:"trước khi"},
+  {de:"nachdem",            art:"",    vi:"sau khi"},
+  {de:"der Bäcker",         art:"der", vi:"thợ làm bánh / tiệm bánh mì"},
+  {de:"ebenfalls",          art:"",    vi:"cũng / tương tự"},
+  {de:"das Seminar",        art:"das", vi:"hội thảo / buổi học chuyên đề"},
+  {de:"aufregend",          art:"",    vi:"hồi hộp / kích thích"},
+  {de:"das Erlebnis",       art:"das", vi:"trải nghiệm / sự kiện đáng nhớ"},
+  {de:"versichern",         art:"",    vi:"bảo hiểm / đảm bảo"},
+  {de:"die Pflicht",        art:"die", vi:"nghĩa vụ / bổn phận"},
+  {de:"die Pflegeversicherung", art:"die", vi:"bảo hiểm chăm sóc điều dưỡng"},
+  {de:"zulassen",           art:"",    vi:"cho phép / để xảy ra"},
+  {de:"eventuell",          art:"",    vi:"có thể / tùy trường hợp"},
+  {de:"abhängen",           art:"",    vi:"phụ thuộc vào"},
+  {de:"der Rentner",        art:"der", vi:"người về hưu"},
+  {de:"die Scheibe",        art:"die", vi:"kính (cửa sổ/xe) / lát mỏng"},
+  {de:"überprüfen",         art:"",    vi:"kiểm tra / xem xét lại"},
+  {de:"die Bedienungsanleitung", art:"die", vi:"hướng dẫn sử dụng"},
+  {de:"vorgestern",         art:"",    vi:"hôm kia"},
+  {de:"vorhin",             art:"",    vi:"vừa rồi / lúc nãy"},
+  {de:"der Verwandte",      art:"der", vi:"người thân / họ hàng"},
+  {de:"die Vorwahl",        art:"die", vi:"mã vùng điện thoại"},
+  {de:"verwandt",           art:"",    vi:"có quan hệ họ hàng"},
+  {de:"der Leiter",         art:"der", vi:"người lãnh đạo / thang leo"},
+  {de:"die Art",            art:"die", vi:"loại / cách / kiểu"},
+  {de:"das Zeichen",        art:"das", vi:"dấu hiệu / ký hiệu"}
+];
+
+var LUECKEN = [
+  {s:"Der Fahrer hat nicht [_], obwohl die Ampel Rot zeigte.",
+   a:"gebremst", d:["abgebogen","gehupt","gestanden"],
+   e:"bremsen = phanh xe. Perfekt: hat gebremst. Nguoc lai: beschleunigen."},
+  {s:"Der Lkw hat das Auto von hinten [_].",
+   a:"beschaedigt", d:["angehalten","zugelassen","ueberprueft"],
+   e:"beschaedigen = lam hong. Perfekt: hat beschaedigt. Dong nghia: Schaden anrichten."},
+  {s:"Kannst du [_] kommen? Ich brauche deine Hilfe.",
+   a:"sofort", d:["vorgestern","ebenfalls","eventuell"],
+   e:"sofort = ngay lap tuc. Khac: eventuell (co the), vorgestern (hom kia)."},
+  {s:"[_] er ankam, war der Unfall schon passiert.",
+   a:"Bevor", d:["Nachdem","Ebenfalls","Bereits"],
+   e:"bevor + Nebensatz = truoc khi. Neu dung 'Nachdem' thi nghia se nguoc lai."},
+  {s:"Der [_] hat uns erklaert, wie wir das Geraet bedienen sollen.",
+   a:"Leiter", d:["Zeuge","Rentner","Bäcker"],
+   e:"Leiter = nguoi lanh dao. Cung co nghia la cai thang leo."},
+  {s:"Ich muss die Versicherung anrufen und den [_] melden.",
+   a:"Schaden", d:["Zeuge","Lkw","Rentner"],
+   e:"Schaden melden = bao thiet hai voi cong ty bao hiem. Cum tu quan trong."},
+  {s:"Die Autoscheibe ist nach dem Unfall [_] gebrochen.",
+   a:"bereits", d:["eventuell","vorhin","ebenfalls"],
+   e:"bereits = da / roi (truoc do roi). Dong nghia: schon."},
+  {s:"[_] dem Unfall hat Herr Kaya sofort die Polizei gerufen.",
+   a:"Nachdem", d:["Bevor","Ebenfalls","Bereits"],
+   e:"nachdem + Nebensatz = sau khi. Dong tu trong menh de phu o Perfekt/Plusquamperfekt."},
+  {s:"Das Seminar war sehr [_] - wir haben viel gelernt.",
+   a:"aufregend", d:["ärgerlich","hungrig","verwandt"],
+   e:"aufregend = hoi hop / kich thich (theo nghia tich cuc). Khong nham voi aergerlich."},
+  {s:"Die Hoehe der Versicherung haengt von vielen Faktoren [_].",
+   a:"ab", d:["zu","an","auf"],
+   e:"abhaengen von = phu thuoc vao. Chu y tien to tach roi: haengt ... ab."}
+];
+
+var WORTFELD = [
+  {q:"Welches Wort ist ein Synonym von BEREITS?",
+   a:"schon",
+   o:["schon","vorhin","ebenfalls","eventuell"],
+   n:"Synonym",
+   e:"bereits = schon = da/roi. Khong nham voi vorhin (vua roi) hay ebenfalls (cung)."},
+  {q:"Welches ist das passende Gegenteil von AERGERLICH?",
+   a:"erfreut",
+   o:["erfreut","aufregend","hungrig","verwandt"],
+   n:"Antonym",
+   e:"aergerlich (tuc gian) -- Gegenteil: erfreut (vui mung). Khong phai aufregend (hoi hop)."},
+  {q:"Welche Kollokation mit SCHADEN ist korrekt?",
+   a:"einen Schaden melden",
+   o:["einen Schaden melden","einen Schaden machen","einen Schaden sagen","einen Schaden bringen"],
+   n:"Kollokation",
+   e:"Schaden melden = bao thiet hai. Cac tu khac (machen, sagen) sai ve cu phap."},
+  {q:"Welche Kollokation mit VERABREDUNG ist korrekt?",
+   a:"eine Verabredung absagen",
+   o:["eine Verabredung absagen","eine Verabredung machen","eine Verabredung kaufen","eine Verabredung lesen"],
+   n:"Kollokation",
+   e:"eine Verabredung absagen = huy cuoc hen. Cung dung: eine Verabredung treffen (dat hen)."},
+  {q:"Was ist ein Synonym von UEBERPRUEFEN?",
+   a:"kontrollieren",
+   o:["kontrollieren","versichern","abbiegen","zulassen"],
+   n:"Synonym",
+   e:"ueberpruefen = kontrollieren = kiem tra lai. Khong nham voi versichern (bao hiem/dam bao)."},
+  {q:"Was ist das Gegenteil von HUNGRIG?",
+   a:"satt",
+   o:["satt","aergerlich","aufregend","durcheinander"],
+   n:"Antonym",
+   e:"hungrig (doi) -- Gegenteil: satt (no). Cu the: satt sein = da no."},
+  {q:"Welche Kollokation mit VERSICHERUNG ist korrekt?",
+   a:"eine Versicherung abschliessen",
+   o:["eine Versicherung abschliessen","eine Versicherung kaufen","eine Versicherung schreiben","eine Versicherung aufgeben"],
+   n:"Kollokation",
+   e:"eine Versicherung abschliessen = ky hop dong bao hiem. Day la cum tu co dinh quan trong."},
+  {q:"Welches Wort passt NICHT in die Gruppe Verkehrsunfall?",
+   a:"das Seminar",
+   o:["das Seminar","der Schaden","der Zeuge","der Lastkraftwagen"],
+   n:"Wortfeld",
+   e:"Schaden, Zeuge, Lkw deu lien quan den tai nan giao thong. Seminar la hoi thao hoc thuat."},
+  {q:"Was bedeutet ABHAENGEN VON in diesem Satz: Der Preis haengt vom Anbieter ab?",
+   a:"Durch den Anbieter wird der Preis bestimmt.",
+   o:["Durch den Anbieter wird der Preis bestimmt.",
+      "Der Preis ist immer gleich.",
+      "Der Anbieter zahlt den Preis.",
+      "Der Preis ist sehr hoch."],
+   n:"Bedeutung",
+   e:"abhaengen von = phu thuoc vao. Cau tren nghia: gia ca duoc quyet dinh boi nha cung cap."},
+  {q:"Welches Wort beschreibt eine Person, die einen Unfall gesehen hat?",
+   a:"der Zeuge",
+   o:["der Zeuge","der Rentner","der Leiter","der Bäcker"],
+   n:"Wortfeld",
+   e:"Zeuge = nhan chung, nguoi chung kien. Quan trong trong canh sat va toa an."}
+];
+
+var KONTEXT = [
+  {ctx:"Nach einem Unfall muss man die Versicherung informieren.",
+   q:"Was muss man der Versicherung melden?",
+   a:"den Schaden und die Umstaende des Unfalls",
+   o:["den Schaden und die Umstaende des Unfalls",
+      "nur den Namen des Fahrers",
+      "nur das Datum des Unfalls",
+      "die Bedienungsanleitung des Autos"],
+   t:6,
+   e:"Man muss den Schaden und alle Umstaende (wie, wann, wo) melden. Die Versicherung braucht alle Details."},
+  {ctx:"",
+   q:"Welches Wort kann man NICHT mit dem Verb ABBIEGEN kombinieren?",
+   a:"einen Schaden abbiegen",
+   o:["einen Schaden abbiegen",
+      "links abbiegen",
+      "rechts abbiegen",
+      "an der Kreuzung abbiegen"],
+   t:7,
+   e:"abbiegen + Richtung ist korrekt (links, rechts). Einen Schaden abbiegen existiert nicht."},
+  {ctx:"Herr Demir hat vorgestern einen Unfall erlebt. Gestern hat er zur Versicherung angerufen.",
+   q:"Wann hat Herr Demir angerufen?",
+   a:"einen Tag nach dem Unfall",
+   o:["einen Tag nach dem Unfall",
+      "am Tag des Unfalls",
+      "zwei Tage nach dem Unfall",
+      "eine Woche spaeter"],
+   t:6,
+   e:"vorgestern = hom kia, gestern = hom qua. Also: Unfall hom kia, anrufen hom qua = mot ngay sau."},
+  {ctx:"",
+   q:"Welche zwei Woerter haben fast die gleiche Bedeutung: Er hat das Auto ___ und ist weitergefahren.",
+   a:"beschaedigt / angefahren",
+   o:["beschaedigt / angefahren",
+      "angehalten / gebremst",
+      "hupen / abbiegen",
+      "erschrecken / aufregend"],
+   t:7,
+   e:"beschaedigen und anfahren (ein Auto anfahren) bedeuten beide: mit einem Fahrzeug Schaden verursachen."},
+  {ctx:"Die Pflegeversicherung ist in Deutschland Pflicht.",
+   q:"Was bedeutet das in diesem Kontext?",
+   a:"Jeder muss eine Pflegeversicherung haben.",
+   o:["Jeder muss eine Pflegeversicherung haben.",
+      "Die Pflegeversicherung ist kostenlos.",
+      "Nur Rentner brauchen Pflegeversicherung.",
+      "Die Pflegeversicherung ist optional."],
+   t:6,
+   e:"Pflicht = nghia vu bat buoc. Also: alle muessen eine Pflegeversicherung abschliessen."},
+  {ctx:"Bitte ueberpruefen Sie die Bedienungsanleitung, bevor Sie das Geraet einschalten.",
+   q:"Wann soll man die Bedienungsanleitung lesen?",
+   a:"vor dem Einschalten des Geraetes",
+   o:["vor dem Einschalten des Geraetes",
+      "nach dem Kauf im Laden",
+      "wenn das Geraet kaputt ist",
+      "nur wenn man ein Problem hat"],
+   t:6,
+   e:"bevor = truoc khi. Der Satz sagt klar: erst Anleitung lesen, dann einschalten."},
+  {ctx:"",
+   q:"Welches Wort passt: Die Versicherung deckt den ___ am Fahrzeug.",
+   a:"Schaden",
+   o:["Schaden","Zeuge","Pflicht","Leiter"],
+   t:7,
+   e:"Schaden decken = bao hiem chi tra thiet hai. Collocation: Schaden decken / regulieren / ersetzen."},
+  {ctx:"Eva hat ihre Verabredung mit Tom abgesagt, weil sie krank war.",
+   q:"Was hat Eva gemacht?",
+   a:"Sie hat das Treffen mit Tom nicht stattfinden lassen.",
+   o:["Sie hat das Treffen mit Tom nicht stattfinden lassen.",
+      "Sie ist trotz Krankheit zu Tom gegangen.",
+      "Sie hat Tom angerufen, um spaeter zu kommen.",
+      "Sie hat eine neue Verabredung gemacht."],
+   t:6,
+   e:"absagen = huy bo. Eva hat die Verabredung abgesagt = cuoc hen khong dien ra."},
+  {ctx:"",
+   q:"Welches Wort kann man NICHT mit ZEICHEN kombinieren?",
+   a:"ein Zeichen bremsen",
+   o:["ein Zeichen bremsen",
+      "ein Zeichen geben",
+      "ein Zeichen setzen",
+      "ein Zeichen sehen"],
+   t:7,
+   e:"ein Zeichen geben / setzen / sehen sind korrekt. ein Zeichen bremsen gibt es nicht."},
+  {ctx:"Das Ergebnis haengt davon ab, wie viel Zeit wir investieren.",
+   q:"Was bedeutet dieser Satz?",
+   a:"Je mehr Zeit wir investieren, desto besser das Ergebnis.",
+   o:["Je mehr Zeit wir investieren, desto besser das Ergebnis.",
+      "Das Ergebnis ist immer gleich.",
+      "Wir haben nicht genug Zeit.",
+      "Das Ergebnis ist bereits fertig."],
+   t:6,
+   e:"abhaengen von = phu thuoc vao. Cau nay noi: ket qua tot hay xau phu thuoc vao thoi gian bo ra."}
+];
+
+var score=0,answered=0,streak=0,maxStreak=0,secondsLeft=840,timerID=null,TOTAL=60;
+var TS={1:[0,0],2:[0,0],3:[0,0],4:[0,0],5:[0,0],6:[0,0],7:[0,0]};
+var LS={1:[0,0],2:[0,0],3:[0,0],4:[0,0]};
+var studentName="";
+
+var nameInp=document.getElementById("nameInp");
+var nameBtn=document.getElementById("nameBtn");
+nameInp.addEventListener("input",function(){nameBtn.classList.toggle("ready",nameInp.value.trim().length>0);});
+nameInp.addEventListener("keydown",function(e){if(e.key==="Enter"&&nameInp.value.trim().length>0)doStart();});
+nameBtn.addEventListener("click",function(){if(nameInp.value.trim().length>0)doStart();});
+
+function doStart(){studentName=nameInp.value.trim();document.getElementById("modal").className="modal hidden";buildAll();runTimer();}
+function shuffle(a){var b=a.slice(),i,j,t;for(i=b.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+function lockAll(g,correct){
+  var btns=g.querySelectorAll(".opt");
+  for(var k=0;k<btns.length;k++){
+    btns[k].style.pointerEvents="none";
+    if(btns[k].getAttribute("data-v")===correct){
+      if(!btns[k].classList.contains("ok"))btns[k].classList.add("show");
+    }else if(!btns[k].classList.contains("ok")&&!btns[k].classList.contains("no")){
+      btns[k].classList.add("lock");
+    }
+  }
+}
+
+function record(t,ok,lv){
+  TS[t][1]++;if(ok){score++;TS[t][0]++;}
+  LS[lv][1]++;if(ok)LS[lv][0]++;
+  answered++;streak=ok?streak+1:0;if(streak>maxStreak)maxStreak=streak;
+  var sb=document.getElementById("sbadge");
+  if(streak>=3){sb.textContent="Streak x"+streak;sb.className="sbadge on";}else{sb.className="sbadge";}
+  document.getElementById("tcnt").textContent=answered+" / "+TOTAL;
+  document.getElementById("pfill").style.width=Math.round(answered/TOTAL*100)+"%";
+  if(answered>=TOTAL)endTest();
+}
+
+function mkHead(qn,typeCls,typeLbl,lv){
+  var lvColors={1:"lv1",2:"lv2",3:"lv3",4:"lv4"};
+  var lvLabels={1:"Leicht",2:"Mittel",3:"Schwer",4:"Sehr schwer"};
+  var d=document.createElement("div");d.className="qhead";
+  var sn=document.createElement("span");sn.className="qnum";sn.textContent="Frage "+qn+" / "+TOTAL;
+  var bt=document.createElement("span");bt.className="qtag "+typeCls;bt.textContent=typeLbl;
+  var dl=document.createElement("span");dl.className="dlvl lbadge "+lvColors[lv];dl.textContent=lvLabels[lv];
+  d.appendChild(sn);d.appendChild(bt);d.appendChild(dl);
+  return d;
+}
+
+function mkText(html){var d=document.createElement("div");d.className="qtext";d.innerHTML=html;return d;}
+function mkExpl(txt){var d=document.createElement("div");d.className="expl";d.textContent=txt;return d;}
+function mkBtn(label,val){var b=document.createElement("button");b.className="opt";b.textContent=label;b.setAttribute("data-v",val);return b;}
+
+function cardDEVI(w,qn){
+  var c=document.createElement("div");c.className="qcard";
+  c.appendChild(mkHead(qn,"qt1","DE > VI",1));
+  c.appendChild(mkText("Was bedeutet: <b>"+w.de+"</b>?"));
+  var g=document.createElement("div");g.className="opts2";
+  var wrong=shuffle(WORDS.filter(function(x){return x.de!==w.de;})).slice(0,3);
+  shuffle([w].concat(wrong)).forEach(function(o){
+    var b=mkBtn(o.vi,o.vi);
+    b.addEventListener("click",function(){var ok=o.de===w.de;b.classList.add(ok?"ok":"no");lockAll(g,w.vi);record(1,ok,1);});
+    g.appendChild(b);
+  });
+  c.appendChild(g);return c;
+}
+
+function cardVIDE(w,qn){
+  var c=document.createElement("div");c.className="qcard";
+  c.appendChild(mkHead(qn,"qt2","VI > DE",1));
+  c.appendChild(mkText('"<b>'+w.vi+'</b>" -- welches Wort?'));
+  var g=document.createElement("div");g.className="opts2";
+  var wrong=shuffle(WORDS.filter(function(x){return x.de!==w.de;})).slice(0,3);
+  shuffle([w].concat(wrong)).forEach(function(o){
+    var b=mkBtn(o.de,o.de);
+    b.addEventListener("click",function(){var ok=o.de===w.de;b.classList.add(ok?"ok":"no");lockAll(g,w.de);record(2,ok,1);});
+    g.appendChild(b);
+  });
+  c.appendChild(g);return c;
+}
+
+function cardArt(w,qn){
+  if(!w.art||["der","die","das"].indexOf(w.art)<0)return cardDEVI(w,qn);
+  var c=document.createElement("div");c.className="qcard";
+  c.appendChild(mkHead(qn,"qt3","Artikel",1));
+  var base=w.de.replace(/^(der|die|das) /,"");
+  c.appendChild(mkText("Welcher Artikel gehoert zu: <b>"+base+"</b>?"));
+  var g=document.createElement("div");g.className="opts2";
+  shuffle(["der","die","das"]).forEach(function(a){
+    var b=mkBtn(a,a);
+    b.addEventListener("click",function(){var ok=a===w.art;b.classList.add(ok?"ok":"no");lockAll(g,w.art);record(3,ok,1);});
+    g.appendChild(b);
+  });
+  c.appendChild(g);return c;
+}
+
+function cardLuecke(lq,qn){
+  var c=document.createElement("div");c.className="qcard";
+  c.appendChild(mkHead(qn,"qt4","Lueckentext",2));
+  c.appendChild(mkText(lq.s.replace("[_]","<b>______</b>")));
+  var g=document.createElement("div");g.className="opts2";
+  var ex=mkExpl(lq.e);
+  shuffle([lq.a].concat(lq.d)).forEach(function(o){
+    var b=mkBtn(o,o);
+    b.addEventListener("click",function(){var ok=o===lq.a;b.classList.add(ok?"ok":"no");lockAll(g,lq.a);record(4,ok,2);ex.classList.add("on");});
+    g.appendChild(b);
+  });
+  c.appendChild(g);c.appendChild(ex);return c;
+}
+
+function cardWortfeld(wf,qn){
+  var c=document.createElement("div");c.className="qcard hard";
+  c.appendChild(mkHead(qn,"qt5","Wortfeld",3));
+  var note=document.createElement("div");note.className="wfnote";note.textContent=wf.n;c.appendChild(note);
+  c.appendChild(mkText(wf.q));
+  var g=document.createElement("div");g.className="opts1";
+  var ex=mkExpl(wf.e);
+  shuffle(wf.o.slice()).forEach(function(o){
+    var b=mkBtn(o,o);
+    b.addEventListener("click",function(){var ok=o===wf.a;b.classList.add(ok?"ok":"no");lockAll(g,wf.a);record(5,ok,3);ex.classList.add("on");});
+    g.appendChild(b);
+  });
+  c.appendChild(g);c.appendChild(ex);return c;
+}
+
+function cardKontext(kq,qn){
+  var c=document.createElement("div");c.className="qcard vhard";
+  var lbl=kq.t===7?"Wortbildung":"Kontextfrage";
+  var cls=kq.t===7?"qt7":"qt6";
+  c.appendChild(mkHead(qn,cls,lbl,4));
+  if(kq.ctx){var ctx=document.createElement("div");ctx.className="qctx";ctx.textContent=kq.ctx;c.appendChild(ctx);}
+  c.appendChild(mkText(kq.q));
+  var g=document.createElement("div");g.className="opts1";
+  var ex=mkExpl(kq.e);
+  shuffle(kq.o.slice()).forEach(function(o){
+    var b=mkBtn(o,o);
+    b.addEventListener("click",function(){var ok=o===kq.a;b.classList.add(ok?"ok":"no");lockAll(g,kq.a);record(kq.t,ok,4);ex.classList.add("on");});
+    g.appendChild(b);
+  });
+  c.appendChild(g);c.appendChild(ex);return c;
+}
+
+function buildAll(){
+  var wrap=document.getElementById("qwrap");wrap.innerHTML="";
+  var allW=shuffle(WORDS.slice());
+  var nouns=WORDS.filter(function(w){return ["der","die","das"].indexOf(w.art)>=0;});
+  var used={};
+  var p1=allW.slice(0,12);p1.forEach(function(w){used[w.de]=true;});
+  var p2=allW.filter(function(w){return !used[w.de];}).slice(0,10);p2.forEach(function(w){used[w.de]=true;});
+  var p3=shuffle(nouns.filter(function(w){return !used[w.de];}));
+  if(p3.length<8)p3=shuffle(nouns.slice());
+  p3=p3.slice(0,8);
+  var p4=shuffle(LUECKEN.slice()).slice(0,10);
+  var p5=shuffle(WORTFELD.slice()).slice(0,10);
+  var p6=shuffle(KONTEXT.slice()).slice(0,10);
+
+  var fnsL=[],fnsM=[],fnsH=[],fnsV=[];
+  p1.forEach(function(w){(function(w){fnsL.push(function(n){return cardDEVI(w,n);});})(w);});
+  p2.forEach(function(w){(function(w){fnsL.push(function(n){return cardVIDE(w,n);});})(w);});
+  p3.forEach(function(w){(function(w){fnsL.push(function(n){return cardArt(w,n);});})(w);});
+  p4.forEach(function(lq){(function(lq){fnsM.push(function(n){return cardLuecke(lq,n);});})(lq);});
+  p5.forEach(function(wf){(function(wf){fnsH.push(function(n){return cardWortfeld(wf,n);});})(wf);});
+  p6.forEach(function(kq){(function(kq){fnsV.push(function(n){return cardKontext(kq,n);});})(kq);});
+
+  var all=shuffle(fnsL).concat(shuffle(fnsM)).concat(shuffle(fnsH)).concat(shuffle(fnsV));
+  all.forEach(function(fn,i){wrap.appendChild(fn(i+1));});
+}
+
+function runTimer(){
+  timerID=setInterval(function(){
+    secondsLeft--;
+    var m=Math.floor(secondsLeft/60),s=secondsLeft%60;
+    var d=document.getElementById("tdisp");
+    d.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    d.className=secondsLeft<=60?"tdisp warn":"tdisp";
+    if(secondsLeft<=0){clearInterval(timerID);endTest();}
+  },1000);
+}
+
+function endTest(){
+  clearInterval(timerID);
+  document.getElementById("qwrap").style.display="none";
+  document.getElementById("tbar").style.display="none";
+  var pct=Math.round(score/TOTAL*100);
+  document.getElementById("remoji").textContent=pct>=85?"🏆":pct>=70?"⭐":pct>=55?"👍":"💪";
+  document.getElementById("rscore").textContent=score+"/"+TOTAL;
+  document.getElementById("rpct").textContent=pct+"%";
+  document.getElementById("rmsg").textContent=pct>=85?"Ausgezeichnet!":pct>=70?"Gut gemacht!":pct>=55?"Nicht schlecht!":"Weiter ueben!";
+  document.getElementById("rstu").textContent=studentName+" - Lektion 10";
+
+  var med=document.getElementById("medals");
+  var hardOk=LS[3][0]+LS[4][0],hardTot=LS[3][1]+LS[4][1];
+  [[pct>=85,"Ausgezeichnet"],[maxStreak>=5,"Streak x"+maxStreak],[TS[3][1]>0&&TS[3][0]===TS[3][1],"Artikel-Meister"],[hardTot>0&&hardOk/hardTot>=0.7,"Profi-Level"],[LS[4][1]>0&&LS[4][0]===LS[4][1],"Kontext-Experte"]].forEach(function(m){
+    if(m[0]){var d=document.createElement("div");d.className="medal";d.textContent=m[1];med.appendChild(d);}
+  });
+
+  var tnames={1:"DE > VI",2:"VI > DE",3:"Artikel",4:"Lueckentext",5:"Wortfeld",6:"Kontextfrage",7:"Wortbildung"};
+  var tcols={1:"var(--blue)",2:"var(--green)",3:"var(--gold)",4:"var(--purple)",5:"var(--orange)",6:"var(--rose)",7:"var(--teal)"};
+  var bdr=document.getElementById("bdrows");
+  [1,2,3,4,5,6,7].forEach(function(t){
+    var c2=TS[t][0],tot=TS[t][1];if(tot===0)return;
+    var p=Math.round(c2/tot*100);
+    var row=document.createElement("div");row.className="bdrow";
+    var top=document.createElement("div");top.className="bdtop";
+    var nm=document.createElement("span");nm.className="bdname";nm.textContent=tnames[t];
+    var st=document.createElement("span");st.className="bdstat";st.style.color=tcols[t];st.textContent=c2+"/"+tot+"  "+p+"%";
+    top.appendChild(nm);top.appendChild(st);
+    var tr=document.createElement("div");tr.className="bdtrack";
+    var br=document.createElement("div");br.className="bdbar";br.style.background=tcols[t];br.style.width=p+"%";
+    tr.appendChild(br);row.appendChild(top);row.appendChild(tr);bdr.appendChild(row);
+  });
+
+  var lnames={1:"Leicht (x30)",2:"Mittel (x10)",3:"Schwer (x10)",4:"Sehr schwer (x10)"};
+  var lcols={1:"var(--blue)",2:"var(--green)",3:"var(--gold)",4:"var(--rose)"};
+  var lvr=document.getElementById("lvlrows");
+  [1,2,3,4].forEach(function(l){
+    var c2=LS[l][0],tot=LS[l][1];if(tot===0)return;
+    var p=Math.round(c2/tot*100);
+    var row=document.createElement("div");row.className="bdrow";
+    var top=document.createElement("div");top.className="bdtop";
+    var nm=document.createElement("span");nm.className="bdname";nm.textContent=lnames[l];
+    var st=document.createElement("span");st.className="bdstat";st.style.color=lcols[l];st.textContent=c2+"/"+tot+"  "+p+"%";
+    top.appendChild(nm);top.appendChild(st);
+    var tr=document.createElement("div");tr.className="bdtrack";
+    var br=document.createElement("div");br.className="bdbar";br.style.background=lcols[l];br.style.width=p+"%";
+    tr.appendChild(br);row.appendChild(top);row.appendChild(tr);lvr.appendChild(row);
+  });
+
+  document.getElementById("result").className="result on";
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

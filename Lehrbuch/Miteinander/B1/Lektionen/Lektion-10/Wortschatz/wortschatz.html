@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wortschatz – Lektion 10</title>
+<style>
+:root{
+  --bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;
+  --blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;
+  --rose:#e11d48;--rose-lt:#ffe4e6;--teal:#0d9488;--teal-lt:#ccfbf1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+
+/* ── HEADER ── */
+header{background:#1e3a5f;color:#fff;padding:28px 20px 20px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;pointer-events:none;}
+.hdr-inner{position:relative;}
+.hdr-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:Georgia,serif;font-size:24px;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+
+/* ── MAIN TABS ── */
+.main-tabs{display:flex;max-width:640px;margin:20px auto 0;padding:0 16px;gap:10px;}
+.main-tab{flex:1;padding:13px;border-radius:14px;border:2px solid var(--border);background:var(--card);font-size:15px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;text-align:center;}
+.main-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+/* ── PANELS ── */
+.panel{display:none;max-width:640px;margin:0 auto;padding:20px 16px;}
+.panel.active{display:block;}
+
+/* ══════════════════════════════
+   WORTLISTE
+══════════════════════════════ */
+.wl-search{width:100%;padding:11px 16px;border-radius:12px;border:2px solid var(--border);font-size:14px;color:var(--ink);background:var(--card);margin-bottom:14px;outline:none;transition:border-color .2s;}
+.wl-search:focus{border-color:var(--blue);}
+.wl-count{font-size:12px;color:var(--muted);margin-bottom:10px;text-align:right;}
+.wl-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(37,99,235,.08);border:2px solid var(--border);}
+.wl-table thead th{background:#1e3a5f;color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:12px 14px;text-align:left;}
+.wl-table tbody tr{border-bottom:1px solid var(--border);}
+.wl-table tbody tr:last-child{border-bottom:none;}
+.wl-table tbody tr:hover{background:var(--bg);}
+.wl-table td{padding:11px 14px;vertical-align:top;font-size:14px;line-height:1.4;}
+.wl-art{display:inline-block;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:2px 8px;border-radius:99px;margin-bottom:3px;}
+.wl-de{font-weight:600;color:var(--ink);}
+.wl-vi{color:var(--muted);font-size:13px;}
+.wl-ex{color:#64748b;font-size:12px;font-style:italic;margin-top:4px;line-height:1.45;}
+.tts-sm{background:none;border:none;cursor:pointer;font-size:16px;padding:2px 4px;color:var(--muted);vertical-align:middle;}
+.tts-sm:hover{color:var(--blue);}
+.wl-empty{text-align:center;padding:32px;color:var(--muted);font-size:14px;}
+
+/* ══════════════════════════════
+   FLASHCARDS
+══════════════════════════════ */
+.fc-mode-row{display:flex;gap:10px;margin-bottom:18px;}
+.fc-mode-btn{flex:1;padding:11px;border-radius:12px;border:2px solid var(--border);background:var(--card);font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;text-align:center;}
+.fc-mode-btn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+.fc-progress{background:var(--border);border-radius:99px;height:6px;margin-bottom:6px;}
+.fc-progress-bar{background:var(--blue);height:6px;border-radius:99px;transition:width .4s;}
+.fc-counter{text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;}
+
+/* 3-D flip card */
+.fc-scene{perspective:900px;margin-bottom:16px;}
+.fc-card-wrap{position:relative;width:100%;min-height:240px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);cursor:pointer;}
+.fc-card-wrap.flipped{transform:rotateY(180deg);}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;box-shadow:0 4px 24px rgba(37,99,235,.13);border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px 24px;text-align:center;background:var(--card);}
+.fc-face.back{transform:rotateY(180deg);background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-color:#86efac;}
+.fc-art{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:4px 12px;border-radius:99px;}
+.fc-de{font-family:Georgia,serif;font-size:26px;color:var(--ink);line-height:1.2;}
+.fc-vi{font-size:18px;color:var(--muted);}
+.fc-ex{font-size:13px;color:#64748b;font-style:italic;line-height:1.5;max-width:300px;}
+.fc-tap{font-size:13px;color:#94a3b8;}
+.tts-btn{background:var(--blue-lt);border:none;border-radius:99px;width:44px;height:44px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.tts-btn:hover{background:#bfdbfe;}
+
+.fc-btns{display:flex;gap:12px;}
+.fc-btn{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .1s;}
+.fc-btn:active{transform:scale(.97);}
+.fc-btn-wrong{background:var(--rose-lt);color:var(--rose);}
+.fc-btn-ok{background:var(--green-lt);color:var(--green);}
+.fc-btns-hidden{display:none;}
+
+/* score */
+.score-screen{display:none;text-align:center;padding:32px 16px;}
+.score-screen.show{display:block;}
+.score-emoji{font-size:56px;margin-bottom:12px;}
+.score-big{font-family:Georgia,serif;font-size:48px;color:var(--blue);}
+.score-msg{font-size:16px;color:var(--muted);margin:8px 0 24px;}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;margin:6px;}
+.btn-back-mode{background:var(--card);color:var(--ink);border:2px solid var(--border);border-radius:14px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;margin:6px;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:20px;font-size:11px;color:#8aa3bc;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-inner">
+    <div class="hdr-tag">Lektion 10 · Miteinander! B1.2</div>
+    <h1>Ahmet – Gut versichert</h1>
+    <p>Wortschatz lernen &amp; üben</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<!-- MAIN TABS -->
+<div class="main-tabs">
+  <button class="main-tab active" onclick="showPanel('wortliste')">📖 Wortliste</button>
+  <button class="main-tab" onclick="showPanel('flashcards')">🃏 Flashcards</button>
+</div>
+
+<!-- ══ PANEL: WORTLISTE ══ -->
+<div class="panel active" id="panel-wortliste">
+  <input class="wl-search" type="search" placeholder="🔍  Suchen …" oninput="filterTable(this.value)" id="wlSearch">
+  <div class="wl-count" id="wlCount"></div>
+  <table class="wl-table" id="wlTable">
+    <thead>
+      <tr>
+        <th style="width:46%">Deutsch</th>
+        <th>Tiếng Việt &amp; Beispiel</th>
+      </tr>
+    </thead>
+    <tbody id="wlBody"></tbody>
+  </table>
+  <div class="wl-empty" id="wlEmpty" style="display:none;">Keine Ergebnisse gefunden.</div>
+</div>
+
+<!-- ══ PANEL: FLASHCARDS ══ -->
+<div class="panel" id="panel-flashcards">
+  <!-- mode selector -->
+  <div class="fc-mode-row">
+    <button class="fc-mode-btn active" id="btnAlle" onclick="setMode('alle')">📚 Alle Wörter</button>
+    <button class="fc-mode-btn" id="btnZufall" onclick="setMode('zufall')">🎲 Zufällig (15)</button>
+  </div>
+
+  <!-- card area -->
+  <div id="fcMain">
+    <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+    <div class="fc-counter" id="fcCounter">1 / —</div>
+
+    <div class="fc-scene">
+      <div class="fc-card-wrap" id="fcCardWrap" onclick="flipCard()">
+        <!-- FRONT -->
+        <div class="fc-face front">
+          <button class="tts-btn" onclick="event.stopPropagation();speakCurrent()">🔊</button>
+          <div class="fc-art" id="fcArt"></div>
+          <div class="fc-de" id="fcDe">Lade …</div>
+          <div class="fc-tap">Tippen zum Umdrehen</div>
+        </div>
+        <!-- BACK -->
+        <div class="fc-face back">
+          <div class="fc-vi" id="fcVi"></div>
+          <div class="fc-ex" id="fcEx"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-btns fc-btns-hidden" id="fcBtns">
+      <button class="fc-btn fc-btn-wrong" onclick="answer(false)">✗ Nochmal</button>
+      <button class="fc-btn fc-btn-ok" onclick="answer(true)">✓ Gewusst</button>
+    </div>
+  </div>
+
+  <!-- score -->
+  <div class="score-screen" id="scoreScreen">
+    <div class="score-emoji" id="scoreEmoji">⭐</div>
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-msg" id="scoreMsg"></div>
+    <button class="btn-restart" onclick="restartDeck()">🔄 Nochmal</button>
+    <button class="btn-back-mode" onclick="showPanel('wortliste')">📖 Zur Wortliste</button>
+  </div>
+</div>
+
+<div class="footer">Made with love by BBQ</div>
+
+<script>
+/* ══════════════════════════════
+   DATA
+══════════════════════════════ */
+const WORDS = [
+  {de:"erschrecken",art:"",vi:"giật mình / bị hoảng sợ",ex:"Alev ist erschrocken, weil Autos gehupt haben."},
+  {de:"hupen",art:"",vi:"bóp còi",ex:"Die Autos haben gehupt, als Ahmet abgebogen ist."},
+  {de:"abbiegen",art:"",vi:"rẽ (phải/trái) / rẽ cua",ex:"Mein Bruder ist mal beim Abbiegen mit dem Fahrrad gestürzt."},
+  {de:"ärgerlich",art:"",vi:"bực bội / tức giận",ex:"Das war echt ärgerlich."},
+  {de:"durcheinander",art:"",vi:"rối loạn / bối rối",ex:"Ahmet ist völlig durcheinander."},
+  {de:"bremsen",art:"",vi:"phanh / hãm lại",ex:"Plötzlich haben Autos gebremst, weil auf der Kreuzung ein Lkw stehen geblieben war."},
+  {de:"der Lastkraftwagen",art:"der",vi:"xe tải lớn",ex:"Ein Lastkraftwagen stand mitten auf der Kreuzung."},
+  {de:"der Lkw",art:"der",vi:"xe tải (viết tắt)",ex:"Plötzlich stand ein Lkw auf der Kreuzung."},
+  {de:"stehen bleiben",art:"",vi:"dừng lại / đứng lại",ex:"Der Lkw ist auf der Kreuzung stehen geblieben."},
+  {de:"stoßen",art:"",vi:"va chạm / đụng phải",ex:"Ahmet ist mit dem Fahrrad gegen die Tür eines parkenden Autos gestoßen."},
+  {de:"der Zeuge",art:"der",vi:"nhân chứng",ex:"Es gibt keine Zeugen, die gesehen haben, was passiert ist."},
+  {de:"der Schaden",art:"der",vi:"thiệt hại / hư hỏng",ex:"Ahmets Versicherung kümmert sich darum, dass der Schaden bezahlt wird."},
+  {de:"anhalten",art:"",vi:"dừng lại / giữ lại",ex:"Ahmet hat zu spät gesehen, dass Alev angehalten hatte."},
+  {de:"hungrig",art:"",vi:"đói bụng",ex:"Ich war nicht mehr hungrig, weil ich gerade gefrühstückt hatte."},
+  {de:"die Verabredung",art:"die",vi:"cuộc hẹn",ex:"Ich war sauer, weil meine Freundin unsere Verabredung abgesagt hatte."},
+  {de:"bereits",art:"",vi:"đã / rồi",ex:"Ich musste zu Fuß nach Hause gehen, weil der Zug bereits abgefahren war."},
+  {de:"beschädigen",art:"",vi:"làm hư hỏng / gây thiệt hại",ex:"Ich bin zur Polizei gegangen, weil jemand mein Auto beschädigt hatte."},
+  {de:"bevor",art:"",vi:"trước khi",ex:"Bevor ich nach Wien umgezogen bin, habe ich viele Jahre in Paris gelebt."},
+  {de:"nachdem",art:"",vi:"sau khi",ex:"Nachdem ich die Schule dort beendet hatte, habe ich eine Ausbildung zum Bäcker gemacht."},
+  {de:"der Bäcker",art:"der",vi:"thợ làm bánh mì",ex:"Ich habe eine Ausbildung zum Bäcker gemacht."},
+  {de:"ebenfalls",art:"",vi:"cũng vậy / tương tự",ex:"Ebenfalls superwichtig: Bevor man sich selbstständig macht, muss man sich gut informieren."},
+  {de:"das Seminar",art:"das",vi:"hội thảo / khóa học ngắn",ex:"Ich habe die Bäckerei erst eröffnet, nachdem ich mehrere Gründerseminare besucht hatte."},
+  {de:"aufregend",art:"",vi:"thú vị / hồi hộp",ex:"Gestern hatte ich ein aufregendes Erlebnis."},
+  {de:"das Erlebnis",art:"das",vi:"trải nghiệm / sự kiện",ex:"Das war ein unvergessliches Erlebnis."},
+  {de:"versichern",art:"",vi:"bảo hiểm / đảm bảo",ex:"Haus, Hund, Smartphone oder Auto: Man kann fast alles versichern."},
+  {de:"die Pflicht",art:"die",vi:"nghĩa vụ / bắt buộc",ex:"Fast alle haben eine Kranken- und Pflegeversicherung, denn diese Versicherungen sind Pflicht."},
+  {de:"die Pflegeversicherung",art:"die",vi:"bảo hiểm chăm sóc / điều dưỡng",ex:"So braucht zum Beispiel jeder eine Kranken- und Pflegeversicherung."},
+  {de:"zulassen",art:"",vi:"cho phép / cấp phép lưu hành",ex:"Ohne diese Versicherung wird das Fahrzeug nicht zugelassen."},
+  {de:"eventuell",art:"",vi:"có thể / tùy trường hợp",ex:"Welche Versicherungen eventuell wichtig sind, hängt von der persönlichen Situation ab."},
+  {de:"abhängen",art:"",vi:"phụ thuộc vào",ex:"Welche Versicherungen sinnvoll sind, hängt von der persönlichen Situation ab."},
+  {de:"der Rentner",art:"der",vi:"người về hưu",ex:"Studierende brauchen andere Versicherungen als Rentner."},
+  {de:"die Scheibe",art:"die",vi:"kính (xe / cửa sổ)",ex:"Die Scheibe geht kaputt."},
+  {de:"überprüfen",art:"",vi:"kiểm tra lại / xem xét",ex:"Bevor Sie das Formular abschicken, überprüfen Sie bitte noch mal alle Angaben."},
+  {de:"die Bedienungsanleitung",art:"die",vi:"hướng dẫn sử dụng",ex:"Liest du immer die Bedienungsanleitung, bevor du ein Gerät benutzt?"},
+  {de:"vorgestern",art:"",vi:"hôm kia",ex:"Während ich vorgestern zur Arbeit gefahren bin, habe ich mit einem Freund telefoniert."},
+  {de:"vorhin",art:"",vi:"vừa nãy / lúc nãy",ex:"Während ich vorhin Sport gemacht habe, habe ich laut Musik gehört."},
+  {de:"der/die Verwandte",art:"",vi:"người thân / họ hàng",ex:"Während Ihre Nachbarn bei Verwandten sind, sollen Sie die Blumen gießen."},
+  {de:"die Vorwahl",art:"die",vi:"mã vùng điện thoại",ex:"Ahmets Vorwahl ist 0120."},
+  {de:"die Art",art:"die",vi:"loại / cách thức",ex:"Machen Sie Fotos oder Videos, um einen Nachweis über die Art des Schadens zu haben."},
+  {de:"das Zeichen",art:"das",vi:"dấu hiệu / ký hiệu / biển báo",ex:"Hat die Polizei den Schaden aufgenommen? Wenn ja, bitte Aktenzeichen angeben."},
+  {de:"verwandt",art:"",vi:"có họ hàng / liên quan",ex:"Sind Sie mit der geschädigten Person verwandt?"},
+  {de:"die Leiter",art:"die",vi:"cái thang",ex:"Ich habe eine Leiter getragen."},
+];
+
+/* ══════════════════════════════
+   PANEL SWITCHING
+══════════════════════════════ */
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.main-tab')[id==='wortliste'?0:1].classList.add('active');
+  if(id==='flashcards' && !fcInited){initDeck();fcInited=true;}
+}
+
+/* ══════════════════════════════
+   WORTLISTE
+══════════════════════════════ */
+function buildTable(){
+  const tbody=document.getElementById('wlBody');
+  tbody.innerHTML='';
+  WORDS.forEach((w,i)=>{
+    const tr=document.createElement('tr');
+    tr.dataset.search=(w.de+' '+w.vi+' '+w.ex).toLowerCase();
+    tr.innerHTML=`
+      <td>
+        ${w.art?`<div class="wl-art">${w.art}</div>`:''}
+        <div class="wl-de">${w.de} <button class="tts-sm" onclick="speak('${w.de.replace(/'/g,"\\'")}')">🔊</button></div>
+      </td>
+      <td>
+        <div class="wl-vi">${w.vi}</div>
+        ${w.ex?`<div class="wl-ex">${w.ex}</div>`:''}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  updateCount();
+}
+function filterTable(q){
+  const rows=document.querySelectorAll('#wlBody tr');
+  const lq=q.toLowerCase().trim();
+  let vis=0;
+  rows.forEach(r=>{
+    const show=!lq||r.dataset.search.includes(lq);
+    r.style.display=show?'':'none';
+    if(show)vis++;
+  });
+  updateCount(vis);
+  document.getElementById('wlEmpty').style.display=vis===0?'block':'none';
+  document.getElementById('wlTable').style.display=vis===0?'none':'table';
+}
+function updateCount(n){
+  const total=WORDS.length;
+  const shown=n===undefined?total:n;
+  document.getElementById('wlCount').textContent=shown===total?`${total} Wörter`:`${shown} von ${total} Wörtern`;
+}
+
+/* ══════════════════════════════
+   FLASHCARDS
+══════════════════════════════ */
+let mode='alle',queue=[],current=0,flipped=false,correct=0,fcInited=false;
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('btnAlle').classList.toggle('active',m==='alle');
+  document.getElementById('btnZufall').classList.toggle('active',m==='zufall');
+  hideScore();
+  initDeck();
+}
+
+function initDeck(){
+  queue=mode==='alle'?shuffle(WORDS):shuffle(WORDS).slice(0,15);
+  current=0;correct=0;flipped=false;
+  document.getElementById('fcMain').style.display='block';
+  hideScore();
+  updateCard();
+}
+
+function updateCard(){
+  if(current>=queue.length){endSession();return;}
+  const w=queue[current];flipped=false;
+  document.getElementById('fcCardWrap').classList.remove('flipped');
+  const artEl=document.getElementById('fcArt');
+  artEl.textContent=w.art||'';
+  artEl.style.display=w.art?'inline-block':'none';
+  document.getElementById('fcDe').textContent=w.de;
+  document.getElementById('fcVi').textContent=w.vi;
+  document.getElementById('fcEx').textContent=w.ex||'';
+  document.getElementById('fcBtns').classList.add('fc-btns-hidden');
+  const pct=Math.round(current/queue.length*100);
+  document.getElementById('fcBar').style.width=pct+'%';
+  document.getElementById('fcCounter').textContent=(current+1)+' / '+queue.length;
+}
+
+function flipCard(){
+  if(flipped)return;
+  flipped=true;
+  document.getElementById('fcCardWrap').classList.add('flipped');
+  document.getElementById('fcBtns').classList.remove('fc-btns-hidden');
+  speakCurrent();
+}
+
+function speakCurrent(){speak(queue[current].de);}
+function speak(text){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text.replace(/[()\/]/g,' '));
+  u.lang='de-DE';u.rate=0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function answer(ok){
+  if(ok){correct++;current++;updateCard();}
+  else{
+    const w=queue.splice(current,1)[0];
+    const pos=Math.min(current+3,queue.length);
+    queue.splice(pos,0,w);
+    updateCard();
+  }
+}
+
+function endSession(){
+  document.getElementById('fcMain').style.display='none';
+  const total=mode==='alle'?WORDS.length:15;
+  const pct=Math.round(correct/total*100);
+  document.getElementById('scoreEmoji').textContent=pct>=80?'🏆':pct>=60?'⭐':'💪';
+  document.getElementById('scoreBig').textContent=correct+'/'+total+' ('+pct+'%)';
+  document.getElementById('scoreMsg').textContent=pct>=80?'Ausgezeichnet!':pct>=60?'Gut gemacht!':'Weiter üben!';
+  document.getElementById('scoreScreen').classList.add('show');
+}
+
+function hideScore(){
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('fcMain').style.display='block';
+}
+
+function restartDeck(){hideScore();initDeck();}
+
+/* ── INIT ── */
+buildTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Übungen – Lektion 10</title>
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;--blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;--gold:#d97706;--gold-lt:#fef3c7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;padding:28px 20px 22px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:Georgia,serif;font-size:24px;color:#fff;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+.tab-nav{max-width:680px;margin:20px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;}
+.tab-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:system-ui,sans-serif;transition:all .15s;white-space:nowrap;}
+.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.panel{display:none;max-width:680px;margin:20px auto;padding:0 16px 20px;}
+.panel.active{display:block;}
+.panel-title{font-family:Georgia,serif;font-size:20px;color:var(--ink);margin-bottom:4px;}
+.panel-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.ex-card{background:var(--card);border-radius:14px;border:2px solid var(--border);padding:20px;margin-bottom:14px;}
+.ex-q{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+.ex-q em{color:var(--blue);font-style:normal;font-weight:800;}
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mc-opts1{display:grid;grid-template-columns:1fr;gap:8px;}
+.mc-opt{background:#fafafa;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:system-ui,sans-serif;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--ink);}
+.mc-opt:hover{border-color:var(--blue);background:var(--blue-lt);}
+.mc-opt.ok{background:var(--green-lt);border-color:var(--green);color:var(--green);pointer-events:none;}
+.mc-opt.no{background:var(--rose-lt);border-color:var(--rose);color:var(--rose);pointer-events:none;}
+.mc-opt.reveal{background:var(--green-lt);border-color:var(--green);color:var(--green);pointer-events:none;opacity:.7;}
+.mc-opt.locked{pointer-events:none;opacity:.4;}
+.inp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.inp-field{border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;font-family:system-ui,sans-serif;font-weight:600;color:var(--ink);outline:none;min-width:160px;flex:1;}
+.inp-field:focus{border-color:var(--blue);}
+.inp-field.ok{border-color:var(--green);background:var(--green-lt);color:var(--green);}
+.inp-field.no{border-color:var(--rose);background:var(--rose-lt);color:var(--rose);}
+.check-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.feedback{font-size:13px;margin-top:8px;font-weight:600;display:none;}
+.feedback.ok{color:var(--green);display:block;}
+.feedback.no{color:var(--rose);display:block;}
+.score-bar{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.score-label{font-size:13px;font-weight:700;color:var(--muted);}
+.score-num{font-family:Georgia,serif;font-size:28px;color:var(--blue);}
+.reset-btn{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;}
+.reset-btn:hover{border-color:var(--blue);color:var(--blue);}
+.footer{text-align:center;padding:24px;font-size:11px;color:#8aa3bc;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 10 · ÜBUNGEN</div>
+    <h1>Zeuge eines Unfalls</h1>
+    <p>7 Übungstypen · Interaktiv</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn active" id="tb0">1 · Artikel</button>
+  <button class="tab-btn" id="tb1">2 · Bedeutung</button>
+  <button class="tab-btn" id="tb2">3 · Lückentext</button>
+  <button class="tab-btn" id="tb3">4 · Wortfeld</button>
+  <button class="tab-btn" id="tb4">5 · Unfallbericht</button>
+  <button class="tab-btn" id="tb5">6 · bevor / nachdem</button>
+  <button class="tab-btn" id="tb6">7 · Wortbildung</button>
+</div>
+
+<div class="panel active" id="panel0">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc0">0 / 0</div></div><button class="reset-btn" id="rb0">↺ Neu</button></div>
+  <div class="panel-title">Übung 1 · Artikel</div>
+  <div class="panel-sub">Welcher Artikel gehört zu diesem Nomen?</div>
+  <div id="p0items"></div>
+</div>
+
+<div class="panel" id="panel1">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc1">0 / 0</div></div><button class="reset-btn" id="rb1">↺ Neu</button></div>
+  <div class="panel-title">Übung 2 · Bedeutung</div>
+  <div class="panel-sub">Welche Definition passt zum Wort?</div>
+  <div id="p1items"></div>
+</div>
+
+<div class="panel" id="panel2">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc2">0 / 0</div></div><button class="reset-btn" id="rb2">↺ Neu</button></div>
+  <div class="panel-title">Übung 3 · Lückentext</div>
+  <div class="panel-sub">Ergänzen Sie das fehlende Wort.</div>
+  <div id="p2items"></div>
+</div>
+
+<div class="panel" id="panel3">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc3">0 / 0</div></div><button class="reset-btn" id="rb3">↺ Neu</button></div>
+  <div class="panel-title">Übung 4 · Wortfeld</div>
+  <div class="panel-sub">Synonyme, Antonyme und Kollokationen.</div>
+  <div id="p3items"></div>
+</div>
+
+<div class="panel" id="panel4">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc4">0 / 0</div></div><button class="reset-btn" id="rb4">↺ Neu</button></div>
+  <div class="panel-title">Übung 5 · Unfallbericht</div>
+  <div class="panel-sub">Was passt zur Situation? Wählen Sie die beste Antwort.</div>
+  <div id="p4items"></div>
+</div>
+
+<div class="panel" id="panel5">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc5">0 / 0</div></div><button class="reset-btn" id="rb5">↺ Neu</button></div>
+  <div class="panel-title">Übung 6 · bevor / nachdem</div>
+  <div class="panel-sub">Welche Konjunktion passt? Achten Sie auf die Zeitfolge.</div>
+  <div id="p5items"></div>
+</div>
+
+<div class="panel" id="panel6">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc6">0 / 0</div></div><button class="reset-btn" id="rb6">↺ Neu</button></div>
+  <div class="panel-title">Übung 7 · Wortbildung</div>
+  <div class="panel-sub">Welches Wort passt zur Beschreibung?</div>
+  <div id="p6items"></div>
+</div>
+
+<div class="footer">Made with love by BBQ</div>
+
+<script>
+var scores=[0,0,0,0,0,0,0];
+var totals=[0,0,0,0,0,0,0];
+
+function addScore(panel,correct){
+  totals[panel]++;
+  if(correct)scores[panel]++;
+  document.getElementById("sc"+panel).textContent=scores[panel]+" / "+totals[panel];
+}
+
+function resetPanel(panel){
+  scores[panel]=0;totals[panel]=0;
+  document.getElementById("sc"+panel).textContent="0 / 0";
+  buildPanel(panel);
+}
+
+function showTab(n){
+  var panels=document.querySelectorAll(".panel");
+  var tabs=document.querySelectorAll(".tab-btn");
+  for(var i=0;i<panels.length;i++){panels[i].classList.toggle("active",i===n);}
+  for(var j=0;j<tabs.length;j++){tabs[j].classList.toggle("active",j===n);}
+}
+
+function shuffle(a){
+  var b=a.slice(),i,j,t;
+  for(i=b.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=b[i];b[i]=b[j];b[j]=t;}
+  return b;
+}
+
+for(var ti=0;ti<7;ti++){
+  (function(n){
+    document.getElementById("tb"+n).addEventListener("click",function(){showTab(n);});
+    document.getElementById("rb"+n).addEventListener("click",function(){resetPanel(n);});
+  })(ti);
+}
+
+function makeMC(container,panelIdx,question,correctAns,wrongAnswers,wide){
+  var card=document.createElement("div");card.className="ex-card";
+  var q=document.createElement("div");q.className="ex-q";q.innerHTML=question;
+  var grid=document.createElement("div");grid.className=wide?"mc-opts1":"mc-opts";
+  var opts=shuffle([correctAns].concat(wrongAnswers));
+  var done=false;
+  opts.forEach(function(o){
+    var btn=document.createElement("button");btn.className="mc-opt";btn.textContent=o;
+    btn.addEventListener("click",function(){
+      if(done)return;done=true;
+      var ok=(o===correctAns);
+      btn.classList.add(ok?"ok":"no");
+      var all=grid.querySelectorAll(".mc-opt");
+      for(var k=0;k<all.length;k++){
+        if(all[k]!==btn){all[k].classList.add(all[k].textContent===correctAns?"reveal":"locked");}
+      }
+      addScore(panelIdx,ok);
+    });
+    grid.appendChild(btn);
+  });
+  card.appendChild(q);card.appendChild(grid);
+  container.appendChild(card);
+}
+
+function makeInput(container,panelIdx,question,correctAns,hint){
+  var card=document.createElement("div");card.className="ex-card";
+  var q=document.createElement("div");q.className="ex-q";q.innerHTML=question;
+  var row=document.createElement("div");row.className="inp-row";
+  var inp=document.createElement("input");inp.className="inp-field";inp.type="text";inp.placeholder="Antwort...";
+  var btn=document.createElement("button");btn.className="check-btn";btn.textContent="Prüfen";
+  var fb=document.createElement("div");fb.className="feedback";
+  var done=false;
+  btn.addEventListener("click",function(){
+    if(done)return;
+    var val=inp.value.trim();
+    var ok=val.toLowerCase()===correctAns.toLowerCase();
+    inp.classList.add(ok?"ok":"no");
+    fb.textContent=ok?"✓ Richtig!":"✗ Richtig wäre: "+correctAns+(hint?" ("+hint+")":"");
+    fb.className="feedback "+(ok?"ok":"no");
+    btn.style.opacity="0.4";btn.style.pointerEvents="none";
+    done=true;addScore(panelIdx,ok);
+  });
+  inp.addEventListener("keydown",function(e){if(e.key==="Enter")btn.click();});
+  row.appendChild(inp);row.appendChild(btn);
+  card.appendChild(q);card.appendChild(row);card.appendChild(fb);
+  container.appendChild(card);
+}
+
+// ── DATEN ────────────────────────────────────────────────────────────────
+
+var p0data=[
+  {word:"Lastkraftwagen",art:"der",wrong:["die","das"]},
+  {word:"Zeuge",art:"der",wrong:["die","das"]},
+  {word:"Schaden",art:"der",wrong:["die","das"]},
+  {word:"Verabredung",art:"die",wrong:["der","das"]},
+  {word:"Bäcker",art:"der",wrong:["die","das"]},
+  {word:"Seminar",art:"das",wrong:["der","die"]},
+  {word:"Erlebnis",art:"das",wrong:["der","die"]},
+  {word:"Pflicht",art:"die",wrong:["der","das"]},
+  {word:"Pflegeversicherung",art:"die",wrong:["der","das"]},
+  {word:"Rentner",art:"der",wrong:["die","das"]},
+  {word:"Scheibe",art:"die",wrong:["der","das"]},
+  {word:"Bedienungsanleitung",art:"die",wrong:["der","das"]},
+  {word:"Verwandte",art:"der",wrong:["die","das"]},
+  {word:"Vorwahl",art:"die",wrong:["der","das"]},
+  {word:"Leiter",art:"der",wrong:["die","das"]},
+  {word:"Art",art:"die",wrong:["der","das"]},
+  {word:"Zeichen",art:"das",wrong:["der","die"]}
+];
+
+var p1data=[
+  {q:"Was bedeutet <em>erschrecken</em>?",ans:"plötzlich Angst bekommen / sich fürchten",wrong:["wütend werden","müde sein","nachdenken"]},
+  {q:"Was bedeutet <em>hupen</em>?",ans:"das Hupsignal im Auto betätigen",wrong:["bremsen","abbiegen","stoßen"]},
+  {q:"Was bedeutet <em>ärgerlich</em>?",ans:"wütend / nicht zufrieden sein",wrong:["fröhlich","aufgeregt","hungrig"]},
+  {q:"Was bedeutet <em>durcheinander</em>?",ans:"in Unordnung / ohne klare Struktur",wrong:["ordentlich","pünktlich","vollständig"]},
+  {q:"Was bedeutet <em>bremsen</em>?",ans:"das Fahrzeug langsamer machen oder stoppen",wrong:["beschleunigen","abbiegen","hupen"]},
+  {q:"Was bedeutet <em>stehen bleiben</em>?",ans:"sich nicht mehr bewegen / zum Stillstand kommen",wrong:["weitergehen","beschleunigen","abbiegen"]},
+  {q:"Was bedeutet <em>der Zeuge</em>?",ans:"eine Person, die etwas beobachtet hat",wrong:["der Täter","der Richter","der Rentner"]},
+  {q:"Was bedeutet <em>bereits</em>?",ans:"schon / zu diesem Zeitpunkt",wrong:["noch nicht","vielleicht","manchmal"]},
+  {q:"Was bedeutet <em>eventuell</em>?",ans:"möglicherweise / unter Umständen",wrong:["sicher","niemals","sofort"]},
+  {q:"Was bedeutet <em>aufregend</em>?",ans:"spannend / mit starken Gefühlen",wrong:["langweilig","ruhig","ärgerlich"]},
+  {q:"Was bedeutet <em>die Pflicht</em>?",ans:"etwas, das man tun muss / eine Verpflichtung",wrong:["ein Recht","eine Möglichkeit","eine Erlaubnis"]},
+  {q:"Was bedeutet <em>vorgestern</em>?",ans:"zwei Tage vor heute",wrong:["gestern","heute","vor einer Woche"]}
+];
+
+var p2data=[
+  {sent:"Der Fahrer hat nicht [_], obwohl die Ampel Rot war.",ans:"gebremst",hint:"Perfekt von bremsen"},
+  {sent:"Er hat an der Kreuzung links [_] und dabei ein Auto getroffen.",ans:"abgebogen",hint:"Perfekt von abbiegen"},
+  {sent:"Der Lkw hat die Windschutz[_] des Autos zerbrochen.",ans:"scheibe",hint:"Nomen, Kompositum"},
+  {sent:"Ich muss die [_] lesen, bevor ich das Gerät einschalte.",ans:"Bedienungsanleitung",hint:"Nomen"},
+  {sent:"[_] er gebremst hatte, war es schon zu spät.",ans:"Nachdem",hint:"Konjunktion"},
+  {sent:"Sie hat ihre Verabredung [_], weil sie krank war.",ans:"abgesagt",hint:"Perfekt von absagen"},
+  {sent:"Das Ergebnis [_] davon ab, wie gut du vorbereitet bist.",ans:"hängt",hint:"Präsens von abhängen"},
+  {sent:"Er ist [_] Rentner und bleibt gern zu Hause.",ans:"bereits",hint:"Adverb"},
+  {sent:"Die Versicherung muss den [_] am Auto bezahlen.",ans:"Schaden",hint:"Nomen"},
+  {sent:"[_] dem Unfall hat die Polizei alle Zeugen befragt.",ans:"Nach",hint:"Präposition + Dativ"}
+];
+
+var p3data=[
+  {q:"Welches Wort ist ein Synonym von <em>bereits</em>?",ans:"schon",wrong:["vorhin","ebenfalls","eventuell"]},
+  {q:"Welches Wort ist das Antonym von <em>ärgerlich</em>?",ans:"erfreut",wrong:["aufregend","hungrig","durcheinander"]},
+  {q:"Welche Kollokation ist korrekt?",ans:"einen Schaden melden",wrong:["einen Schaden machen","einen Schaden sagen","einen Schaden finden"]},
+  {q:"Welche Kollokation mit VERSICHERUNG ist korrekt?",ans:"eine Versicherung abschließen",wrong:["eine Versicherung kaufen","eine Versicherung aufgeben","eine Versicherung schreiben"]},
+  {q:"Welche Kollokation ist korrekt?",ans:"ein Zeichen geben",wrong:["ein Zeichen machen","ein Zeichen bringen","ein Zeichen kaufen"]},
+  {q:"Welches Wort ist das Antonym von <em>hungrig</em>?",ans:"satt",wrong:["aufgeregt","ärgerlich","erschrocken"]},
+  {q:"Welches Wort ist ein Synonym von <em>überprüfen</em>?",ans:"kontrollieren",wrong:["versichern","abbiegen","beschädigen"]},
+  {q:"Welche Kollokation mit VERABREDUNG ist korrekt?",ans:"eine Verabredung absagen",wrong:["eine Verabredung machen","eine Verabredung geben","eine Verabredung lesen"]}
+];
+
+var p4data=[
+  {q:"Die Polizei fragt: Haben Sie den Unfall gesehen? Was antwortet ein Zeuge?",
+   ans:"Ja, ich habe alles beobachtet. Der Lkw hat das Auto von hinten getroffen.",
+   wrong:["Ich war nicht da.","Das ist nicht mein Problem.","Ich fahre immer vorsichtig."],wide:true},
+  {q:"Der Versicherungsmann fragt: Wer hat den Schaden verursacht? Was sagen Sie?",
+   ans:"Der andere Fahrer hat nicht gebremst und ist auf mein Auto gefahren.",
+   wrong:["Ich weiß nicht, wer das war.","Der Schaden ist sehr klein.","Ich habe die Versicherung nicht angerufen."],wide:true},
+  {q:"Sie müssen den Unfall der Versicherung melden. Was sagen Sie zuerst?",
+   ans:"Ich möchte einen Schaden melden. Es gab vorhin einen Unfall auf der Hauptstraße.",
+   wrong:["Ich brauche eine neue Versicherung.","Ich möchte meinen Vertrag kündigen.","Ich habe eine Frage zur Bedienungsanleitung."],wide:true},
+  {q:"Jemand fragt: Ist die Pflegeversicherung freiwillig? Was ist die richtige Antwort?",
+   ans:"Nein, die Pflegeversicherung ist in Deutschland Pflicht.",
+   wrong:["Ja, man kann sie abwählen.","Sie ist nur für Rentner.","Sie kostet nichts."],wide:true},
+  {q:"Ein Freund fragt: Warum bist du so ärgerlich? Was könnte Ihre Antwort sein?",
+   ans:"Jemand hat mein Auto beschädigt und ist einfach weggefahren.",
+   wrong:["Ich bin sehr glücklich heute.","Das Seminar war langweilig.","Der Bäcker war geschlossen."],wide:true}
+];
+
+var p5data=[
+  {q:"Wählen Sie die richtige Konjunktion: ___ er ankam, war der Unfall bereits passiert.",
+   ans:"Als / Bevor",
+   wrong:["Nachdem","Obwohl","Weil"]},
+  {q:"___ das Auto gebremst hatte, war es schon zu spät.",
+   ans:"Nachdem",
+   wrong:["Bevor","Obwohl","Weil"]},
+  {q:"Sie hat angerufen, ___ sie nach Hause gefahren ist.",
+   ans:"bevor",
+   wrong:["nachdem","bereits","ebenfalls"]},
+  {q:"___ er den Schaden gemeldet hatte, kam die Versicherung zum Unfall.",
+   ans:"Nachdem",
+   wrong:["Bevor","Bereits","Eventuell"]},
+  {q:"Er hat die Bedienungsanleitung gelesen, ___ er das Gerät eingeschaltet hat.",
+   ans:"bevor",
+   wrong:["nachdem","bereits","ebenfalls"]},
+  {q:"Zeitfolge: Zuerst hupen, dann bremsen. Welcher Satz ist korrekt?",
+   ans:"Nachdem er gehupt hatte, hat er gebremst.",
+   wrong:["Bevor er gehupt hatte, hat er gebremst.","Er hat gehupt, bevor er gebremst hatte.","Er hat gebremst, nachdem er bremsen wollte."],wide:true},
+  {q:"___ die Polizei kam, hatten die Zeugen schon alles erklärt.",
+   ans:"Bevor",
+   wrong:["Nachdem","Bereits","Ebenfalls"]}
+];
+
+var p6data=[
+  {q:"Eine Person, die bei einem Unfall dabei war und alles gesehen hat – welches Wort?",ans:"der Zeuge",wrong:["der Rentner","der Leiter","der Bäcker"]},
+  {q:"Das Dokument, das erklärt, wie man ein Gerät benutzt – welches Wort?",ans:"die Bedienungsanleitung",wrong:["die Verabredung","die Pflegeversicherung","die Vorwahl"]},
+  {q:"Wenn ein Auto mit einem anderen zusammenstößt – welches Verb?",ans:"stoßen / zusammenstoßen",wrong:["hupen","abbiegen","bremsen"]},
+  {q:"Wenn man mit dem Auto in eine andere Richtung fährt – welches Verb?",ans:"abbiegen",wrong:["bremsen","hupen","stehen bleiben"]},
+  {q:"Die Nummer, die man vor einer Telefonnummer wählen muss – welches Wort?",ans:"die Vorwahl",wrong:["die Pflicht","die Scheibe","das Zeichen"]},
+  {q:"Eine Pflicht, die man gesetzlich erfüllen muss – welches Nomen?",ans:"die Pflicht",wrong:["die Verabredung","das Seminar","das Erlebnis"]},
+  {q:"Wenn man kontrolliert, ob etwas korrekt ist – welches Verb?",ans:"überprüfen",wrong:["versichern","zulassen","beschädigen"]},
+  {q:"Etwas, das von äußeren Faktoren bestimmt wird – welches Verb?",ans:"abhängen von",wrong:["zulassen","stoßen","erschrecken"]}
+];
+
+function buildPanel(panel){
+  var cids=["p0items","p1items","p2items","p3items","p4items","p5items","p6items"];
+  var c=document.getElementById(cids[panel]);c.innerHTML="";
+  if(panel===0){
+    shuffle(p0data).slice(0,12).forEach(function(d){
+      makeMC(c,0,"Welcher Artikel gehört zu: <em>"+d.word+"</em>?",d.art,d.wrong,false);
+    });
+  } else if(panel===1){
+    shuffle(p1data).slice(0,10).forEach(function(d){makeMC(c,1,d.q,d.ans,d.wrong,false);});
+  } else if(panel===2){
+    shuffle(p2data).forEach(function(d){
+      makeInput(c,2,d.sent.replace("[_]","<em>______</em>"),d.ans,d.hint);
+    });
+  } else if(panel===3){
+    shuffle(p3data).forEach(function(d){makeMC(c,3,d.q,d.ans,d.wrong,false);});
+  } else if(panel===4){
+    shuffle(p4data).forEach(function(d){makeMC(c,4,d.q,d.ans,d.wrong,d.wide||false);});
+  } else if(panel===5){
+    shuffle(p5data).forEach(function(d){makeMC(c,5,d.q,d.ans,d.wrong,d.wide||false);});
+  } else if(panel===6){
+    shuffle(p6data).forEach(function(d){makeMC(c,6,d.q,d.ans,d.wrong,false);});
+  }
+}
+
+for(var pi=0;pi<7;pi++){buildPanel(pi);}
+</script>
+</body>
+</html>
