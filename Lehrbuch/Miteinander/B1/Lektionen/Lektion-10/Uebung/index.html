@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Übung – Lektion 10</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: #f0f4f8;
+      color: #1e293b;
+      padding: 0 0 60px;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+    /* ── Header ── */
+    .page-header {
+      background: linear-gradient(135deg, #0e7490, #0369a1);
+      color: white;
+      padding: 28px 20px 20px;
+      text-align: center;
+    }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; }
+    .page-header p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+
+    /* ── Nav tabs ── */
+    .nav-tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 0;
+      background: #0c4a6e;
+      padding: 0 12px;
+    }
+    .nav-tabs::-webkit-scrollbar { height: 4px; }
+    .nav-tabs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+
+    .nav-tab {
+      flex-shrink: 0;
+      padding: 12px 18px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover { color: white; }
+    .nav-tab.active {
+      color: white;
+      border-bottom-color: #38bdf8;
+    }
+
+    /* ── Content area ── */
+    .content { max-width: 640px; margin: 0 auto; padding: 20px 16px; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── Exercise card ── */
+    .exercise-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .exercise-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #0284c7;
+      margin-bottom: 6px;
+    }
+    .exercise-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0c4a6e;
+      margin-bottom: 6px;
+    }
+    .exercise-instruction {
+      font-size: 0.88rem;
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    /* ── Audio player ── */
+    .audio-wrap {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .audio-wrap audio {
+      width: 100%;
+      accent-color: #0284c7;
+    }
+    .audio-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 6px;
+    }
+
+    /* ── Transcript (karaoke) ── */
+    .transcript-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #0284c7;
+      cursor: pointer;
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: #e0f2fe;
+      border-radius: 20px;
+      border: none;
+      transition: background 0.2s;
+    }
+    .transcript-toggle:hover { background: #bae6fd; }
+
+    .transcript-box {
+      display: none;
+      margin-top: 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.84rem;
+      line-height: 1.75;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .transcript-box.open { display: block; }
+
+    .transcript-line { margin-bottom: 6px; }
+    .speaker {
+      font-weight: 700;
+      color: #0369a1;
+      margin-right: 4px;
+    }
+
+    /* ── MCQ ── */
+    .mcq-item { margin-bottom: 18px; }
+    .mcq-question {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .mcq-options { display: flex; flex-direction: column; gap: 6px; }
+    .mcq-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+      background: white;
+    }
+    .mcq-option:hover { border-color: #7dd3fc; background: #f0f9ff; }
+    .mcq-option.selected { border-color: #0284c7; background: #e0f2fe; }
+    .mcq-option.correct { border-color: #16a34a; background: #f0fdf4; color: #15803d; }
+    .mcq-option.wrong { border-color: #dc2626; background: #fef2f2; color: #dc2626; }
+    .mcq-option.revealed { border-color: #16a34a; background: #f0fdf4; color: #15803d; }
+
+    .option-letter {
+      font-weight: 700;
+      min-width: 20px;
+      color: #64748b;
+    }
+    .mcq-option.selected .option-letter { color: #0284c7; }
+    .mcq-option.correct .option-letter,
+    .mcq-option.revealed .option-letter { color: #16a34a; }
+    .mcq-option.wrong .option-letter { color: #dc2626; }
+
+    /* ── True/False ── */
+    .tf-item { margin-bottom: 16px; }
+    .tf-statement {
+      font-size: 0.88rem;
+      color: #334155;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .tf-buttons { display: flex; gap: 8px; }
+    .tf-btn {
+      flex: 1;
+      padding: 9px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    .tf-btn:hover { border-color: #7dd3fc; }
+    .tf-btn.selected { border-color: #0284c7; background: #e0f2fe; color: #0284c7; }
+    .tf-btn.correct { border-color: #16a34a; background: #f0fdf4; color: #16a34a; }
+    .tf-btn.wrong { border-color: #dc2626; background: #fef2f2; color: #dc2626; }
+
+    /* ── Gap fill ── */
+    .gap-sentence {
+      font-size: 0.9rem;
+      line-height: 2;
+      color: #334155;
+      margin-bottom: 14px;
+    }
+    .gap-input {
+      border: none;
+      border-bottom: 2px solid #7dd3fc;
+      outline: none;
+      font-size: 0.9rem;
+      width: 140px;
+      text-align: center;
+      background: transparent;
+      color: #0c4a6e;
+      font-family: inherit;
+      padding: 2px 4px;
+      transition: border-color 0.2s;
+    }
+    .gap-input:focus { border-bottom-color: #0284c7; }
+    .gap-input.correct { border-bottom-color: #16a34a; color: #16a34a; }
+    .gap-input.wrong { border-bottom-color: #dc2626; color: #dc2626; }
+
+    /* ── Ordering ── */
+    .order-items { display: flex; flex-direction: column; gap: 8px; }
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      font-size: 0.87rem;
+      cursor: grab;
+    }
+    .order-item:active { cursor: grabbing; }
+    .order-item.dragging { opacity: 0.4; }
+    .order-item.over { border-color: #0284c7; background: #e0f2fe; }
+    .drag-handle { color: #94a3b8; font-size: 1rem; }
+
+    /* ── Word bank ── */
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e1;
+    }
+    .word-chip {
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 2px solid #bae6fd;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: white;
+      color: #0369a1;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .word-chip:hover { background: #e0f2fe; }
+    .word-chip.used { opacity: 0.35; pointer-events: none; }
+
+    /* ── Check button ── */
+    .btn-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 24px;
+      background: #0284c7;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 12px;
+    }
+    .btn-check:hover { background: #0369a1; }
+
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      background: #f1f5f9;
+      color: #64748b;
+      border: none;
+      border-radius: 24px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      margin-left: 8px;
+      transition: background 0.2s;
+    }
+    .btn-reset:hover { background: #e2e8f0; }
+
+    /* ── Feedback ── */
+    .feedback {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.good { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .feedback.bad { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+    /* ── Divider ── */
+    .section-divider {
+      border: none;
+      border-top: 2px dashed #e2e8f0;
+      margin: 24px 0;
+    }
+
+    /* ── Score bar ── */
+    .score-bar {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+    .score-val { font-size: 1.4rem; font-weight: 800; color: #0284c7; }
+
+    /* ── Inline answer reveal ── */
+    .revealed-answer {
+      font-size: 0.78rem;
+      color: #16a34a;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* ── Copyright ── */
+    .copyright {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.72rem;
+      color: rgba(0,0,0,0.28);
+      margin-top: 40px;
+      padding: 0 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>📝 Übungen – Lektion 10</h1>
+  <p>Thema: Versicherungen &amp; Schadensmeldung</p>
+</div>
+
+<div class="nav-tabs" id="navTabs">
+  <div class="nav-tab active" data-section="s1">A · Hören 1</div>
+  <div class="nav-tab" data-section="s2">B · Hören 2</div>
+  <div class="nav-tab" data-section="s3">C · Telefonat</div>
+  <div class="nav-tab" data-section="s4">D · Sätze</div>
+  <div class="nav-tab" data-section="s5">E · Rollenspiel</div>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════════════════════════════════
+       SECTION A – Aufgabe 1c (Track 6_10)
+  ══════════════════════════════════════════ -->
+  <div class="section active" id="s1">
+
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe 1c · Track 6_10</div>
+      <div class="exercise-title">Was ist passiert?</div>
+      <div class="exercise-instruction">
+        Hören Sie das Gespräch. Bringen Sie dann die Ereignisse in die richtige Reihenfolge (1–6).
+      </div>
+
+      <div class="audio-wrap">
+        <div class="audio-label">🔊 6_10 – Aufgabe 1c</div>
+        <audio controls>
+          <source src="../../Audio/6_10_Miteinander_B12_KB_L10_1c.mp3" type="audio/mpeg">
+          Ihr Browser unterstützt kein Audio.
+        </audio>
+        <br>
+        <button class="transcript-toggle" onclick="toggleTranscript('t10')">📄 Transkript anzeigen</button>
+      </div>
+
+      <div class="transcript-box" id="t10">
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Uah! Oh, nein! So ein Mist!</div>
+        <div class="transcript-line"><span class="speaker">Alev:</span> Guck mal, Opa. Da ist ein großer Kratzer an dem Auto. Hast du das gemacht?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ja, das war ich – mit meinem Fahrradlenker. Wie ärgerlich!</div>
+        <div class="transcript-line"><span class="speaker">Alev:</span> Nicht so schlimm, Opa. Ist nur ein Kratzer. Komm, weiter.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Das geht jetzt nicht, Alev. Wenn man ein Auto beschädigt, darf man nicht einfach weiterfahren. Das ist verboten.</div>
+        <div class="transcript-line"><span class="speaker">Alev:</span> Ich will aber zum Schwimmen!</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Das verstehe ich, aber … Ach, warte mal, Alev, ich rufe kurz deine Mutter an, ja?</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Papa, was gibt's?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Mm, wir haben hier ein kleines Problem.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Wieso, was ist los? Hast du deine Badehose vergessen?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Nein, das nicht. Ich bin gerade mit meinem Fahrrad gegen ein parkendes Auto gefahren. Da ist jetzt ein Kratzer in der Tür.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Oh, das ist ja ärgerlich. Wie ist das denn passiert?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Also … Alev ist vor mir gefahren, dann haben Autos gehupt, sie ist erschrocken. Und naja, ich bin dann auch erschrocken und gegen die Autotür gestoßen.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Seid ihr verletzt?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Nein, nein, es ist nichts passiert.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Das ist das Wichtigste. Die Unfallversicherung bezahlt den Schaden. Äh … ich meine natürlich die Haftpflichtversicherung. Du hast doch eine Haftpflichtversicherung, oder?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Eine Haftpflichtversicherung? Ich denke schon. Ich schaue zu Hause mal nach.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Gut! Und jetzt ruf erstmal die Polizei an.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Könntest du Alev vielleicht abholen? Dann muss sie nicht die ganze Zeit hier warten.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Natürlich, ich hol sie. Wo seid ihr denn?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Auf der Mainzer Straße, Ecke Dürerstraße. Dort, wo die Bäckerei Möller ist.</div>
+        <div class="transcript-line"><span class="speaker">Selda:</span> Ah ja, ich weiß schon. Okay, ich bin gleich da.</div>
+      </div>
+    </div>
+
+    <!-- Ordering exercise -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe A1</div>
+      <div class="exercise-title">Bringen Sie die Ereignisse in die richtige Reihenfolge.</div>
+      <div class="exercise-instruction">Ziehen Sie die Karten in die richtige Reihenfolge (1 = zuerst).</div>
+
+      <div class="order-items" id="orderA" data-answer="2,5,1,4,6,3">
+        <div class="order-item" draggable="true" data-id="1">
+          <span class="drag-handle">⠿</span>
+          <span>Ahmet fährt mit dem Fahrrad gegen ein parkendes Auto.</span>
+        </div>
+        <div class="order-item" draggable="true" data-id="2">
+          <span class="drag-handle">⠿</span>
+          <span>Ahmet und Alev sind auf dem Weg zum Schwimmbad.</span>
+        </div>
+        <div class="order-item" draggable="true" data-id="3">
+          <span class="drag-handle">⠿</span>
+          <span>Selda sagt, Ahmet soll die Polizei anrufen.</span>
+        </div>
+        <div class="order-item" draggable="true" data-id="4">
+          <span class="drag-handle">⠿</span>
+          <span>Ahmet ruft seine Tochter Selda an.</span>
+        </div>
+        <div class="order-item" draggable="true" data-id="5">
+          <span class="drag-handle">⠿</span>
+          <span>Autos hupen, Alev erschrickt und bleibt stehen.</span>
+        </div>
+        <div class="order-item" draggable="true" data-id="6">
+          <span class="drag-handle">⠿</span>
+          <span>Selda holt Alev ab.</span>
+        </div>
+      </div>
+      <br>
+      <button class="btn-check" onclick="checkOrder('orderA')">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetOrder('orderA')">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-orderA"></div>
+    </div>
+
+    <!-- MCQ Richtig/Falsch -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe A2</div>
+      <div class="exercise-title">Richtig oder falsch?</div>
+      <div class="exercise-instruction">Hören Sie noch einmal und wählen Sie: richtig (R) oder falsch (F).</div>
+
+      <div id="tfA" class="tf-container">
+        <div class="tf-item">
+          <div class="tf-statement">1. Alev will nicht weiterfahren, weil sie weiß, dass man nach einem Unfall warten muss.</div>
+          <div class="tf-buttons">
+            <button class="tf-btn" data-group="tf1" data-val="R" onclick="selectTF(this,'tf1')">Richtig</button>
+            <button class="tf-btn" data-group="tf1" data-val="F" onclick="selectTF(this,'tf1')">Falsch</button>
+          </div>
+        </div>
+        <div class="tf-item">
+          <div class="tf-statement">2. Ahmet ist verletzt.</div>
+          <div class="tf-buttons">
+            <button class="tf-btn" data-group="tf2" data-val="R" onclick="selectTF(this,'tf2')">Richtig</button>
+            <button class="tf-btn" data-group="tf2" data-val="F" onclick="selectTF(this,'tf2')">Falsch</button>
+          </div>
+        </div>
+        <div class="tf-item">
+          <div class="tf-statement">3. Selda fragt, ob Ahmet eine Haftpflichtversicherung hat.</div>
+          <div class="tf-buttons">
+            <button class="tf-btn" data-group="tf3" data-val="R" onclick="selectTF(this,'tf3')">Richtig</button>
+            <button class="tf-btn" data-group="tf3" data-val="F" onclick="selectTF(this,'tf3')">Falsch</button>
+          </div>
+        </div>
+        <div class="tf-item">
+          <div class="tf-statement">4. Ahmet ist sich sicher, dass er eine Haftpflichtversicherung hat.</div>
+          <div class="tf-buttons">
+            <button class="tf-btn" data-group="tf4" data-val="R" onclick="selectTF(this,'tf4')">Richtig</button>
+            <button class="tf-btn" data-group="tf4" data-val="F" onclick="selectTF(this,'tf4')">Falsch</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-check" onclick="checkTF('tfA', {tf1:'F', tf2:'F', tf3:'R', tf4:'F'})">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetTF('tfA')">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-tfA"></div>
+    </div>
+
+  </div><!-- /s1 -->
+
+
+  <!-- ══════════════════════════════════════════
+       SECTION B – Aufgabe A1a/b (Track 6_11)
+  ══════════════════════════════════════════ -->
+  <div class="section" id="s2">
+
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe A1a &amp; b · Track 6_11</div>
+      <div class="exercise-title">Ahmet spricht mit der Polizistin</div>
+      <div class="exercise-instruction">
+        Hören Sie das Gespräch bei der Polizei. Bearbeiten Sie dann die Aufgaben.
+      </div>
+
+      <div class="audio-wrap">
+        <div class="audio-label">🔊 6_11 – Aufgabe A1a und b</div>
+        <audio controls>
+          <source src="../../Audio/6_11_Miteinander_B12_KB_L10_A1a_b.mp3" type="audio/mpeg">
+        </audio>
+        <br>
+        <button class="transcript-toggle" onclick="toggleTranscript('t11')">📄 Transkript anzeigen</button>
+      </div>
+
+      <div class="transcript-box" id="t11">
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Haben Sie Ihren Ausweis dabei, Herr Yavuz?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ja, einen Moment. Ah, da ist er ja. Hier, bitte.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Danke. Okay, dann wiederholen Sie doch noch einmal, was passiert ist. Sie haben mir vorhin erzählt, dass Sie hinter Ihrer Enkelin hergefahren sind?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ja, ich hatte Alev gesagt, dass ich hinter ihr bleibe, weil ich sie dann sehen kann. Das ist sicherer.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Mmhm. Und dann?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Und dann haben plötzlich Autos gehupt. Ich habe geschaut, was los ist.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Mhm?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Auf der Kreuzung da vorne war wohl ein Lkw stehengeblieben. Die anderen Autos konnten nicht vorbei und haben alle angefangen zu hupen. Es war richtig laut.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Verstehe. Und was ist dann passiert?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Meine Enkelin ist erschrocken und plötzlich stehengeblieben. Ich habe leider zu spät gesehen, dass sie angehalten hatte und vom Rad gestiegen war. Es ging alles so schnell. Ich bin dann links rüber, weil ich sie ja nicht umfahren wollte, aber dann war da dieses Auto und ich bin irgendwie mit dem Fahrrad gegen die Tür gestoßen.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Gibt es Zeugen, die gesehen haben, was passiert ist?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ähm, ich weiß nicht. Ich glaube nicht.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Mmhm, okay. Gut, Herr Yavuz, dann wäre das von meiner Seite erstmal alles. Ich informiere den Besitzer des Fahrzeugs und Ihre Versicherung kümmert sich darum, dass der Schaden bezahlt wird. Ich nehme an, Sie haben eine Haftpflichtversicherung?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ja, ich glaube schon. Wenn ich nach Hause komme, rufe ich gleich dort an.</div>
+        <div class="transcript-line"><span class="speaker">Polizistin:</span> Gut, machen Sie das. Dann wünsche ich Ihnen noch einen schönen Tag.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Danke, ebenso.</div>
+      </div>
+    </div>
+
+    <!-- MCQ questions for track 6_11 -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe B1</div>
+      <div class="exercise-title">Wählen Sie die richtige Antwort.</div>
+
+      <div class="mcq-item" id="mcqB1">
+        <div class="mcq-question">1. Warum ist Ahmet hinter Alev geblieben?</div>
+        <div class="mcq-options">
+          <div class="mcq-option" onclick="selectMCQ('mcqB1',this,'A')"><span class="option-letter">A</span>Weil er langsamer fahren wollte.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB1',this,'B')"><span class="option-letter">B</span>Damit er Alev sehen und besser auf sie aufpassen kann.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB1',this,'C')"><span class="option-letter">C</span>Weil er Alev nicht kannte.</div>
+        </div>
+      </div>
+
+      <div class="mcq-item" id="mcqB2">
+        <div class="mcq-question">2. Was war der Grund für den Lärm auf der Straße?</div>
+        <div class="mcq-options">
+          <div class="mcq-option" onclick="selectMCQ('mcqB2',this,'A')"><span class="option-letter">A</span>Ein Unfall zwischen zwei Autos.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB2',this,'B')"><span class="option-letter">B</span>Ein Lkw war auf der Kreuzung stehengeblieben.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB2',this,'C')"><span class="option-letter">C</span>Kinder spielten auf der Straße.</div>
+        </div>
+      </div>
+
+      <div class="mcq-item" id="mcqB3">
+        <div class="mcq-question">3. Warum ist Ahmet nach links gefahren?</div>
+        <div class="mcq-options">
+          <div class="mcq-option" onclick="selectMCQ('mcqB3',this,'A')"><span class="option-letter">A</span>Weil er den Weg kürzer machen wollte.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB3',this,'B')"><span class="option-letter">B</span>Um Alev nicht zu umfahren.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB3',this,'C')"><span class="option-letter">C</span>Weil rechts kein Platz war.</div>
+        </div>
+      </div>
+
+      <div class="mcq-item" id="mcqB4">
+        <div class="mcq-question">4. Was sagt die Polizistin am Ende?</div>
+        <div class="mcq-options">
+          <div class="mcq-option" onclick="selectMCQ('mcqB4',this,'A')"><span class="option-letter">A</span>Ahmet muss eine Strafe bezahlen.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB4',this,'B')"><span class="option-letter">B</span>Sie informiert den Fahrzeugbesitzer; die Versicherung bezahlt den Schaden.</div>
+          <div class="mcq-option" onclick="selectMCQ('mcqB4',this,'C')"><span class="option-letter">C</span>Ahmet muss am nächsten Tag zur Polizei kommen.</div>
+        </div>
+      </div>
+
+      <button class="btn-check" onclick="checkMCQs(['mcqB1','mcqB2','mcqB3','mcqB4'],['B','B','B','B'])">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetMCQs(['mcqB1','mcqB2','mcqB3','mcqB4'])">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-mcqsB"></div>
+    </div>
+
+  </div><!-- /s2 -->
+
+
+  <!-- ══════════════════════════════════════════
+       SECTION C – Telefonat B2a/b/B4a (6_12, 6_13, 6_14)
+  ══════════════════════════════════════════ -->
+  <div class="section" id="s3">
+
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe B2a · Track 6_12</div>
+      <div class="exercise-title">Telefonat: Schadensmeldung</div>
+      <div class="exercise-instruction">
+        Hören Sie das Telefonat. Markieren Sie: Welche Informationen hören Sie?
+      </div>
+
+      <div class="audio-wrap">
+        <div class="audio-label">🔊 6_12 – Aufgabe B2a</div>
+        <audio controls>
+          <source src="../../Audio/6_12_Miteinander_B12_KB_L10_B2a.mp3" type="audio/mpeg">
+        </audio>
+        <br>
+        <button class="transcript-toggle" onclick="toggleTranscript('t12')">📄 Transkript anzeigen</button>
+      </div>
+
+      <div class="transcript-box" id="t12">
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> K&amp;G Versicherungen, guten Tag. Sie sprechen mit Lea Franke. Was kann ich für Sie tun?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ahmet Yavuz, guten Tag. Ich habe eine Haftpflichtversicherung bei Ihnen und möchte einen Schaden melden.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Um was für einen Schaden geht es denn?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ich bin mit meinem Fahrrad aus Versehen gegen ein parkendes Auto gestoßen. In der Autotür ist jetzt ein Kratzer.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Okay, das heißt, Sie haben einen Schaden an einem fremden Fahrzeug verursacht.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Genau. Die Polizei war auch da und hat alles aufgenommen.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Sehr gut, dann brauchen Sie das Formular C. Soll ich es Ihnen per E-Mail zuschicken oder möchten Sie es sich selbst von der Webseite herunterladen?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ich kann es mir selbst herunterladen, danke. Formular C, sagten Sie?</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Ja, genau. Wichtig ist, dass alle Angaben vollständig und korrekt sind. Nachdem Sie das Formular ausgefüllt haben, schicken Sie es einfach an uns zurück.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> In Ordnung.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Ach ja, und bevor Sie das Formular abschicken, überprüfen Sie bitte nochmal alle Angaben.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Natürlich, das mache ich.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Prima. Würden Sie mir bitte nochmal Ihren Namen sagen?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Yavuz. Ahmet Yavuz.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Ahmet Ya… Schreibt man das vorne mit J oder mit Y?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Mit Y. Und hinten mit Z.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Entschuldigung, wie bitte?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Mein Name wird am Ende mit Z geschrieben.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Ach so, Könnten Sie den Namen bitte buchstabieren?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Natürlich: Y-A-V-U-Z.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Danke, jetzt hab' ich's. Und Ihre Versicherungsnummer, Herr Yavuz?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Die Versicherungsnummer ist 4101320-H.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Vielen Dank. Dann notiere ich schon mal, dass von Ihnen eine Schadensmeldung kommt.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Noch eine Frage: … Ach, Entschuldigung, Sie schreiben ja noch.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Kein Problem. Sie können mich auch fragen, während ich schreibe. Multitasking!</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Gut. Ich wollte nur wissen, was ich mache, wenn ich beim Ausfüllen des Formulars unsicher bin.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Wenn Sie beim Ausfüllen merken, dass Sie Hilfe brauchen, dann melden Sie sich einfach nochmal bei mir.</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ja, vielen Dank.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Gern. Kann ich noch etwas für Sie tun?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Nein, im Moment nicht, danke. Einen schönen Tag noch.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Vielen Dank, Ihnen auch! Auf Wiederhören.</div>
+      </div>
+    </div>
+
+    <!-- Checkboxes: Welche Informationen hören Sie? -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe C1</div>
+      <div class="exercise-title">Welche Informationen hören Sie im Telefonat?</div>
+      <div class="exercise-instruction">Wählen Sie alle zutreffenden Aussagen aus.</div>
+
+      <div id="checkC1">
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="c1" style="margin-top:3px;"> 
+          <span>Ahmet hat eine Haftpflichtversicherung bei K&amp;G Versicherungen.</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="c2" style="margin-top:3px;">
+          <span>Ahmet muss Formular B ausfüllen.</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="c3" style="margin-top:3px;">
+          <span>Die Mitarbeiterin schickt das Formular per E-Mail.</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="c4" style="margin-top:3px;">
+          <span>Ahmet buchstabiert seinen Namen.</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="c5" style="margin-top:3px;">
+          <span>Die Versicherungsnummer ist 4101320-H.</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="c6" style="margin-top:3px;">
+          <span>Ahmet kann bei Fragen nochmal anrufen.</span>
+        </label>
+      </div>
+      <button class="btn-check" onclick="checkCheckboxes('checkC1', ['c1','c4','c5','c6'])">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetCheckboxes('checkC1')">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-checkC1"></div>
+    </div>
+
+    <!-- Track 6_13 – B2b: Satzverbindungen -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe B2b · Track 6_13</div>
+      <div class="exercise-title">Temporale Konjunktionen</div>
+      <div class="exercise-instruction">
+        Hören Sie die drei Sätze. Welche Konjunktion verbindet die Teilsätze? Ergänzen Sie.
+      </div>
+
+      <div class="audio-wrap">
+        <div class="audio-label">🔊 6_13 – Aufgabe B2b</div>
+        <audio controls>
+          <source src="../../Audio/6_13_Miteinander_B12_KB_L10_B2b.mp3" type="audio/mpeg">
+        </audio>
+        <br>
+        <button class="transcript-toggle" onclick="toggleTranscript('t13')">📄 Transkript anzeigen</button>
+      </div>
+
+      <div class="transcript-box" id="t13">
+        <div class="transcript-line"><strong>1.</strong> <span class="speaker">Mitarbeiterin:</span> Nachdem Sie das Formular ausgefüllt haben, schicken Sie es einfach an uns zurück.</div>
+        <div class="transcript-line"><strong>2.</strong> <span class="speaker">Mitarbeiterin:</span> Bevor Sie das Formular abschicken, überprüfen Sie bitte nochmal alle Angaben.</div>
+        <div class="transcript-line"><strong>3.</strong> <span class="speaker">Mitarbeiterin:</span> Sie können mich auch fragen, während ich schreibe.</div>
+      </div>
+
+      <div class="word-bank" id="wbC2">
+        <div class="word-chip" onclick="useChip(this,'wbC2')">nachdem</div>
+        <div class="word-chip" onclick="useChip(this,'wbC2')">bevor</div>
+        <div class="word-chip" onclick="useChip(this,'wbC2')">während</div>
+        <div class="word-chip" onclick="useChip(this,'wbC2')">als</div>
+        <div class="word-chip" onclick="useChip(this,'wbC2')">wenn</div>
+      </div>
+
+      <div class="gap-sentence">
+        1. <input class="gap-input" id="gc1" placeholder="…"> Sie das Formular ausgefüllt haben, schicken Sie es zurück.
+      </div>
+      <div class="gap-sentence">
+        2. <input class="gap-input" id="gc2" placeholder="…"> Sie das Formular abschicken, überprüfen Sie nochmal alle Angaben.
+      </div>
+      <div class="gap-sentence">
+        3. Sie können mich fragen, <input class="gap-input" id="gc3" placeholder="…"> ich schreibe.
+      </div>
+
+      <button class="btn-check" onclick="checkGaps(['gc1','gc2','gc3'], ['nachdem','bevor','während'])">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetGaps(['gc1','gc2','gc3'], 'wbC2')">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-gapsC2"></div>
+    </div>
+
+    <!-- Track 6_14 – B4a: Rollenspiel Vorbereitung -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe B4a · Track 6_14</div>
+      <div class="exercise-title">Verkürztes Telefonat</div>
+      <div class="exercise-instruction">
+        Hören Sie das kürzere Telefonat. Was fehlt im Vergleich zum ersten Gespräch (6_12)?
+      </div>
+
+      <div class="audio-wrap">
+        <div class="audio-label">🔊 6_14 – Aufgabe B4a</div>
+        <audio controls>
+          <source src="../../Audio/6_14_Miteinander_B12_KB_L10_B4a.mp3" type="audio/mpeg">
+        </audio>
+        <br>
+        <button class="transcript-toggle" onclick="toggleTranscript('t14')">📄 Transkript anzeigen</button>
+      </div>
+
+      <div class="transcript-box" id="t14">
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Guten Tag. Was kann ich für Sie tun?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ich habe eine Haftpflichtversicherung bei Ihnen und möchte einen Schaden melden.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Um was für einen Schaden geht es denn?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ich bin mit meinem Fahrrad aus Versehen gegen ein parkendes Auto gestoßen. In der Autotür ist jetzt ein Kratzer.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Okay, dann brauchen Sie das Formular C. Sie können es von der Webseite herunterladen. Würden Sie mir bitte Ihren Namen sagen?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Ahmet Yavuz.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Schreibt man das vorne mit J oder mit Y?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Mit Y. Und hinten mit Z.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Entschuldigung, wie bitte?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Mein Name wird am Ende mit Z geschrieben.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Können Sie den Namen bitte buchstabieren?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Natürlich: Y-A-V-U-Z.</div>
+        <div class="transcript-line"><span class="speaker">Mitarbeiterin:</span> Vielen Dank, Herr Yavuz. Kann ich noch etwas für Sie tun?</div>
+        <div class="transcript-line"><span class="speaker">Ahmet:</span> Nein, im Moment nicht. Danke.</div>
+      </div>
+    </div>
+
+    <!-- Compare: Was fehlt? -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe C3</div>
+      <div class="exercise-title">Was fehlt im zweiten Telefonat?</div>
+      <div class="exercise-instruction">Welche Elemente kommen in 6_12, aber NICHT in 6_14 vor? Wählen Sie alle richtigen Antworten.</div>
+
+      <div id="checkC3">
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="d1" style="margin-top:3px;">
+          <span>Der Name der Mitarbeiterin (Lea Franke)</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="d2" style="margin-top:3px;">
+          <span>Der Hinweis, alle Angaben zu überprüfen</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="d3" style="margin-top:3px;">
+          <span>Die Versicherungsnummer</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="d4" style="margin-top:3px;">
+          <span>Das Buchstabieren des Namens</span>
+        </label>
+        <label class="mcq-option" style="cursor:pointer; margin-bottom:8px; display:flex; align-items:flex-start; gap:10px;">
+          <input type="checkbox" data-id="d5" style="margin-top:3px;">
+          <span>Die Frage, ob das Formular per E-Mail zugeschickt werden soll</span>
+        </label>
+      </div>
+      <button class="btn-check" onclick="checkCheckboxes('checkC3', ['d1','d2','d3','d5'])">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetCheckboxes('checkC3')">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-checkC3"></div>
+    </div>
+
+  </div><!-- /s3 -->
+
+
+  <!-- ══════════════════════════════════════════
+       SECTION D – Satzverbindungen (Grammatik)
+  ══════════════════════════════════════════ -->
+  <div class="section" id="s4">
+
+    <div class="exercise-card">
+      <div class="exercise-label">Grammatik</div>
+      <div class="exercise-title">Temporale Konjunktionen: nachdem · bevor · während</div>
+      <div class="exercise-instruction">
+        Ergänzen Sie die Sätze mit der richtigen Konjunktion.
+      </div>
+
+      <div class="word-bank" id="wbD1">
+        <div class="word-chip" onclick="useChip(this,'wbD1')">nachdem</div>
+        <div class="word-chip" onclick="useChip(this,'wbD1')">bevor</div>
+        <div class="word-chip" onclick="useChip(this,'wbD1')">während</div>
+        <div class="word-chip" onclick="useChip(this,'wbD1')">nachdem</div>
+        <div class="word-chip" onclick="useChip(this,'wbD1')">bevor</div>
+        <div class="word-chip" onclick="useChip(this,'wbD1')">während</div>
+      </div>
+
+      <div class="gap-sentence">1. <input class="gap-input" id="gd1" placeholder="…"> Ahmet nach Hause kommt, schaut er in seinen Versicherungsordner.</div>
+      <div class="gap-sentence">2. <input class="gap-input" id="gd2" placeholder="…"> die Polizistin alles aufgeschrieben hatte, durfte Ahmet nach Hause gehen.</div>
+      <div class="gap-sentence">3. Ahmet rief Selda an, <input class="gap-input" id="gd3" placeholder="…"> er auf die Polizei wartete.</div>
+      <div class="gap-sentence">4. <input class="gap-input" id="gd4" placeholder="…"> du das Formular abschickst, überprüfe alle Angaben.</div>
+      <div class="gap-sentence">5. <input class="gap-input" id="gd5" placeholder="…"> Selda aufgelegt hatte, rief Ahmet sofort die Polizei an.</div>
+      <div class="gap-sentence">6. Alev wartet, <input class="gap-input" id="gd6" placeholder="…"> ihr Opa mit der Polizistin spricht.</div>
+
+      <button class="btn-check" onclick="checkGaps(['gd1','gd2','gd3','gd4','gd5','gd6'], ['bevor','nachdem','während','bevor','nachdem','während'])">✔ Prüfen</button>
+      <button class="btn-reset" onclick="resetGaps(['gd1','gd2','gd3','gd4','gd5','gd6'], 'wbD1')">↺ Zurücksetzen</button>
+      <div class="feedback" id="fb-gapsD1"></div>
+    </div>
+
+    <!-- Satzumformung -->
+    <div class="exercise-card">
+      <div class="exercise-label">Aufgabe D2</div>
+      <div class="exercise-title">Sätze verbinden</div>
+      <div class="exercise-instruction">
+        Verbinden Sie die Sätze mit der angegebenen Konjunktion. Achten Sie auf die Wortstellung!
+      </div>
+
+      <div style="margin-bottom:16px; font-size:0.87rem; color:#334155; line-height:1.7;">
+        <div style="margin-bottom:12px; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+          <strong>1. (während)</strong><br>
+          Ahmet wartet auf die Polizei. Selda holt Alev ab.<br>
+          <span style="font-size:0.78rem; color:#64748b;">→ Schreiben Sie einen Satz mit <em>während</em>.</span>
+          <br><br>
+          <textarea id="td2a" rows="2" style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px; font-size:0.85rem; font-family:inherit; resize:vertical;" placeholder="Während …"></textarea>
+          <div class="revealed-answer" id="rev-td2a" style="display:none;">✅ Während Ahmet auf die Polizei wartet, holt Selda Alev ab.</div>
+        </div>
+
+        <div style="margin-bottom:12px; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+          <strong>2. (nachdem)</strong><br>
+          Ahmet hat das Formular ausgefüllt. Er schickt es ab.<br>
+          <span style="font-size:0.78rem; color:#64748b;">→ Schreiben Sie einen Satz mit <em>nachdem</em>.</span>
+          <br><br>
+          <textarea id="td2b" rows="2" style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px; font-size:0.85rem; font-family:inherit; resize:vertical;" placeholder="Nachdem …"></textarea>
+          <div class="revealed-answer" id="rev-td2b" style="display:none;">✅ Nachdem Ahmet das Formular ausgefüllt hat, schickt er es ab.</div>
+        </div>
+
+        <div style="padding:12px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
+          <strong>3. (bevor)</strong><br>
+          Du sendest das Formular. Du überprüfst alle Angaben.<br>
+          <span style="font-size:0.78rem; color:#64748b;">→ Schreiben Sie einen Satz mit <em>bevor</em>.</span>
+          <br><br>
+          <textarea id="td2c" rows="2" style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px; font-size:0.85rem; font-family:inherit; resize:vertical;" placeholder="Bevor …"></textarea>
+          <div class="revealed-answer" id="rev-td2c" style="display:none;">✅ Bevor du das Formular sendest, überprüfst du alle Angaben.</div>
+        </div>
+      </div>
+
+      <button class="btn-check" onclick="revealSample(['td2a','td2b','td2c'])">💡 Musterlösung anzeigen</button>
+    </div>
+
+  </div><!-- /s4 -->
+
+
+  <!-- ══════════════════════════════════════════
+       SECTION E – Rollenspiel
+  ══════════════════════════════════════════ -->
+  <div class="section" id="s5">
+
+    <div class="exercise-card">
+      <div class="exercise-label">Sprechen</div>
+      <div class="exercise-title">Rollenspiel: Schadensmeldung am Telefon</div>
+      <div class="exercise-instruction">
+        Üben Sie das Telefonat in Partnerarbeit. Benutzen Sie die Redemittel unten.
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:#f0f9ff; border-radius:12px; padding:14px; border:1px solid #bae6fd;">
+          <div style="font-weight:700; color:#0369a1; margin-bottom:10px; font-size:0.85rem;">🎭 Person A: Kundin / Kunde</div>
+          <ul style="font-size:0.82rem; line-height:1.8; color:#334155; padding-left:16px;">
+            <li>Haftpflichtversicherung haben</li>
+            <li>Schaden melden wollen</li>
+            <li>Ihren Namen / Nummer angeben</li>
+            <li>Fragen stellen, wenn nötig</li>
+          </ul>
+        </div>
+        <div style="background:#f0fdf4; border-radius:12px; padding:14px; border:1px solid #bbf7d0;">
+          <div style="font-weight:700; color:#15803d; margin-bottom:10px; font-size:0.85rem;">🎭 Person B: Mitarbeiterin</div>
+          <ul style="font-size:0.82rem; line-height:1.8; color:#334155; padding-left:16px;">
+            <li>Begrüßen, nach dem Schaden fragen</li>
+            <li>Formular empfehlen</li>
+            <li>Name + Versicherungsnummer notieren</li>
+            <li>Verabschieden</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Redemittel accordion -->
+      <div style="margin-bottom:16px;">
+        <button class="transcript-toggle" onclick="toggleTranscript('redemittel')">📋 Redemittel anzeigen</button>
+        <div class="transcript-box" id="redemittel">
+          <div style="margin-bottom:10px;"><strong>Telefonat eröffnen:</strong><br>
+            – Guten Tag, hier spricht … / Mein Name ist …<br>
+            – Ich habe eine Haftpflichtversicherung bei Ihnen.<br>
+            – Ich möchte einen Schaden melden.
+          </div>
+          <div style="margin-bottom:10px;"><strong>Schaden beschreiben:</strong><br>
+            – Ich bin mit meinem Fahrrad gegen … gestoßen.<br>
+            – Es gibt jetzt einen Kratzer / Schaden an …<br>
+            – Die Polizei war auch da.
+          </div>
+          <div style="margin-bottom:10px;"><strong>Nachfragen / Buchstabieren:</strong><br>
+            – Entschuldigung, wie bitte? / Könnten Sie das buchstabieren?<br>
+            – Schreibt man das mit … oder mit …?<br>
+            – Natürlich: A-B-C-D-E …
+          </div>
+          <div style="margin-bottom:10px;"><strong>Telefonat beenden:</strong><br>
+            – Kann ich noch etwas für Sie tun?<br>
+            – Nein, danke. Einen schönen Tag noch!<br>
+            – Auf Wiederhören.
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario cards -->
+      <div style="font-size:0.85rem; font-weight:700; color:#0c4a6e; margin-bottom:10px;">🎲 Situationskarten</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:12px; padding:14px;">
+          <div style="font-weight:700; color:#92400e; font-size:0.82rem; margin-bottom:6px;">Situation 1</div>
+          <div style="font-size:0.85rem; color:#334155; line-height:1.5;">
+            Sie haben aus Versehen Ihr Nachbars Fenster eingeworfen.<br>
+            Sie wollen den Schaden bei Ihrer Haftpflichtversicherung melden.<br>
+            <strong>Versicherungsnummer:</strong> 7823401-B
+          </div>
+        </div>
+
+        <div style="background:#f5f3ff; border:1px solid #c4b5fd; border-radius:12px; padding:14px;">
+          <div style="font-weight:700; color:#6d28d9; font-size:0.82rem; margin-bottom:6px;">Situation 2</div>
+          <div style="font-size:0.85rem; color:#334155; line-height:1.5;">
+            Ihr Kind hat beim Spielen das Tablet einer anderen Person beschädigt.<br>
+            Sie sind bei der Versicherung „Prima Schutz" versichert.<br>
+            <strong>Versicherungsnummer:</strong> 3300912-A
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Self-check Checkliste -->
+    <div class="exercise-card">
+      <div class="exercise-label">Selbstkontrolle</div>
+      <div class="exercise-title">Checkliste für das Rollenspiel</div>
+      <div style="font-size:0.85rem; color:#334155; line-height:2;">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:4px;">
+          <input type="checkbox" style="width:16px; height:16px; accent-color:#0284c7;">
+          Ich habe mich höflich vorgestellt.
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:4px;">
+          <input type="checkbox" style="width:16px; height:16px; accent-color:#0284c7;">
+          Ich habe den Schaden klar beschrieben.
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:4px;">
+          <input type="checkbox" style="width:16px; height:16px; accent-color:#0284c7;">
+          Ich habe meinen Namen buchstabiert.
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:4px;">
+          <input type="checkbox" style="width:16px; height:16px; accent-color:#0284c7;">
+          Ich habe meine Versicherungsnummer genannt.
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:4px;">
+          <input type="checkbox" style="width:16px; height:16px; accent-color:#0284c7;">
+          Ich habe das Gespräch höflich beendet.
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+          <input type="checkbox" style="width:16px; height:16px; accent-color:#0284c7;">
+          Ich habe temporale Konjunktionen (nachdem, bevor, während) benutzt.
+        </label>
+      </div>
+    </div>
+
+  </div><!-- /s5 -->
+
+  <div class="copyright">Made with love by Bảo Quang</div>
+</div><!-- /content -->
+
+<script>
+// ── Tab navigation ──
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.section).classList.add('active');
+  });
+});
+
+// ── Transcript toggle ──
+function toggleTranscript(id) {
+  const box = document.getElementById(id);
+  const btn = box.previousElementSibling;
+  if (box.classList.contains('open')) {
+    box.classList.remove('open');
+    btn.textContent = '📄 Transkript anzeigen';
+  } else {
+    box.classList.add('open');
+    btn.textContent = '📄 Transkript verbergen';
+  }
+}
+
+// ── MCQ single ──
+function selectMCQ(groupId, el, val) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.mcq-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  el._val = val;
+}
+
+function checkMCQs(ids, answers) {
+  let correct = 0;
+  ids.forEach((id, i) => {
+    const group = document.getElementById(id);
+    const selected = group.querySelector('.mcq-option.selected');
+    const options = group.querySelectorAll('.mcq-option');
+    options.forEach((o, j) => {
+      const letter = ['A','B','C'][j];
+      if (letter === answers[i]) o.classList.add('revealed');
+      if (selected && o === selected) {
+        if (selected._val === answers[i]) { o.classList.add('correct'); correct++; }
+        else o.classList.add('wrong');
+      }
+    });
+  });
+  const fb = document.getElementById('fb-mcqsB');
+  fb.className = 'feedback show ' + (correct === ids.length ? 'good' : 'bad');
+  fb.textContent = `${correct} / ${ids.length} richtig` + (correct === ids.length ? ' 🎉' : ' – Schau nochmal ins Transkript!');
+}
+
+function resetMCQs(ids) {
+  ids.forEach(id => {
+    document.getElementById(id).querySelectorAll('.mcq-option').forEach(o => {
+      o.classList.remove('selected','correct','wrong','revealed');
+      o._val = null;
+    });
+  });
+  document.getElementById('fb-mcqsB').className = 'feedback';
+}
+
+// ── True/False ──
+const tfState = {};
+function selectTF(btn, group) {
+  const parent = btn.closest('.tf-item');
+  parent.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  tfState[group] = btn.dataset.val;
+}
+
+function checkTF(containerId, answers) {
+  let correct = 0; let total = Object.keys(answers).length;
+  Object.entries(answers).forEach(([group, ans]) => {
+    const btns = document.querySelectorAll(`[data-group="${group}"]`);
+    btns.forEach(b => {
+      if (b.dataset.val === ans) b.classList.add('correct');
+      if (b.classList.contains('selected') && b.dataset.val !== ans) b.classList.add('wrong');
+      if (b.classList.contains('selected') && b.dataset.val === ans) correct++;
+    });
+  });
+  const fb = document.getElementById('fb-' + containerId);
+  fb.className = 'feedback show ' + (correct === total ? 'good' : 'bad');
+  fb.textContent = `${correct} / ${total} richtig` + (correct === total ? ' 🎉' : '');
+}
+
+function resetTF(containerId) {
+  const c = document.getElementById(containerId);
+  c.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected','correct','wrong'));
+  document.getElementById('fb-' + containerId).className = 'feedback';
+}
+
+// ── Drag to reorder ──
+function initDrag(listId) {
+  const list = document.getElementById(listId);
+  let dragging = null;
+  list.querySelectorAll('.order-item').forEach(item => {
+    item.addEventListener('dragstart', () => { dragging = item; item.classList.add('dragging'); });
+    item.addEventListener('dragend', () => { item.classList.remove('dragging'); dragging = null; });
+    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('over'); });
+    item.addEventListener('dragleave', () => item.classList.remove('over'));
+    item.addEventListener('drop', () => {
+      item.classList.remove('over');
+      if (dragging && dragging !== item) list.insertBefore(dragging, item);
+    });
+  });
+}
+initDrag('orderA');
+
+function checkOrder(listId) {
+  const list = document.getElementById(listId);
+  const correctOrder = list.dataset.answer.split(',').map(Number);
+  const items = list.querySelectorAll('.order-item');
+  let allCorrect = true;
+  items.forEach((item, idx) => {
+    const id = parseInt(item.dataset.id);
+    if (id === correctOrder[idx]) {
+      item.style.borderColor = '#16a34a'; item.style.background = '#f0fdf4';
+    } else {
+      item.style.borderColor = '#dc2626'; item.style.background = '#fef2f2';
+      allCorrect = false;
+    }
+  });
+  const fb = document.getElementById('fb-' + listId);
+  fb.className = 'feedback show ' + (allCorrect ? 'good' : 'bad');
+  fb.textContent = allCorrect ? 'Perfekt! Richtige Reihenfolge! 🎉' : 'Noch nicht ganz – probiere nochmal!';
+}
+
+function resetOrder(listId) {
+  const list = document.getElementById(listId);
+  list.querySelectorAll('.order-item').forEach(item => {
+    item.style.borderColor = ''; item.style.background = '';
+  });
+  document.getElementById('fb-' + listId).className = 'feedback';
+}
+
+// ── Gap fill ──
+function checkGaps(ids, answers) {
+  let correct = 0;
+  ids.forEach((id, i) => {
+    const input = document.getElementById(id);
+    const val = input.value.trim().toLowerCase();
+    const ans = answers[i].toLowerCase();
+    input.classList.remove('correct','wrong');
+    if (val === ans) { input.classList.add('correct'); correct++; }
+    else { input.classList.add('wrong'); }
+  });
+  // find feedback id from last input's surrounding card
+  const fbId = 'fb-gaps' + ids[0].replace(/[a-z]/g,'').replace(/\d/g,'') + ids[0].replace(/\d/g,'').toUpperCase().slice(0,2);
+  // simpler: derive from first id
+  const baseLetter = ids[0].charAt(1).toUpperCase();
+  const num = ids[0].charAt(2) || '';
+  const fb = document.getElementById('fb-gaps' + baseLetter + num) || document.getElementById('fb-gaps' + ids[0].slice(1,3).toUpperCase());
+  if (fb) {
+    fb.className = 'feedback show ' + (correct === ids.length ? 'good' : 'bad');
+    fb.textContent = `${correct} / ${ids.length} richtig` + (correct === ids.length ? ' 🎉' : '');
+  }
+}
+
+function resetGaps(ids, wbId) {
+  ids.forEach(id => {
+    const input = document.getElementById(id);
+    input.value = '';
+    input.classList.remove('correct','wrong');
+  });
+  if (wbId) document.getElementById(wbId).querySelectorAll('.word-chip').forEach(c => c.classList.remove('used'));
+  // reset feedback
+  const baseLetter = ids[0].charAt(1).toUpperCase();
+  const num = ids[0].charAt(2) || '';
+  const fb = document.getElementById('fb-gaps' + baseLetter + num);
+  if (fb) fb.className = 'feedback';
+}
+
+// ── Word chip ──
+function useChip(chip, wbId) {
+  const inputs = document.querySelectorAll('.gap-input');
+  const focused = document.activeElement;
+  if (focused && focused.classList.contains('gap-input')) {
+    focused.value = chip.textContent;
+    chip.classList.add('used');
+  } else {
+    // fill next empty
+    for (const input of inputs) {
+      if (!input.value) { input.value = chip.textContent; chip.classList.add('used'); break; }
+    }
+  }
+}
+
+// ── Checkboxes ──
+function checkCheckboxes(containerId, correctIds) {
+  const container = document.getElementById(containerId);
+  const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+  let correct = 0;
+  checkboxes.forEach(cb => {
+    const isCorrect = correctIds.includes(cb.dataset.id);
+    const isChecked = cb.checked;
+    const label = cb.closest('label') || cb.parentElement;
+    label.style.borderColor = '';
+    label.style.background = '';
+    if (isCorrect && isChecked) { label.style.borderColor = '#16a34a'; label.style.background = '#f0fdf4'; correct++; }
+    else if (!isCorrect && isChecked) { label.style.borderColor = '#dc2626'; label.style.background = '#fef2f2'; }
+    else if (isCorrect && !isChecked) { label.style.borderColor = '#f59e0b'; label.style.background = '#fffbeb'; }
+  });
+  const fbId = 'fb-' + containerId;
+  const fb = document.getElementById(fbId);
+  fb.className = 'feedback show ' + (correct === correctIds.length ? 'good' : 'bad');
+  fb.textContent = `${correct} / ${correctIds.length} richtig` + (correct === correctIds.length ? ' 🎉' : ' – Schau nochmal!');
+}
+
+function resetCheckboxes(containerId) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+    const label = cb.closest('label') || cb.parentElement;
+    label.style.borderColor = '';
+    label.style.background = '';
+  });
+  document.getElementById('fb-' + containerId).className = 'feedback';
+}
+
+// ── Sample answer reveal ──
+function revealSample(ids) {
+  ids.forEach(id => {
+    const revId = 'rev-' + id;
+    const rev = document.getElementById(revId);
+    if (rev) rev.style.display = 'block';
+  });
+}
+</script>
+
+</body>
+</html>
