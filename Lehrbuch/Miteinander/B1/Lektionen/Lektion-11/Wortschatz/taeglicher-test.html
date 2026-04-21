@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Täglicher Test v3 – Lektion 11</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--card:#253248;--border:#334155;
+  --ink:#e2e8f0;--muted:#94a3b8;--faint:#475569;
+  --blue:#3b82f6;--blue-d:#1e3a5f;--blue-lt:rgba(59,130,246,.18);
+  --green:#22c55e;--green-d:#14532d;
+  --rose:#f43f5e;--rose-d:#4c0519;
+  --gold:#f59e0b;--gold-d:rgba(245,158,11,.15);
+  --purple:#a78bfa;--purple-d:rgba(167,139,250,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:72px;}
+
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px 18px;text-align:center;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% -20%,rgba(59,130,246,.22) 0%,transparent 55%),radial-gradient(ellipse at 20% 120%,rgba(167,139,250,.12) 0%,transparent 50%);pointer-events:none;}
+.hdr-rel{position:relative;}
+.hdr-tag{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:5px;}
+header h1{font-family:Georgia,serif;font-size:21px;color:var(--ink);margin-bottom:3px;}
+header p{font-size:12px;color:var(--muted);}
+.hdr-back{display:inline-block;margin-top:11px;background:rgba(255,255,255,.07);border-radius:9px;color:var(--blue);font-size:12px;font-weight:600;padding:6px 14px;text-decoration:none;border:1px solid var(--border);}
+
+/* START */
+#startScreen{max-width:540px;margin:36px auto;padding:0 16px;}
+.start-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:32px 24px;text-align:center;}
+.start-ver{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--purple);background:var(--purple-d);display:inline-block;padding:4px 14px;border-radius:99px;margin-bottom:16px;}
+.start-icon{font-size:50px;margin-bottom:14px;}
+.start-title{font-family:Georgia,serif;font-size:21px;color:var(--ink);margin-bottom:8px;}
+.start-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.start-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.stat-pill{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;}
+.stat-pill span{color:var(--blue);display:block;font-size:20px;font-family:Georgia,serif;font-weight:700;line-height:1.1;}
+.stat-pill small{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;}
+.diff-legend{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px;}
+.diff-pill{border-radius:10px;padding:10px 6px;text-align:center;font-size:11px;font-weight:700;}
+.diff-pill.easy{background:var(--green-d);color:var(--green);}
+.diff-pill.hard{background:var(--gold-d);color:var(--gold);}
+.diff-pill.logic{background:var(--purple-d);color:var(--purple);}
+.inp-name{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--ink);font-size:15px;font-weight:600;outline:none;margin-bottom:12px;transition:border-color .2s;}
+.inp-name:focus{border-color:var(--blue);}
+.btn-start{width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:13px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:opacity .15s;}
+.btn-start:hover{opacity:.87;}
+
+/* QUIZ */
+#quizScreen{display:none;max-width:600px;margin:0 auto;padding:14px 16px;}
+.qz-topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.qz-timer{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:8px 14px;font-size:15px;font-weight:800;color:var(--gold);min-width:76px;text-align:center;flex-shrink:0;}
+.qz-timer.urgent{color:var(--rose);animation:blink .7s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+.qz-prog-wrap{flex:1;}
+.qz-prog-track{background:var(--border);border-radius:99px;height:7px;}
+.qz-prog-fill{height:7px;border-radius:99px;transition:width .35s;background:linear-gradient(90deg,var(--blue),var(--purple));}
+.qz-prog-label{display:flex;justify-content:space-between;margin-top:5px;}
+.qz-prog-label span{font-size:11px;color:var(--faint);}
+.diff-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 13px;border-radius:99px;margin-bottom:10px;}
+.diff-badge.easy{background:var(--green-d);color:var(--green);}
+.diff-badge.hard{background:var(--gold-d);color:var(--gold);}
+.diff-badge.logic{background:var(--purple-d);color:var(--purple);}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px 20px;margin-bottom:12px;}
+.q-context{background:var(--card);border-left:3px solid var(--purple);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;color:var(--ink);line-height:1.8;}
+.q-context-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:700;color:var(--ink);line-height:1.55;margin-bottom:16px;}
+.q-text em{color:var(--blue);font-style:normal;font-weight:800;}
+.opts{display:grid;gap:9px;}
+.opts.two{grid-template-columns:1fr 1fr;}
+.opt-btn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 15px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left;transition:border-color .15s,background .15s;font-family:system-ui,sans-serif;line-height:1.45;}
+.opt-btn:hover{border-color:var(--blue);background:var(--blue-lt);}
+.opt-btn.ok{background:var(--green-d);border-color:var(--green);color:var(--green);pointer-events:none;}
+.opt-btn.no{background:var(--rose-d);border-color:var(--rose);color:var(--rose);pointer-events:none;}
+.opt-btn.reveal{background:var(--green-d);border-color:var(--green);color:var(--green);pointer-events:none;opacity:.6;}
+.opt-btn.locked{pointer-events:none;opacity:.3;}
+.q-inp-row{display:flex;gap:8px;align-items:stretch;}
+.q-inp{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;color:var(--ink);outline:none;font-family:system-ui,sans-serif;}
+.q-inp:focus{border-color:var(--blue);}
+.q-inp.ok{border-color:var(--green);background:var(--green-d);color:var(--green);}
+.q-inp.no{border-color:var(--rose);background:var(--rose-d);color:var(--rose);}
+.q-check{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;}
+.q-fb{font-size:13px;font-weight:600;margin-top:8px;display:none;}
+.q-fb.ok{color:var(--green);display:block;}
+.q-fb.no{color:var(--rose);display:block;}
+
+/* RESULT */
+#resultScreen{display:none;max-width:540px;margin:36px auto;padding:0 16px;}
+.res-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:36px 24px;text-align:center;}
+.res-ver{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--purple);background:var(--purple-d);display:inline-block;padding:4px 14px;border-radius:99px;margin-bottom:20px;}
+.res-icon{font-size:58px;margin-bottom:10px;}
+.res-name{font-size:13px;color:var(--muted);margin-bottom:4px;}
+.res-score{font-family:Georgia,serif;font-size:54px;color:var(--blue);line-height:1;}
+.res-msg{font-size:15px;color:var(--muted);margin:10px 0 6px;line-height:1.5;}
+.res-pass{font-size:13px;font-weight:700;padding:8px 20px;border-radius:10px;display:inline-block;margin-bottom:24px;}
+.res-pass.pass{background:var(--green-d);color:var(--green);}
+.res-pass.fail{background:var(--rose-d);color:var(--rose);}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.res-diff-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:26px;}
+.res-stat{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px 10px;}
+.res-stat-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:5px;}
+.res-stat-val{font-family:Georgia,serif;font-size:26px;color:var(--ink);}
+.res-stat.easy .res-stat-val{color:var(--green);}
+.res-stat.hard .res-stat-val{color:var(--gold);}
+.res-stat.logic .res-stat-val{color:var(--purple);}
+.btn-retry{background:var(--blue);color:#fff;border:none;border-radius:13px;padding:14px 36px;font-size:15px;font-weight:800;cursor:pointer;margin:6px;}
+.btn-back{background:var(--card);color:var(--ink);border:1px solid var(--border);border-radius:13px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;margin:6px;}
+.footer{text-align:center;padding:22px;font-size:11px;color:var(--faint);}
+</style>
+</head>
+<body>
+<header>
+  <div class="hdr-rel">
+    <div class="hdr-tag">Lektion 11 · Miteinander! B1.2</div>
+    <h1>Täglicher Test</h1>
+    <p>Version 3 · 60 Fragen · 15 Minuten</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div id="startScreen">
+  <div class="start-card">
+    <div class="start-ver">Version 3</div>
+    <div class="start-icon">🧠</div>
+    <div class="start-title">Luna – Ein super Team!</div>
+    <div class="start-desc">Voller B1-Test: Wortschatz, Synonyme, Antonyme, Kollokationen, Redewendungen und Lesetexte mit logischem Schlussfolgern. Drei Schwierigkeitsstufen.</div>
+    <div class="start-stats">
+      <div class="stat-pill"><span>60</span><small>Fragen</small></div>
+      <div class="stat-pill"><span>15'</span><small>Zeit</small></div>
+      <div class="stat-pill"><span>85%</span><small>Ziel</small></div>
+      <div class="stat-pill"><span>3</span><small>Level</small></div>
+    </div>
+    <div class="diff-legend">
+      <div class="diff-pill easy">✅ 35 Normal</div>
+      <div class="diff-pill hard">⚡ 15 Schwer</div>
+      <div class="diff-pill logic">🔍 10 Logik</div>
+    </div>
+    <input class="inp-name" type="text" id="nameInput" placeholder="Dein Name …" maxlength="40">
+    <button class="btn-start" onclick="startTest()">Test starten →</button>
+  </div>
+</div>
+
+<div id="quizScreen">
+  <div class="qz-topbar">
+    <div class="qz-timer" id="timerDisplay">15:00</div>
+    <div class="qz-prog-wrap">
+      <div class="qz-prog-track"><div class="qz-prog-fill" id="progFill" style="width:0%"></div></div>
+      <div class="qz-prog-label"><span id="progLeft"></span><span id="progRight"></span></div>
+    </div>
+  </div>
+  <div id="questionArea"></div>
+</div>
+
+<div id="resultScreen">
+  <div class="res-card">
+    <div class="res-ver">Version 3</div>
+    <div class="res-icon" id="resIcon">🏆</div>
+    <div class="res-name" id="resName"></div>
+    <div class="res-score" id="resScore"></div>
+    <div class="res-msg" id="resMsg"></div>
+    <div class="res-pass" id="resPass"></div>
+    <div class="res-grid">
+      <div class="res-stat"><div class="res-stat-label">Richtig</div><div class="res-stat-val" id="resRight"></div></div>
+      <div class="res-stat"><div class="res-stat-label">Falsch</div><div class="res-stat-val" id="resWrong"></div></div>
+      <div class="res-stat"><div class="res-stat-label">Zeit</div><div class="res-stat-val" id="resTime"></div></div>
+      <div class="res-stat"><div class="res-stat-label">Prozent</div><div class="res-stat-val" id="resPct"></div></div>
+    </div>
+    <div class="res-diff-grid">
+      <div class="res-stat easy"><div class="res-stat-label">✅ Normal</div><div class="res-stat-val" id="resEasy"></div></div>
+      <div class="res-stat hard"><div class="res-stat-label">⚡ Schwer</div><div class="res-stat-val" id="resHard"></div></div>
+      <div class="res-stat logic"><div class="res-stat-label">🔍 Logik</div><div class="res-stat-val" id="resLogic"></div></div>
+    </div>
+    <button class="btn-retry" onclick="location.reload()">↺ Nochmal</button>
+    <button class="btn-back" onclick="window.location.href='index.html'">← Zur Übersicht</button>
+  </div>
+</div>
+
+<div class="footer">Made with love by Bảo Quang</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   QUESTION BANK – 60 Fragen – Lektion 11
+   diff: "easy"(35) | "hard"(15) | "logic"(10)
+   type: "mc" | "input"
+   ctx: optional reading passage (logic questions)
+════════════════════════════════════════════════════════ */
+var BANK=[
+
+/* ══════════════════════════════
+   NORMAL – 35 Fragen
+══════════════════════════════ */
+
+// Artikel (8)
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Kuli</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Lautsprecher</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Roman</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Gedanke</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Schicht</em>?",ans:"die",wrong:["der","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Jahreskarte</em>?",ans:"die",wrong:["der","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Sehenswürdigkeit</em>?",ans:"die",wrong:["der","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Schaufenster</em>?",ans:"das",wrong:["der","die"]},
+
+// Bedeutung direkt (8)
+{diff:"easy",type:"mc",q:"Was bedeutet <em>bedienen</em>?",ans:"etwas benutzen oder betreiben",wrong:["etwas kaufen","sich ärgern","aufräumen"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>eintragen</em>?",ans:"Daten in eine Liste oder ein System schreiben",wrong:["laut vorlesen","etwas streichen","kaufen"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>gründlich</em>?",ans:"sehr sorgfältig und vollständig",wrong:["schnell","ungefähr","laut"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>neulich</em>?",ans:"vor kurzer Zeit",wrong:["in Zukunft","sehr früh","immer"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>jederzeit</em>?",ans:"zu jedem Zeitpunkt / immer",wrong:["manchmal","selten","einmalig"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>doppelt</em>?",ans:"zweimal so viel",wrong:["halb so viel","dreifach","genauso viel"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>erstellen</em>?",ans:"etwas anfertigen oder produzieren",wrong:["zerstören","kaufen","ignorieren"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>ordnen</em>?",ans:"in eine Reihenfolge oder Struktur bringen",wrong:["waschen","streichen","zählen"]},
+
+// Lückentext-Input (8)
+{diff:"easy",type:"input",q:"Sie macht ihre Arbeit sehr [___] – kein einziger Fehler.",ans:"gründlich",hint:"sorgfältig / vollständig"},
+{diff:"easy",type:"input",q:"Das war [___] passiert – vor ein paar Tagen.",ans:"neulich",hint:"vor kurzer Zeit"},
+{diff:"easy",type:"input",q:"Du kannst mich [___] anrufen – ich bin immer erreichbar.",ans:"jederzeit",hint:"zu jeder Zeit"},
+{diff:"easy",type:"input",q:"Kannst du etwa keinen Computer [___]?",ans:"bedienen",hint:"Infinitiv"},
+{diff:"easy",type:"input",q:"Bitte [___] die Daten in das System ein.",ans:"trage",hint:"Imperativ von eintragen"},
+{diff:"easy",type:"input",q:"Sie haben [___] so viele Überstunden wie letzte Woche.",ans:"doppelt",hint:"zweimal so viel"},
+{diff:"easy",type:"input",q:"Ich liege lieber auf der [___], statt aufzuräumen.",ans:"Couch",hint:"Nomen, Sg."},
+{diff:"easy",type:"input",q:"Frank und Luna [___] ihre Schichten für das Wochenende.",ans:"tauschen",hint:"Präsens"},
+
+// Situation (5)
+{diff:"easy",type:"mc",
+ q:"Frank ist wütend, weil die Medikamente nicht im System sind. Was ist passiert?",
+ ans:"Luna hat Medikamente in eine Papierliste statt ins Computersystem eingetragen.",
+ wrong:["Luna hat den Computer ausgeschaltet.","Luna hat falsche Medikamente verteilt.","Frank hat das System kaputt gemacht."]},
+{diff:"easy",type:"mc",
+ q:"Was schlägt Luna vor, als Frank wegen seiner Tochter nicht arbeiten kann?",
+ ans:"Luna übernimmt Franks Nachtschicht, Frank macht dafür ihre Frühschicht.",
+ wrong:["Margot soll für Frank einspringen.","Frank soll Mia mitbringen.","Frank soll freinehmen."]},
+{diff:"easy",type:"mc",
+ q:"Warum hat Luna die Medikamente in eine Liste geschrieben?",
+ ans:"In ihrem alten Krankenhaus hat man das so gemacht.",
+ wrong:["Das System war kaputt.","Der Chefarzt hat das so angeordnet.","Sie wollte Frank ärgern."]},
+{diff:"easy",type:"mc",
+ q:"Was bedeutet die Redewendung <em>'unter vier Augen sprechen'</em>?",
+ ans:"Ein privates Gespräch nur zwischen zwei Personen.",
+ wrong:["Ein öffentliches Gespräch im Team.","Ein Gespräch am Telefon.","Ein formelles Meeting mit dem Chef."]},
+{diff:"easy",type:"mc",
+ q:"Wozu dient der Plan mit den sechs Punkten im Stationszimmer?",
+ ans:"Er beschreibt den festen Ablauf der Dienstübergabe.",
+ wrong:["Er zeigt die Medikamentenliste.","Er erklärt das PC-System.","Er enthält die Schichtpläne."]},
+
+// Wortfeld leicht (6)
+{diff:"easy",type:"mc",
+ q:"Welche Kollokation ist korrekt?",
+ ans:"eine Liste erstellen",
+ wrong:["eine Liste bauen","eine Liste sprechen","eine Liste fahren"]},
+{diff:"easy",type:"mc",
+ q:"Welche Kollokation mit <em>Gedanken</em> ist korrekt?",
+ ans:"sich Gedanken machen",
+ wrong:["Gedanken kaufen","Gedanken geben","Gedanken spielen"]},
+{diff:"easy",type:"mc",
+ q:"Welche Kollokation mit <em>Schicht</em> ist korrekt?",
+ ans:"eine Schicht übernehmen",
+ wrong:["eine Schicht machen","eine Schicht lesen","eine Schicht sagen"]},
+{diff:"easy",type:"mc",
+ q:"Welche Kollokation mit <em>Verabredung</em> ist korrekt?",
+ ans:"eine Verabredung absagen",
+ wrong:["eine Verabredung machen","eine Verabredung lesen","eine Verabredung kaufen"]},
+{diff:"easy",type:"mc",
+ q:"<em>Nochmals</em> bedeutet dasselbe wie …",
+ ans:"noch einmal",
+ wrong:["sofort","nie mehr","manchmal"]},
+{diff:"easy",type:"mc",
+ q:"<em>Neulich</em> bedeutet dasselbe wie …",
+ ans:"kürzlich",
+ wrong:["bald","jederzeit","immer"]},
+
+/* ══════════════════════════════
+   SCHWER – 15 Fragen
+══════════════════════════════ */
+
+// Synonyme (4)
+{diff:"hard",type:"mc",
+ q:"<em>Gründlich</em> ist ein Synonym von …",
+ ans:"sorgfältig",
+ wrong:["flüchtig","hastig","nachlässig"]},
+{diff:"hard",type:"mc",
+ q:"<em>Erstellen</em> ist ein Synonym von …",
+ ans:"anfertigen",
+ wrong:["zerstören","löschen","verlieren"]},
+{diff:"hard",type:"mc",
+ q:"<em>Bedienen</em> kann auch bedeuten …",
+ ans:"ein Gerät oder eine Maschine in Betrieb nehmen",
+ wrong:["jemandem Vorwürfe machen","etwas kaufen","aufhören zu arbeiten"]},
+{diff:"hard",type:"mc",
+ q:"<em>Jederzeit</em> ist ein Synonym von …",
+ ans:"zu jedem Zeitpunkt / stets",
+ wrong:["manchmal","gelegentlich","selten"]},
+
+// Antonyme (4)
+{diff:"hard",type:"mc",
+ q:"Das Antonym von <em>gründlich</em> ist …",
+ ans:"oberflächlich",
+ wrong:["sorgfältig","genau","vollständig"]},
+{diff:"hard",type:"mc",
+ q:"Das Antonym von <em>doppelt</em> ist …",
+ ans:"halb",
+ wrong:["dreifach","gleich","einmalig"]},
+{diff:"hard",type:"mc",
+ q:"Das Antonym von <em>ordnen</em> ist …",
+ ans:"durcheinanderbringen",
+ wrong:["sortieren","aufräumen","strukturieren"]},
+{diff:"hard",type:"mc",
+ q:"Das Antonym von <em>neulich</em> ist – im zeitlichen Sinne – am ehesten …",
+ ans:"bald / in Zukunft",
+ wrong:["jetzt","früher","manchmal"]},
+
+// Grammatik statt/anstatt (5)
+{diff:"hard",type:"mc",
+ q:"Welcher Satz ist grammatikalisch korrekt?",
+ ans:"Statt ins Kino zu gehen, bleibt Luna zu Hause.",
+ wrong:["Statt ins Kino gehen, bleibt Luna zu Hause.","Statt dass Luna ins Kino geht bleibt sie.","Anstatt sie geht ins Kino, bleibt sie."]},
+{diff:"hard",type:"mc",
+ q:"Welcher Satz mit <em>anstatt … zu</em> ist korrekt?",
+ ans:"Anstatt die Medikamente einzutragen, hat Luna eine Liste gemacht.",
+ wrong:["Anstatt die Medikamente eintragen, hat sie eine Liste gemacht.","Anstatt die Medikamente eingetragen, machte sie eine Liste.","Anstatt dass eingetragen die Medikamente, eine Liste wurde gemacht."]},
+{diff:"hard",type:"mc",
+ q:"<em>Statt dass er sich entschuldigt, ist Frank einfach weggegangen.</em> – Was bedeutet dieser Satz?",
+ ans:"Frank hat sich nicht entschuldigt, sondern ist direkt gegangen.",
+ wrong:["Frank hat sich entschuldigt und ist dann gegangen.","Frank wollte sich entschuldigen, hat es aber vergessen.","Frank ist geblieben und hat mit Luna gesprochen."]},
+{diff:"hard",type:"input",
+ q:"Ich lese ein Buch, [___] fernzusehen. (statt/anstatt + Infinitiv)",
+ ans:"statt / anstatt",hint:"statt oder anstatt"},
+{diff:"hard",type:"input",
+ q:"Sie kauft eine Jahreskarte, [___] jeden Tag Einzeltickets zu kaufen.",
+ ans:"statt / anstatt",hint:"statt oder anstatt"},
+
+/* ══════════════════════════════
+   LOGIK – 10 Fragen
+══════════════════════════════ */
+
+{diff:"logic",type:"mc",
+ ctx:"Frank ist wütend: Die Medikamente müssen ins System, nicht in eine Liste! Luna erklärt: In meinem alten Krankenhaus haben wir das so gemacht. Frank: Hier funktioniert das eben anders.",
+ q:"Was ist die wahrscheinlichste Ursache des Konflikts?",
+ ans:"Niemand hat Luna die internen Regeln erklärt - es war ein Kommunikationsproblem.",
+ wrong:["Luna wollte die Regeln absichtlich ignorieren.","Frank hasst neue Kollegen grundsätzlich.","Das Computersystem war fehlerhaft."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Margot sagt zu Luna: Statt dass du dich aergerst, solltest du mit Frank sprechen - am besten unter vier Augen. Luna fragt: Unter vier Augen? Margot: Ja, nur du und Frank, niemand sonst.",
+ q:"Welchen Rat gibt Margot und warum ist er sinnvoll?",
+ ans:"Ein direktes Vieraugengespraech verhindert, dass das Problem eskaliert oder andere hineingezogen werden.",
+ wrong:["Margot moechte nicht einbezogen werden, weil sie kein Interesse hat.","Frank soll entscheiden, ob er mit Luna spricht.","Luna soll das Problem allein loesen, ohne Frank."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Luna: Ich kann doch deinen Dienst uebernehmen. Margot: Luna, du hast schon zwei Wochenenddienste in diesem Monat. Luna: Ja, aber das geht schon.",
+ q:"Was verraet Lunas Reaktion ueber ihren Charakter?",
+ ans:"Sie ist hilfsbereit und stellt Teaminteressen ueber ihre eigene Bequemlichkeit.",
+ wrong:["Sie mag Wochenenddienste und will mehr Geld verdienen.","Sie will Margot einen Gefallen tun, nicht Frank.","Sie weiss nicht, wie viele Dienste sie schon hat."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Frank: Hast du den Plan nicht gelesen? Luna: Nein! Den hat mir niemand gezeigt. Frank: Wirklich? Dir hat niemand erklaert, wie die Uebergabe hier funktioniert?",
+ q:"Was kann man aus diesem Dialog schlussfolgern?",
+ ans:"Die Einarbeitung von Luna war unvollstaendig - das Team traegt eine Mitverantwortung.",
+ wrong:["Luna hat den Plan absichtlich ignoriert.","Frank hat Luna den Plan versteckt.","Luna hat kein Interesse an ihrer Arbeit."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Lesen Sie: Statt abends eine Serie zu schauen, lese ich lieber einen Roman. Statt Sehenswuerdigkeiten zu besichtigen, kaufe ich lieber in der Innenstadt ein. Statt Einzeltickets zu kaufen, nehme ich lieber eine Jahreskarte.",
+ q:"Was ist die grammatische Funktion von <em>statt</em> in diesen Saetzen?",
+ ans:"Es drueckt eine Alternative aus: statt A waehlt man B.",
+ wrong:["Es zeigt eine zeitliche Reihenfolge (zuerst A, dann B).","Es erklaert einen Grund fuer eine Handlung.","Es drueckt eine Bedingung aus (wenn A, dann B)."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Margot erzaehlt: Ich war so neidisch auf Tatjana - sie war die beste Schuelerin und hatte die tollsten Kleider. Tatjana: Aber du hattest die meisten Freundinnen. Ihr habt mich nie beachtet. Ich habe mich schrecklich gefuehlt.",
+ q:"Welche Aussage beschreibt die Situation am besten?",
+ ans:"Beide hatten ein verzerrtes Bild voneinander - jede sah nur, was die andere hatte, nicht was sie selbst vermisste.",
+ wrong:["Tatjana war arrogant und deshalb unbeliebt.","Margot hat absichtlich versucht, Tatjana zu verletzen.","Die Freundschaft war von Anfang an unmoeglich."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Am Ende sagt Frank zu Luna: Ich sehe schon - dein altes Krankenhaus hatte auch ein paar gute Seiten.",
+ q:"Was meint Frank mit diesem Satz?",
+ ans:"Er gibt indirekt zu, dass Lunas Teamgeist und Hilfsbereitschaft wertvoll sind.",
+ wrong:["Er moechte in Lunas altem Krankenhaus arbeiten.","Er glaubt, das aktuelle Krankenhaus sei schlechter.","Er macht Luna ein Kompliment ueber ihre Medikamentenliste."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Margot sagt: Ich finde es wirklich wichtig, dass ihr euer Problem gemeinsam loest. Weglaufen bringt nichts - ihr muesst auch in Zukunft zusammenarbeiten.",
+ q:"Welche Redewendung passt am besten zu Margots Aussage?",
+ ans:"Den Stier bei den Hoernern packen (= ein Problem direkt angehen).",
+ wrong:["Der fruehe Vogel faengt den Wurm (= frueh aufstehen lohnt sich).","Viele Koeche verderben den Brei (= zu viele Beteiligte sind schlecht).","Wer rastet, der rostet (= man soll aktiv bleiben)."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Tatjana und Margot: Als Krankenpflege-Schuelerinnen wussten wir, wie Erste Hilfe geht. Margot drehte die Frau auf die Seite, Tatjana rief den Krankenwagen. Der Notarzt sagte: Ihr seid ein super Team! Danach wurden sie beste Freundinnen.",
+ q:"Was ist die zentrale Botschaft dieser Geschichte fuer Luna und Frank?",
+ ans:"Eine gemeinsame Herausforderung kann Vorurteile ueberwinden und Menschen zusammenbringen.",
+ wrong:["Erste Hilfe ist die Grundlage jeder Freundschaft.","Nur gemeinsame Notfaelle fuehren zu echter Freundschaft.","Tatjana und Margot waren schon immer aehnlich."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Frank: Ich zeige dir das Computersystem noch mal. Luna: Willst du damit sagen, dass ich keine Ahnung habe? Frank: Nein, ich will dir gern helfen.",
+ q:"Welches Kommunikationsproblem zeigt dieser Austausch?",
+ ans:"Ein gut gemeintes Hilfsangebot wird als Kritik missverstanden, weil der Kontext noch angespannt ist.",
+ wrong:["Frank ist unehrlich - er haelt Luna wirklich fuer inkompetent.","Luna hat ein grundsaetzliches Problem mit Autoritaet.","Frank und Luna sprechen generell aneinander vorbei."]},
+
+]; // end BANK
+
+/* ════════════════════════════════
+   ENGINE
+════════════════════════════════ */
+var userName='',queue=[],current=0,
+    score=0,
+    easyScore=0,easyTotal=0,
+    hardScore=0,hardTotal=0,
+    logicScore=0,logicTotal=0,
+    timerSec=900,timerInt,startTime;
+
+var diffLabel={easy:"✅ Normal",hard:"⚡ Schwer",logic:"🔍 Logik"};
+
+function shuffle(a){
+  var b=a.slice();
+  for(var i=b.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var t=b[i];b[i]=b[j];b[j]=t;
+  }
+  return b;
+}
+
+function startTest(){
+  userName=document.getElementById('nameInput').value.trim()||'Student';
+  var easy=shuffle(BANK.filter(function(q){return q.diff==='easy';}));
+  var hard=shuffle(BANK.filter(function(q){return q.diff==='hard';}));
+  var logic=shuffle(BANK.filter(function(q){return q.diff==='logic';}));
+  queue=easy.concat(hard).concat(logic);
+  current=0;score=0;
+  easyScore=0;easyTotal=0;hardScore=0;hardTotal=0;logicScore=0;logicTotal=0;
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('quizScreen').style.display='block';
+  startTime=Date.now();
+  timerSec=900;
+  timerInt=setInterval(tickTimer,1000);
+  showQuestion();
+}
+
+function tickTimer(){
+  timerSec--;
+  var m=Math.floor(timerSec/60),s=timerSec%60;
+  var el=document.getElementById('timerDisplay');
+  el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  if(timerSec<=120)el.classList.add('urgent');
+  if(timerSec<=0){clearInterval(timerInt);endTest();}
+}
+
+function addScore(diff,ok){
+  if(ok){
+    score++;
+    if(diff==='easy')easyScore++;
+    else if(diff==='hard')hardScore++;
+    else logicScore++;
+  }
+  if(diff==='easy')easyTotal++;
+  else if(diff==='hard')hardTotal++;
+  else logicTotal++;
+}
+
+function showQuestion(){
+  if(current>=queue.length){endTest();return;}
+  var q=queue[current];
+  var pct=Math.round(current/queue.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLeft').textContent=(current+1)+' / '+queue.length;
+  document.getElementById('progRight').textContent=q.diff==='easy'?'Normal':q.diff==='hard'?'Schwer':'Logik';
+
+  var area=document.getElementById('questionArea');
+  area.innerHTML='';
+
+  var badge=document.createElement('div');
+  badge.className='diff-badge '+q.diff;
+  badge.textContent=diffLabel[q.diff];
+  area.appendChild(badge);
+
+  var card=document.createElement('div');card.className='q-card';
+
+  if(q.ctx){
+    var lbl=document.createElement('div');lbl.className='q-context-label';lbl.textContent='📖 Lesetext';
+    var ctx=document.createElement('div');ctx.className='q-context';
+    ctx.appendChild(lbl);
+    var ctxText=document.createElement('div');ctxText.textContent=q.ctx;
+    ctx.appendChild(ctxText);
+    card.appendChild(ctx);
+  }
+
+  var qEl=document.createElement('div');qEl.className='q-text';qEl.innerHTML=q.q;
+  card.appendChild(qEl);
+
+  if(q.type==='input'){
+    var row=document.createElement('div');row.className='q-inp-row';
+    var inp=document.createElement('input');inp.type='text';inp.className='q-inp';
+    inp.placeholder=q.hint||'Antwort …';
+    var btn=document.createElement('button');btn.className='q-check';btn.textContent='Prüfen';
+    var fb=document.createElement('div');fb.className='q-fb';
+    var done=false;
+
+    (function(inp,btn,fb,q){
+      function check(){
+        if(done)return;done=true;
+        var val=inp.value.trim();
+        var corrects=q.ans.split('/').map(function(s){return s.trim().toLowerCase();});
+        var ok=corrects.indexOf(val.toLowerCase())!==-1;
+        inp.classList.add(ok?'ok':'no');
+        fb.className='q-fb '+(ok?'ok':'no');
+        fb.textContent=ok?'✓ Richtig!':'✗ Richtig wäre: '+q.ans;
+        btn.disabled=true;
+        addScore(q.diff,ok);
+        setTimeout(function(){current++;showQuestion();},1500);
+      }
+      btn.onclick=check;
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+    })(inp,btn,fb,q);
+
+    row.appendChild(inp);row.appendChild(btn);
+    card.appendChild(row);card.appendChild(fb);
+
+  } else {
+    var opts=shuffle([q.ans].concat(q.wrong||[]));
+    var isWide=(opts.length>3)||(q.diff==='logic');
+    var grid=document.createElement('div');
+    grid.className=isWide?'opts':'opts two';
+    var answered=false;
+
+    opts.forEach(function(o){
+      var btn=document.createElement('button');btn.className='opt-btn';btn.textContent=o;
+      (function(o,btn){
+        btn.onclick=function(){
+          if(answered)return;answered=true;
+          var ok=(o===q.ans);
+          btn.classList.add(ok?'ok':'no');
+          if(!ok){
+            grid.querySelectorAll('.opt-btn').forEach(function(b){
+              if(b.textContent===q.ans)b.classList.add('reveal');
+              else if(b!==btn)b.classList.add('locked');
+            });
+          }
+          addScore(q.diff,ok);
+          setTimeout(function(){current++;showQuestion();},q.diff==='logic'?2200:1200);
+        };
+      })(o,btn);
+      grid.appendChild(btn);
+    });
+    card.appendChild(grid);
+  }
+
+  area.appendChild(card);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function endTest(){
+  clearInterval(timerInt);
+  var elapsed=Math.round((Date.now()-startTime)/1000);
+  var em=Math.floor(elapsed/60),es=elapsed%60;
+  var total=queue.length;
+  var pct=Math.round(score/total*100);
+  var pass=pct>=85;
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('resultScreen').style.display='block';
+  document.getElementById('resIcon').textContent=pct>=92?'🏆':pct>=80?'⭐':pct>=65?'💪':'📚';
+  document.getElementById('resName').textContent=userName;
+  document.getElementById('resScore').textContent=score+' / '+total;
+  document.getElementById('resMsg').textContent=
+    pct>=92?'Perfekt! Du beherrschst Lektion 11 auf Hochniveau!':
+    pct>=85?'Super! Du hast das Ziel erreicht – weiter so!':
+    pct>=70?'Gut gemacht! Die schwierigen Teile noch einmal wiederholen.':
+    'Noch weiter üben – Wortschatz und Logikaufgaben nochmals anschauen.';
+  document.getElementById('resPass').className='res-pass '+(pass?'pass':'fail');
+  document.getElementById('resPass').textContent=pass?'✓ Bestanden (≥ 85%)':'✗ Noch nicht bestanden (< 85%)';
+  document.getElementById('resRight').textContent=score;
+  document.getElementById('resWrong').textContent=total-score;
+  document.getElementById('resTime').textContent=(em<10?'0':'')+em+':'+(es<10?'0':'')+es;
+  document.getElementById('resPct').textContent=pct+'%';
+  document.getElementById('resEasy').textContent=easyScore+'/'+easyTotal;
+  document.getElementById('resHard').textContent=hardScore+'/'+hardTotal;
+  document.getElementById('resLogic').textContent=logicScore+'/'+logicTotal;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

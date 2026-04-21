@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Übungen – Lektion 11</title>
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;--blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;--gold:#d97706;--gold-lt:#fef3c7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;padding:28px 20px 22px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:Georgia,serif;font-size:24px;color:#fff;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+.tab-nav{max-width:680px;margin:20px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;}
+.tab-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:system-ui,sans-serif;transition:all .15s;white-space:nowrap;}
+.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.panel{display:none;max-width:680px;margin:20px auto;padding:0 16px 20px;}
+.panel.active{display:block;}
+.panel-title{font-family:Georgia,serif;font-size:20px;color:var(--ink);margin-bottom:4px;}
+.panel-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.ex-card{background:var(--card);border-radius:14px;border:2px solid var(--border);padding:20px;margin-bottom:14px;}
+.ex-q{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+.ex-q em{color:var(--blue);font-style:normal;font-weight:800;}
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mc-opts1{display:grid;grid-template-columns:1fr;gap:8px;}
+.mc-opt{background:#fafafa;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:system-ui,sans-serif;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--ink);}
+.mc-opt:hover{border-color:var(--blue);background:var(--blue-lt);}
+.mc-opt.ok{background:var(--green-lt);border-color:var(--green);color:var(--green);pointer-events:none;}
+.mc-opt.no{background:var(--rose-lt);border-color:var(--rose);color:var(--rose);pointer-events:none;}
+.mc-opt.reveal{background:var(--green-lt);border-color:var(--green);color:var(--green);pointer-events:none;opacity:.7;}
+.mc-opt.locked{pointer-events:none;opacity:.4;}
+.inp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.inp-field{border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;font-family:system-ui,sans-serif;font-weight:600;color:var(--ink);outline:none;min-width:160px;flex:1;}
+.inp-field:focus{border-color:var(--blue);}
+.inp-field.ok{border-color:var(--green);background:var(--green-lt);color:var(--green);}
+.inp-field.no{border-color:var(--rose);background:var(--rose-lt);color:var(--rose);}
+.check-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.feedback{font-size:13px;margin-top:8px;font-weight:600;display:none;}
+.feedback.ok{color:var(--green);display:block;}
+.feedback.no{color:var(--rose);display:block;}
+.score-bar{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.score-label{font-size:13px;font-weight:700;color:var(--muted);}
+.score-num{font-family:Georgia,serif;font-size:28px;color:var(--blue);}
+.reset-btn{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;}
+.reset-btn:hover{border-color:var(--blue);color:var(--blue);}
+.footer{text-align:center;padding:24px;font-size:11px;color:#8aa3bc;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 11 · ÜBUNGEN</div>
+    <h1>Luna – Ein super Team!</h1>
+    <p>7 Übungstypen · Interaktiv</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn active" id="tb0">1 · Artikel</button>
+  <button class="tab-btn" id="tb1">2 · Bedeutung</button>
+  <button class="tab-btn" id="tb2">3 · Lückentext</button>
+  <button class="tab-btn" id="tb3">4 · Wortfeld</button>
+  <button class="tab-btn" id="tb4">5 · Im Krankenhaus</button>
+  <button class="tab-btn" id="tb5">6 · statt / anstatt</button>
+  <button class="tab-btn" id="tb6">7 · Wortbildung</button>
+</div>
+
+<div class="panel active" id="panel0">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc0">0 / 0</div></div><button class="reset-btn" id="rb0">↺ Neu</button></div>
+  <div class="panel-title">Übung 1 · Artikel</div>
+  <div class="panel-sub">Welcher Artikel gehört zu diesem Nomen?</div>
+  <div id="p0items"></div>
+</div>
+
+<div class="panel" id="panel1">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc1">0 / 0</div></div><button class="reset-btn" id="rb1">↺ Neu</button></div>
+  <div class="panel-title">Übung 2 · Bedeutung</div>
+  <div class="panel-sub">Welche Definition passt zum Wort?</div>
+  <div id="p1items"></div>
+</div>
+
+<div class="panel" id="panel2">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc2">0 / 0</div></div><button class="reset-btn" id="rb2">↺ Neu</button></div>
+  <div class="panel-title">Übung 3 · Lückentext</div>
+  <div class="panel-sub">Ergänzen Sie das fehlende Wort.</div>
+  <div id="p2items"></div>
+</div>
+
+<div class="panel" id="panel3">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc3">0 / 0</div></div><button class="reset-btn" id="rb3">↺ Neu</button></div>
+  <div class="panel-title">Übung 4 · Wortfeld</div>
+  <div class="panel-sub">Synonyme, Antonyme und Kollokationen.</div>
+  <div id="p3items"></div>
+</div>
+
+<div class="panel" id="panel4">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc4">0 / 0</div></div><button class="reset-btn" id="rb4">↺ Neu</button></div>
+  <div class="panel-title">Übung 5 · Im Krankenhaus</div>
+  <div class="panel-sub">Was passt zur Situation? Wählen Sie die beste Antwort.</div>
+  <div id="p4items"></div>
+</div>
+
+<div class="panel" id="panel5">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc5">0 / 0</div></div><button class="reset-btn" id="rb5">↺ Neu</button></div>
+  <div class="panel-title">Übung 6 · statt / anstatt</div>
+  <div class="panel-sub">Welche Konstruktion ist grammatikalisch korrekt?</div>
+  <div id="p5items"></div>
+</div>
+
+<div class="panel" id="panel6">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc6">0 / 0</div></div><button class="reset-btn" id="rb6">↺ Neu</button></div>
+  <div class="panel-title">Übung 7 · Wortbildung</div>
+  <div class="panel-sub">Beschreiben oder erkennen Sie das Wort.</div>
+  <div id="p6items"></div>
+</div>
+
+<div class="footer">Made with love by Bảo Quang</div>
+
+<script>
+var scores=[0,0,0,0,0,0,0],totals=[0,0,0,0,0,0,0];
+
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+function setScore(panel,delta,totalDelta){
+  if(totalDelta){totals[panel]+=totalDelta;}
+  scores[panel]+=delta;
+  document.getElementById('sc'+panel).textContent=scores[panel]+' / '+totals[panel];
+}
+
+function makeMC(container,panel,question,correct,wrong,wide){
+  var opts=shuffle([correct].concat(wrong));
+  var card=document.createElement('div');card.className='ex-card';
+  var qEl=document.createElement('div');qEl.className='ex-q';qEl.innerHTML=question;
+  card.appendChild(qEl);
+  var grid=document.createElement('div');
+  grid.className=wide?'mc-opts1':'mc-opts';
+  totals[panel]++;
+  document.getElementById('sc'+panel).textContent=scores[panel]+' / '+totals[panel];
+  var answered=false;
+  opts.forEach(function(o){
+    var btn=document.createElement('button');btn.className='mc-opt';btn.textContent=o;
+    btn.onclick=function(){
+      if(answered)return;answered=true;
+      if(o===correct){btn.classList.add('ok');scores[panel]++;}
+      else{
+        btn.classList.add('no');
+        grid.querySelectorAll('.mc-opt').forEach(function(b){if(b.textContent===correct)b.classList.add('reveal');else b.classList.add('locked');});
+      }
+      document.getElementById('sc'+panel).textContent=scores[panel]+' / '+totals[panel];
+    };
+    grid.appendChild(btn);
+  });
+  card.appendChild(grid);container.appendChild(card);
+}
+
+function makeInput(container,panel,sentenceHTML,correct,hint){
+  var card=document.createElement('div');card.className='ex-card';
+  var qEl=document.createElement('div');qEl.className='ex-q';qEl.innerHTML=sentenceHTML;
+  card.appendChild(qEl);
+  var row=document.createElement('div');row.className='inp-row';
+  var inp=document.createElement('input');inp.type='text';inp.className='inp-field';inp.placeholder=hint||'Antwort …';
+  var btn=document.createElement('button');btn.className='check-btn';btn.textContent='Prüfen';
+  var fb=document.createElement('div');fb.className='feedback';
+  totals[panel]++;
+  document.getElementById('sc'+panel).textContent=scores[panel]+' / '+totals[panel];
+  var answered=false;
+  function check(){
+    if(answered)return;
+    var val=inp.value.trim();
+    var corrects=correct.split('/').map(function(s){return s.trim().toLowerCase();});
+    if(corrects.indexOf(val.toLowerCase())!==-1){
+      inp.classList.add('ok');fb.className='feedback ok';fb.textContent='✓ Richtig!';scores[panel]++;
+      document.getElementById('sc'+panel).textContent=scores[panel]+' / '+totals[panel];
+      answered=true;
+    } else {
+      inp.classList.add('no');fb.className='feedback no';fb.textContent='✗ Richtig: '+correct;answered=true;
+    }
+  }
+  btn.onclick=check;
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+  row.appendChild(inp);row.appendChild(btn);
+  card.appendChild(row);card.appendChild(fb);container.appendChild(card);
+}
+
+/* ── DATA ── */
+var p0data=[
+  {word:"Kuli",art:"der",wrong:["die","das"]},
+  {word:"Lautsprecher",art:"der",wrong:["die","das"]},
+  {word:"PC",art:"der",wrong:["die","das"]},
+  {word:"Roman",art:"der",wrong:["die","das"]},
+  {word:"Schreck",art:"der",wrong:["die","das"]},
+  {word:"Gedanke",art:"der",wrong:["die","das"]},
+  {word:"Abfall",art:"der",wrong:["die","das"]},
+  {word:"Tierpark",art:"der",wrong:["die","das"]},
+  {word:"Internetanschluss",art:"der",wrong:["die","das"]},
+  {word:"Jahreskarte",art:"die",wrong:["der","das"]},
+  {word:"Sehenswürdigkeit",art:"die",wrong:["der","das"]},
+  {word:"Innenstadt",art:"die",wrong:["der","das"]},
+  {word:"Bücherei",art:"die",wrong:["der","das"]},
+  {word:"Couch",art:"die",wrong:["der","das"]},
+  {word:"Mauer",art:"die",wrong:["der","das"]},
+  {word:"Soße",art:"die",wrong:["der","das"]},
+  {word:"Mahlzeit",art:"die",wrong:["der","das"]},
+  {word:"Schicht",art:"die",wrong:["der","das"]},
+  {word:"Schaufenster",art:"das",wrong:["der","die"]},
+];
+
+var p1data=[
+  {q:"Was bedeutet <em>bedienen</em>?",ans:"etwas benutzen oder betreiben",wrong:["etwas kaufen","sich ärgern","aufräumen"]},
+  {q:"Was bedeutet <em>nochmals</em>?",ans:"noch einmal / ein weiteres Mal",wrong:["sofort","manchmal","nie mehr"]},
+  {q:"Was bedeutet <em>eintragen</em>?",ans:"etwas in eine Liste oder ein System schreiben",wrong:["löschen","bestellen","ausgeben"]},
+  {q:"Was bedeutet <em>gründlich</em>?",ans:"sehr sorgfältig und vollständig",wrong:["schnell","laut","ungefähr"]},
+  {q:"Was bedeutet <em>neulich</em>?",ans:"vor kurzer Zeit / kürzlich",wrong:["sehr früh","bald","immer"],},
+  {q:"Was bedeutet <em>jederzeit</em>?",ans:"immer / zu jedem Zeitpunkt",wrong:["manchmal","selten","vorhin"]},
+  {q:"Was bedeutet <em>doppelt</em>?",ans:"zwei Mal so viel / zweifach",wrong:["halb so viel","dreifach","einmal"]},
+  {q:"Was bedeutet <em>erstellen</em>?",ans:"etwas produzieren oder anfertigen",wrong:["zerstören","kaufen","vergessen"]},
+  {q:"Was bedeutet <em>ordnen</em>?",ans:"in eine Reihenfolge oder Struktur bringen",wrong:["waschen","zählen","streichen"]},
+  {q:"Was bedeutet <em>erziehen</em>?",ans:"Kinder begleiten und ihnen Werte beibringen",wrong:["unterrichten","besuchen","beschädigen"]},
+];
+
+var p2data=[
+  {sent:"Frank ist sauer, weil Luna die Medikamente in eine Liste [_] statt ins Computersystem.",ans:"eingetragen hat",hint:"Perfekt von eintragen"},
+  {sent:"Die Mahlzeit war [_] – ich habe alles genau und ohne Fehler gekocht.",ans:"gründlich",hint:"Adverb"},
+  {sent:"Das war [_] passiert – vor ein paar Tagen.",ans:"neulich",hint:"Adverb"},
+  {sent:"Kannst du mir das [_] erklären? Ich habe es noch nicht ganz verstanden.",ans:"nochmals",hint:"Adverb"},
+  {sent:"Sie haben heute [_] so viele Überstunden wie letzte Woche.",ans:"doppelt",hint:"Adverb"},
+  {sent:"Ich bin [_] erreichbar – du kannst mich immer anrufen.",ans:"jederzeit",hint:"Adverb"},
+  {sent:"Bitte [_] deinen Namen in das Formular ein.",ans:"trage / trag",hint:"Imperativ von eintragen"},
+  {sent:"Frank und Luna [_] ihre Schichten für das Wochenende.",ans:"tauschen",hint:"Präsens"},
+  {sent:"Statt eine Serie zu schauen, [_] ich lieber ein Buch.",ans:"lese",hint:"Präsens von lesen"},
+  {sent:"Sie müssen die Abfalltonnen [_] – sie sind voll.",ans:"rausstellen",hint:"Infinitiv: rausstellen"},
+];
+
+var p3data=[
+  {q:"Welches Wort ist ein Synonym von <em>gründlich</em>?",ans:"sorgfältig",wrong:["schnell","laut","faul"]},
+  {q:"Welches Wort ist das Antonym von <em>doppelt</em>?",ans:"halb",wrong:["dreifach","gleich","genau"]},
+  {q:"Welche Kollokation ist korrekt?",ans:"eine Liste erstellen",wrong:["eine Liste bauen","eine Liste sagen","eine Liste kaufen"]},
+  {q:"Welche Kollokation mit SCHICHT ist korrekt?",ans:"eine Schicht tauschen",wrong:["eine Schicht machen","eine Schicht lesen","eine Schicht finden"]},
+  {q:"Welches Wort ist ein Synonym von <em>neulich</em>?",ans:"kürzlich",wrong:["bald","manchmal","jederzeit"]},
+  {q:"Welche Kollokation mit GEDANKEN ist korrekt?",ans:"sich Gedanken machen",wrong:["Gedanken kaufen","Gedanken geben","Gedanken lesen"]},
+  {q:"Welches Wort ist das Antonym von <em>ordnen</em>?",ans:"durcheinanderbringen",wrong:["sortieren","aufräumen","notieren"]},
+  {q:"Welche Kollokation ist korrekt?",ans:"einen Computer bedienen",wrong:["einen Computer machen","einen Computer fahren","einen Computer sprechen"]},
+];
+
+var p4data=[
+  {q:"Frank ist wütend, weil die Medikamente nicht im System sind. Was sagt Luna?",
+   ans:"Entschuldigung, ich habe sie in meine Liste geschrieben. Das mache ich in Zukunft anders.",
+   wrong:["Das ist nicht mein Problem.","Das System funktioniert nicht.","Ich war heute krank."],wide:true},
+  {q:"Margot fragt Luna, wie es ihr nach dem Streit geht. Was antwortet Luna?",
+   ans:"Ich war am Anfang sauer, aber jetzt habe ich mit Frank gesprochen und wir haben das Problem gelöst.",
+   wrong:["Ich möchte nie wieder mit Frank arbeiten.","Ich kündige morgen.","Mir ist das egal."],wide:true},
+  {q:"Frank hat am Wochenende Nachtschicht, aber da ist seine Tochter bei ihm. Was schlägt Luna vor?",
+   ans:"Ich kann deinen Dienst übernehmen. Du machst dafür meine Frühschicht.",
+   wrong:["Du musst einfach arbeiten.","Ruf den Chef an.","Bring deine Tochter mit."],wide:true},
+  {q:"Luna erklärt, warum sie die Medikamente in eine Liste geschrieben hat. Was sagt sie?",
+   ans:"In meinem alten Krankenhaus haben wir das so gemacht. Ich wusste nicht, dass es hier anders ist.",
+   wrong:["Ich habe das System nicht verstanden.","Ich wollte Frank ärgern.","Die Liste ist praktischer als das System."],wide:true},
+  {q:"Margot sagt Frank, er soll Luna eine Chance geben. Warum?",
+   ans:"Weil Luna gezeigt hat, dass sie ein gutes Teammitglied ist und bereit ist zu helfen.",
+   wrong:["Weil Luna die beste Krankenpflegerin ist.","Weil Frank sie mag.","Weil Luna Überstunden macht."],wide:true},
+];
+
+var p5data=[
+  {q:"___ eine Serie zu schauen, liest Luna lieber ein Buch.",
+   ans:"Statt / Anstatt",wrong:["Bevor","Nachdem","Obwohl"]},
+  {q:"Sie kauft eine Jahreskarte, ___ jeden Tag ein Ticket zu kaufen.",
+   ans:"statt / anstatt",wrong:["weil","dass","damit"]},
+  {q:"Welcher Satz ist korrekt?",
+   ans:"Statt ins Kino zu gehen, bleibe ich zu Hause.",
+   wrong:["Statt dass ich ins Kino gehen, bleibe ich zu Hause.","Statt ich ins Kino gehe, bleibe ich zu Hause.","Anstatt gehe ich ins Kino."],wide:true},
+  {q:"___ dass er sich entschuldigt, ist Frank einfach weggegangen.",
+   ans:"Statt / Anstatt",wrong:["Bevor","Obwohl","Während"]},
+  {q:"Welcher Satz ist korrekt?",
+   ans:"Anstatt die Medikamente einzutragen, hat Luna eine Liste gemacht.",
+   wrong:["Anstatt die Medikamente eintragen, hat Luna eine Liste gemacht.","Anstatt dass die Medikamente eingetragen, hat Luna eine Liste gemacht.","Statt die Medikamente eintragen wurde eine Liste gemacht."],wide:true},
+  {q:"Ich gehe in die Bücherei, ___ Sehenswürdigkeiten zu besichtigen.",
+   ans:"statt / anstatt",wrong:["bevor","nachdem","weil"]},
+  {q:"Welche Konstruktion ist mit 'statt dass' korrekt?",
+   ans:"Statt dass Frank sich entschuldigt, hat er einfach weitergemacht.",
+   wrong:["Statt dass Frank entschuldigt hat, macht er weiter.","Statt Frank entschuldigt, macht er weiter.","Statt dass Frank entschuldigen, macht er weiter."],wide:true},
+];
+
+var p6data=[
+  {q:"Ein Ort in der Stadt, wo man Bücher ausleihen kann – welches Wort?",ans:"die Bücherei",wrong:["der Tierpark","das Schaufenster","die Innenstadt"]},
+  {q:"Ein Gerät, mit dem man Ton hören kann – welches Wort?",ans:"der Lautsprecher",wrong:["der Kuli","der PC","die Schicht"]},
+  {q:"Wenn man Informationen in ein Computersystem schreibt – welches Verb?",ans:"eintragen",wrong:["ordnen","rühren","chatten"]},
+  {q:"Die Arbeitszeit von z.B. 6–14 Uhr oder 14–22 Uhr in einem Krankenhaus – welches Wort?",ans:"die Schicht",wrong:["die Mahlzeit","der Abfall","der Gedanke"]},
+  {q:"Wenn Kinder von Eltern oder Erziehern geformt und begleitet werden – welches Verb?",ans:"erziehen",wrong:["bedienen","ordnen","besichtigen"]},
+  {q:"Eine gläserne Fläche in einem Geschäft, hinter der Produkte ausgestellt werden – welches Wort?",ans:"das Schaufenster",wrong:["die Mauer","die Couch","der Roman"]},
+  {q:"Wenn man etwas sehr sorgfältig und vollständig macht – welches Adjektiv?",ans:"gründlich",wrong:["doppelt","neulich","jederzeit"]},
+  {q:"Eine flache Sitzgelegenheit im Wohnzimmer, auf der man liegt oder sitzt – welches Wort?",ans:"die Couch",wrong:["die Mahlzeit","die Bücherei","die Jahreskarte"]},
+];
+
+function buildPanel(panel){
+  var cids=["p0items","p1items","p2items","p3items","p4items","p5items","p6items"];
+  var c=document.getElementById(cids[panel]);c.innerHTML="";
+  scores[panel]=0;totals[panel]=0;
+  document.getElementById('sc'+panel).textContent='0 / 0';
+  if(panel===0){
+    shuffle(p0data).slice(0,12).forEach(function(d){
+      makeMC(c,0,"Welcher Artikel gehört zu: <em>"+d.word+"</em>?",d.art,d.wrong,false);
+    });
+  } else if(panel===1){
+    shuffle(p1data).slice(0,10).forEach(function(d){makeMC(c,1,d.q,d.ans,d.wrong,false);});
+  } else if(panel===2){
+    shuffle(p2data).forEach(function(d){
+      makeInput(c,2,d.sent.replace("[_]","<em>______</em>"),d.ans,d.hint);
+    });
+  } else if(panel===3){
+    shuffle(p3data).forEach(function(d){makeMC(c,3,d.q,d.ans,d.wrong,false);});
+  } else if(panel===4){
+    shuffle(p4data).forEach(function(d){makeMC(c,4,d.q,d.ans,d.wrong,d.wide||false);});
+  } else if(panel===5){
+    shuffle(p5data).forEach(function(d){makeMC(c,5,d.q,d.ans,d.wrong,d.wide||false);});
+  } else if(panel===6){
+    shuffle(p6data).forEach(function(d){makeMC(c,6,d.q,d.ans,d.wrong,false);});
+  }
+}
+
+/* TAB NAV */
+var tabs=document.querySelectorAll('.tab-btn');
+tabs.forEach(function(btn,i){
+  btn.onclick=function(){
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.getElementById('panel'+i).classList.add('active');
+    btn.classList.add('active');
+  };
+  document.getElementById('rb'+i).onclick=function(){buildPanel(i);};
+});
+
+for(var pi=0;pi<7;pi++){buildPanel(pi);}
+</script>
+</body>
+</html>

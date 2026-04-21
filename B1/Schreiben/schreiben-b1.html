@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schreiben B1 – Übungstrainer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --teal-dark: #0f766e;
+  --indigo: #4f46e5;
+  --indigo-light: #e0e7ff;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --slate: #475569;
+  --slate-light: #f1f5f9;
+  --slate-border: #e2e8f0;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --white: #ffffff;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f8fafc;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* STICKY HEADER */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--white);
+  border-bottom: 1.5px solid var(--slate-border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sticky-header .logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  color: var(--teal-dark);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sticky-header input[type="text"] {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+  border: 1.5px solid var(--slate-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--slate-light);
+}
+
+.timer-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--teal-light);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.timer-box.warning { background: var(--amber-light); color: var(--amber); }
+.timer-box.danger  { background: #fee2e2; color: #dc2626; }
+
+.timer-icon { font-size: 14px; }
+
+/* MAIN LAYOUT */
+.container { max-width: 800px; margin: 0 auto; padding: 20px 14px 60px; }
+
+h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--teal-dark);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* TYPE TABS */
+.type-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.type-tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--slate-border);
+  background: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.type-tab.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+}
+
+/* AUFGABE CARD */
+.aufgabe-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--slate-border);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+.aufgabe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.aufgabe-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-formell  { background: var(--indigo-light); color: var(--indigo); }
+.badge-informell { background: var(--teal-light); color: var(--teal-dark); }
+.badge-forum    { background: var(--amber-light); color: var(--amber); }
+
+.btn-neue-aufgabe {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--slate-border);
+  background: var(--slate-light);
+  color: var(--slate);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-neue-aufgabe:hover { border-color: var(--teal); color: var(--teal-dark); }
+
+.aufgabe-title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.aufgabe-text {
+  font-size: 13px;
+  color: var(--slate);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.aufgabe-punkte {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.aufgabe-punkte span {
+  display: inline-block;
+  background: var(--slate-light);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 2px 3px 2px 0;
+  font-weight: 500;
+}
+
+/* REDEMITTEL */
+.redemittel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 8px;
+}
+
+.redemittel-toggle .arrow { transition: transform 0.2s; font-size: 10px; }
+.redemittel-toggle.open .arrow { transform: rotate(90deg); }
+
+.redemittel-box {
+  display: none;
+  background: var(--teal-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.redemittel-box.open { display: block; }
+
+.redemittel-section {
+  font-size: 12px;
+  color: var(--teal-dark);
+  font-weight: 600;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+.redemittel-section:first-child { margin-top: 0; }
+
+.redemittel-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.rm-chip {
+  background: white;
+  border: 1px solid rgba(13,148,136,0.25);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 12px;
+  color: var(--teal-dark);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.rm-chip:hover { background: var(--teal); color: white; }
+
+/* TEXTAREA */
+.schreib-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--slate-border);
+  padding: 4px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+
+.schreib-box:focus-within { border-color: var(--teal); }
+
+textarea {
+  width: 100%;
+  min-height: 180px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  padding: 12px 14px;
+  background: transparent;
+}
+
+.wort-counter {
+  padding: 6px 14px 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+  border-top: 1px solid var(--slate-border);
+}
+
+.wort-counter .count { font-weight: 700; color: var(--teal-dark); }
+.wort-counter .count.warn { color: var(--amber); }
+.wort-counter .count.ok   { color: #059669; }
+
+/* BUTTONS */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.btn-primary {
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  background: var(--teal);
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-primary:hover { background: var(--teal-dark); }
+.btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+
+.btn-secondary {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1.5px solid var(--slate-border);
+  background: var(--white);
+  color: var(--slate);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-secondary:hover { border-color: var(--teal); color: var(--teal-dark); }
+
+/* AI FEEDBACK */
+.feedback-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--slate-border);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  display: none;
+}
+
+.feedback-box.show { display: block; }
+
+.feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--indigo);
+  margin-bottom: 12px;
+}
+
+.feedback-icon { font-size: 16px; }
+
+.feedback-content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.feedback-content.loading {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.score-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--slate-border);
+}
+
+.score-pill {
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.score-pill .val { font-size: 18px; font-weight: 700; display: block; }
+.score-pill .lbl { font-size: 10px; font-weight: 500; opacity: 0.8; }
+.sp-inhalt   { background: var(--teal-light); color: var(--teal-dark); }
+.sp-struktur { background: var(--indigo-light); color: var(--indigo); }
+.sp-sprache  { background: var(--amber-light); color: var(--amber); }
+
+/* MUSTERLÖSUNG */
+.muster-box {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  display: none;
+}
+
+.muster-box.show { display: block; }
+
+.muster-header {
+  font-weight: 600;
+  font-size: 13px;
+  color: #166534;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.muster-text {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 24px;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-icon { font-size: 36px; margin-bottom: 12px; }
+.modal h2 { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 8px; }
+.modal p  { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+.modal .btn-primary { width: 100%; }
+
+/* NAME REQUIRED */
+.name-hint {
+  font-size: 12px;
+  color: #dc2626;
+  display: none;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+.name-hint.show { display: block; }
+</style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<div class="sticky-header">
+  <div class="logo">✍️ Schreiben B1</div>
+  <input type="text" id="studentName" placeholder="Dein Name / Tên của bạn">
+  <div class="timer-box" id="timerBox" onclick="toggleTimer()">
+    <span class="timer-icon">⏱</span>
+    <span id="timerDisplay">20:00</span>
+  </div>
+</div>
+
+<div class="container">
+  <h1>Schreiben-Übungstrainer</h1>
+  <p class="subtitle">Niveau B1 · Goethe-Zertifikat · Wähle einen Aufgabentyp und beginne zu schreiben.</p>
+  <p class="name-hint" id="nameHint">⚠ Bitte gib zuerst deinen Namen ein!</p>
+
+  <!-- TYPE TABS -->
+  <div class="type-tabs">
+    <button class="type-tab active" onclick="switchType('formell')">📧 E-Mail formell</button>
+    <button class="type-tab" onclick="switchType('informell')">💬 E-Mail informell</button>
+    <button class="type-tab" onclick="switchType('forum')">🗣 Forenbeitrag</button>
+  </div>
+
+  <!-- AUFGABE CARD -->
+  <div class="aufgabe-card">
+    <div class="aufgabe-header">
+      <span class="aufgabe-badge" id="aufgabeBadge">E-Mail formell</span>
+      <button class="btn-neue-aufgabe" onclick="neueAufgabe()">🔀 Neue Aufgabe</button>
+    </div>
+    <div class="aufgabe-title" id="aufgabeTitle"></div>
+    <div class="aufgabe-text" id="aufgabeText"></div>
+    <div class="aufgabe-punkte" id="aufgabePunkte"></div>
+  </div>
+
+  <!-- REDEMITTEL -->
+  <div class="redemittel-toggle" id="rmToggle" onclick="toggleRedemittel()">
+    <span class="arrow">▶</span>
+    💡 Redemittel anzeigen
+  </div>
+  <div class="redemittel-box" id="rmBox"></div>
+
+  <!-- TEXTAREA -->
+  <div class="schreib-box">
+    <textarea id="antwortText" placeholder="Schreibe deine Antwort hier..."></textarea>
+    <div class="wort-counter">
+      Wörter: <span class="count" id="wortCount">0</span> / empfohlen: <span id="wortZiel">80–100</span>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <button class="btn-primary" onclick="submitAI()">🤖 KI-Bewertung erhalten</button>
+    <button class="btn-secondary" onclick="showMuster()">📄 Musterlösung anzeigen</button>
+    <button class="btn-secondary" onclick="resetAlles()">🔄 Neu beginnen</button>
+  </div>
+
+  <!-- AI FEEDBACK -->
+  <div class="feedback-box" id="feedbackBox">
+    <div class="feedback-header">
+      <span class="feedback-icon">🤖</span>
+      KI-Bewertung
+    </div>
+    <div class="feedback-content" id="feedbackContent"></div>
+    <div class="score-row" id="scoreRow" style="display:none">
+      <div class="score-pill sp-inhalt">
+        <span class="val" id="s-inhalt">–</span>
+        <span class="lbl">Inhalt</span>
+      </div>
+      <div class="score-pill sp-struktur">
+        <span class="val" id="s-struktur">–</span>
+        <span class="lbl">Struktur</span>
+      </div>
+      <div class="score-pill sp-sprache">
+        <span class="val" id="s-sprache">–</span>
+        <span class="lbl">Sprache</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MUSTERLÖSUNG -->
+  <div class="muster-box" id="musterBox">
+    <div class="muster-header">✅ Musterlösung</div>
+    <div class="muster-text" id="musterText"></div>
+  </div>
+</div>
+
+<!-- TIME'S UP MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon">⏰</div>
+    <h2>Zeit ist um!</h2>
+    <p>Deine 20 Minuten sind abgelaufen. Du kannst deine Antwort jetzt noch einreichen.</p>
+    <button class="btn-primary" onclick="closeModal()">Verstanden</button>
+  </div>
+</div>
+
+<script>
+var currentType = 'formell';
+var currentAufgabe = null;
+var timerInterval = null;
+var timerSeconds = 1200;
+var timerRunning = false;
+
+var AUFGABEN = {
+  formell: [
+    {
+      title: 'Bewerbung um eine Stelle als Küchenhilfe',
+      text: 'Sie haben eine Stellenanzeige für eine Küchenhilfe im Restaurant „Zur Linde" gelesen. Schreiben Sie eine E-Mail an den Restaurantleiter Herrn Berger:\n• Stellen Sie sich kurz vor.\n• Erklären Sie, warum Sie sich bewerben.\n• Fragen Sie nach den Arbeitszeiten.\n• Nennen Sie, wann Sie anfangen können.',
+      punkte: ['Vorstellung', 'Bewerbungsgrund', 'Arbeitszeitfrage', 'Starttermin'],
+      ziel: '80–100',
+      muster: 'Sehr geehrter Herr Berger,\n\nmit großem Interesse habe ich Ihre Stellenanzeige für eine Küchenhilfe gelesen. Mein Name ist [Name], ich bin 24 Jahre alt und suche derzeit eine Stelle in der Gastronomie.\n\nIch habe bereits zwei Jahre Erfahrung als Küchenhilfe in einem vietnamesischen Restaurant und arbeite gerne im Team. Ich bin pünktlich, zuverlässig und lerne schnell.\n\nKönnten Sie mir bitte mitteilen, wie die Arbeitszeiten aussehen? Ich bin sowohl für Früh- als auch Spätschichten verfügbar.\n\nIch könnte frühestens ab dem 1. des nächsten Monats beginnen.\n\nIch freue mich auf Ihre Rückmeldung.\n\nMit freundlichen Grüßen\n[Name]'
+    },
+    {
+      title: 'Anfrage an eine Sprachschule',
+      text: 'Sie möchten einen Deutschkurs an der Sprachschule „Lingua" besuchen. Schreiben Sie eine E-Mail:\n• Erklären Sie Ihr Sprachniveau.\n• Fragen Sie nach dem Kursangebot und den Preisen.\n• Fragen Sie, ob es Abendkurse gibt.\n• Bitten Sie um Informationsmaterial.',
+      punkte: ['Sprachniveau nennen', 'Kursanfrage', 'Abendkurs-Frage', 'Materialwunsch'],
+      ziel: '80–100',
+      muster: 'Sehr geehrte Damen und Herren,\n\nich interessiere mich für einen Deutschkurs an Ihrer Schule. Mein aktuelles Sprachniveau ist A2 und ich möchte mein Deutsch auf B1-Niveau verbessern.\n\nKönnten Sie mir bitte mitteilen, welche Kurse für mein Niveau geeignet sind? Wie hoch sind die Kursgebühren? Außerdem würde ich gerne wissen, ob Sie auch Abendkurse anbieten, da ich tagsüber arbeite.\n\nIch wäre Ihnen sehr dankbar, wenn Sie mir Ihr Informationsmaterial zusenden könnten.\n\nMit freundlichen Grüßen\n[Name]'
+    },
+    {
+      title: 'Beschwerde über eine Lieferung',
+      text: 'Sie haben online einen Drucker bestellt, aber das falsche Modell erhalten. Schreiben Sie eine Beschwerde-E-Mail an den Kundenservice:\n• Beschreiben Sie das Problem genau.\n• Erklären Sie, was Sie bestellt haben und was Sie bekommen haben.\n• Fordern Sie eine Lösung.\n• Setzen Sie eine Frist.',
+      punkte: ['Problem beschreiben', 'Bestellung vs. Lieferung', 'Lösungsforderung', 'Frist setzen'],
+      ziel: '80–100',
+      muster: 'Sehr geehrte Damen und Herren,\n\nam 10. dieses Monats habe ich bei Ihnen einen Drucker (Modell HP LaserJet 107w, Bestellnummer 445821) bestellt. Leider habe ich ein völlig anderes Gerät erhalten: den HP DeskJet 2720e.\n\nDas ist nicht das Produkt, das ich bestellt und bezahlt habe. Ich bitte Sie daher, mir so schnell wie möglich das richtige Modell zuzusenden oder den Kaufpreis zurückzuerstatten.\n\nIch bitte um eine Rückmeldung bis zum 20. dieses Monats.\n\nMit freundlichen Grüßen\n[Name]'
+    },
+    {
+      title: 'Krankmeldung beim Arbeitgeber',
+      text: 'Sie sind krank und können heute nicht zur Arbeit kommen. Schreiben Sie eine E-Mail an Ihre Vorgesetzte, Frau Koch:\n• Erklären Sie, dass Sie krank sind.\n• Beschreiben Sie kurz die Symptome.\n• Sagen Sie, wie lange Sie voraussichtlich fehlen werden.\n• Erklären Sie, wie Ihre Aufgaben erledigt werden können.',
+      punkte: ['Krankmeldung', 'Symptome', 'Fehlzeit', 'Aufgabenregelung'],
+      ziel: '80–100',
+      muster: 'Sehr geehrte Frau Koch,\n\nleider muss ich Ihnen mitteilen, dass ich heute nicht zur Arbeit kommen kann. Ich bin krank: Ich habe seit gestern Abend starke Kopfschmerzen und Fieber.\n\nMein Arzt hat mir empfohlen, heute und morgen zu Hause zu bleiben. Das Attest reiche ich nach meiner Rückkehr nach.\n\nMeine dringenden Aufgaben kann Herr Müller übernehmen. Ich habe ihm bereits eine kurze Nachricht geschickt.\n\nIch entschuldige mich für die Unannehmlichkeiten.\n\nMit freundlichen Grüßen\n[Name]'
+    }
+  ],
+  informell: [
+    {
+      title: 'Einladung zum Geburtstag absagen',
+      text: 'Dein Freund Jonas hat dich zu seinem Geburtstag eingeladen. Leider kannst du nicht kommen. Schreibe eine E-Mail:\n• Bedanke dich für die Einladung.\n• Erkläre, warum du nicht kommen kannst.\n• Mache einen anderen Vorschlag, euch zu treffen.\n• Wünsche ihm alles Gute.',
+      punkte: ['Dank für Einladung', 'Absagegrund', 'Alternativvorschlag', 'Glückwunsch'],
+      ziel: '60–80',
+      muster: 'Hey Jonas,\n\nvielen Dank für deine Einladung zu deinem Geburtstag! Ich freue mich sehr, dass du an mich gedacht hast.\n\nLeider kann ich nicht kommen, weil meine Eltern am Wochenende zu Besuch sind und ich für sie kochen möchte. Es tut mir wirklich leid!\n\nAber wie wäre es, wenn wir uns nächste Woche treffen? Ich würde dich gerne auf einen Kaffee oder ein Bier einladen – als kleinen Geburtstagsersatz 😊\n\nAlles Gute zum Geburtstag! Ich hoffe, du feierst schön!\n\nLiebe Grüße\n[Name]'
+    },
+    {
+      title: 'Wohnungssuche – Freundin um Hilfe bitten',
+      text: 'Du suchst eine neue Wohnung in der Stadt. Schreibe deiner Freundin Sarah eine E-Mail:\n• Erkläre deine Situation.\n• Beschreibe, was du suchst (Größe, Lage, Preis).\n• Frage sie, ob sie helfen kann.\n• Frage nach Tipps zur Wohnungssuche.',
+      punkte: ['Situation erklären', 'Wohnungswunsch', 'Hilfebitte', 'Tipps fragen'],
+      ziel: '60–80',
+      muster: 'Hallo Sarah,\n\nwie geht es dir? Ich hoffe, du bist gesund!\n\nIch schreibe dir, weil ich gerade eine neue Wohnung suche. Mein Vermieter hat mir leider gesagt, dass ich bis Ende des Monats ausziehen muss.\n\nIch suche eine kleine Wohnung, etwa 30–40 qm, möglichst in der Nähe vom Stadtzentrum. Der Preis sollte nicht mehr als 600 Euro warm sein.\n\nKennst du vielleicht jemanden, der eine Wohnung vermietet? Oder hast du Tipps, wo ich am besten suchen kann?\n\nIch wäre dir wirklich dankbar!\n\nLiebe Grüße\n[Name]'
+    },
+    {
+      title: 'Ausflug planen',
+      text: 'Du möchtest mit deinen Freunden einen Tagesausflug machen. Schreibe deinem Freund Nico:\n• Schlage einen Ort vor und erkläre warum.\n• Beschreibe, was ihr dort machen könnt.\n• Frage, wann er Zeit hat.\n• Bitte ihn, anderen Freunden Bescheid zu geben.',
+      punkte: ['Ortsvorschlag + Begründung', 'Aktivitäten', 'Terminabsprache', 'Infoweitergabe'],
+      ziel: '60–80',
+      muster: 'Hey Nico!\n\nIch habe eine Idee für einen Ausflug: Wie wäre es mit einem Tag am Chiemsee? Der See ist wunderschön und man kann dort wirklich viel machen.\n\nWir könnten mit dem Boot zur Insel fahren, das Schloss besichtigen oder einfach am Strand sitzen und grillen. Das wird bestimmt super!\n\nWann hast du Zeit? Am besten wäre ein Samstag oder Sonntag, weil wir dann den ganzen Tag haben.\n\nKannst du bitte Julia und Tom fragen, ob sie auch mitkommen wollen? Ich freue mich schon auf den Ausflug!\n\nLiebe Grüße\n[Name]'
+    },
+    {
+      title: 'Empfehlung – Restaurant vorschlagen',
+      text: 'Deine Freundin Mia fragt dich nach einer Restaurantempfehlung. Schreibe ihr eine E-Mail:\n• Empfehle ein Restaurant.\n• Erkläre, warum es gut ist (Essen, Atmosphäre, Preis).\n• Beschreibe, wo es liegt und wie man hinkommt.\n• Schlage vor, zusammen hinzugehen.',
+      punkte: ['Restaurant nennen', 'Begründung (3 Aspekte)', 'Lage/Anfahrt', 'Einladung'],
+      ziel: '60–80',
+      muster: 'Hallo Mia,\n\nnatürlich gebe ich dir gerne eine Empfehlung! Du solltest unbedingt das „Trattoria Roma" in der Hauptstraße ausprobieren.\n\nDas Essen dort ist fantastisch – die Pasta ist selbstgemacht und die Pizzen sind riesig! Die Atmosphäre ist sehr gemütlich und das Personal ist super freundlich. Und das Beste: Es ist gar nicht teuer!\n\nDas Restaurant ist ganz einfach zu finden: Du nimmst die Linie 3 bis zur Haltestelle „Marktplatz" und gehst dann 5 Minuten zu Fuß.\n\nWollen wir vielleicht nächste Woche zusammen hingehen? Ich würde mich freuen!\n\nLiebe Grüße\n[Name]'
+    }
+  ],
+  forum: [
+    {
+      title: 'Sollten Jugendliche ein Taschengeld bekommen?',
+      text: 'In einem Online-Forum wird diskutiert: „Sollten Eltern ihren Kindern regelmäßig Taschengeld geben?" Schreibe einen Forenbeitrag:\n• Nenne deine Meinung klar.\n• Gib zwei Argumente für deine Position.\n• Beschreibe ein Beispiel aus dem Alltag.\n• Komme zu einem Schluss.',
+      punkte: ['Meinung/These', '2 Argumente', 'Alltagsbeispiel', 'Schluss'],
+      ziel: '80–100',
+      muster: 'Ich bin der Meinung, dass Kinder und Jugendliche regelmäßig Taschengeld bekommen sollten.\n\nErstens lernen sie dadurch, mit Geld umzugehen. Wenn ein Kind weiß, dass es nur 20 Euro im Monat hat, überlegt es sich genauer, wofür es das Geld ausgibt. Das ist eine wichtige Lebenserfahrung.\n\nZweitens fördert Taschengeld die Selbstständigkeit. Jugendliche können eigene Entscheidungen treffen und müssen nicht immer ihre Eltern um Geld bitten. Das stärkt ihr Selbstbewusstsein.\n\nIch kenne zum Beispiel einen Freund, der seit Jahren Taschengeld bekommt und inzwischen sogar spart, um sich ein Fahrrad zu kaufen. Das zeigt, wie motivierend das sein kann.\n\nFazit: Taschengeld ist nicht nur Geld, sondern auch ein Lernmittel für das Leben.'
+    },
+    {
+      title: 'Homeoffice – Vor- oder Nachteil?',
+      text: 'Das Thema im Forum lautet: „Ist Homeoffice besser als im Büro arbeiten?" Schreibe einen Beitrag:\n• Nenne deine Meinung.\n• Gib ein Argument dafür und eines dagegen.\n• Erkläre, was für dich persönlich wichtiger ist.\n• Schreibe einen Schluss.',
+      punkte: ['Meinung', 'Pro-Argument', 'Kontra-Argument', 'Persönliche Gewichtung', 'Schluss'],
+      ziel: '80–100',
+      muster: 'Homeoffice hat sicher viele Vorteile, aber ich persönlich bevorzuge die Arbeit im Büro.\n\nEin großer Vorteil von Homeoffice ist natürlich die Flexibilität: Man spart Zeit und Geld für den Weg zur Arbeit und kann seinen Alltag freier gestalten. Das ist besonders praktisch für Eltern mit kleinen Kindern.\n\nAber ein wichtiger Nachteil ist, dass die Kommunikation mit den Kollegen schwieriger wird. Man vermisst den persönlichen Kontakt, und viele kreative Ideen entstehen erst im direkten Gespräch.\n\nFür mich persönlich ist der soziale Aspekt sehr wichtig. Ich arbeite besser, wenn ich meine Kollegen direkt treffen und mit ihnen sprechen kann.\n\nIch denke, die beste Lösung ist eine Mischung aus beiden Modellen.'
+    },
+    {
+      title: 'Öffentliche Verkehrsmittel oder Auto?',
+      text: 'Im Forum diskutieren Nutzer: „Sollte man öffentliche Verkehrsmittel statt des Autos nutzen?" Schreibe deinen Beitrag:\n• Stelle deine Position klar dar.\n• Nenne Argumente (Umwelt, Kosten, Komfort).\n• Geh auf eine andere Meinung ein.\n• Formuliere einen Schluss.',
+      punkte: ['Position', 'Argumente', 'Gegenposition aufgreifen', 'Schluss'],
+      ziel: '80–100',
+      muster: 'Ich bin klar der Meinung, dass wir viel öfter öffentliche Verkehrsmittel nutzen sollten, anstatt mit dem Auto zu fahren.\n\nErstens ist es viel besser für die Umwelt. Busse und Bahnen verursachen pro Person viel weniger CO2 als ein eigenes Auto. Wenn mehr Menschen umsteigen, können wir gemeinsam viel für das Klima tun.\n\nZweitens ist es oft günstiger. Ein Monatsticket kostet deutlich weniger als Benzin, Versicherung und Parkgebühren zusammen.\n\nIch weiß, dass manche sagen, das Auto sei bequemer – besonders auf dem Land. Das stimmt, und ich verstehe dieses Argument. Aber in der Stadt gibt es wirklich keinen guten Grund, noch mit dem Auto zu fahren.\n\nFazit: Öffentliche Verkehrsmittel sind die klügere Wahl – für uns und für die Zukunft.'
+    },
+    {
+      title: 'Soziale Medien – Fluch oder Segen?',
+      text: 'Das Forenthema: „Sind soziale Medien schädlich für Jugendliche?" Schreibe deinen Beitrag:\n• Nenne deine Haltung zum Thema.\n• Gib zwei Beispiele oder Argumente.\n• Erkläre, was man verbessern könnte.\n• Schreibe einen kurzen Schluss.',
+      punkte: ['Haltung', '2 Argumente/Beispiele', 'Verbesserungsvorschlag', 'Schluss'],
+      ziel: '80–100',
+      muster: 'Ich glaube, soziale Medien haben sowohl positive als auch negative Seiten für Jugendliche.\n\nEinerseits helfen sie dabei, mit Freunden in Kontakt zu bleiben und Informationen schnell zu teilen. Ich selbst nutze soziale Medien, um mit meiner Familie in Vietnam zu kommunizieren – das wäre früher kaum möglich gewesen.\n\nAndererseits verbringen viele Jugendliche zu viel Zeit vor dem Bildschirm. Das kann zu Schlafproblemen führen und lenkt von der Schule ab. Außerdem gibt es leider auch Cybermobbing.\n\nIch denke, man sollte Jugendliche besser darüber aufklären, wie man soziale Medien verantwortungsvoll nutzt. Schulen könnten dazu eigene Unterrichtsstunden anbieten.\n\nFazit: Soziale Medien sind weder gut noch schlecht – es kommt darauf an, wie man sie nutzt.'
+    }
+  ]
+};
+
+var REDEMITTEL = {
+  formell: {
+    'Einstieg': ['Sehr geehrte Damen und Herren,', 'Sehr geehrter Herr / Sehr geehrte Frau …,', 'Mit großem Interesse habe ich … gelesen.', 'Ich schreibe Ihnen bezüglich …'],
+    'Hauptteil': ['Ich möchte Sie darüber informieren, dass …', 'Könnten Sie mir bitte mitteilen, …?', 'Ich bitte Sie, … zu …', 'Ich habe folgendes Problem: …', 'Leider musste ich feststellen, dass …'],
+    'Schluss': ['Ich freue mich auf Ihre Antwort.', 'Für Rückfragen stehe ich gerne zur Verfügung.', 'Ich bitte um eine baldige Rückmeldung.', 'Mit freundlichen Grüßen']
+  },
+  informell: {
+    'Einstieg': ['Hallo [Name]!', 'Hey [Name], wie geht\'s?', 'Ich hoffe, es geht dir gut!', 'Ich schreibe dir, weil …'],
+    'Hauptteil': ['Stell dir vor, …', 'Ich würde mich freuen, wenn …', 'Wie wäre es mit …?', 'Hast du Lust, …?', 'Ich hatte die Idee, …', 'Leider kann ich nicht …, weil …'],
+    'Schluss': ['Ich freue mich auf deine Antwort!', 'Meld dich bald!', 'Liebe Grüße', 'Bis bald!', 'Tschüss und alles Gute!']
+  },
+  forum: {
+    'Meinung äußern': ['Ich bin der Meinung, dass …', 'Ich denke/glaube, dass …', 'Meiner Ansicht nach …', 'Ich bin davon überzeugt, dass …'],
+    'Argumente': ['Erstens …', 'Außerdem …', 'Ein weiterer Punkt ist, dass …', 'Hinzu kommt, dass …', 'Ein wichtiger Vorteil ist …', 'Ein Nachteil ist jedoch …'],
+    'Gegenposition': ['Ich verstehe, dass … Aber …', 'Zwar … aber …', 'Einerseits … andererseits …', 'Manche sagen … Ich jedoch …'],
+    'Schluss': ['Fazit:', 'Zusammenfassend lässt sich sagen, dass …', 'Ich komme zu dem Schluss, dass …', 'Insgesamt bin ich der Meinung, dass …']
+  }
+};
+
+function getAufgaben() { return AUFGABEN[currentType]; }
+function getRedemittel() { return REDEMITTEL[currentType]; }
+
+function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function switchType(type) {
+  currentType = type;
+  document.querySelectorAll('.type-tab').forEach(function(t, i) {
+    t.classList.toggle('active', ['formell','informell','forum'][i] === type);
+  });
+  var badge = document.getElementById('aufgabeBadge');
+  var labels = { formell: 'E-Mail formell', informell: 'E-Mail informell', forum: 'Forenbeitrag' };
+  var classes = { formell: 'badge-formell', informell: 'badge-informell', forum: 'badge-forum' };
+  badge.textContent = labels[type];
+  badge.className = 'aufgabe-badge ' + classes[type];
+  neueAufgabe();
+  buildRedemittel();
+  resetFeedback();
+}
+
+function neueAufgabe() {
+  var list = getAufgaben();
+  currentAufgabe = randomItem(list);
+  document.getElementById('aufgabeTitle').textContent = currentAufgabe.title;
+  document.getElementById('aufgabeText').textContent = currentAufgabe.text;
+  var punkte = currentAufgabe.punkte.map(function(p) { return '<span>' + p + '</span>'; }).join('');
+  document.getElementById('aufgabePunkte').innerHTML = 'Inhaltspunkte: ' + punkte;
+  document.getElementById('wortZiel').textContent = currentAufgabe.ziel + ' Wörter';
+  document.getElementById('antwortText').value = '';
+  document.getElementById('wortCount').textContent = '0';
+  document.getElementById('wortCount').className = 'count';
+  resetFeedback();
+}
+
+function buildRedemittel() {
+  var rm = getRedemittel();
+  var html = '';
+  Object.keys(rm).forEach(function(section) {
+    html += '<div class="redemittel-section">' + section + '</div>';
+    html += '<div class="redemittel-list">';
+    rm[section].forEach(function(phrase) {
+      html += '<span class="rm-chip" onclick="insertPhrase(this)">' + phrase + '</span>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('rmBox').innerHTML = html;
+}
+
+function insertPhrase(el) {
+  var ta = document.getElementById('antwortText');
+  var phrase = el.textContent;
+  var pos = ta.selectionStart;
+  var val = ta.value;
+  ta.value = val.slice(0, pos) + phrase + ' ' + val.slice(pos);
+  ta.selectionStart = ta.selectionEnd = pos + phrase.length + 1;
+  ta.focus();
+  countWords();
+}
+
+function toggleRedemittel() {
+  var toggle = document.getElementById('rmToggle');
+  var box = document.getElementById('rmBox');
+  toggle.classList.toggle('open');
+  box.classList.toggle('open');
+}
+
+function countWords() {
+  var text = document.getElementById('antwortText').value.trim();
+  var count = text === '' ? 0 : text.split(/\s+/).length;
+  var el = document.getElementById('wortCount');
+  el.textContent = count;
+  var range = currentAufgabe ? currentAufgabe.ziel : '80–100';
+  var parts = range.split('–');
+  var min = parseInt(parts[0]);
+  var max = parseInt(parts[1]);
+  if (count === 0) { el.className = 'count'; }
+  else if (count < min) { el.className = 'count warn'; }
+  else if (count >= min && count <= max + 20) { el.className = 'count ok'; }
+  else { el.className = 'count warn'; }
+}
+
+document.getElementById('antwortText').addEventListener('input', countWords);
+
+function resetFeedback() {
+  var fb = document.getElementById('feedbackBox');
+  var mb = document.getElementById('musterBox');
+  fb.classList.remove('show');
+  mb.classList.remove('show');
+  document.getElementById('scoreRow').style.display = 'none';
+  document.getElementById('feedbackContent').textContent = '';
+}
+
+function resetAlles() {
+  document.getElementById('antwortText').value = '';
+  countWords();
+  resetFeedback();
+}
+
+async function submitAI() {
+  var name = document.getElementById('studentName').value.trim();
+  if (!name) {
+    document.getElementById('nameHint').classList.add('show');
+    return;
+  }
+  document.getElementById('nameHint').classList.remove('show');
+
+  var text = document.getElementById('antwortText').value.trim();
+  if (!text) { alert('Bitte schreibe zuerst deinen Text!'); return; }
+
+  var fb = document.getElementById('feedbackBox');
+  var fc = document.getElementById('feedbackContent');
+  fb.classList.add('show');
+  fc.className = 'feedback-content loading';
+  fc.textContent = 'KI bewertet deinen Text ...';
+  document.getElementById('scoreRow').style.display = 'none';
+
+  var typeLabel = { formell: 'formelle E-Mail', informell: 'informelle E-Mail', forum: 'Forenbeitrag' }[currentType];
+  var aufgabe = currentAufgabe;
+
+  var prompt = 'Du bist Deutschlehrer und bewertest eine Schreiben-Aufgabe auf Niveau B1 (Goethe-Zertifikat).\n\n'
+    + 'Aufgabentyp: ' + typeLabel + '\n'
+    + 'Aufgabe: ' + aufgabe.title + '\n'
+    + 'Inhaltspunkte: ' + aufgabe.punkte.join(', ') + '\n\n'
+    + 'Text des Lernenden (' + name + '):\n"""\n' + text + '\n"""\n\n'
+    + 'Bitte bewerte den Text auf Deutsch nach diesen Kriterien:\n'
+    + '1. INHALT (0-5 Punkte): Wurden alle Inhaltspunkte bearbeitet?\n'
+    + '2. STRUKTUR (0-5 Punkte): Ist der Text logisch aufgebaut? Gibt es Einleitung, Hauptteil, Schluss? Sind Redemittel passend verwendet?\n'
+    + '3. SPRACHE (0-5 Punkte): Grammatik, Wortschatz, Satzbau, Stil (formell/informell passend?)\n\n'
+    + 'Format deiner Antwort (genau so, kein Markdown):\n'
+    + 'INHALT: [Punkte]/5 – [kurzer Kommentar, 1-2 Sätze]\n'
+    + 'STRUKTUR: [Punkte]/5 – [kurzer Kommentar, 1-2 Sätze]\n'
+    + 'SPRACHE: [Punkte]/5 – [kurzer Kommentar, 1-2 Sätze]\n'
+    + 'GESAMTEINDRUCK: [2-3 Sätze allgemeines Feedback]\n'
+    + 'VERBESSERUNG: [1-2 konkrete Verbesserungsvorschläge]';
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    var data = await resp.json();
+    var result = data.content && data.content[0] ? data.content[0].text : 'Keine Antwort erhalten.';
+    fc.className = 'feedback-content';
+    fc.textContent = result;
+
+    var inhaltMatch = result.match(/INHALT:\s*(\d)/);
+    var strukturMatch = result.match(/STRUKTUR:\s*(\d)/);
+    var spracheMatch = result.match(/SPRACHE:\s*(\d)/);
+
+    if (inhaltMatch && strukturMatch && spracheMatch) {
+      document.getElementById('s-inhalt').textContent = inhaltMatch[1] + '/5';
+      document.getElementById('s-struktur').textContent = strukturMatch[1] + '/5';
+      document.getElementById('s-sprache').textContent = spracheMatch[1] + '/5';
+      document.getElementById('scoreRow').style.display = 'flex';
+    }
+  } catch (e) {
+    fc.className = 'feedback-content';
+    fc.textContent = 'Fehler bei der KI-Bewertung. Bitte versuche es erneut.';
+  }
+}
+
+function showMuster() {
+  if (!currentAufgabe) return;
+  var mb = document.getElementById('musterBox');
+  document.getElementById('musterText').textContent = currentAufgabe.muster;
+  mb.classList.add('show');
+  mb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* TIMER */
+function toggleTimer() {
+  if (!timerRunning) {
+    timerRunning = true;
+    timerInterval = setInterval(tickTimer, 1000);
+  } else {
+    clearInterval(timerInterval);
+    timerRunning = false;
+  }
+}
+
+function tickTimer() {
+  if (timerSeconds <= 0) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('modalOverlay').classList.add('show');
+    return;
+  }
+  timerSeconds--;
+  var m = Math.floor(timerSeconds / 60);
+  var s = timerSeconds % 60;
+  document.getElementById('timerDisplay').textContent = pad(m) + ':' + pad(s);
+  var box = document.getElementById('timerBox');
+  if (timerSeconds <= 120) { box.className = 'timer-box danger'; }
+  else if (timerSeconds <= 300) { box.className = 'timer-box warning'; }
+  else { box.className = 'timer-box'; }
+}
+
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+/* INIT */
+buildRedemittel();
+neueAufgabe();
+</script>
+</body>
+</html>
