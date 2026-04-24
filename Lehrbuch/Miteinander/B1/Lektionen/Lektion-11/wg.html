@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lektion 11 &amp; 12 – Wortschatz &amp; Grammatik</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+:root {
+  --teal:       #0F6E56;
+  --teal-mid:   #1D9E75;
+  --teal-light: #9FE1CB;
+  --teal-pale:  #E1F5EE;
+  --blue:       #185FA5;
+  --blue-mid:   #2F7DC8;
+  --blue-light: #A8CDEF;
+  --blue-pale:  #E6F1FB;
+  --slate:      #374151;
+  --slate-mid:  #6B7280;
+  --slate-light:#F3F4F6;
+  --slate-pale: #F9FAFB;
+  --white:      #FFFFFF;
+  --border:     #E5E7EB;
+  --amber:      #D97706;
+  --amber-pale: #FFFBEB;
+  --red:        #DC2626;
+  --red-pale:   #FEF2F2;
+  --green:      #16A34A;
+  --green-pale: #F0FDF4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#EEF2F0;color:var(--slate);min-height:100vh;padding-bottom:50px;}
+
+/* FLOATING HEADER */
+.hdr{
+  position:sticky;top:0;z-index:200;
+  background:linear-gradient(135deg,var(--teal) 0%,#0a4f3c 100%);
+  padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  box-shadow:0 2px 10px rgba(0,0,0,.22);
+}
+.hdr-title{font-family:'DM Serif Display',serif;color:#fff;font-size:14px;font-weight:400;flex:1;min-width:120px;}
+.name-inp{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  border-radius:6px;padding:5px 10px;color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;width:130px;
+}
+.name-inp::placeholder{color:rgba(255,255,255,.55);}
+.name-inp:focus{outline:none;background:rgba(255,255,255,.22);}
+.timer{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  border-radius:6px;padding:5px 11px;color:#fff;font-size:14px;font-weight:700;
+  font-variant-numeric:tabular-nums;min-width:66px;text-align:center;
+  transition:background .3s;
+}
+.timer.warn{background:rgba(220,38,38,.38);border-color:rgba(220,38,38,.6);}
+
+/* SCORE BAR */
+.score-bar{
+  background:rgba(15,110,86,.92);
+  padding:5px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.spill{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  border-radius:20px;padding:3px 11px;color:#fff;font-size:11px;font-weight:500;
+}
+.spill span{font-weight:700;font-size:13px;}
+
+/* TABS */
+.tabs{display:flex;background:var(--teal);padding:0 14px;border-bottom:2px solid rgba(255,255,255,.12);}
+.tab-btn{
+  background:transparent;border:none;cursor:pointer;padding:9px 16px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.58);border-bottom:3px solid transparent;
+  transition:color .2s,border-color .2s;white-space:nowrap;
+}
+.tab-btn.active{color:#fff;border-bottom-color:var(--teal-light);}
+.tab-btn.l12.active{border-bottom-color:var(--blue-light);color:#fff;}
+.tab-btn:hover{color:rgba(255,255,255,.85);}
+
+/* CONTENT */
+.content{max-width:820px;margin:0 auto;padding:18px 14px;}
+.panel{display:none;} .panel.active{display:block;}
+
+/* CARD */
+.card{background:var(--white);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.09);padding:18px;margin-bottom:18px;}
+.card-h{font-family:'DM Serif Display',serif;font-size:17px;color:var(--teal);margin-bottom:2px;}
+.card-h.blue{color:var(--blue);}
+.card-sub{font-size:12px;color:var(--slate-mid);margin-bottom:14px;}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:10px;}
+.bw{background:var(--teal-pale);color:var(--teal);}
+.bg{background:#EDE9FE;color:#5B21B6;}
+.bk{background:#FEF3C7;color:#92400E;}
+.bb{background:var(--blue-pale);color:var(--blue);}
+
+/* WORTSUCHE */
+.chain-wrap{background:var(--slate-pale);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;}
+.chain{font-size:13px;font-weight:600;letter-spacing:.06em;line-height:2.4;word-break:break-all;}
+.ch{display:inline-block;cursor:pointer;padding:1px 0;border-radius:3px;transition:background .12s,color .12s;user-select:none;}
+.ch:hover{background:var(--teal-light);}
+.ch.sel{background:var(--teal-mid);color:#fff;}
+.ch.conf{background:var(--teal-dark,#0a5040);color:#fff;}
+.ch.err{background:#FECACA;color:var(--red);}
+/* blue variant for L12 */
+.l12 .ch:hover{background:var(--blue-light);}
+.l12 .ch.sel{background:var(--blue-mid);color:#fff;}
+.l12 .ch.conf{background:var(--blue);color:#fff;}
+
+.ws-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.bt{padding:6px 13px;border-radius:7px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:opacity .15s;}
+.bt:hover{opacity:.85;}
+.bt-p{background:var(--teal);color:#fff;}
+.bt-p.blue{background:var(--blue);}
+.bt-s{background:var(--slate-light);color:var(--slate);}
+.found-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;min-height:24px;}
+.f-tag{background:var(--teal-pale);color:var(--teal);border:1px solid var(--teal-light);border-radius:20px;padding:1px 9px;font-size:11px;font-weight:600;}
+.f-tag.blue{background:var(--blue-pale);color:var(--blue);border-color:var(--blue-light);}
+
+.hint-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+@media(max-width:480px){.hint-g{grid-template-columns:1fr;}}
+.hchip{background:var(--slate-pale);border:1px dashed var(--border);border-radius:7px;padding:6px 9px;font-size:11px;color:var(--slate-mid);line-height:1.4;}
+.hchip.done{background:var(--teal-pale);border-color:var(--teal-light);color:var(--teal);}
+.hchip.done.blue{background:var(--blue-pale);border-color:var(--blue-light);color:var(--blue);}
+
+.prog-row{display:flex;align-items:center;gap:8px;margin-top:10px;}
+.prog-tr{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-fl{height:100%;background:var(--teal-mid);border-radius:99px;transition:width .3s;width:0%;}
+.prog-fl.blue{background:var(--blue-mid);}
+.prog-lb{font-size:11px;color:var(--slate-mid);white-space:nowrap;}
+
+/* LÜCKEN */
+.luc-s{font-size:14px;line-height:2.3;margin-bottom:10px;}
+.luc-in{
+  border:none;border-bottom:2px solid var(--teal-mid);background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--slate);
+  padding:0 3px;width:120px;text-align:center;outline:none;transition:border-color .2s;
+}
+.luc-in:focus{border-color:var(--teal);}
+.luc-in.ok{border-color:var(--green);background:var(--green-pale);color:var(--green);border-radius:3px 3px 0 0;}
+.luc-in.no{border-color:var(--red);background:var(--red-pale);color:var(--red);border-radius:3px 3px 0 0;}
+.luc-in.blue-f{border-color:var(--blue-mid);}
+.luc-in.blue-f:focus{border-color:var(--blue);}
+
+/* STATT/OHNE */
+.ex-prompt{font-size:13px;color:var(--slate-mid);background:var(--slate-light);border-radius:7px;padding:7px 11px;margin-bottom:7px;line-height:1.5;}
+.ex-prompt b{color:var(--slate);}
+.ex-ta{width:100%;border:1px solid var(--border);border-radius:8px;padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--slate);resize:vertical;min-height:50px;outline:none;transition:border-color .2s;}
+.ex-ta:focus{border-color:var(--teal-mid);}
+.ex-ta.blue-f:focus{border-color:var(--blue-mid);}
+.ans-box{display:none;margin-top:7px;background:var(--teal-pale);border-left:3px solid var(--teal-mid);border-radius:0 7px 7px 0;padding:7px 11px;font-size:12px;color:var(--teal);line-height:1.5;}
+.ans-box.show{display:block;}
+.ans-box.blue{background:var(--blue-pale);border-left-color:var(--blue-mid);color:var(--blue);}
+.eg-box{background:var(--amber-pale);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;margin-bottom:14px;line-height:1.6;}
+
+/* MATCHING / ZUORDNUNG */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+@media(max-width:500px){.match-grid{grid-template-columns:1fr;}}
+.match-left{display:flex;flex-direction:column;gap:6px;}
+.match-right{display:flex;flex-direction:column;gap:6px;}
+.match-item{display:flex;align-items:center;gap:8px;padding:6px 9px;background:var(--slate-pale);border:1px solid var(--border);border-radius:7px;font-size:13px;}
+.match-num{font-weight:700;color:var(--teal);min-width:16px;}
+.match-num.blue{color:var(--blue);}
+.match-sel{
+  border:none;background:var(--white);border-radius:5px;padding:3px 6px;
+  font-family:'DM Sans',sans-serif;font-size:12px;color:var(--slate);
+  outline:none;border:1px solid var(--border);cursor:pointer;
+}
+.match-r{padding:6px 9px;background:var(--teal-pale);border:1px solid var(--teal-light);border-radius:7px;font-size:12px;line-height:1.4;}
+.match-r.blue{background:var(--blue-pale);border-color:var(--blue-light);}
+
+/* MC */
+.mc-item{margin-bottom:12px;}
+.mc-q{font-size:13px;margin-bottom:6px;font-weight:500;}
+.mc-opts{display:flex;flex-direction:column;gap:5px;}
+.mc-opt{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--slate-pale);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:13px;transition:background .15s;}
+.mc-opt:hover{background:var(--teal-pale);}
+.mc-opt.blue:hover{background:var(--blue-pale);}
+.mc-opt input{accent-color:var(--teal);width:15px;height:15px;}
+.mc-opt.correct-mc{background:var(--green-pale);border-color:var(--green);}
+.mc-opt.wrong-mc{background:var(--red-pale);border-color:var(--red);}
+
+/* DIALOG */
+.dialog-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.dialog-num{background:var(--teal-pale);padding:6px 12px;font-size:11px;font-weight:700;color:var(--teal);border-bottom:1px solid var(--teal-light);}
+.dialog-num.blue{background:var(--blue-pale);color:var(--blue);border-bottom-color:var(--blue-light);}
+.dialog-body{padding:10px 12px;}
+.dline{display:flex;align-items:baseline;gap:8px;margin-bottom:9px;font-size:13px;line-height:1.8;}
+.dline:last-child{margin-bottom:0;}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.dot.a{background:var(--teal);}
+.dot.b{background:var(--slate-mid);}
+.cslot{
+  display:inline-flex;align-items:center;border:1px dashed var(--teal-mid);border-radius:6px;
+  padding:2px 7px;min-width:120px;cursor:pointer;font-size:12px;font-weight:500;
+  color:var(--slate-mid);background:var(--teal-pale);transition:all .15s;vertical-align:middle;
+}
+.cslot:hover{background:var(--teal-light);}
+.cslot.filled{color:var(--teal);border-style:solid;border-color:var(--teal-mid);}
+.cslot.cok{background:var(--green-pale);border-color:var(--green);color:var(--green);}
+.cslot.cno{background:var(--red-pale);border-color:var(--red);color:var(--red);}
+
+.word-bank{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:var(--slate-pale);border:1px solid var(--border);border-radius:8px;}
+.wchip{background:var(--white);border:1.5px solid var(--teal-mid);border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500;color:var(--teal);cursor:pointer;transition:all .15s;user-select:none;}
+.wchip:hover{background:var(--teal-pale);}
+.wchip.used{opacity:.32;pointer-events:none;text-decoration:line-through;}
+.wchip.blue-c{border-color:var(--blue-mid);color:var(--blue);}
+.wchip.blue-c:hover{background:var(--blue-pale);}
+
+/* FUTUR */
+.futur-item{margin-bottom:12px;}
+.futur-words{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+.fw{background:var(--blue-pale);border:1px solid var(--blue-light);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--blue);font-weight:500;}
+.futur-in{width:100%;border:1px solid var(--border);border-radius:7px;padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--slate);outline:none;transition:border-color .2s;}
+.futur-in:focus{border-color:var(--blue-mid);}
+.futur-in.ok{border-color:var(--green);background:var(--green-pale);}
+.futur-in.no{border-color:var(--red);background:var(--red-pale);}
+
+/* ACTIONS */
+.act-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.btn-p{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-p.blue{background:var(--blue);}
+.btn-p:hover{opacity:.87;}
+.btn-s{background:var(--slate-light);color:var(--slate);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s;}
+.btn-s:hover{opacity:.85;}
+
+/* FINAL MSG */
+.fin-msg{text-align:center;padding:14px;border-radius:10px;display:none;margin-top:12px;}
+.fin-msg.show{display:block;}
+.fin-msg.ok{background:var(--green-pale);color:var(--green);}
+.fin-msg.err{background:var(--amber-pale);color:var(--amber);}
+
+.ex-item{margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<!-- FLOATING HEADER -->
+<div class="hdr">
+  <div class="hdr-title">L11 &amp; L12 – Wortschatz &amp; Grammatik</div>
+  <input class="name-inp" type="text" id="nameInp" placeholder="Dein Name …">
+  <div class="timer" id="timerBox">15:00</div>
+</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <div class="spill">L11 Ü1: <span id="s11_1">0</span>/8</div>
+  <div class="spill">L11 Ü2: <span id="s11_2">0</span>/5</div>
+  <div class="spill">L11 Ü3: <span id="s11_3">0</span>/5</div>
+  <div class="spill">L11 Ü4: <span id="s11_4">0</span>/5</div>
+  <div class="spill">L11 Ü5: <span id="s11_5">0</span>/7</div>
+  <div class="spill" style="background:rgba(255,255,255,.22);">L11 ∑ <span id="s11tot">0</span>/30</div>
+</div>
+<div class="score-bar" style="background:rgba(24,95,165,.85);">
+  <div class="spill">L12 Ü1: <span id="s12_1">0</span>/8</div>
+  <div class="spill">L12 Ü2: <span id="s12_2">0</span>/4</div>
+  <div class="spill">L12 Ü3: <span id="s12_3">0</span>/5</div>
+  <div class="spill">L12 Ü4: <span id="s12_4">0</span>/5</div>
+  <div class="spill">L12 Ü5: <span id="s12_5">0</span>/7</div>
+  <div class="spill" style="background:rgba(255,255,255,.22);">L12 ∑ <span id="s12tot">0</span>/29</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" id="tbL11" onclick="switchTab('L11')">Lektion 11 – Luna</button>
+  <button class="tab-btn l12" id="tbL12" onclick="switchTab('L12')">Lektion 12 – Zofia</button>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════ LEKTION 11 ═══════════════════ -->
+<div class="panel active" id="panL11">
+
+<!-- Ü1: WORTSUCHE L11 -->
+<div class="card">
+  <span class="badge bw">Wörter · 8 Punkte</span>
+  <div class="card-h">Übung 1: Wortsuche</div>
+  <div class="card-sub">Klicke auf zusammenhängende Buchstaben, um ein Wort zu markieren. Dann „Prüfen" drücken. 8 Wörter sind versteckt.</div>
+  <div class="hint-g" id="hints11"></div>
+  <div class="chain-wrap">
+    <div class="chain" id="chain11"></div>
+    <div class="ws-btns">
+      <button class="bt bt-p" onclick="chkSel(11)">Prüfen ✓</button>
+      <button class="bt bt-s" onclick="clrSel(11)">Auswahl löschen</button>
+      <button class="bt bt-s" onclick="rstWS(11)">Neustart</button>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--slate-mid);margin-bottom:4px;">Gefunden:</div>
+  <div class="found-row" id="found11"></div>
+  <div class="prog-row"><div class="prog-tr"><div class="prog-fl" id="prog11"></div></div><div class="prog-lb" id="progL11">0/8</div></div>
+</div>
+
+<!-- Ü2: LÜCKENTEXT Wörter (AB Ü5 – Wörter Rentner-Text) -->
+<div class="card">
+  <span class="badge bw">Wörter · 5 Punkte</span>
+  <div class="card-h">Übung 2: Lückentext – Wörter im Kontext</div>
+  <div class="card-sub">Ergänze die richtigen Wörter. Achte auf die Wortform.</div>
+  <div id="luc11"></div>
+  <div class="act-row">
+    <button class="btn-p" onclick="chkLuc(11)">Alles prüfen</button>
+    <button class="btn-s" onclick="rstLuc(11)">Zurücksetzen</button>
+  </div>
+  <div class="fin-msg" id="fin11_luc"></div>
+</div>
+
+<!-- Ü3: STATT … ZU (AB Ü8 Verbinden + Schnelltest Ü2) -->
+<div class="card">
+  <span class="badge bg">Grammatik · 5 Punkte</span>
+  <div class="card-h">Übung 3: Sätze mit <em>statt … zu / anstatt … zu</em></div>
+  <div class="card-sub">Verbinde die Sätze. Schreib einen neuen Satz wie im Beispiel.</div>
+  <div class="eg-box"><b>Beispiel:</b> nicht so lange fernsehen → früher schlafen gehen<br>→ <em>Statt so lange fernzusehen, solltest du früher schlafen gehen.</em></div>
+  <div id="statt11"></div>
+  <div class="act-row">
+    <button class="btn-p" onclick="chkStatt(11)">Antworten zeigen</button>
+    <button class="btn-s" onclick="rstStatt(11)">Zurücksetzen</button>
+  </div>
+</div>
+
+<!-- Ü4: WÖRTER WÄHLEN – richtig/falsch (AB Ü17) -->
+<div class="card">
+  <span class="badge bw">Wörter · 5 Punkte</span>
+  <div class="card-h">Übung 4: Was passt? Markiere das richtige Wort.</div>
+  <div class="card-sub">Wähle in jeder Zeile das passende Wort aus.</div>
+  <div id="mc11"></div>
+  <div class="act-row">
+    <button class="btn-p" onclick="chkMC(11)">Prüfen</button>
+    <button class="btn-s" onclick="rstMC(11)">Zurücksetzen</button>
+  </div>
+  <div class="fin-msg" id="fin11_mc"></div>
+</div>
+
+<!-- Ü5: DIALOG (Schnelltest Ü3 + AB Ü2) -->
+<div class="card">
+  <span class="badge bk">Kommunikation · 7 Punkte</span>
+  <div class="card-h">Übung 5: Ergänze die Gespräche</div>
+  <div class="card-sub">Wähle aus dem Wortkasten und klicke dann auf die Lücke.</div>
+  <div class="word-bank" id="bank11"></div>
+  <div id="dlg11"></div>
+  <div class="act-row">
+    <button class="btn-p" onclick="chkDlg(11)">Prüfen</button>
+    <button class="btn-s" onclick="rstDlg(11)">Zurücksetzen</button>
+  </div>
+  <div class="fin-msg" id="fin11_dlg"></div>
+</div>
+
+</div><!-- /panL11 -->
+
+<!-- ═══════════════════ LEKTION 12 ═══════════════════ -->
+<div class="panel" id="panL12">
+
+<!-- Ü1: WORTSUCHE L12 -->
+<div class="card">
+  <span class="badge bb">Wörter · 8 Punkte</span>
+  <div class="card-h blue">Übung 1: Wortsuche (Lektion 12)</div>
+  <div class="card-sub">Finde 8 Wörter in der Buchstabenkette. Klicke Buchstaben an, dann „Prüfen".</div>
+  <div class="hint-g" id="hints12"></div>
+  <div class="chain-wrap l12">
+    <div class="chain" id="chain12"></div>
+    <div class="ws-btns">
+      <button class="bt bt-p blue" onclick="chkSel(12)">Prüfen ✓</button>
+      <button class="bt bt-s" onclick="clrSel(12)">Auswahl löschen</button>
+      <button class="bt bt-s" onclick="rstWS(12)">Neustart</button>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--slate-mid);margin-bottom:4px;">Gefunden:</div>
+  <div class="found-row" id="found12"></div>
+  <div class="prog-row"><div class="prog-tr"><div class="prog-fl blue" id="prog12"></div></div><div class="prog-lb" id="progL12">0/8</div></div>
+</div>
+
+<!-- Ü2: FUTUR I sätze bilden (AB Ü4 Sortieren + Schnelltest 2a) -->
+<div class="card">
+  <span class="badge" style="background:#E0F2FE;color:#0369A1;">Grammatik · 4 Punkte</span>
+  <div class="card-h blue">Übung 2: Futur I – Sätze schreiben</div>
+  <div class="card-sub">Sortiere die Wörter und schreibe Sätze im Futur I (<em>werden + Infinitiv</em>).</div>
+  <div class="eg-box"><b>Beispiel:</b> ich • werde • mit dem Bus • zur neuen Arbeitsstelle • fahren<br>→ <em>Zur neuen Arbeitsstelle werde ich mit dem Bus fahren.</em></div>
+  <div id="futur12"></div>
+  <div class="act-row">
+    <button class="btn-p blue" onclick="chkFutur()">Antworten zeigen</button>
+    <button class="btn-s" onclick="rstFutur()">Zurücksetzen</button>
+  </div>
+</div>
+
+<!-- Ü3: LÜCKENTEXT Wörter L12 (AB Ü11 Online-Kauf-Forum) -->
+<div class="card">
+  <span class="badge bb">Wörter · 5 Punkte</span>
+  <div class="card-h blue">Übung 3: Lückentext – Online-Kauf</div>
+  <div class="card-sub">Ergänze die richtigen Wörter aus dem Kontext. Achte auf die Wortform.</div>
+  <div id="luc12"></div>
+  <div class="act-row">
+    <button class="btn-p blue" onclick="chkLuc(12)">Alles prüfen</button>
+    <button class="btn-s" onclick="rstLuc(12)">Zurücksetzen</button>
+  </div>
+  <div class="fin-msg" id="fin12_luc"></div>
+</div>
+
+<!-- Ü4: OHNE … ZU / OHNE DASS (AB Ü15 + Schnelltest 2b) -->
+<div class="card">
+  <span class="badge" style="background:#E0F2FE;color:#0369A1;">Grammatik · 5 Punkte</span>
+  <div class="card-h blue">Übung 4: <em>ohne … zu</em> / <em>ohne dass</em></div>
+  <div class="card-sub">Verbinde die Sätze mit der richtigen Konstruktion.</div>
+  <div class="eg-box"><b>Regel:</b> Gleiches Subjekt → <em>ohne … zu + Infinitiv</em><br>Verschiedene Subjekte → <em>ohne dass + Nebensatz</em><br><em>Fabienne bestellt nie etwas im Internet, ohne die Preise zu vergleichen.</em></div>
+  <div id="ohne12"></div>
+  <div class="act-row">
+    <button class="btn-p blue" onclick="chkOhne()">Antworten zeigen</button>
+    <button class="btn-s" onclick="rstOhne()">Zurücksetzen</button>
+  </div>
+</div>
+
+<!-- Ü5: ZUORDNUNG Redemittel (Schnelltest Ü3 + AB Ü8 Vermutungen) -->
+<div class="card">
+  <span class="badge bk">Kommunikation · 7 Punkte</span>
+  <div class="card-h blue">Übung 5: Zuordnung – Was kann man damit sagen?</div>
+  <div class="card-sub">Ordne jede Aussage (1–7) der passenden Funktion (A–G) zu.</div>
+  <div id="zuo12"></div>
+  <div class="act-row">
+    <button class="btn-p blue" onclick="chkZuo()">Prüfen</button>
+    <button class="btn-s" onclick="rstZuo()">Zurücksetzen</button>
+  </div>
+  <div class="fin-msg" id="fin12_zuo"></div>
+</div>
+
+</div><!-- /panL12 -->
+</div><!-- /content -->
+
+<script>
+/* ══════════════════════════════════════════════════
+   DATA – LEKTION 11
+══════════════════════════════════════════════════ */
+var CHAIN11 = "CHERZIEHENSÜTSCHAUFENSTERDISBÜCHEREITERSEHENS" +
+              "WÜRDIGKEITKUBGEINNENSTADTKTORDNENSHUBS" +
+              "TERABESICHTIGENWEIFREEINTRAGENISCHICHT";
+var WORDS11 = [
+  {w:"ERZIEHEN",     h:"Kinder großziehen und fördern"},
+  {w:"SCHAUFENSTER", h:"Glasscheibe am Laden mit Waren"},
+  {w:"BÜCHEREI",     h:"Öffentliche Bibliothek"},
+  {w:"SEHENSWÜRDIGKEIT", h:"Ort, den man in einer Stadt besuchen sollte"},
+  {w:"INNENSTADT",   h:"Das Zentrum einer Stadt"},
+  {w:"ORDNEN",       h:"Dinge in Ordnung/Reihenfolge bringen"},
+  {w:"BESICHTIGEN",  h:"Einen Ort offiziell anschauen"},
+  {w:"EINTRAGEN",    h:"Etwas in eine Liste/Plan schreiben"}
+];
+
+// Ü2 Lückentext L11 (AB Ü5 – Rentner-Text)
+var LUC11 = [
+  {s:"Endlich kann ich wieder in die", b:"", a:" (Innenstadt) fahren und unsere tollen", inp:"li11_0", key:"INNENSTADT", acc:["Innenstadt","die Innenstadt","innenstadt"]},
+  {s:"", b:"Ich besichtige", a:" gern die (Sehenswürdigkeiten).", inp:"li11_1", key:"SW", acc:["Sehenswürdigkeiten","sehenswürdigkeiten","die Sehenswürdigkeiten"]},
+  {s:"Ich fühle mich wie eine Touristin. Oft gehe ich auch mit meinen Enkeln in den", b:"", a:" (Tierpark).", inp:"li11_2", key:"TP", acc:["Tierpark","den Tierpark","Tier park"]},
+  {s:"Ich habe eine", b:"", a:" (Jahreskarte) für jeden gekauft.", inp:"li11_3", key:"JK", acc:["Jahreskarte","die Jahreskarte","jahreskarte"]},
+  {s:"Außerdem habe ich mich in einer", b:"", a:" (Bücherei) angemeldet.", inp:"li11_4", key:"BUE", acc:["Bücherei","der Bücherei","die Bücherei","bücherei"]}
+];
+
+// Ü3 statt…zu L11 (AB Ü8 Verbinden + Schnelltest)
+var STATT11 = [
+  {p:["sich auf den Frühling freuen","sich nicht über den Winter ärgern"],
+   a:"Statt sich auf den Frühling zu freuen, solltest du dich nicht über den Winter ärgern.",pts:1},
+  {p:["nicht auf die Nachbarn sauer sein","mit Humor das Problem lösen"],
+   a:"Statt auf die Nachbarn sauer zu sein, solltest du mit Humor das Problem lösen.",pts:1},
+  {p:["Termine nicht auf einem Zettel notieren","sie in einen digitalen Kalender eintragen"],
+   a:"Statt Termine auf einem Zettel zu notieren, solltest du sie in einen digitalen Kalender eintragen.",pts:1},
+  {p:["nicht auf deinen Bruder sauer sein","lieber das Problem erklären"],
+   a:"Statt auf deinen Bruder sauer zu sein, solltest du lieber das Problem erklären.",pts:1},
+  {p:["sich auf den Urlaub freuen","sich nicht über die Arbeit beschweren"],
+   a:"Statt dich auf den Urlaub zu freuen, solltest du dich nicht über die Arbeit beschweren.",pts:1}
+];
+
+// Ü4 MC – Wörter L11 (AB Ü17)
+var MC11 = [
+  {q:"1  Ich war in ein paar Tagen ___ bei einer interessanten Fortbildung.",
+   opts:["neulich","jederzeit","nochmals","damals"], ans:0},
+  {q:"2  Mein Bruder ruft mich ___ an, wenn er Hilfe braucht.",
+   opts:["jederzeit","neulich","gründlich","statt"], ans:0},
+  {q:"3  Ich habe so einen ___ bekommen, als ich merkte, dass mein Geldbeutel weg war.",
+   opts:["Schreck","Gedanke","Schicht","Mahlzeit"], ans:0},
+  {q:"4  Wir ___ uns für Sonntag mit Freunden zum Grillen.",
+   opts:["verabreden","chatten","eintragen","ordnen"], ans:0},
+  {q:"5  Wir müssen uns ___ Gedanken machen, wann wir die Wohnung renovieren wollen.",
+   opts:["bald","gründlich","neulich","jederzeit"], ans:0}
+];
+
+// Ü5 Dialog L11 (Schnelltest Ü3 + AB Ü2 ergänzt)
+var BANK11 = [
+  "dass du alles ganz anders machst als wir",
+  "dass wir das jetzt klären müssen",
+  "gibt es doch nicht",
+  "Ich hatte einen Riesenstress wegen dir",
+  "ich kann dir zeigen",
+  "Kannst du etwa keinen Computer",
+  "Warum warst du gestern so sauer",
+  "Willst du damit sagen"
+];
+var DLG11 = [
+  {num:1, lines:[
+    {sp:"a",segs:[{t:"Das "},{sl:"d11_1a",an:"gibt es doch nicht"},{t:"! "},{sl:"d11_1b",an:"Kannst du etwa keinen Computer"},{t:" bedienen?"}]},
+    {sp:"b",segs:[{t:"Moment mal! Wie sprichst du denn mit mir?"}]},
+    {sp:"a",segs:[{t:"Ach, vergiss es!"}]},
+    {sp:"b",segs:[{t:"Nein! Ich finde, "},{sl:"d11_1c",an:"dass wir das jetzt klären müssen"},{t:"."}]}
+  ]},
+  {num:2, lines:[
+    {sp:"a",segs:[{sl:"d11_2a",an:"Warum warst du gestern so sauer"},{t:"? Du warst sehr unfreundlich zu mir."}]},
+    {sp:"b",segs:[{sl:"d11_2b",an:"Ich hatte einen Riesenstress wegen dir"},{t:" und dann bin ich zu spät zum Termin gekommen."}]},
+    {sp:"a",segs:[{sl:"d11_2c",an:"Willst du damit sagen"},{t:", dass ich schuld bin, wenn du unpünktlich bist?"}]}
+  ]},
+  {num:3, lines:[
+    {sp:"a",segs:[{t:"Das Problem ist, "},{sl:"d11_3a",an:"dass du alles ganz anders machst als wir"},{t:"."}]},
+    {sp:"b",segs:[{t:"Wie meinst du das denn jetzt?"}]},
+    {sp:"a",segs:[{t:"Du trägst die Daten falsch ein, aber "},{sl:"d11_3b",an:"ich kann dir zeigen"},{t:", wie wir das machen."}]}
+  ]}
+];
+
+/* ══════════════════════════════════════════════════
+   DATA – LEKTION 12
+══════════════════════════════════════════════════ */
+var CHAIN12 = "DVDRETTENAPPARATEENTSORGENZAHNBÜRSTENSCHÄTZENZEUG" +
+              "JEMALSZWINGENFESTPLATTEUNHEIMLICHTROCKNEN" +
+              "VORNEHMENDIGITALSENDERSCHEINVERPACKEN";
+var WORDS12 = [
+  {w:"DVD",         h:"Optischer Datenträger für Filme"},
+  {w:"ENTSORGEN",   h:"Etwas wegwerfen / in den Müll geben"},
+  {w:"ZAHNBÜRSTE",  h:"Gerät zum Zähneputzen"},
+  {w:"ZEUG",        h:"Umgangssprachlich für Dinge/Sachen"},
+  {w:"FESTPLATTE",  h:"Speichermedium im Computer"},
+  {w:"VORNEHMEN",   h:"Sich etwas planen / sich etwas vornehmen"},
+  {w:"DIGITAL",     h:"Elektronisch, nicht analog"},
+  {w:"VERPACKEN",   h:"Etwas einwickeln / in eine Verpackung tun"}
+];
+
+// Ü2 Futur I L12 (AB Ü4 Sortieren)
+var FUTUR12 = [
+  {words:["ich","werde","meine Arbeitszeit","beginnen","Wann","?"], ans:"Wann werde ich meine Arbeitszeit beginnen?",pts:1},
+  {words:["morgens","ich","werde","Um wie viel Uhr","aus dem Haus","gehen","?"], ans:"Um wie viel Uhr werde ich morgens aus dem Haus gehen?",pts:1},
+  {words:["ich","Mittags","werde","essen","in der Kantine","."], ans:"Mittags werde ich in der Kantine essen.",pts:1},
+  {words:["ich","viele neue Leute","kennenlernen","werde","."], ans:"Ich werde viele neue Leute kennenlernen.",pts:1}
+];
+
+// Ü3 Lückentext L12 (AB Ü11 simplify + Schnelltest Ü1 mix)
+var LUC12 = [
+  {pre:"Ich habe im Internet eine elektrische", suf:" bestellt. Der Verkäufer hat geschrieben, dass sie sauber ist.", inp:"li12_0", acc:["Zahnbürste","zahnbürste","die Zahnbürste","eine Zahnbürste"]},
+  {pre:"Aber erst habe ich drei Wochen auf die", suf:" gewartet.", inp:"li12_1", acc:["Lieferung","die Lieferung","lieferung"]},
+  {pre:"Ich hätte sie nur noch im Müll", suf:" können.", inp:"li12_2", acc:["entsorgen","entsorgt"]},
+  {pre:"Der Verkäufer sagt, ich kann die Zahnbürste", suf:". Aber ich will mein Geld zurück.", inp:"li12_3", acc:["umtauschen","umtauscht"]},
+  {pre:"Oh je! Könnt ihr euch irgendwie", suf:"?", inp:"li12_4", acc:["einigen","einigt","einige"]}
+];
+
+// Ü4 ohne…zu / ohne dass (AB Ü15 + Schnelltest)
+var OHNE12 = [
+  {p:["Fabienne bestellt nie etwas im Internet.","Sie vergleicht die Preise nicht.","(ohne…zu, gleiche Person)"],
+   a:"Fabienne bestellt nie etwas im Internet, ohne die Preise zu vergleichen.",pts:1},
+  {p:["Ich habe das Handy zurückgeschickt.","Ich habe es nicht ausprobiert.","(ohne…zu)"],
+   a:"Ich habe das Handy zurückgeschickt, ohne es auszuprobieren.",pts:1},
+  {p:["Manche Unternehmen schicken mir Werbung.","Ich habe dort nichts gekauft.","(ohne dass, versch. Subjekte)"],
+   a:"Manche Unternehmen schicken mir Werbung, ohne dass ich dort etwas gekauft habe.",pts:1},
+  {p:["Ich habe den Wettbewerb gewonnen.","Ich musste mich nicht anstrengen.","(ohne dass)"],
+   a:"Ich habe den Wettbewerb gewonnen, ohne dass ich mich anstrengen musste.",pts:1},
+  {p:["Thilo kauft Brillen online.","Er probiert sie vorher nicht an.","(ohne…zu)"],
+   a:"Thilo kauft Brillen online, ohne sie vorher anzuprobieren.",pts:1}
+];
+
+// Ü5 Zuordnung L12 (Schnelltest Ü3 + AB Ü8)
+var ZUO12_STMTS = [
+  "Was macht man damit?",
+  "Vermutlich gibt es …",
+  "Ich fürchte, dass ...",
+  "Der Artikel wurde beschädigt geliefert.",
+  "Funktioniert das Gerät trotzdem?",
+  "Das Gerät funktioniert einwandfrei.",
+  "Kann man am Preis noch was machen?"
+];
+var ZUO12_FUNS = [
+  {id:"A",txt:"nach dem Zustand eines Artikels fragen"},
+  {id:"B",txt:"etwas reklamieren"},
+  {id:"C",txt:"über den Preis verhandeln"},
+  {id:"D",txt:"über den Zustand informieren"},
+  {id:"E",txt:"eine Hypothese aufstellen"},
+  {id:"F",txt:"Sorge ausdrücken"},
+  {id:"G",txt:"nach dem Zweck fragen"}
+];
+var ZUO12_ANS = ["G","E","F","B","A","D","C"]; // 1→G,2→E,3→F,4→B,5→A,6→D,7→C
+
+/* ══════════════════════════════════════════════════
+   GLOBAL STATE
+══════════════════════════════════════════════════ */
+var ws = {
+  11:{chain:CHAIN11,words:WORDS11,sel:[],conf:[],found:[]},
+  12:{chain:CHAIN12,words:WORDS12,sel:[],conf:[],found:[]}
+};
+var scores = {s11_1:0,s11_2:0,s11_3:0,s11_4:0,s11_5:0,s12_1:0,s12_2:0,s12_3:0,s12_4:0,s12_5:0};
+
+/* timer per tab */
+var timers = {L11:{left:15*60,iv:null}, L12:{left:15*60,iv:null}};
+var curTab = "L11";
+
+/* dialog state */
+var dlg11State = {}; var dlg11Filled = {}; var dlg11Active = null;
+var zuo12Sel = {};   // idx -> letter
+
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
+window.onload = function() {
+  buildWS(11); buildWS(12);
+  buildLuc11(); buildLuc12();
+  buildStatt(11); buildFutur(); buildOhne();
+  buildMC11(); buildZuo12();
+  buildDlg11();
+  startTimer("L11");
+};
+
+/* ══════════════════════════════════════════════════
+   TABS + TIMER
+══════════════════════════════════════════════════ */
+function switchTab(t) {
+  curTab = t;
+  document.getElementById("panL11").classList.toggle("active", t==="L11");
+  document.getElementById("panL12").classList.toggle("active", t==="L12");
+  document.getElementById("tbL11").classList.toggle("active", t==="L11");
+  document.getElementById("tbL12").classList.toggle("active", t==="L12");
+  if (!timers[t].iv) startTimer(t);
+  renderTimer(t);
+}
+
+function startTimer(t) {
+  if (timers[t].iv) return;
+  timers[t].iv = setInterval(function() {
+    if (curTab !== t) return;
+    timers[t].left--;
+    renderTimer(t);
+    if (timers[t].left <= 0) { clearInterval(timers[t].iv); timers[t].iv = null; }
+  }, 1000);
+}
+
+function renderTimer(t) {
+  var l = timers[t].left;
+  var m = Math.floor(l/60), s = l%60;
+  var box = document.getElementById("timerBox");
+  box.textContent = pad(m)+":"+pad(s);
+  box.classList.toggle("warn", l <= 300);
+}
+function pad(n){return n<10?"0"+n:n;}
+
+/* ══════════════════════════════════════════════════
+   SCORE
+══════════════════════════════════════════════════ */
+function updScores() {
+  var keys = Object.keys(scores);
+  keys.forEach(function(k){ var el=document.getElementById(k); if(el) el.textContent=scores[k]; });
+  var t11=scores.s11_1+scores.s11_2+scores.s11_3+scores.s11_4+scores.s11_5;
+  var t12=scores.s12_1+scores.s12_2+scores.s12_3+scores.s12_4+scores.s12_5;
+  document.getElementById("s11tot").textContent=t11;
+  document.getElementById("s12tot").textContent=t12;
+}
+
+/* ══════════════════════════════════════════════════
+   WORTSUCHE
+══════════════════════════════════════════════════ */
+function buildWS(L) {
+  var d = ws[L];
+  // hints
+  var hg = document.getElementById("hints"+L);
+  hg.innerHTML = "";
+  d.words.forEach(function(w,i){
+    var div=document.createElement("div"); div.className="hchip"; div.id="hc"+L+"_"+i;
+    div.innerHTML="<b>"+(i+1)+".</b> "+esc(w.h); hg.appendChild(div);
+  });
+  // chain
+  var ch = document.getElementById("chain"+L); ch.innerHTML="";
+  for(var i=0;i<d.chain.length;i++){
+    var s=document.createElement("span"); s.className="ch"; s.textContent=d.chain[i];
+    s.dataset.i=i; s.dataset.L=L;
+    s.addEventListener("click", onChar);
+    ch.appendChild(s);
+  }
+}
+
+function onChar(e) {
+  var i=parseInt(e.target.dataset.i), L=parseInt(e.target.dataset.L), d=ws[L];
+  if(isConf(d,i)) return;
+  var p=d.sel.indexOf(i);
+  if(p===-1){d.sel.push(i); e.target.classList.add("sel");}
+  else{d.sel.splice(p,1); e.target.classList.remove("sel");}
+}
+
+function isConf(d,i){
+  for(var r=0;r<d.conf.length;r++) if(i>=d.conf[r][0]&&i<=d.conf[r][1]) return true;
+  return false;
+}
+
+function chkSel(L) {
+  var d=ws[L]; if(d.sel.length<2) return;
+  var sorted=d.sel.slice().sort(function(a,b){return a-b;});
+  for(var i=1;i<sorted.length;i++) if(sorted[i]!==sorted[i-1]+1){flashErr(L);return;}
+  var st=sorted[0],en=sorted[sorted.length-1];
+  var sel=d.chain.substring(st,en+1).toUpperCase();
+  var match=null;
+  for(var w=0;w<d.words.length;w++) if(d.words[w].w===sel&&d.found.indexOf(d.words[w].w)===-1){match=d.words[w];break;}
+  if(match){
+    d.conf.push([st,en]); d.found.push(match.w);
+    var chs=document.querySelectorAll("#chain"+L+" .ch");
+    for(var i=st;i<=en;i++){chs[i].classList.remove("sel"); chs[i].classList.add("conf");}
+    d.sel=[];
+    var tag=document.createElement("span"); tag.className="f-tag"+(L===12?" blue":"");
+    tag.textContent=match.w[0]+match.w.slice(1).toLowerCase();
+    document.getElementById("found"+L).appendChild(tag);
+    var wi=d.words.indexOf(match);
+    var hc=document.getElementById("hc"+L+"_"+wi);
+    hc.classList.add("done"); if(L===12) hc.classList.add("blue");
+    var pct=(d.found.length/8)*100;
+    document.getElementById("prog"+L).style.width=pct+"%";
+    document.getElementById("progL"+L).textContent=d.found.length+"/8";
+    if(L===11){scores.s11_1=d.found.length;}else{scores.s12_1=d.found.length;}
+    updScores();
+  } else {flashErr(L);}
+}
+
+function flashErr(L) {
+  var sels=document.querySelectorAll("#chain"+L+" .ch.sel");
+  sels.forEach(function(s){s.classList.remove("sel");s.classList.add("err");});
+  setTimeout(function(){
+    document.querySelectorAll("#chain"+L+" .ch.err").forEach(function(s){s.classList.remove("err");});
+    ws[L].sel=[];
+  },650);
+}
+
+function clrSel(L) {
+  document.querySelectorAll("#chain"+L+" .ch.sel, #chain"+L+" .ch.err").forEach(function(s){s.classList.remove("sel","err");});
+  ws[L].sel=[];
+}
+
+function rstWS(L) {
+  ws[L].sel=[]; ws[L].conf=[]; ws[L].found=[];
+  document.getElementById("found"+L).innerHTML="";
+  document.getElementById("prog"+L).style.width="0%";
+  document.getElementById("progL"+L).textContent="0/8";
+  document.querySelectorAll(".hchip[id^='hc"+L+"']").forEach(function(h){h.classList.remove("done","blue");});
+  if(L===11){scores.s11_1=0;}else{scores.s12_1=0;} updScores();
+  buildWS(L);
+}
+
+/* ══════════════════════════════════════════════════
+   LÜCKENTEXT L11
+══════════════════════════════════════════════════ */
+function buildLuc11() {
+  var c=document.getElementById("luc11"); c.innerHTML="";
+  LUC11.forEach(function(item,i){
+    var p=document.createElement("p"); p.className="luc-s"; p.style.marginBottom="12px";
+    p.innerHTML="<b>"+(i+1)+".</b> "+esc(item.s)+" "+esc(item.b)+
+      " <input class='luc-in' id='"+item.inp+"' type='text' placeholder='…' style='width:150px;'>"+
+      " "+esc(item.a);
+    c.appendChild(p);
+  });
+}
+
+function chkLuc(L) {
+  var items=L===11?LUC11:LUC12;
+  var ok=0,tot=items.length;
+  items.forEach(function(item){
+    var inp=document.getElementById(item.inp); if(!inp) return;
+    var v=inp.value.trim();
+    var good=item.acc.some(function(a){return norm(v)===norm(a);});
+    inp.className="luc-in "+(good?"ok":"no");
+    if(good) ok++;
+  });
+  if(L===11){scores.s11_2=ok;}else{scores.s12_3=ok;} updScores();
+  var fin=document.getElementById("fin"+(L===11?"11":"12")+"_luc");
+  fin.className="fin-msg show "+(ok===tot?"ok":"err");
+  fin.textContent=ok+" von "+tot+" richtig"+(ok===tot?" – Super! 🎉":"! Schau die markierten Felder nochmal an.");
+}
+
+function rstLuc(L) {
+  var items=L===11?LUC11:LUC12;
+  items.forEach(function(item){
+    var inp=document.getElementById(item.inp);
+    if(inp){inp.value="";inp.className="luc-in"+(L===12?" blue-f":"");}
+  });
+  document.getElementById("fin"+(L===11?"11":"12")+"_luc").className="fin-msg";
+  if(L===11){scores.s11_2=0;}else{scores.s12_3=0;} updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   LÜCKENTEXT L12
+══════════════════════════════════════════════════ */
+function buildLuc12() {
+  var c=document.getElementById("luc12"); c.innerHTML="";
+  LUC12.forEach(function(item,i){
+    var p=document.createElement("p"); p.className="luc-s"; p.style.marginBottom="12px";
+    p.innerHTML="<b>"+(i+1)+".</b> "+esc(item.pre)+
+      " <input class='luc-in blue-f' id='"+item.inp+"' type='text' placeholder='…' style='width:140px;'>"+
+      " "+esc(item.suf);
+    c.appendChild(p);
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   STATT … ZU
+══════════════════════════════════════════════════ */
+function buildStatt(L) {
+  var c=document.getElementById("statt"+L); c.innerHTML="";
+  STATT11.forEach(function(item,i){
+    var d=document.createElement("div"); d.className="ex-item";
+    d.innerHTML='<div class="ex-prompt"><b>'+(i+1)+'.</b> '+esc(item.p[0])+" – "+esc(item.p[1])+'</div>'+
+      '<textarea class="ex-ta" id="st11_'+i+'" placeholder="Schreib deinen Satz …"></textarea>'+
+      '<div class="ans-box" id="sa11_'+i+'"><b>Musterlösung:</b><br>'+esc(item.a)+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function chkStatt(L) {
+  var tot=0;
+  STATT11.forEach(function(item,i){
+    document.getElementById("sa11_"+i).classList.add("show");
+    if((document.getElementById("st11_"+i).value||"").trim().length>5) tot++;
+  });
+  scores.s11_3=Math.min(5,tot); updScores();
+}
+
+function rstStatt(L) {
+  STATT11.forEach(function(_,i){
+    document.getElementById("st11_"+i).value="";
+    document.getElementById("sa11_"+i).classList.remove("show");
+  });
+  scores.s11_3=0; updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   MC L11
+══════════════════════════════════════════════════ */
+function buildMC11() {
+  var c=document.getElementById("mc11"); c.innerHTML="";
+  MC11.forEach(function(item,qi){
+    var d=document.createElement("div"); d.className="mc-item";
+    var opts=item.opts.map(function(o,oi){
+      return '<label class="mc-opt" id="mco11_'+qi+'_'+oi+'"><input type="radio" name="mc11_'+qi+'" value="'+oi+'"> '+esc(o)+'</label>';
+    }).join("");
+    d.innerHTML='<div class="mc-q">'+esc(item.q)+'</div><div class="mc-opts">'+opts+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function chkMC(L) {
+  var ok=0;
+  MC11.forEach(function(item,qi){
+    var sel=document.querySelector('input[name="mc11_'+qi+'"]:checked');
+    item.opts.forEach(function(_,oi){
+      var el=document.getElementById("mco11_"+qi+"_"+oi);
+      if(!el) return;
+      el.classList.remove("correct-mc","wrong-mc");
+      if(oi===item.ans) el.classList.add("correct-mc");
+      else if(sel&&parseInt(sel.value)===oi) el.classList.add("wrong-mc");
+    });
+    if(sel&&parseInt(sel.value)===item.ans) ok++;
+  });
+  scores.s11_4=ok; updScores();
+  var fin=document.getElementById("fin11_mc");
+  fin.className="fin-msg show "+(ok===MC11.length?"ok":"err");
+  fin.textContent=ok+" von "+MC11.length+" richtig"+(ok===MC11.length?" – Ausgezeichnet! 🎉":"!");
+}
+
+function rstMC(L) {
+  MC11.forEach(function(_,qi){
+    var inps=document.querySelectorAll('input[name="mc11_'+qi+'"]');
+    inps.forEach(function(inp){inp.checked=false;});
+    _.opts.forEach(function(__,oi){
+      var el=document.getElementById("mco11_"+qi+"_"+oi);
+      if(el) el.classList.remove("correct-mc","wrong-mc");
+    });
+  });
+  document.getElementById("fin11_mc").className="fin-msg";
+  scores.s11_4=0; updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   DIALOG L11
+══════════════════════════════════════════════════ */
+function buildDlg11() {
+  // bank
+  var bk=document.getElementById("bank11"); bk.innerHTML="";
+  BANK11.forEach(function(ph,bi){
+    var c=document.createElement("span"); c.className="wchip"; c.id="bch11_"+bi;
+    c.textContent=ph; c.dataset.bi=bi;
+    c.addEventListener("click",function(){pickChip11(bi);});
+    bk.appendChild(c);
+  });
+  // dialogs
+  var c=document.getElementById("dlg11"); c.innerHTML="";
+  DLG11.forEach(function(dlg){
+    var box=document.createElement("div"); box.className="dialog-box";
+    var num=document.createElement("div"); num.className="dialog-num";
+    num.textContent="Dialog "+dlg.num; box.appendChild(num);
+    var body=document.createElement("div"); body.className="dialog-body";
+    dlg.lines.forEach(function(line){
+      var ld=document.createElement("div"); ld.className="dline";
+      var dot=document.createElement("span"); dot.className="dot "+line.sp; ld.appendChild(dot);
+      var txt=document.createElement("span"); txt.style.flex="1";
+      line.segs.forEach(function(seg){
+        if(seg.t!==undefined){txt.appendChild(document.createTextNode(seg.t));}
+        else if(seg.sl){
+          var sl=document.createElement("span"); sl.className="cslot"; sl.id="sl_"+seg.sl;
+          sl.dataset.sl=seg.sl; sl.dataset.an=seg.an; sl.textContent="…";
+          sl.addEventListener("click",function(){actSlot11(seg.sl);});
+          txt.appendChild(sl); dlg11Filled[seg.sl]=null;
+        }
+      });
+      ld.appendChild(txt); body.appendChild(ld);
+    });
+    box.appendChild(body); c.appendChild(box);
+  });
+}
+
+function actSlot11(slId){
+  if(dlg11Active){var prev=document.getElementById("sl_"+dlg11Active);if(prev)prev.style.outline="";}
+  dlg11Active=slId;
+  document.getElementById("sl_"+slId).style.outline="2px solid var(--teal)";
+}
+
+function pickChip11(bi){
+  if(!dlg11Active) return;
+  var ph=BANK11[bi];
+  // Clear if already used
+  for(var sid in dlg11State){
+    if(dlg11State[sid]===bi){
+      var old=document.getElementById("sl_"+sid);
+      if(old){old.textContent="…";old.classList.remove("filled");}
+      dlg11State[sid]=null;
+    }
+  }
+  var el=document.getElementById("sl_"+dlg11Active);
+  el.textContent=ph; el.classList.add("filled"); el.style.outline="";
+  dlg11State[dlg11Active]=bi; dlg11Filled[dlg11Active]=ph;
+  updBankUsed11(); dlg11Active=null;
+}
+
+function updBankUsed11(){
+  var used={};
+  for(var sid in dlg11State) if(dlg11State[sid]!==null) used[dlg11State[sid]]=true;
+  BANK11.forEach(function(_,bi){
+    var c=document.getElementById("bch11_"+bi); if(c) c.classList.toggle("used",!!used[bi]);
+  });
+}
+
+function chkDlg(L){
+  var ok=0,tot=0;
+  document.querySelectorAll("#dlg11 .cslot").forEach(function(el){
+    tot++;
+    var ok2=norm(dlg11Filled[el.dataset.sl]||"")===norm(el.dataset.an);
+    el.classList.remove("cok","cno"); el.classList.add(ok2?"cok":"cno");
+    if(ok2) ok++;
+  });
+  scores.s11_5=ok; updScores();
+  var fin=document.getElementById("fin11_dlg");
+  fin.className="fin-msg show "+(ok===tot?"ok":"err");
+  fin.textContent=ok+" von "+tot+" richtig"+(ok===tot?" – Sehr gut! 🎉":"!");
+}
+
+function rstDlg(L){
+  dlg11State={}; dlg11Filled={}; dlg11Active=null;
+  document.querySelectorAll("#dlg11 .cslot").forEach(function(el){
+    el.textContent="…"; el.classList.remove("filled","cok","cno"); el.style.outline="";
+  });
+  document.querySelectorAll("#bank11 .wchip").forEach(function(c){c.classList.remove("used");});
+  document.getElementById("fin11_dlg").className="fin-msg";
+  scores.s11_5=0; updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   FUTUR L12
+══════════════════════════════════════════════════ */
+function buildFutur(){
+  var c=document.getElementById("futur12"); c.innerHTML="";
+  FUTUR12.forEach(function(item,i){
+    var d=document.createElement("div"); d.className="ex-item";
+    var wds=item.words.map(function(w){return '<span class="fw">'+esc(w)+'</span>';}).join(" ");
+    d.innerHTML='<div class="futur-words">'+wds+'</div>'+
+      '<input class="futur-in" id="fut_'+i+'" type="text" placeholder="Schreib den Satz …">'+
+      '<div class="ans-box blue" id="futa_'+i+'" style="display:none;margin-top:6px;"><b>Musterlösung:</b><br>'+esc(item.ans)+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function chkFutur(){
+  var tot=0;
+  FUTUR12.forEach(function(item,i){
+    var el=document.getElementById("futa_"+i); el.style.display="block";
+    if((document.getElementById("fut_"+i).value||"").trim().length>5) tot++;
+  });
+  scores.s12_2=Math.min(4,tot); updScores();
+}
+
+function rstFutur(){
+  FUTUR12.forEach(function(_,i){
+    document.getElementById("fut_"+i).value="";
+    document.getElementById("futa_"+i).style.display="none";
+  });
+  scores.s12_2=0; updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   OHNE … ZU / OHNE DASS
+══════════════════════════════════════════════════ */
+function buildOhne(){
+  var c=document.getElementById("ohne12"); c.innerHTML="";
+  OHNE12.forEach(function(item,i){
+    var d=document.createElement("div"); d.className="ex-item";
+    d.innerHTML='<div class="ex-prompt"><b>'+(i+1)+'.</b> '+esc(item.p[0])+" / "+esc(item.p[1])+'<br><small style="font-size:11px;color:var(--blue-mid);">'+esc(item.p[2])+'</small></div>'+
+      '<textarea class="ex-ta blue-f" id="oh_'+i+'" placeholder="Schreib deinen Satz …"></textarea>'+
+      '<div class="ans-box blue" id="oha_'+i+'"><b>Musterlösung:</b><br>'+esc(item.a)+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function chkOhne(){
+  var tot=0;
+  OHNE12.forEach(function(_,i){
+    document.getElementById("oha_"+i).classList.add("show");
+    if((document.getElementById("oh_"+i).value||"").trim().length>5) tot++;
+  });
+  scores.s12_4=Math.min(5,tot); updScores();
+}
+
+function rstOhne(){
+  OHNE12.forEach(function(_,i){
+    document.getElementById("oh_"+i).value="";
+    document.getElementById("oha_"+i).classList.remove("show");
+  });
+  scores.s12_4=0; updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   ZUORDNUNG L12
+══════════════════════════════════════════════════ */
+function buildZuo12(){
+  var c=document.getElementById("zuo12"); c.innerHTML="";
+  // Right side: function labels
+  var funHtml=ZUO12_FUNS.map(function(f){
+    return '<div class="match-r blue"><b>'+f.id+'.</b> '+esc(f.txt)+'</div>';
+  }).join("");
+  // Left side: statement + select
+  var opts=ZUO12_FUNS.map(function(f){return '<option value="'+f.id+'">'+f.id+'</option>';}).join("");
+  var leftHtml=ZUO12_STMTS.map(function(s,i){
+    return '<div class="match-item"><span class="match-num blue">'+(i+1)+'.</span>'+
+      '<span style="flex:1;font-size:12px;">'+esc(s)+'</span>'+
+      '<select class="match-sel" id="zs'+i+'"><option value="">–</option>'+opts+'</select></div>';
+  }).join("");
+  c.innerHTML='<div class="match-grid"><div class="match-left">'+leftHtml+'</div><div class="match-right">'+funHtml+'</div></div>';
+}
+
+function chkZuo(){
+  var ok=0;
+  ZUO12_STMTS.forEach(function(_,i){
+    var sel=document.getElementById("zs"+i); if(!sel) return;
+    var v=sel.value, ans=ZUO12_ANS[i];
+    sel.style.background=v===ans?"var(--green-pale)":v?"var(--red-pale)":"";
+    sel.style.color=v===ans?"var(--green)":v?"var(--red)":"";
+    if(v===ans) ok++;
+  });
+  scores.s12_5=ok; updScores();
+  var fin=document.getElementById("fin12_zuo");
+  fin.className="fin-msg show "+(ok===7?"ok":"err");
+  fin.textContent=ok+" von 7 richtig"+(ok===7?" – Sehr gut! 🎉":"!");
+}
+
+function rstZuo(){
+  ZUO12_STMTS.forEach(function(_,i){
+    var sel=document.getElementById("zs"+i);
+    if(sel){sel.value="";sel.style.background="";sel.style.color="";}
+  });
+  document.getElementById("fin12_zuo").className="fin-msg";
+  scores.s12_5=0; updScores();
+}
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function norm(s){
+  return (s||"").toLowerCase()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[.,!?]/g,"").replace(/\s+/g," ").trim();
+}
+function esc(s){
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+</script>
+</body>
+</html>
