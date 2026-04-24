@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Übungen – Lektion 12</title>
+<style>
+:root{--bg:#eef4fb;--card:#fff;--ink:#1e3a5f;--muted:#5b7a99;--border:#c5d8ee;--blue:#2563eb;--blue-lt:#dbeafe;--green:#16a34a;--green-lt:#dcfce7;--rose:#e11d48;--rose-lt:#ffe4e6;--gold:#d97706;--gold-lt:#fef3c7;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+header{background:#1e3a5f;padding:28px 20px 22px;position:relative;overflow:hidden;text-align:center;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% -10%,#3b82f6 0%,transparent 55%),radial-gradient(ellipse at 10% 110%,#0ea5e9 0%,transparent 50%);opacity:.4;}
+header .inner{position:relative;}
+.hd-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;margin-bottom:6px;}
+header h1{font-family:Georgia,serif;font-size:24px;color:#fff;margin-bottom:4px;}
+header p{font-size:13px;color:rgba(255,255,255,.55);}
+.hdr-back{display:inline-block;margin-top:12px;background:rgba(255,255,255,.13);border-radius:10px;color:#93c5fd;font-size:12px;font-weight:600;padding:7px 16px;text-decoration:none;border:1px solid rgba(255,255,255,.15);}
+.tab-nav{max-width:680px;margin:20px auto 0;padding:0 16px;display:flex;gap:6px;flex-wrap:wrap;}
+.tab-btn{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:system-ui,sans-serif;transition:all .15s;white-space:nowrap;}
+.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.panel{display:none;max-width:680px;margin:20px auto;padding:0 16px 20px;}
+.panel.active{display:block;}
+.panel-title{font-family:Georgia,serif;font-size:20px;color:var(--ink);margin-bottom:4px;}
+.panel-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.ex-card{background:var(--card);border-radius:14px;border:2px solid var(--border);padding:20px;margin-bottom:14px;}
+.ex-q{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+.ex-q em{color:var(--blue);font-style:normal;font-weight:800;}
+.mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mc-opts1{display:grid;grid-template-columns:1fr;gap:8px;}
+.mc-opt{background:#fafafa;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:system-ui,sans-serif;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--ink);}
+.mc-opt:hover{border-color:var(--blue);background:var(--blue-lt);}
+.mc-opt.ok{background:var(--green-lt);border-color:var(--green);color:var(--green);pointer-events:none;}
+.mc-opt.no{background:var(--rose-lt);border-color:var(--rose);color:var(--rose);pointer-events:none;}
+.mc-opt.reveal{background:var(--green-lt);border-color:var(--green);color:var(--green);pointer-events:none;opacity:.7;}
+.mc-opt.locked{pointer-events:none;opacity:.4;}
+.inp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.inp-field{border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:15px;font-family:system-ui,sans-serif;font-weight:600;color:var(--ink);outline:none;min-width:160px;flex:1;}
+.inp-field:focus{border-color:var(--blue);}
+.inp-field.ok{border-color:var(--green);background:var(--green-lt);color:var(--green);}
+.inp-field.no{border-color:var(--rose);background:var(--rose-lt);color:var(--rose);}
+.check-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.feedback{font-size:13px;margin-top:8px;font-weight:600;display:none;}
+.feedback.ok{color:var(--green);display:block;}
+.feedback.no{color:var(--rose);display:block;}
+.score-bar{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.score-label{font-size:13px;font-weight:700;color:var(--muted);}
+.score-num{font-family:Georgia,serif;font-size:28px;color:var(--blue);}
+.reset-btn{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;}
+.reset-btn:hover{border-color:var(--blue);color:var(--blue);}
+.footer{text-align:center;padding:24px;font-size:11px;color:#8aa3bc;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="hd-tag">LEKTION 12 · ÜBUNGEN</div>
+    <h1>Zofia – Zeit aufzuräumen!</h1>
+    <p>7 Übungstypen · Interaktiv</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn active" id="tb0">1 · Artikel</button>
+  <button class="tab-btn" id="tb1">2 · Bedeutung</button>
+  <button class="tab-btn" id="tb2">3 · Lückentext</button>
+  <button class="tab-btn" id="tb3">4 · Wortfeld</button>
+  <button class="tab-btn" id="tb4">5 · Online-Handel</button>
+  <button class="tab-btn" id="tb5">6 · trotz / falls</button>
+  <button class="tab-btn" id="tb6">7 · Wortbildung</button>
+</div>
+
+<div class="panel active" id="panel0">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc0">0 / 0</div></div><button class="reset-btn" id="rb0">↺ Neu</button></div>
+  <div class="panel-title">Übung 1 · Artikel</div>
+  <div class="panel-sub">Welcher Artikel gehört zu diesem Nomen?</div>
+  <div id="p0items"></div>
+</div>
+<div class="panel" id="panel1">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc1">0 / 0</div></div><button class="reset-btn" id="rb1">↺ Neu</button></div>
+  <div class="panel-title">Übung 2 · Bedeutung</div>
+  <div class="panel-sub">Welche Definition passt zum Wort?</div>
+  <div id="p1items"></div>
+</div>
+<div class="panel" id="panel2">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc2">0 / 0</div></div><button class="reset-btn" id="rb2">↺ Neu</button></div>
+  <div class="panel-title">Übung 3 · Lückentext</div>
+  <div class="panel-sub">Ergänzen Sie das fehlende Wort.</div>
+  <div id="p2items"></div>
+</div>
+<div class="panel" id="panel3">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc3">0 / 0</div></div><button class="reset-btn" id="rb3">↺ Neu</button></div>
+  <div class="panel-title">Übung 4 · Wortfeld</div>
+  <div class="panel-sub">Synonyme, Antonyme und Kollokationen.</div>
+  <div id="p3items"></div>
+</div>
+<div class="panel" id="panel4">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc4">0 / 0</div></div><button class="reset-btn" id="rb4">↺ Neu</button></div>
+  <div class="panel-title">Übung 5 · Online-Handel</div>
+  <div class="panel-sub">Was passt zur Situation im Online-Handel?</div>
+  <div id="p4items"></div>
+</div>
+<div class="panel" id="panel5">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc5">0 / 0</div></div><button class="reset-btn" id="rb5">↺ Neu</button></div>
+  <div class="panel-title">Übung 6 · trotz / falls</div>
+  <div class="panel-sub">Welche Konstruktion ist grammatikalisch korrekt?</div>
+  <div id="p5items"></div>
+</div>
+<div class="panel" id="panel6">
+  <div class="score-bar"><div><div class="score-label">Punkte</div><div class="score-num" id="sc6">0 / 0</div></div><button class="reset-btn" id="rb6">↺ Neu</button></div>
+  <div class="panel-title">Übung 7 · Wortbildung</div>
+  <div class="panel-sub">Beschreiben oder erkennen Sie das Wort.</div>
+  <div id="p6items"></div>
+</div>
+
+<div class="footer">Made with love by Bảo Quang</div>
+
+<script>
+var scores=[0,0,0,0,0,0,0],totals=[0,0,0,0,0,0,0];
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function setScore(panel){document.getElementById('sc'+panel).textContent=scores[panel]+' / '+totals[panel];}
+
+function makeMC(container,panel,question,correct,wrong,wide){
+  var opts=shuffle([correct].concat(wrong));
+  var card=document.createElement('div');card.className='ex-card';
+  var qEl=document.createElement('div');qEl.className='ex-q';qEl.innerHTML=question;card.appendChild(qEl);
+  var grid=document.createElement('div');grid.className=wide?'mc-opts1':'mc-opts';
+  totals[panel]++;setScore(panel);
+  var answered=false;
+  opts.forEach(function(o){
+    var btn=document.createElement('button');btn.className='mc-opt';btn.textContent=o;
+    btn.onclick=function(){
+      if(answered)return;answered=true;
+      if(o===correct){btn.classList.add('ok');scores[panel]++;}
+      else{btn.classList.add('no');grid.querySelectorAll('.mc-opt').forEach(function(b){if(b.textContent===correct)b.classList.add('reveal');else b.classList.add('locked');});}
+      setScore(panel);
+    };
+    grid.appendChild(btn);
+  });
+  card.appendChild(grid);container.appendChild(card);
+}
+
+function makeInput(container,panel,sentenceHTML,correct,hint){
+  var card=document.createElement('div');card.className='ex-card';
+  var qEl=document.createElement('div');qEl.className='ex-q';qEl.innerHTML=sentenceHTML;card.appendChild(qEl);
+  var row=document.createElement('div');row.className='inp-row';
+  var inp=document.createElement('input');inp.type='text';inp.className='inp-field';inp.placeholder=hint||'Antwort …';
+  var btn=document.createElement('button');btn.className='check-btn';btn.textContent='Prüfen';
+  var fb=document.createElement('div');fb.className='feedback';
+  totals[panel]++;setScore(panel);
+  var answered=false;
+  function check(){
+    if(answered)return;
+    var val=inp.value.trim();
+    var corrects=correct.split('/').map(function(s){return s.trim().toLowerCase();});
+    if(corrects.indexOf(val.toLowerCase())!==-1){
+      inp.classList.add('ok');fb.className='feedback ok';fb.textContent='✓ Richtig!';scores[panel]++;answered=true;
+    } else {
+      inp.classList.add('no');fb.className='feedback no';fb.textContent='✗ Richtig: '+correct;answered=true;
+    }
+    setScore(panel);
+  }
+  btn.onclick=check;inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+  row.appendChild(inp);row.appendChild(btn);card.appendChild(row);card.appendChild(fb);container.appendChild(card);
+}
+
+/* ── DATA ── */
+var p0data=[
+  {word:"Festplatte",art:"die",wrong:["der","das"]},
+  {word:"Zahnbürste",art:"die",wrong:["der","das"]},
+  {word:"DVD",art:"die",wrong:["der","das"]},
+  {word:"Garantie",art:"die",wrong:["der","das"]},
+  {word:"Lieferung",art:"die",wrong:["der","das"]},
+  {word:"Ausnahme",art:"die",wrong:["der","das"]},
+  {word:"Marke",art:"die",wrong:["der","das"]},
+  {word:"Bedingung",art:"die",wrong:["der","das"]},
+  {word:"Apparat",art:"der",wrong:["die","das"]},
+  {word:"Umtausch",art:"der",wrong:["die","das"]},
+  {word:"Händler",art:"der",wrong:["die","das"]},
+  {word:"Transport",art:"der",wrong:["die","das"]},
+  {word:"Sender",art:"der",wrong:["die","das"]},
+  {word:"Handel",art:"der",wrong:["die","das"]},
+  {word:"Zustand",art:"der",wrong:["die","das"]},
+  {word:"Zeug",art:"das",wrong:["der","die"]},
+  {word:"Kabel",art:"das",wrong:["der","die"]},
+  {word:"Modell",art:"das",wrong:["der","die"]},
+  {word:"Ersatzteil",art:"das",wrong:["der","die"]},
+  {word:"Reisebüro",art:"das",wrong:["der","die"]},
+];
+
+var p1data=[
+  {q:"Was bedeutet <em>entsorgen</em>?",ans:"Abfall oder kaputte Sachen wegwerfen / fachgerecht beseitigen",wrong:["kaufen","reparieren","aufbewahren"]},
+  {q:"Was bedeutet <em>sich vornehmen</em>?",ans:"etwas planen oder beschließen, das man tun will",wrong:["etwas vergessen","etwas kaufen","reisen"]},
+  {q:"Was bedeutet <em>jemals</em>?",ans:"zu irgendeinem Zeitpunkt / je",wrong:["niemals","sofort","manchmal"]},
+  {q:"Was bedeutet <em>allerdings</em>?",ans:"jedoch / aber",wrong:["deshalb","weil","damit"]},
+  {q:"Was bedeutet <em>verursachen</em>?",ans:"etwas bewirken oder herbeiführen (oft negativ)",wrong:["verhindern","verkaufen","vergessen"]},
+  {q:"Was bedeutet <em>schuld sein</em>?",ans:"die Verantwortung für einen Fehler oder Schaden tragen",wrong:["Recht haben","traurig sein","bezahlen"]},
+  {q:"Was bedeutet <em>verwechseln</em>?",ans:"etwas mit etwas anderem vertauschen / irrtümlich für etwas anderes halten",wrong:["tauschen","kaufen","verlieren"]},
+  {q:"Was bedeutet <em>sich einigen</em>?",ans:"zu einer gemeinsamen Vereinbarung kommen",wrong:["sich streiten","sich kennen","sich vorstellen"]},
+  {q:"Was bedeutet <em>notwendig</em>?",ans:"unbedingt erforderlich / nötig",wrong:["möglich","schön","teuer"]},
+  {q:"Was bedeutet <em>hinweisen</em>?",ans:"auf etwas aufmerksam machen / zeigen",wrong:["verstecken","ignorieren","kaufen"]},
+];
+
+var p2data=[
+  {sent:"Das Gerät ist kaputt – bitte [_] Sie es fachgerecht.",ans:"entsorgen",hint:"Infinitiv"},
+  {sent:"Ich habe mir [_], das Zimmer heute aufzuräumen.",ans:"vorgenommen",hint:"Partizip II von sich vornehmen"},
+  {sent:"Der Händler weigert sich, das Gerät um[_].",ans:"umzutauschen",hint:"Infinitiv mit zu"},
+  {sent:"Die Bestellung wurde [_] – ich habe das falsche Modell bekommen.",ans:"verwechselt",hint:"Partizip II"},
+  {sent:"[_] das Gerät defekt ist, haben Sie das Recht auf Umtausch.",ans:"Falls",hint:"Konjunktion"},
+  {sent:"Sie können die Ware [_] der Kratzer noch benutzen.",ans:"trotz",hint:"Präposition + Genitiv"},
+  {sent:"Beschreiben Sie den Zustand des Artikels [_] – auch kleine Schäden.",ans:"genau / gründlich",hint:"Adverb"},
+  {sent:"Wir konnten uns auf 40 Euro [_].",ans:"einigen",hint:"Infinitiv von sich einigen"},
+  {sent:"Ich zahle nicht, weil ich den Schaden nicht [_] habe.",ans:"verursacht",hint:"Partizip II"},
+  {sent:"Schreiben Sie keine Romane – Stichwörter [_]!",ans:"reichen",hint:"Präsens von reichen"},
+];
+
+var p3data=[
+  {q:"Welches Wort ist ein Synonym von <em>entdecken</em>?",ans:"herausfinden / bemerken",wrong:["verlieren","kaufen","reparieren"]},
+  {q:"Welches Wort ist das Antonym von <em>notwendig</em>?",ans:"unnötig / überflüssig",wrong:["wichtig","dringend","teuer"]},
+  {q:"Welche Kollokation ist korrekt?",ans:"sich Mühe geben",wrong:["Mühe kaufen","Mühe machen","Mühe lesen"]},
+  {q:"Welches Wort ist ein Synonym von <em>sich weigern</em>?",ans:"ablehnen",wrong:["zustimmen","anbieten","akzeptieren"]},
+  {q:"Welche Kollokation mit STAUB ist korrekt?",ans:"Staub entfernen",wrong:["Staub kaufen","Staub lesen","Staub machen"]},
+  {q:"Welches Wort ist das Antonym von <em>schuld sein</em>?",ans:"unschuldig sein",wrong:["betroffen sein","zuständig sein","zahlen"]},
+  {q:"Welche Kollokation mit GARANTIE ist korrekt?",ans:"Garantie haben / Garantie geben",wrong:["Garantie kaufen","Garantie lesen","Garantie fahren"]},
+  {q:"<em>Allerdings</em> ist ein Synonym von …",ans:"jedoch / aber",wrong:["deshalb","obwohl","damit"]},
+];
+
+var p4data=[
+  {q:"Zofia hat ein Gerät bestellt, aber ein anderes Modell bekommen. Was soll sie tun?",
+   ans:"Den Händler kontaktieren und auf Umtausch oder Rückgabe bestehen – sie hat das gesetzliche Recht dazu.",
+   wrong:["Das Gerät einfach behalten, weil es zu aufwändig ist.","Sofort einen Anwalt beauftragen.","Das Gerät selbst reparieren."],wide:true},
+  {q:"In den AGB steht: 'Zahlung ausschließlich per Vorkasse.' Was bedeutet das?",
+   ans:"Man muss bezahlen, bevor die Ware geliefert wird.",
+   wrong:["Man bezahlt nach 30 Tagen.","Man bezahlt beim Empfang.","Man kann per Ratenzahlung zahlen."],wide:true},
+  {q:"Zofia möchte ihren DVD-Player online verkaufen. Was soll sie in der Beschreibung angeben?",
+   ans:"Marke, Modell, Zustand (inkl. Schäden), Preis – klar und ehrlich.",
+   wrong:["Nur den Preis, nichts weiter.","Eine lange Geschichte über den Player.","Nur Fotos ohne Text."],wide:true},
+  {q:"Was bedeutet 'Umtausch innerhalb von 14 Tagen ohne Angabe von Gründen'?",
+   ans:"Man kann die Ware bis zu 14 Tage nach dem Kauf zurückgeben, ohne einen Grund nennen zu müssen.",
+   wrong:["Man muss immer einen Grund nennen.","Die 14 Tage gelten nur bei defekten Waren.","Man braucht eine Quittung."],wide:true},
+  {q:"Ilias rät: 'Lösch die Anzeige nicht, bis der Verkauf abgeschlossen ist.' Warum?",
+   ans:"Weil mehrere Interessenten entstehen können und man den besten Käufer wählen möchte.",
+   wrong:["Weil das Löschen teuer ist.","Weil die Plattform es verboten hat.","Weil man sonst Steuern zahlen muss."],wide:true},
+];
+
+var p5data=[
+  {q:"___ des Schadens funktioniert das Gerät noch gut.",ans:"Trotz",wrong:["Falls","Wegen","Obwohl"]},
+  {q:"[___] das Paket nicht ankommt, melde dich bitte bei uns.",ans:"Falls",wrong:["Trotz","Wegen","Obwohl"]},
+  {q:"Welcher Satz mit <em>trotz</em> ist korrekt?",
+   ans:"Trotz des Regens gehen wir spazieren.",
+   wrong:["Trotz dem Regen gehen wir spazieren.","Trotz der Regen gehen wir spazieren.","Trotz Regen wir gehen spazieren."],wide:true},
+  {q:"Welcher Satz mit <em>falls</em> ist korrekt?",
+   ans:"Falls du Fragen hast, kannst du mich anrufen.",
+   wrong:["Falls du Fragen hast, du kannst mich anrufen.","Falls hast du Fragen, kannst du mich anrufen.","Falls Fragen du hast, ruf mich an."],wide:true},
+  {q:"Sie kauft das Gerät, ___ die Garantie schon abgelaufen ist.",ans:"trotzdem / obwohl",wrong:["falls","damit","weil"]},
+  {q:"___ der Händler sich weigert, wende dich an die Verbraucherzentrale.",ans:"Falls",wrong:["Trotz","Weil","Nachdem"]},
+  {q:"Welcher Satz ist korrekt?",
+   ans:"Trotz des hohen Preises kauft sie den Grill.",
+   wrong:["Trotz dem hohen Preis kauft sie den Grill.","Trotz hoher Preis kauft sie den Grill.","Trotz des Preis kauft sie den Grill."],wide:true},
+];
+
+var p6data=[
+  {q:"Ein Teil, das man kauft, um ein kaputtes Teil in einem Gerät zu ersetzen – welches Wort?",ans:"das Ersatzteil",wrong:["das Modell","der Transport","das Kabel"]},
+  {q:"Wenn man Dinge wegwirft oder fachgerecht beseitigt – welches Verb?",ans:"entsorgen",wrong:["verpacken","tauschen","hinweisen"]},
+  {q:"Die rechtlichen Regeln und Bedingungen eines Online-Shops – welcher Begriff?",ans:"die Allgemeinen Geschäftsbedingungen (AGB)",wrong:["die Garantie","die Lieferung","der Umtausch"]},
+  {q:"Man bezahlt, bevor die Ware kommt – welche Zahlungsart?",ans:"Vorkasse",wrong:["Ratenzahlung","Nachnahme","Rechnung"]},
+  {q:"Wenn man zwei Artikel irrtümlich tauscht – welches Verb?",ans:"verwechseln",wrong:["entsorgen","schätzen","reiten"]},
+  {q:"Der Ort, wo Zofia günstig Sachen verkaufen oder kaufen kann – welches Konzept?",ans:"Online-Handel / Secondhand-Markt",wrong:["Garantie","Vorkasse","Lieferung"]},
+  {q:"Wenn jemand ablehnt, etwas zu tun – welches Verb?",ans:"sich weigern",wrong:["sich einigen","sich vornehmen","sich konzentrieren"]},
+  {q:"Wenn man Maschinen oder Technologie nicht mehr braucht, weil es etwas Besseres gibt – welches Adjektiv?",ans:"überflüssig / veraltet",wrong:["notwendig","gespannt","digital"]},
+];
+
+function buildPanel(panel){
+  var cids=["p0items","p1items","p2items","p3items","p4items","p5items","p6items"];
+  var c=document.getElementById(cids[panel]);c.innerHTML="";
+  scores[panel]=0;totals[panel]=0;setScore(panel);
+  if(panel===0){
+    shuffle(p0data).slice(0,12).forEach(function(d){
+      makeMC(c,0,"Welcher Artikel gehört zu: <em>"+d.word+"</em>?",d.art,d.wrong,false);
+    });
+  } else if(panel===1){
+    shuffle(p1data).slice(0,10).forEach(function(d){makeMC(c,1,d.q,d.ans,d.wrong,false);});
+  } else if(panel===2){
+    shuffle(p2data).forEach(function(d){
+      makeInput(c,2,d.sent.replace("[_]","<em>______</em>"),d.ans,d.hint);
+    });
+  } else if(panel===3){
+    shuffle(p3data).forEach(function(d){makeMC(c,3,d.q,d.ans,d.wrong,false);});
+  } else if(panel===4){
+    shuffle(p4data).forEach(function(d){makeMC(c,4,d.q,d.ans,d.wrong,d.wide||false);});
+  } else if(panel===5){
+    shuffle(p5data).forEach(function(d){makeMC(c,5,d.q,d.ans,d.wrong,d.wide||false);});
+  } else if(panel===6){
+    shuffle(p6data).forEach(function(d){makeMC(c,6,d.q,d.ans,d.wrong,false);});
+  }
+}
+
+var tabs=document.querySelectorAll('.tab-btn');
+tabs.forEach(function(btn,i){
+  btn.onclick=function(){
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.getElementById('panel'+i).classList.add('active');
+    btn.classList.add('active');
+  };
+  document.getElementById('rb'+i).onclick=function(){buildPanel(i);};
+});
+for(var pi=0;pi<7;pi++){buildPanel(pi);}
+</script>
+</body>
+</html>

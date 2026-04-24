@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Täglicher Test – Lektion 12</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--card:#253248;--border:#334155;
+  --ink:#e2e8f0;--muted:#94a3b8;--faint:#475569;
+  --blue:#3b82f6;--blue-d:#1e3a5f;--blue-lt:rgba(59,130,246,.18);
+  --green:#22c55e;--green-d:#14532d;
+  --rose:#f43f5e;--rose-d:#4c0519;
+  --gold:#f59e0b;--gold-d:rgba(245,158,11,.15);
+  --purple:#a78bfa;--purple-d:rgba(167,139,250,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:72px;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px 18px;text-align:center;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% -20%,rgba(59,130,246,.22) 0%,transparent 55%),radial-gradient(ellipse at 20% 120%,rgba(167,139,250,.12) 0%,transparent 50%);pointer-events:none;}
+.hdr-rel{position:relative;}
+.hdr-tag{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:5px;}
+header h1{font-family:Georgia,serif;font-size:21px;color:var(--ink);margin-bottom:3px;}
+header p{font-size:12px;color:var(--muted);}
+.hdr-back{display:inline-block;margin-top:11px;background:rgba(255,255,255,.07);border-radius:9px;color:var(--blue);font-size:12px;font-weight:600;padding:6px 14px;text-decoration:none;border:1px solid var(--border);}
+#startScreen{max-width:540px;margin:36px auto;padding:0 16px;}
+.start-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:32px 24px;text-align:center;}
+.start-ver{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--purple);background:var(--purple-d);display:inline-block;padding:4px 14px;border-radius:99px;margin-bottom:16px;}
+.start-icon{font-size:50px;margin-bottom:14px;}
+.start-title{font-family:Georgia,serif;font-size:21px;color:var(--ink);margin-bottom:8px;}
+.start-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.start-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.stat-pill{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;}
+.stat-pill span{color:var(--blue);display:block;font-size:20px;font-family:Georgia,serif;font-weight:700;line-height:1.1;}
+.stat-pill small{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.8px;}
+.diff-legend{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px;}
+.diff-pill{border-radius:10px;padding:10px 6px;text-align:center;font-size:11px;font-weight:700;}
+.diff-pill.easy{background:var(--green-d);color:var(--green);}
+.diff-pill.hard{background:var(--gold-d);color:var(--gold);}
+.diff-pill.logic{background:var(--purple-d);color:var(--purple);}
+.inp-name{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--ink);font-size:15px;font-weight:600;outline:none;margin-bottom:12px;transition:border-color .2s;}
+.inp-name:focus{border-color:var(--blue);}
+.btn-start{width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:13px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:opacity .15s;}
+.btn-start:hover{opacity:.87;}
+#quizScreen{display:none;max-width:600px;margin:0 auto;padding:14px 16px;}
+.qz-topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.qz-timer{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:8px 14px;font-size:15px;font-weight:800;color:var(--gold);min-width:76px;text-align:center;flex-shrink:0;}
+.qz-timer.urgent{color:var(--rose);animation:blink .7s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+.qz-prog-wrap{flex:1;}
+.qz-prog-track{background:var(--border);border-radius:99px;height:7px;}
+.qz-prog-fill{height:7px;border-radius:99px;transition:width .35s;background:linear-gradient(90deg,var(--blue),var(--purple));}
+.qz-prog-label{display:flex;justify-content:space-between;margin-top:5px;}
+.qz-prog-label span{font-size:11px;color:var(--faint);}
+.diff-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 13px;border-radius:99px;margin-bottom:10px;}
+.diff-badge.easy{background:var(--green-d);color:var(--green);}
+.diff-badge.hard{background:var(--gold-d);color:var(--gold);}
+.diff-badge.logic{background:var(--purple-d);color:var(--purple);}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px 20px;margin-bottom:12px;}
+.q-context{background:var(--card);border-left:3px solid var(--purple);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;color:var(--ink);line-height:1.8;}
+.q-context-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:700;color:var(--ink);line-height:1.55;margin-bottom:16px;}
+.q-text em{color:var(--blue);font-style:normal;font-weight:800;}
+.opts{display:grid;gap:9px;}
+.opts.two{grid-template-columns:1fr 1fr;}
+.opt-btn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 15px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left;transition:border-color .15s,background .15s;font-family:system-ui,sans-serif;line-height:1.45;}
+.opt-btn:hover{border-color:var(--blue);background:var(--blue-lt);}
+.opt-btn.ok{background:var(--green-d);border-color:var(--green);color:var(--green);pointer-events:none;}
+.opt-btn.no{background:var(--rose-d);border-color:var(--rose);color:var(--rose);pointer-events:none;}
+.opt-btn.reveal{background:var(--green-d);border-color:var(--green);color:var(--green);pointer-events:none;opacity:.6;}
+.opt-btn.locked{pointer-events:none;opacity:.3;}
+.q-inp-row{display:flex;gap:8px;align-items:stretch;}
+.q-inp{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;color:var(--ink);outline:none;font-family:system-ui,sans-serif;}
+.q-inp:focus{border-color:var(--blue);}
+.q-inp.ok{border-color:var(--green);background:var(--green-d);color:var(--green);}
+.q-inp.no{border-color:var(--rose);background:var(--rose-d);color:var(--rose);}
+.q-check{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;}
+.q-fb{font-size:13px;font-weight:600;margin-top:8px;display:none;}
+.q-fb.ok{color:var(--green);display:block;}
+.q-fb.no{color:var(--rose);display:block;}
+#resultScreen{display:none;max-width:540px;margin:36px auto;padding:0 16px;}
+.res-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:36px 24px;text-align:center;}
+.res-ver{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--purple);background:var(--purple-d);display:inline-block;padding:4px 14px;border-radius:99px;margin-bottom:20px;}
+.res-icon{font-size:58px;margin-bottom:10px;}
+.res-name{font-size:13px;color:var(--muted);margin-bottom:4px;}
+.res-score{font-family:Georgia,serif;font-size:54px;color:var(--blue);line-height:1;}
+.res-msg{font-size:15px;color:var(--muted);margin:10px 0 6px;line-height:1.5;}
+.res-pass{font-size:13px;font-weight:700;padding:8px 20px;border-radius:10px;display:inline-block;margin-bottom:24px;}
+.res-pass.pass{background:var(--green-d);color:var(--green);}
+.res-pass.fail{background:var(--rose-d);color:var(--rose);}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.res-diff-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:26px;}
+.res-stat{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px 10px;}
+.res-stat-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:5px;}
+.res-stat-val{font-family:Georgia,serif;font-size:26px;color:var(--ink);}
+.res-stat.easy .res-stat-val{color:var(--green);}
+.res-stat.hard .res-stat-val{color:var(--gold);}
+.res-stat.logic .res-stat-val{color:var(--purple);}
+.btn-retry{background:var(--blue);color:#fff;border:none;border-radius:13px;padding:14px 36px;font-size:15px;font-weight:800;cursor:pointer;margin:6px;}
+.btn-back{background:var(--card);color:var(--ink);border:1px solid var(--border);border-radius:13px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;margin:6px;}
+.footer{text-align:center;padding:22px;font-size:11px;color:var(--faint);}
+</style>
+</head>
+<body>
+<header>
+  <div class="hdr-rel">
+    <div class="hdr-tag">Lektion 12 · Miteinander! B1.2</div>
+    <h1>Täglicher Test</h1>
+    <p>60 Fragen · 15 Minuten</p>
+    <a href="index.html" class="hdr-back">← Zurück zur Übersicht</a>
+  </div>
+</header>
+
+<div id="startScreen">
+  <div class="start-card">
+    <div class="start-ver">Lektion 12</div>
+    <div class="start-icon">🧠</div>
+    <div class="start-title">Zofia – Zeit aufzuräumen!</div>
+    <div class="start-desc">Voller B1-Test: Wortschatz, Synonyme, Antonyme, Kollokationen, Online-Handel und logisches Schlussfolgern. Drei Schwierigkeitsstufen.</div>
+    <div class="start-stats">
+      <div class="stat-pill"><span>60</span><small>Fragen</small></div>
+      <div class="stat-pill"><span>15'</span><small>Zeit</small></div>
+      <div class="stat-pill"><span>85%</span><small>Ziel</small></div>
+      <div class="stat-pill"><span>3</span><small>Level</small></div>
+    </div>
+    <div class="diff-legend">
+      <div class="diff-pill easy">✅ 35 Normal</div>
+      <div class="diff-pill hard">⚡ 15 Schwer</div>
+      <div class="diff-pill logic">🔍 10 Logik</div>
+    </div>
+    <input class="inp-name" type="text" id="nameInput" placeholder="Dein Name …" maxlength="40">
+    <button class="btn-start" onclick="startTest()">Test starten →</button>
+  </div>
+</div>
+
+<div id="quizScreen">
+  <div class="qz-topbar">
+    <div class="qz-timer" id="timerDisplay">15:00</div>
+    <div class="qz-prog-wrap">
+      <div class="qz-prog-track"><div class="qz-prog-fill" id="progFill" style="width:0%"></div></div>
+      <div class="qz-prog-label"><span id="progLeft"></span><span id="progRight"></span></div>
+    </div>
+  </div>
+  <div id="questionArea"></div>
+</div>
+
+<div id="resultScreen">
+  <div class="res-card">
+    <div class="res-ver">Lektion 12</div>
+    <div class="res-icon" id="resIcon">🏆</div>
+    <div class="res-name" id="resName"></div>
+    <div class="res-score" id="resScore"></div>
+    <div class="res-msg" id="resMsg"></div>
+    <div class="res-pass" id="resPass"></div>
+    <div class="res-grid">
+      <div class="res-stat"><div class="res-stat-label">Richtig</div><div class="res-stat-val" id="resRight"></div></div>
+      <div class="res-stat"><div class="res-stat-label">Falsch</div><div class="res-stat-val" id="resWrong"></div></div>
+      <div class="res-stat"><div class="res-stat-label">Zeit</div><div class="res-stat-val" id="resTime"></div></div>
+      <div class="res-stat"><div class="res-stat-label">Prozent</div><div class="res-stat-val" id="resPct"></div></div>
+    </div>
+    <div class="res-diff-grid">
+      <div class="res-stat easy"><div class="res-stat-label">✅ Normal</div><div class="res-stat-val" id="resEasy"></div></div>
+      <div class="res-stat hard"><div class="res-stat-label">⚡ Schwer</div><div class="res-stat-val" id="resHard"></div></div>
+      <div class="res-stat logic"><div class="res-stat-label">🔍 Logik</div><div class="res-stat-val" id="resLogic"></div></div>
+    </div>
+    <button class="btn-retry" onclick="location.reload()">↺ Nochmal</button>
+    <button class="btn-back" onclick="window.location.href='index.html'">← Zur Übersicht</button>
+  </div>
+</div>
+
+<div class="footer">Made with love by Bảo Quang</div>
+
+<script>
+var BANK=[
+
+/* ══ NORMAL – 35 Fragen ══ */
+
+// Artikel (8)
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Festplatte</em>?",ans:"die",wrong:["der","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Zahnbürste</em>?",ans:"die",wrong:["der","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Apparat</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Zeug</em>?",ans:"das",wrong:["der","die"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Garantie</em>?",ans:"die",wrong:["der","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Umtausch</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Händler</em>?",ans:"der",wrong:["die","das"]},
+{diff:"easy",type:"mc",q:"Welcher Artikel gehört zu: <em>Kabel</em>?",ans:"das",wrong:["der","die"]},
+
+// Bedeutung (8)
+{diff:"easy",type:"mc",q:"Was bedeutet <em>entsorgen</em>?",ans:"Abfall oder kaputte Sachen wegwerfen / fachgerecht beseitigen",wrong:["kaufen","reparieren","aufbewahren"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>sich vornehmen</em>?",ans:"etwas planen oder beschließen, das man tun will",wrong:["etwas vergessen","etwas kaufen","jemanden besuchen"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>jemals</em>?",ans:"zu irgendeinem Zeitpunkt / je",wrong:["niemals","sofort","manchmal"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>allerdings</em>?",ans:"jedoch / aber / trotzdem",wrong:["deshalb","weil","damit"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>verursachen</em>?",ans:"etwas bewirken oder herbeiführen (oft negativ)",wrong:["verhindern","verkaufen","vergessen"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>schuld sein</em>?",ans:"die Verantwortung für einen Fehler oder Schaden tragen",wrong:["Recht haben","traurig sein","bezahlen"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>verwechseln</em>?",ans:"etwas mit etwas anderem vertauschen / irrtümlich für etwas anderes halten",wrong:["tauschen","kaufen","verlieren"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>sich einigen</em>?",ans:"zu einer gemeinsamen Vereinbarung kommen",wrong:["sich streiten","sich kennen","sich vorstellen"]},
+
+// Lückentext Input (8)
+{diff:"easy",type:"input",q:"Zofia hat beschlossen aufzuräumen – sie hat sich das schon lange [___].",ans:"vorgenommen",hint:"Partizip II von sich vornehmen"},
+{diff:"easy",type:"input",q:"Das Gerät ist kaputt. Bitte [___] Sie es fachgerecht.",ans:"entsorgen",hint:"Infinitiv"},
+{diff:"easy",type:"input",q:"Der Händler weigert sich, das Gerät um[___].",ans:"umzutauschen",hint:"Infinitiv mit zu"},
+{diff:"easy",type:"input",q:"Ich weiß nicht, ob das Gerät noch [___] hat.",ans:"Garantie",hint:"Nomen, Sg."},
+{diff:"easy",type:"input",q:"Die Bestellung wurde [___] – ich habe das falsche Modell bekommen.",ans:"verwechselt",hint:"Partizip II von verwechseln"},
+{diff:"easy",type:"input",q:"Einigen wir uns auf 40 Euro? – Ja, das [___] mir.",ans:"reicht",hint:"Präsens von reichen"},
+{diff:"easy",type:"input",q:"Sie haben [___] Vorkasse als Zahlungsmethode angegeben.",ans:"ausschließlich",hint:"Adverb"},
+{diff:"easy",type:"input",q:"Ich habe den Schaden nicht [___], deshalb zahle ich die Kosten nicht.",ans:"verursacht",hint:"Partizip II von verursachen"},
+
+// Situation/Wortfeld (11)
+{diff:"easy",type:"mc",q:"Welche Kollokation ist korrekt?",ans:"sich Mühe geben",wrong:["Mühe kaufen","Mühe lesen","Mühe sprechen"]},
+{diff:"easy",type:"mc",q:"Welche Kollokation ist korrekt?",ans:"Staub entfernen",wrong:["Staub kaufen","Staub hören","Staub fahren"]},
+{diff:"easy",type:"mc",q:"<em>Trotz</em> steht mit welchem Fall?",ans:"Genitiv",wrong:["Dativ","Akkusativ","Nominativ"]},
+{diff:"easy",type:"mc",q:"Was passt zu einem Online-Kauf, wenn man Ware zurückgeben möchte?",ans:"Umtausch / Rückgabe innerhalb von 14 Tagen",wrong:["sofort bezahlen","den Händler anrufen","Garantie verlängern"]},
+{diff:"easy",type:"mc",q:"<em>Pauschal</em> bedeutet in Bezug auf Versandkosten …",ans:"ein fester Betrag, unabhängig vom Gewicht oder der Menge",wrong:["kostenlos","variabel je nach Gewicht","nur für Mitglieder"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>im Voraus</em> bezahlen?",ans:"vor der Lieferung bezahlen",wrong:["nach dem Erhalt bezahlen","per Ratenzahlung bezahlen","bar bezahlen"]},
+{diff:"easy",type:"mc",q:"<em>Voraussichtlich</em> bedeutet …",ans:"wahrscheinlich / wie erwartet",wrong:["garantiert","nie","sofort"]},
+{diff:"easy",type:"mc",q:"Was sind <em>Abgase</em>?",ans:"Schadstoffe, die Autos oder Maschinen ausstoßen",wrong:["Lebensmittel","Ersatzteile","Verpackungen"]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>löschen</em> in Bezug auf Online-Anzeigen?",ans:"einen Beitrag oder Eintrag entfernen / deaktivieren",wrong:["kaufen","verkaufen","kommentieren"]},
+{diff:"easy",type:"mc",q:"Was macht man, wenn man ein Produkt <em>umtauscht</em>?",ans:"Man gibt das gekaufte Produkt zurück und nimmt ein anderes.",wrong:["Man repariert es selbst.","Man schickt eine Reklamation per E-Mail.","Man bestellt zusätzlich ein neues Produkt."]},
+{diff:"easy",type:"mc",q:"Was bedeutet <em>falls</em>?",ans:"wenn / für den Fall, dass",wrong:["weil","obwohl","damit"]},
+
+/* ══ SCHWER – 15 Fragen ══ */
+
+// Synonyme (4)
+{diff:"hard",type:"mc",q:"<em>Entdecken</em> ist ein Synonym von …",ans:"herausfinden / bemerken",wrong:["verlieren","kaufen","reparieren"]},
+{diff:"hard",type:"mc",q:"<em>Sich weigern</em> ist ein Synonym von …",ans:"ablehnen / nicht bereit sein, etwas zu tun",wrong:["zustimmen","anbieten","empfehlen"]},
+{diff:"hard",type:"mc",q:"<em>Verursachen</em> ist ein Synonym von …",ans:"auslösen / bewirken",wrong:["verhindern","beobachten","beschreiben"]},
+{diff:"hard",type:"mc",q:"<em>Allerdings</em> ist ein Synonym von …",ans:"jedoch / aber",wrong:["deshalb","trotzdem","weil"]},
+
+// Antonyme (4)
+{diff:"hard",type:"mc",q:"Das Antonym von <em>schuld sein</em> ist …",ans:"unschuldig sein / keine Verantwortung tragen",wrong:["zuständig sein","betroffen sein","bezahlen"]},
+{diff:"hard",type:"mc",q:"Das Antonym von <em>notwendig</em> ist …",ans:"unnötig / überflüssig",wrong:["wichtig","dringend","sinnvoll"]},
+{diff:"hard",type:"mc",q:"Das Antonym von <em>verwechseln</em> ist …",ans:"richtig zuordnen / korrekt identifizieren",wrong:["vertauschen","irren","vergessen"]},
+{diff:"hard",type:"mc",q:"Das Antonym von <em>sich einigen</em> ist …",ans:"sich streiten / keine Einigung erzielen",wrong:["diskutieren","verhandeln","sprechen"]},
+
+// Grammatik & Wortbildung (4)
+{diff:"hard",type:"mc",q:"Welcher Satz mit <em>trotz</em> ist grammatikalisch korrekt?",ans:"Trotz des Schadens funktioniert das Gerät noch.",wrong:["Trotz dem Schaden funktioniert das Gerät noch.","Trotz der Schaden funktioniert das Gerät noch.","Trotz Schaden funktioniert das Gerät noch."]},
+{diff:"hard",type:"mc",q:"Welcher Satz mit <em>falls</em> ist korrekt?",ans:"Falls das Gerät defekt ist, haben Sie Anspruch auf Umtausch.",wrong:["Falls das Gerät defekt, haben Sie Anspruch auf Umtausch.","Falls das Gerät defekt sei, haben Sie Anspruch.","Falls wenn das Gerät defekt ist, haben Sie Anspruch."]},
+{diff:"hard",type:"input",q:"Das Gerät ist kaputt – ich habe den Schaden gerade erst [___]. (entdecken)",ans:"entdeckt",hint:"Partizip II"},
+{diff:"hard",type:"input",q:"Wir konnten uns leider nicht [___]. (sich einigen)",ans:"einigen",hint:"Infinitiv ohne zu"},
+
+// Kontext (3)
+{diff:"hard",type:"mc",q:"Was bedeutet <em>Allgemeine Geschäftsbedingungen</em> (AGB)?",ans:"Rechtliche Regeln und Bedingungen, die ein Unternehmen für seine Kunden festlegt",wrong:["Öffnungszeiten des Shops","Produktbeschreibungen","Lieferscheine"]},
+{diff:"hard",type:"mc",q:"Was bedeutet <em>Vorkasse</em> als Zahlungsmethode?",ans:"Man bezahlt, bevor die Ware geliefert wird.",wrong:["Man bezahlt beim Empfang der Ware.","Man bezahlt per Ratenzahlung.","Man bezahlt nach 30 Tagen."]},
+{diff:"hard",type:"mc",q:"Was ist ein <em>Ersatzteil</em>?",ans:"Ein Teil, das man kauft, um ein kaputtes Teil in einem Gerät zu ersetzen",wrong:["Ein gebrauchtes Gerät","Eine Garantieverlängerung","Ein Rabattgutschein"]},
+
+/* ══ LOGIK – 10 Fragen ══ */
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia hat einen DVD-Player online bestellt, aber ein falsches Modell erhalten. Sie schreibt dem Händler: 'Sie haben die Bestellung verwechselt. Ich möchte das richtige Modell oder mein Geld zurück.' Der Händler antwortet: 'Laut unseren AGB können wir keine Rückgabe akzeptieren.'",
+ q:"Was kann Zofia als nächstes tun?",
+ ans:"Sie kann prüfen, ob die AGB des Händlers legal sind, da Verbraucher in Deutschland ein gesetzliches Rückgaberecht von 14 Tagen haben.",
+ wrong:["Sie muss die AGB akzeptieren und das falsche Produkt behalten.","Sie kann nichts machen, weil der Händler Recht hat.","Sie muss sofort einen Anwalt beauftragen."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia räumt auf und findet einen alten DVD-Player, eine kaputte Festplatte und alte Zahnbürsten. Ilias schaut zu und schätzt: 'Der DVD-Player ist bestimmt 15 Jahre alt.' Zofia: 'Vielleicht kann man ihn noch online verkaufen?'",
+ q:"Was ist beim Online-Verkauf eines alten Geräts besonders wichtig?",
+ ans:"Den Zustand ehrlich beschreiben – auch Schäden oder Kratzer angeben.",
+ wrong:["Den Preis so hoch wie möglich ansetzen.","Das Gerät als neu beschreiben, damit es sich besser verkauft.","Nur Fotos posten, ohne Beschreibung."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Beim Online-Kauf steht in den Lieferbedingungen: 'Zahlung ausschließlich per Vorkasse. Lieferung voraussichtlich innerhalb von 5 Tagen. Versandkosten pauschal 6,95 Euro.'",
+ q:"Was muss Zofia tun, bevor die Ware geliefert wird?",
+ ans:"Sie muss den vollen Betrag plus Versandkosten im Voraus bezahlen.",
+ wrong:["Sie kann nach der Lieferung bezahlen.","Sie zahlt nur die Versandkosten im Voraus.","Sie muss nichts im Voraus bezahlen."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia hat einen Grill für 80 Euro online gekauft. Nach der Lieferung stellt sie fest, dass ein Kabel fehlt und das Modell nicht dem bestellten entspricht. Der Händler meint, Zofia sei schuld.",
+ q:"Wer trägt hier die Verantwortung und warum?",
+ ans:"Der Händler, weil er das falsche Modell geliefert hat und ein Teil fehlt – das ist kein Fehler der Käuferin.",
+ wrong:["Zofia, weil sie nicht genau kontrolliert hat.","Beide sind gleichermaßen schuld.","Die Versicherung übernimmt die Kosten."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Ilias rät Zofia: 'Schreib keine Romane in der Produktbeschreibung – Stichwörter reichen! Konzentriere dich auf Marke, Modell, Zustand und Preis. Und: Lösch die Anzeige nicht, bis der Verkauf wirklich abgeschlossen ist.'",
+ q:"Welches Prinzip beschreibt Ilias' Ratschläge am besten?",
+ ans:"Klare, knappe und vollständige Informationen sind beim Online-Verkauf effektiver als lange Texte.",
+ wrong:["Lange Produktbeschreibungen überzeugen Käufer besser.","Fotos sind wichtiger als jede Beschreibung.","Nur der Preis entscheidet über den Verkaufserfolg."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia fragt Ilias: 'Ich habe den Grill trotz der Kratzer für 40 Euro angeboten. Ist das fair?' Ilias: 'Ja, wenn du die Kratzer in der Anzeige erwähnt hast.'",
+ q:"Welche Aussage über den Verkauf beschädigter Waren ist korrekt?",
+ ans:"Man kann beschädigte Waren verkaufen, muss aber Schäden transparent kommunizieren.",
+ wrong:["Beschädigte Waren dürfen gar nicht verkauft werden.","Man muss den Schaden erst reparieren, bevor man verkauft.","Der Käufer trägt die Verantwortung für versteckte Schäden."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia denkt: 'In zehn Jahren gibt es keine SMS mehr, nur noch Chats. Keine Reisebüros, keine Papiertickets – alles digital.' Ilias: 'Und keine DVD-Player mehr!'",
+ q:"Was ist die übergeordnete Schlussfolgerung aus diesem Gespräch?",
+ ans:"Technologischer Wandel macht viele alte Objekte und Dienstleistungen überflüssig.",
+ wrong:["Menschen kaufen in Zukunft mehr Sachen.","Das Internet ist nicht nützlich für ältere Menschen.","DVDs werden wieder populär."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Im Online-Handel steht: 'Umtausch innerhalb von 14 Tagen, ohne Angabe von Gründen.' Zofia hat ihren Grill vor 20 Tagen gekauft und möchte ihn zurückgeben.",
+ q:"Was ist die logische Konsequenz?",
+ ans:"Zofia hat das gesetzliche Rückgabefenster überschritten – der Händler muss den Umtausch nicht akzeptieren.",
+ wrong:["Zofia kann den Grill immer noch zurückgeben, weil er defekt ist.","Der Händler muss in jedem Fall umtauschen.","14 Tage beginnen erst nach dem Auspacken."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia verkauft online: Sie schreibt die Beschreibung, macht Fotos, gibt den Zustand an. Ein Interessent fragt: 'Funktioniert die Kamera trotz der Kratzer?' Zofia: 'Ja, einwandfrei.' Interessent: 'Einigen wir uns auf 40 Euro?' Zofia: 'Deal.'",
+ q:"Welche Aussage über diesen Verkaufsprozess ist korrekt?",
+ ans:"Beide Parteien haben sich auf einen Preis geeinigt – der Handel ist verbindlich.",
+ wrong:["Zofia kann den Preis noch erhöhen, weil sie die Kamera noch nicht abgegeben hat.","Der Interessent kann ohne Grund absagen, weil er noch nicht bezahlt hat.","Zofia muss die Kamera erst reparieren lassen."]},
+
+{diff:"logic",type:"mc",
+ ctx:"Zofia hat sich vorgenommen aufzuräumen. Am Ende hat sie: 3 Geräte entsorgt, 2 online verkauft, 1 Artikel umgetauscht. Ilias sagt: 'Das war unheimlich produktiv!'",
+ q:"Was zeigt Zofias Verhalten über ihren Umgang mit Besitz?",
+ ans:"Sie hat gelernt, Dinge loszulassen und sinnvoll zu verwerten, anstatt alles zu behalten.",
+ wrong:["Sie kauft lieber Neues, als Altes aufzubewahren.","Sie vermeidet Online-Käufe in Zukunft.","Sie gibt alle alten Sachen verschenkt weiter."]},
+
+]; // end BANK
+
+var userName='',queue=[],current=0,
+    score=0,easyScore=0,easyTotal=0,hardScore=0,hardTotal=0,logicScore=0,logicTotal=0,
+    timerSec=900,timerInt,startTime;
+var diffLabel={easy:"✅ Normal",hard:"⚡ Schwer",logic:"🔍 Logik"};
+
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+function startTest(){
+  userName=document.getElementById('nameInput').value.trim()||'Student';
+  var easy=shuffle(BANK.filter(function(q){return q.diff==='easy';}));
+  var hard=shuffle(BANK.filter(function(q){return q.diff==='hard';}));
+  var logic=shuffle(BANK.filter(function(q){return q.diff==='logic';}));
+  queue=easy.concat(hard).concat(logic);
+  current=0;score=0;easyScore=0;easyTotal=0;hardScore=0;hardTotal=0;logicScore=0;logicTotal=0;
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('quizScreen').style.display='block';
+  startTime=Date.now();timerSec=900;
+  timerInt=setInterval(tickTimer,1000);
+  showQuestion();
+}
+
+function tickTimer(){
+  timerSec--;
+  var m=Math.floor(timerSec/60),s=timerSec%60;
+  var el=document.getElementById('timerDisplay');
+  el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  if(timerSec<=120)el.classList.add('urgent');
+  if(timerSec<=0){clearInterval(timerInt);endTest();}
+}
+
+function addScore(diff,ok){
+  if(ok){score++;if(diff==='easy')easyScore++;else if(diff==='hard')hardScore++;else logicScore++;}
+  if(diff==='easy')easyTotal++;else if(diff==='hard')hardTotal++;else logicTotal++;
+}
+
+function showQuestion(){
+  if(current>=queue.length){endTest();return;}
+  var q=queue[current];
+  var pct=Math.round(current/queue.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLeft').textContent=(current+1)+' / '+queue.length;
+  document.getElementById('progRight').textContent=q.diff==='easy'?'Normal':q.diff==='hard'?'Schwer':'Logik';
+  var area=document.getElementById('questionArea');area.innerHTML='';
+  var badge=document.createElement('div');badge.className='diff-badge '+q.diff;badge.textContent=diffLabel[q.diff];area.appendChild(badge);
+  var card=document.createElement('div');card.className='q-card';
+  if(q.ctx){
+    var lbl=document.createElement('div');lbl.className='q-context-label';lbl.textContent='📖 Lesetext';
+    var ctx=document.createElement('div');ctx.className='q-context';ctx.appendChild(lbl);
+    var ctxText=document.createElement('div');ctxText.textContent=q.ctx;ctx.appendChild(ctxText);card.appendChild(ctx);
+  }
+  var qEl=document.createElement('div');qEl.className='q-text';qEl.innerHTML=q.q;card.appendChild(qEl);
+  if(q.type==='input'){
+    var row=document.createElement('div');row.className='q-inp-row';
+    var inp=document.createElement('input');inp.type='text';inp.className='q-inp';inp.placeholder=q.hint||'Antwort …';
+    var btn=document.createElement('button');btn.className='q-check';btn.textContent='Prüfen';
+    var fb=document.createElement('div');fb.className='q-fb';
+    var done=false;
+    (function(inp,btn,fb,q){
+      function check(){
+        if(done)return;done=true;
+        var val=inp.value.trim();
+        var corrects=q.ans.split('/').map(function(s){return s.trim().toLowerCase();});
+        var ok=corrects.indexOf(val.toLowerCase())!==-1;
+        inp.classList.add(ok?'ok':'no');fb.className='q-fb '+(ok?'ok':'no');
+        fb.textContent=ok?'✓ Richtig!':'✗ Richtig wäre: '+q.ans;btn.disabled=true;
+        addScore(q.diff,ok);setTimeout(function(){current++;showQuestion();},1500);
+      }
+      btn.onclick=check;inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+    })(inp,btn,fb,q);
+    row.appendChild(inp);row.appendChild(btn);card.appendChild(row);card.appendChild(fb);
+  } else {
+    var opts=shuffle([q.ans].concat(q.wrong||[]));
+    var isWide=(opts.length>3)||(q.diff==='logic');
+    var grid=document.createElement('div');grid.className=isWide?'opts':'opts two';
+    var answered=false;
+    opts.forEach(function(o){
+      var btn=document.createElement('button');btn.className='opt-btn';btn.textContent=o;
+      (function(o,btn){
+        btn.onclick=function(){
+          if(answered)return;answered=true;
+          var ok=(o===q.ans);btn.classList.add(ok?'ok':'no');
+          if(!ok){grid.querySelectorAll('.opt-btn').forEach(function(b){if(b.textContent===q.ans)b.classList.add('reveal');else if(b!==btn)b.classList.add('locked');});}
+          addScore(q.diff,ok);setTimeout(function(){current++;showQuestion();},q.diff==='logic'?2200:1200);
+        };
+      })(o,btn);
+      grid.appendChild(btn);
+    });
+    card.appendChild(grid);
+  }
+  area.appendChild(card);window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function endTest(){
+  clearInterval(timerInt);
+  var elapsed=Math.round((Date.now()-startTime)/1000);
+  var em=Math.floor(elapsed/60),es=elapsed%60;
+  var total=queue.length,pct=Math.round(score/total*100),pass=pct>=85;
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('resultScreen').style.display='block';
+  document.getElementById('resIcon').textContent=pct>=92?'🏆':pct>=80?'⭐':pct>=65?'💪':'📚';
+  document.getElementById('resName').textContent=userName;
+  document.getElementById('resScore').textContent=score+' / '+total;
+  document.getElementById('resMsg').textContent=
+    pct>=92?'Perfekt! Du beherrschst Lektion 12 auf Hochniveau!':
+    pct>=85?'Super! Du hast das Ziel erreicht – weiter so!':
+    pct>=70?'Gut gemacht! Die schwierigen Teile noch einmal wiederholen.':
+    'Noch weiter üben – Wortschatz und Logikaufgaben nochmals anschauen.';
+  document.getElementById('resPass').className='res-pass '+(pass?'pass':'fail');
+  document.getElementById('resPass').textContent=pass?'✓ Bestanden (≥ 85%)':'✗ Noch nicht bestanden (< 85%)';
+  document.getElementById('resRight').textContent=score;
+  document.getElementById('resWrong').textContent=total-score;
+  document.getElementById('resTime').textContent=(em<10?'0':'')+em+':'+(es<10?'0':'')+es;
+  document.getElementById('resPct').textContent=pct+'%';
+  document.getElementById('resEasy').textContent=easyScore+'/'+easyTotal;
+  document.getElementById('resHard').textContent=hardScore+'/'+hardTotal;
+  document.getElementById('resLogic').textContent=logicScore+'/'+logicTotal;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
