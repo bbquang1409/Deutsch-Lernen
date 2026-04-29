@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammatik – Lektion 12</title>
+<style>
+  :root {
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --teal-mid: #5eead4;
+    --slate: #334155;
+    --slate-light: #f1f5f9;
+    --slate-mid: #94a3b8;
+    --correct: #16a34a;
+    --wrong: #dc2626;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --radius: 12px;
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--slate);
+    padding-bottom: 40px;
+  }
+
+  /* STICKY HEADER */
+  #sticky-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--teal); color: white;
+    padding: 10px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  #sticky-header h1 { font-size: 1em; font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
+  #name-input {
+    flex: 1 1 140px; min-width: 120px; max-width: 220px;
+    padding: 6px 10px; border-radius: 8px; border: none;
+    font-size: 0.9em; background: rgba(255,255,255,0.2); color: white; outline: none;
+  }
+  #name-input::placeholder { color: rgba(255,255,255,0.7); }
+  #timer-wrap {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.18); border-radius: 8px; padding: 6px 12px; flex: 0 0 auto;
+  }
+  #timer { font-size: 1em; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 48px; }
+  #timer.warn { color: #fde68a; }
+  #timer.urgent { color: #fca5a5; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  #score-bar {
+    background: var(--teal); padding: 6px 16px;
+    text-align: right; font-size: 0.85em; color: rgba(255,255,255,0.85);
+    border-top: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* TAB NAV */
+  #tab-nav {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 14px 14px 0; background: white;
+    border-bottom: 2px solid var(--teal-light);
+    position: sticky; top: 64px; z-index: 90;
+  }
+  .tab-btn {
+    padding: 8px 14px; border: 2px solid transparent; border-bottom: none;
+    border-radius: 8px 8px 0 0; background: var(--slate-light); color: var(--slate-mid);
+    font-size: 0.82em; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .tab-btn:hover { background: var(--teal-light); color: var(--teal); }
+  .tab-btn.active {
+    background: white; color: var(--teal); border-color: var(--teal-light);
+    border-bottom-color: white; margin-bottom: -2px;
+  }
+
+  /* TAB CONTENT */
+  .tab-panel { display: none; padding: 20px 16px; max-width: 820px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  .grammar-box {
+    background: linear-gradient(135deg, #e0f2fe, var(--teal-light));
+    border-left: 4px solid var(--teal); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 20px;
+    font-size: 0.88em; line-height: 1.7;
+  }
+  .grammar-box strong { color: var(--teal); }
+  .grammar-box .formula {
+    background: white; border-radius: 6px; padding: 8px 14px; margin-top: 8px;
+    font-family: 'Courier New', monospace; font-size: 0.93em; color: var(--slate);
+  }
+  .grammar-box table { border-collapse: collapse; margin-top: 8px; background: white; border-radius: 6px; overflow: hidden; }
+  .grammar-box table td, .grammar-box table th {
+    padding: 5px 14px; border: 1px solid var(--teal-light); font-size: 0.9em;
+  }
+  .grammar-box table th { background: var(--teal-light); color: var(--teal); font-weight: 700; }
+
+  .exercise-card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 18px; margin-bottom: 18px;
+  }
+  .exercise-card h3 {
+    font-size: 0.95em; color: var(--teal); margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px dashed var(--teal-light);
+  }
+
+  /* Fill-in blank */
+  .luecke {
+    display: inline-block; min-width: 110px; border-bottom: 2px solid var(--teal);
+    margin: 0 4px; padding: 2px 4px; font-size: 0.95em; outline: none;
+    color: var(--slate); background: transparent;
+    border-top: none; border-left: none; border-right: none;
+    font-family: inherit; text-align: center;
+  }
+  .luecke.correct { border-color: var(--correct); background: #dcfce7; }
+  .luecke.wrong { border-color: var(--wrong); background: #fee2e2; }
+
+  .item { margin: 10px 0; line-height: 2.1; font-size: 0.95em; }
+  .item-num {
+    display: inline-block; background: var(--teal); color: white;
+    border-radius: 50%; width: 22px; height: 22px; font-size: 0.75em;
+    font-weight: 700; text-align: center; line-height: 22px; margin-right: 6px; flex-shrink: 0;
+  }
+
+  /* Multiple choice */
+  .mc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .mc-btn {
+    padding: 7px 14px; border: 2px solid #e2e8f0; border-radius: 8px;
+    background: white; cursor: pointer; font-size: 0.9em; transition: all 0.2s; font-family: inherit;
+  }
+  .mc-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+  .mc-btn.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal); font-weight: 700; }
+  .mc-btn.correct { border-color: var(--correct); background: #dcfce7; color: var(--correct); }
+  .mc-btn.wrong { border-color: var(--wrong); background: #fee2e2; color: var(--wrong); }
+
+  /* Word bank */
+  .word-bank {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    background: var(--teal-light); border-radius: 8px; padding: 12px; margin-bottom: 14px;
+  }
+  .bank-word {
+    padding: 5px 12px; background: white;
+    border: 2px solid var(--teal-mid); border-radius: 20px;
+    font-size: 0.88em; cursor: pointer; transition: all 0.2s; font-family: inherit; color: var(--slate);
+  }
+  .bank-word:hover { background: var(--teal); color: white; }
+  .bank-word.used { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
+
+  /* Dropdown */
+  .dropdown {
+    border: 2px solid var(--teal); border-radius: 6px; padding: 4px 8px;
+    font-size: 0.9em; font-family: inherit; color: var(--slate); background: white; cursor: pointer; outline: none;
+  }
+  .dropdown.correct { border-color: var(--correct); background: #dcfce7; }
+  .dropdown.wrong { border-color: var(--wrong); background: #fee2e2; }
+
+  /* Buttons */
+  .check-btn, .reset-btn {
+    display: inline-block; margin-top: 14px; padding: 9px 22px;
+    border: none; border-radius: 8px; font-size: 0.9em; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .check-btn { background: var(--teal); color: white; }
+  .check-btn:hover { background: #0f766e; }
+  .reset-btn { background: #e2e8f0; color: var(--slate); margin-left: 8px; }
+  .reset-btn:hover { background: #cbd5e1; }
+
+  .result-msg {
+    margin-top: 10px; padding: 8px 14px; border-radius: 8px;
+    font-size: 0.88em; font-weight: 600; display: none;
+  }
+  .result-msg.show { display: block; }
+  .result-msg.ok { background: #dcfce7; color: var(--correct); }
+  .result-msg.partial { background: #fef9c3; color: #854d0e; }
+  .result-msg.bad { background: #fee2e2; color: var(--wrong); }
+
+  /* Sentence builder */
+  .sent-tokens { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .token {
+    padding: 6px 12px; border: 2px solid #e2e8f0; border-radius: 20px;
+    background: white; cursor: pointer; font-size: 0.88em; transition: all 0.2s; font-family: inherit;
+  }
+  .token:hover { border-color: var(--teal); background: var(--teal-light); }
+  .token.placed { opacity: 0.3; cursor: not-allowed; }
+  .sent-area {
+    min-height: 42px; border: 2px dashed var(--teal-mid); border-radius: 8px;
+    padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px;
+    align-items: center; margin: 10px 0; background: #f8fafc; cursor: pointer;
+  }
+  .placed-token {
+    padding: 4px 10px; background: var(--teal); color: white;
+    border-radius: 16px; font-size: 0.88em; cursor: pointer; transition: background 0.15s;
+  }
+  .placed-token:hover { background: var(--wrong); }
+
+  /* Match pairs */
+  .match-container { display: flex; gap: 14px; flex-wrap: wrap; }
+  .match-col { flex: 1; min-width: 180px; }
+  .match-item {
+    padding: 9px 14px; margin: 5px 0; border-radius: 8px;
+    border: 2px solid #e2e8f0; background: white; cursor: pointer;
+    font-size: 0.9em; transition: all 0.2s; font-family: inherit; text-align: left; width: 100%;
+  }
+  .match-item:hover { border-color: var(--teal); background: var(--teal-light); }
+  .match-item.selected { border-color: var(--teal); background: var(--teal-light); font-weight: 700; }
+  .match-item.matched { border-color: var(--correct); background: #dcfce7; cursor: default; }
+  .match-item.wrong-match { border-color: var(--wrong); background: #fee2e2; }
+
+  .back-link {
+    display: block; color: var(--teal); font-size: 0.9em; font-weight: 600;
+    text-decoration: none; padding: 10px 16px 0;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  @media (max-width: 500px) {
+    .tab-btn { font-size: 0.74em; padding: 6px 10px; }
+    #sticky-header h1 { font-size: 0.9em; }
+    #timer { font-size: 0.9em; }
+    .match-container { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="../index.html">← Zurück zu Lektion 12</a>
+
+<!-- STICKY HEADER -->
+<div id="sticky-header">
+  <h1>Lektion 12 – Grammatik</h1>
+  <input type="text" id="name-input" placeholder="Dein Name ...">
+  <div id="timer-wrap">
+    <span>⏱</span>
+    <span id="timer">25:00</span>
+  </div>
+</div>
+<div id="score-bar">Punkte: <span id="total-score">0</span> / <span id="total-max">0</span></div>
+
+<!-- TAB NAV -->
+<nav id="tab-nav">
+  <button class="tab-btn active" data-tab="u1">1 · Futur I</button>
+  <button class="tab-btn" data-tab="u2">2 · ohne … zu / ohne dass</button>
+  <button class="tab-btn" data-tab="u3">3 · Wortbildung Adjektive</button>
+  <button class="tab-btn" data-tab="u4">4 · zum + Verb</button>
+  <button class="tab-btn" data-tab="u5">5 · Schnelltest</button>
+</nav>
+
+<!-- ══════════════════════════════════
+     TAB 1 – Futur I (werden + Infinitiv)
+     ══════════════════════════════════ -->
+<div class="tab-panel active" id="tab-u1">
+  <div class="grammar-box">
+    <strong>Verben: Futur I – Aussagen über die Zukunft</strong><br>
+    Futur I = <em>werden</em> + Infinitiv. Drückt Vorhersagen, Versprechen oder Vermutungen aus.
+    <div class="formula">
+      Zofia <b>wird</b> mir auf jeden Fall Mühe <b>geben</b>.<br>
+      In 10 Jahren <b>wird</b> es keine DVDs mehr <b>geben</b>.
+    </div>
+    <table>
+      <tr><th>Person</th><th>werden</th></tr>
+      <tr><td>ich</td><td>werde</td></tr>
+      <tr><td>du</td><td>wirst</td></tr>
+      <tr><td>er/sie/es</td><td>wird</td></tr>
+      <tr><td>wir</td><td>werden</td></tr>
+      <tr><td>ihr</td><td>werdet</td></tr>
+      <tr><td>sie/Sie</td><td>werden</td></tr>
+    </table>
+  </div>
+
+  <!-- U1 Ex A: Dropdown -->
+  <div class="exercise-card" id="u1a">
+    <h3>Übung A – Richtige Form von <em>werden</em> wählen</h3>
+    <p class="item"><span class="item-num">1</span>In zehn Jahren <select class="dropdown" data-ans="wird">
+      <option value="">–</option><option>werde</option><option>wird</option><option>werden</option><option>wirst</option>
+    </select> es kein Bargeld mehr geben.</p>
+    <p class="item"><span class="item-num">2</span>Ich <select class="dropdown" data-ans="werde">
+      <option value="">–</option><option>werde</option><option>wird</option><option>wirst</option><option>werden</option>
+    </select> mir auf jeden Fall Mühe geben!</p>
+    <p class="item"><span class="item-num">3</span>Du <select class="dropdown" data-ans="wirst">
+      <option value="">–</option><option>werde</option><option>wirst</option><option>wird</option><option>werden</option>
+    </select> bestimmt die allerbesten Tutorials machen.</p>
+    <p class="item"><span class="item-num">4</span>Dann <select class="dropdown" data-ans="werden">
+      <option value="">–</option><option>werde</option><option>wird</option><option>werden</option><option>werdet</option>
+    </select> bald überall Tutorials von ihr im Netz stehen.</p>
+    <p class="item"><span class="item-num">5</span>Ihr <select class="dropdown" data-ans="werdet">
+      <option value="">–</option><option>werden</option><option>wird</option><option>werdet</option><option>werde</option>
+    </select> das sicher schaffen.</p>
+    <button class="check-btn" onclick="checkDropdowns('u1a', 5)">Prüfen</button>
+    <button class="reset-btn" onclick="resetDropdowns('u1a')">Zurücksetzen</button>
+    <div class="result-msg" id="res-u1a"></div>
+  </div>
+
+  <!-- U1 Ex B: Sentence builder -->
+  <div class="exercise-card" id="u1b">
+    <h3>Übung B – Sätze im Futur I bilden (Wortbank)</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Klicke die Wörter in der richtigen Reihenfolge an.</p>
+    <div id="sb1-items"></div>
+    <button class="check-btn" onclick="checkSB1()">Prüfen</button>
+    <button class="reset-btn" onclick="resetSB1()">Zurücksetzen</button>
+    <div class="result-msg" id="res-u1b"></div>
+  </div>
+
+  <!-- U1 Ex C: Fill-in blanks – prediction sentences -->
+  <div class="exercise-card" id="u1c">
+    <h3>Übung C – Vorhersagen: Lücken ergänzen</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:12px">Ergänze mit der richtigen Form von <em>werden</em> + Infinitiv.</p>
+    <p class="item"><span class="item-num">1</span>Schau mal! Ich glaube, es <input class="luecke" data-ans="wird" style="min-width:70px"> bald <input class="luecke" data-ans="regnen" style="min-width:90px">.</p>
+    <p class="item"><span class="item-num">2</span>In 20 Jahren <input class="luecke" data-ans="werden" style="min-width:90px"> viele Geschäfte nur noch online <input class="luecke" data-ans="existieren" style="min-width:110px">.</p>
+    <p class="item"><span class="item-num">3</span>Zofia sagt: „Ich <input class="luecke" data-ans="werde" style="min-width:80px"> diesen Online-Shop sofort <input class="luecke" data-ans="kontaktieren" style="min-width:130px">."</p>
+    <p class="item"><span class="item-num">4</span>Vermutlich <input class="luecke" data-ans="werden" style="min-width:90px"> die Preise in einem Jahr noch <input class="luecke" data-ans="steigen" style="min-width:90px">.</p>
+    <button class="check-btn" onclick="checkBlanks('u1c', 8)">Prüfen</button>
+    <button class="reset-btn" onclick="resetBlanks('u1c')">Zurücksetzen</button>
+    <div class="result-msg" id="res-u1c"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TAB 2 – ohne … zu / ohne dass
+     ══════════════════════════════════ -->
+<div class="tab-panel" id="tab-u2">
+  <div class="grammar-box">
+    <strong>Konjunktionen: ohne … zu + Infinitiv und ohne dass</strong><br>
+    Drückt aus, was fehlt oder nicht gemacht wird.
+    <div class="formula">
+      Ich habe das Kit zurückgeschickt, <b>ohne</b> es auszuprobieren. <em>(ohne … zu = selbes Subjekt)</em><br>
+      Ich habe das Kit zurückgeschickt, <b>ohne dass</b> ich es ausprobiert habe. <em>(ohne dass = verschiedene Subjekte)</em><br>
+      Im Online-Handel kann man Ware zurückgeben, <b>ohne</b> Gründe angeben <b>zu</b> müssen.
+    </div>
+    <em>Regel: „ohne … zu" → trennbare Verben: <b>aus·zuprobieren</b>, <b>an·zugeben</b></em>
+  </div>
+
+  <!-- U2 Ex A: MC – ohne zu vs ohne dass -->
+  <div class="exercise-card" id="u2a">
+    <h3>Übung A – Richtige Konjunktion wählen</h3>
+    <div id="u2a-items"></div>
+    <button class="check-btn" onclick="checkMC('u2a', u2aData)">Prüfen</button>
+    <button class="reset-btn" onclick="resetMC('u2a', u2aData)">Zurücksetzen</button>
+    <div class="result-msg" id="res-u2a"></div>
+  </div>
+
+  <!-- U2 Ex B: Sentence builder -->
+  <div class="exercise-card" id="u2b">
+    <h3>Übung B – Sätze mit „ohne … zu" bilden (Wortbank)</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Klicke die Wörter in richtiger Reihenfolge.</p>
+    <div id="sb2-items"></div>
+    <button class="check-btn" onclick="checkSB2()">Prüfen</button>
+    <button class="reset-btn" onclick="resetSB2()">Zurücksetzen</button>
+    <div class="result-msg" id="res-u2b"></div>
+  </div>
+
+  <!-- U2 Ex C: Fill-in-blank – transform sentences -->
+  <div class="exercise-card" id="u2c">
+    <h3>Übung C – Sätze verbinden mit <em>ohne … zu</em> oder <em>ohne dass</em></h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Ergänze die Lücken.</p>
+    <p class="item"><span class="item-num">1</span>Ich habe den Wettbewerb gewonnen. Ich habe mich nicht anstrengen müssen.<br>
+    → Ich habe den Wettbewerb gewonnen, <input class="luecke" data-ans="ohne" style="min-width:60px"> mich <input class="luecke" data-ans="anstrengen" style="min-width:120px"> zu <input class="luecke" data-ans="müssen" style="min-width:90px">.</p>
+    <p class="item"><span class="item-num">2</span>Sie hat den Job gekündigt. Sie hat keinen Grund angegeben.<br>
+    → Sie hat den Job gekündigt, <input class="luecke" data-ans="ohne" style="min-width:60px"> einen Grund <input class="luecke" data-ans="anzugeben" style="min-width:130px">.</p>
+    <p class="item"><span class="item-num">3</span>Er hat das Handy zurückgeschickt. Er hat es nicht benutzt.<br>
+    → Er hat das Handy zurückgeschickt, <input class="luecke" data-ans="ohne" style="min-width:60px"> es <input class="luecke" data-ans="benutzt" style="min-width:90px"> zu <input class="luecke" data-ans="haben" style="min-width:80px">.</p>
+    <p class="item"><span class="item-num">4</span>Man kann die Ware zurückgeben. Man muss keine Gründe nennen.<br>
+    → Man kann die Ware zurückgeben, <input class="luecke" data-ans="ohne dass" style="min-width:100px"> man Gründe <input class="luecke" data-ans="nennen" style="min-width:90px"> muss.</p>
+    <button class="check-btn" onclick="checkBlanks('u2c', 11)">Prüfen</button>
+    <button class="reset-btn" onclick="resetBlanks('u2c')">Zurücksetzen</button>
+    <div class="result-msg" id="res-u2c"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TAB 3 – Wortbildung: Adjektive
+     ══════════════════════════════════ -->
+<div class="tab-panel" id="tab-u3">
+  <div class="grammar-box">
+    <strong>Wortbildung: Adjektive mit -lich, -ig, -wert</strong>
+    <div class="formula">
+      <b>-lich:</b> der Ärger → ärger<u>lich</u> &nbsp;|&nbsp; der Freund → freund<u>lich</u><br>
+      <b>-ig:</b> der Wind → wind<u>ig</u> &nbsp;|&nbsp; die Langeweile → langewei<u>lig</u><br>
+      <b>-wert:</b> der Preis → preis<u>wert</u> &nbsp;|&nbsp; empfehlen → empfehlens<u>wert</u>
+    </div>
+    <em>Tipp: <b>-wert</b> → Das Nomen/Verb + „wert" = es ist es wert, ... zu sein</em>
+  </div>
+
+  <!-- U3 Ex A: Word formation – match -->
+  <div class="exercise-card" id="u3a">
+    <h3>Übung A – Adjektiv bilden (Lücken ergänzen)</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:12px">Bilde Adjektive mit dem passenden Suffix: <em>-lich, -ig</em> oder <em>-wert</em>.</p>
+    <p class="item"><span class="item-num">1</span>das Glück → das Gerät ist nicht mehr zu retten, schade – das ist wirklich <input class="luecke" data-ans="unglücklich" style="min-width:140px">.</p>
+    <p class="item"><span class="item-num">2</span>die Liebe → Die alte Lampe ist ein <input class="luecke" data-ans="liebevoll" style="min-width:130px"> Geschenk von meiner Oma.</p>
+    <p class="item"><span class="item-num">3</span>der Staub → Die alte Festplatte ist total <input class="luecke" data-ans="staubig" style="min-width:110px">.</p>
+    <p class="item"><span class="item-num">4</span>empfehlen → Dieses Reparaturcafé ist wirklich <input class="luecke" data-ans="empfehlenswert" style="min-width:170px">.</p>
+    <p class="item"><span class="item-num">5</span>der Preis → Hier findet man oft <input class="luecke" data-ans="preiswerte" style="min-width:130px"> Ersatzteile.</p>
+    <p class="item"><span class="item-num">6</span>der Hunger → Der Mann ist nach dem Klettern sehr <input class="luecke" data-ans="hungrig" style="min-width:110px">.</p>
+    <button class="check-btn" onclick="checkBlanks('u3a', 6)">Prüfen</button>
+    <button class="reset-btn" onclick="resetBlanks('u3a')">Zurücksetzen</button>
+    <div class="result-msg" id="res-u3a"></div>
+  </div>
+
+  <!-- U3 Ex B: MC – choose right suffix -->
+  <div class="exercise-card" id="u3b">
+    <h3>Übung B – Richtiges Suffix wählen (-lich, -ig oder -wert)</h3>
+    <div id="u3b-items"></div>
+    <button class="check-btn" onclick="checkMC('u3b', u3bData)">Prüfen</button>
+    <button class="reset-btn" onclick="resetMC('u3b', u3bData)">Zurücksetzen</button>
+    <div class="result-msg" id="res-u3b"></div>
+  </div>
+
+  <!-- U3 Ex C: Match Nomen → Adjektiv -->
+  <div class="exercise-card" id="u3c">
+    <h3>Übung C – Nomen-Bank: Adjektiv zuordnen</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Wähle für jedes Nomen das richtige Adjektiv aus der Liste.</p>
+    <div class="word-bank" id="bank-u3c">
+      <span class="bank-word" onclick="selectBankWord(this,'bank-u3c')">ärgerlich</span>
+      <span class="bank-word" onclick="selectBankWord(this,'bank-u3c')">langweilig</span>
+      <span class="bank-word" onclick="selectBankWord(this,'bank-u3c')">preiswert</span>
+      <span class="bank-word" onclick="selectBankWord(this,'bank-u3c')">windig</span>
+      <span class="bank-word" onclick="selectBankWord(this,'bank-u3c')">freundlich</span>
+      <span class="bank-word" onclick="selectBankWord(this,'bank-u3c')">wertvoll</span>
+    </div>
+    <p class="item"><span class="item-num">1</span>der Ärger → <input class="luecke" data-ans="ärgerlich" style="min-width:120px" id="u3c-1"></p>
+    <p class="item"><span class="item-num">2</span>der Freund → <input class="luecke" data-ans="freundlich" style="min-width:120px" id="u3c-2"></p>
+    <p class="item"><span class="item-num">3</span>die Langeweile → <input class="luecke" data-ans="langweilig" style="min-width:120px" id="u3c-3"></p>
+    <p class="item"><span class="item-num">4</span>der Wind → <input class="luecke" data-ans="windig" style="min-width:120px" id="u3c-4"></p>
+    <p class="item"><span class="item-num">5</span>der Preis → <input class="luecke" data-ans="preiswert" style="min-width:120px" id="u3c-5"></p>
+    <button class="check-btn" onclick="checkBlanks('u3c', 5)">Prüfen</button>
+    <button class="reset-btn" onclick="resetBlanks('u3c')">Zurücksetzen</button>
+    <div class="result-msg" id="res-u3c"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TAB 4 – Finale Präposition: zum + Verb (nominalisiert)
+     ══════════════════════════════════ -->
+<div class="tab-panel" id="tab-u4">
+  <div class="grammar-box">
+    <strong>Finale Präposition: <em>zum</em> + nominalisierte Verben</strong><br>
+    = Antwort auf „Wozu?" – Zweck / Ziel ausdrücken.
+    <div class="formula">
+      Wozu braucht man ein Vlogging-Kit? → <b>Zum</b> Aufnehmen von Tutorials.<br>
+      Wozu ist das? → Das ist <b>zum</b> Fotografieren, wenn das Licht schlecht ist.<br><br>
+      Struktur: <b>zum</b> + Verb → nominalisiertes Verb (Großbuchstabe, Neutrum)<br>
+      fotografieren → <b>das</b> Fotografieren → <b>zum</b> Fotografieren
+    </div>
+  </div>
+
+  <!-- U4 Ex A: Wozu-Fragen → zum + Verb -->
+  <div class="exercise-card" id="u4a">
+    <h3>Übung A – Wozu? Antworten mit „zum + Verb"</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:12px">Ergänze mit <em>zum</em> + nominalisiertem Verb.</p>
+    <p class="item"><span class="item-num">1</span>Wozu benutzt man einen Lautsprecher?<br>
+    → <input class="luecke" data-ans="Zum Hören" style="min-width:140px"> von Musik oder Podcasts.</p>
+    <p class="item"><span class="item-num">2</span>Wozu braucht man das Vlogging-Kit?<br>
+    → <input class="luecke" data-ans="Zum Aufnehmen" style="min-width:160px"> von Videos.</p>
+    <p class="item"><span class="item-num">3</span>Wozu ist diese Softbox gut?<br>
+    → Sie eignet sich <input class="luecke" data-ans="zum Fotografieren" style="min-width:170px">, wenn das Licht schlecht ist.</p>
+    <p class="item"><span class="item-num">4</span>Wozu braucht man AGBs?<br>
+    → Sie sind <input class="luecke" data-ans="zum Informieren" style="min-width:160px"> über die Geschäftsbedingungen.</p>
+    <p class="item"><span class="item-num">5</span>Wozu gibt es ein Reparaturcafé?<br>
+    → <input class="luecke" data-ans="Zum Reparieren" style="min-width:160px"> von kaputten Sachen.</p>
+    <button class="check-btn" onclick="checkBlanks('u4a', 5)">Prüfen</button>
+    <button class="reset-btn" onclick="resetBlanks('u4a')">Zurücksetzen</button>
+    <div class="result-msg" id="res-u4a"></div>
+  </div>
+
+  <!-- U4 Ex B: MC – Wozu passt das? -->
+  <div class="exercise-card" id="u4b">
+    <h3>Übung B – Was passt? Richtige Antwort wählen</h3>
+    <div id="u4b-items"></div>
+    <button class="check-btn" onclick="checkMC('u4b', u4bData)">Prüfen</button>
+    <button class="reset-btn" onclick="resetMC('u4b', u4bData)">Zurücksetzen</button>
+    <div class="result-msg" id="res-u4b"></div>
+  </div>
+
+  <!-- U4 Ex C: Sentence builder – zum Verben -->
+  <div class="exercise-card" id="u4c">
+    <h3>Übung C – Sätze ordnen (Wortbank)</h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Klicke die Wörter in der richtigen Reihenfolge.</p>
+    <div id="sb4-items"></div>
+    <button class="check-btn" onclick="checkSB4()">Prüfen</button>
+    <button class="reset-btn" onclick="resetSB4()">Zurücksetzen</button>
+    <div class="result-msg" id="res-u4c"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TAB 5 – Schnelltest (aus Lektion 12 Kopiervorlage)
+     ══════════════════════════════════ -->
+<div class="tab-panel" id="tab-u5">
+  <div class="grammar-box">
+    <strong>Schnelltest – Lektion 12: Zofia – aufräumen</strong><br>
+    Wortschatz, Grammatik und Kommunikation aus der ganzen Lektion.
+    <div class="formula">
+      Gesamtpunkte: <b>21</b> &nbsp;|&nbsp; Bestanden ab: <b>17 Punkte</b> ✓
+    </div>
+  </div>
+
+  <!-- Aufgabe 1: Wortschatz Lückentext -->
+  <div class="exercise-card" id="st1">
+    <h3>Aufgabe 1 – Wörter ergänzen <span style="color:var(--slate-mid);font-weight:400;font-size:0.9em">/7 Punkte</span></h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:12px">
+      Wörter: <em>einigen | entsorgen | Geschäftsbedingungen | Händler | Lieferung | umtauschen | vornehmen</em>
+    </p>
+    <div style="background:#f8fafc;border-radius:8px;padding:14px;font-size:0.93em;line-height:2.2;">
+      Ich bin so sauer! Ich habe im Internet eine elektrische Zahnbürste gekauft.
+      Der <input class="luecke" data-ans="Händler" style="min-width:100px"> hat geschrieben, dass die Zahnbürste sauber ist und er sie sofort verschickt.
+      Aber erst habe ich drei Wochen auf die <input class="luecke" data-ans="Lieferung" style="min-width:110px"> gewartet
+      und dann war die Zahnbürste total schmutzig. Ich hätte sie nur noch im Müll
+      <input class="luecke" data-ans="entsorgen" style="min-width:110px"> können.
+      Obwohl in den Allgemeinen <input class="luecke" data-ans="Geschäftsbedingungen" style="min-width:200px"> steht,
+      dass ich die Ware innerhalb von zwei Wochen zurückgeben kann, weigert sich der Verkäufer.
+      Er sagt, ich kann die Zahnbürste <input class="luecke" data-ans="umtauschen" style="min-width:120px">. Aber ich will mein Geld zurück.
+    </div>
+    <div style="background:#f8fafc;border-radius:8px;padding:14px;font-size:0.93em;line-height:2.2;margin-top:10px;">
+      Oh je! Und könnt ihr euch irgendwie
+      <input class="luecke" data-ans="einigen" style="min-width:100px">? Vielleicht solltest du dir
+      <input class="luecke" data-ans="vornehmen" style="min-width:120px">, nie wieder etwas auf einem Online-Marktplatz zu kaufen...
+    </div>
+    <button class="check-btn" onclick="checkBlanks('st1', 7)">Prüfen</button>
+    <button class="reset-btn" onclick="resetBlanks('st1')">Zurücksetzen</button>
+    <div class="result-msg" id="res-st1"></div>
+  </div>
+
+  <!-- Aufgabe 2a: Futur I – Sätze bilden -->
+  <div class="exercise-card" id="st2a">
+    <h3>Aufgabe 2a – Sätze im Futur bilden <span style="color:var(--slate-mid);font-weight:400;font-size:0.9em">/4 Punkte</span></h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Bilde Sätze im Futur I wie im Beispiel.<br>
+    <em>Beispiel: kein Bargeld mehr / in zehn Jahren → In zehn Jahren wird es kein Bargeld mehr geben.</em></p>
+    <div id="st2a-items"></div>
+    <button class="check-btn" onclick="checkSB_st2a()">Prüfen</button>
+    <button class="reset-btn" onclick="resetSB_st2a()">Zurücksetzen</button>
+    <div class="result-msg" id="res-st2a"></div>
+  </div>
+
+  <!-- Aufgabe 2b: ohne zu / ohne dass -->
+  <div class="exercise-card" id="st2b">
+    <h3>Aufgabe 2b – Sätze verbinden <span style="color:var(--slate-mid);font-weight:400;font-size:0.9em">/4 Punkte</span></h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:10px">Verbinde mit <em>ohne … zu</em> oder <em>ohne dass</em>.<br>
+    <em>Beispiel: Ich habe das Handy zurückgeschickt. (ausprobieren, ohne … zu) → … ohne es auszuprobieren.</em></p>
+    <div id="u5b-items"></div>
+    <button class="check-btn" onclick="checkMC('st2b-mc', st2bData)">Prüfen</button>
+    <button class="reset-btn" onclick="resetMC('st2b-mc', st2bData)">Zurücksetzen</button>
+    <div class="result-msg" id="res-st2b"></div>
+  </div>
+
+  <!-- Aufgabe 3: Kommunikation – Match -->
+  <div class="exercise-card" id="st3">
+    <h3>Aufgabe 3 – Kommunikation: Zuordnen <span style="color:var(--slate-mid);font-weight:400;font-size:0.9em">/6 Punkte</span></h3>
+    <p style="font-size:0.85em;color:var(--slate-mid);margin-bottom:12px">Was kann man mit den Ausdrücken sagen? Wähle für jeden Ausdruck die richtige Funktion.</p>
+    <div id="st3-items"></div>
+    <button class="check-btn" onclick="checkMC('st3-mc', st3Data)">Prüfen</button>
+    <button class="reset-btn" onclick="resetMC('st3-mc', st3Data)">Zurücksetzen</button>
+    <div class="result-msg" id="res-st3"></div>
+  </div>
+
+  <!-- Ergebnis-Anzeige -->
+  <div class="exercise-card" style="text-align:center;padding:24px;" id="final-result">
+    <h3 style="color:var(--slate);margin-bottom:14px">Ergebnis – Schnelltest</h3>
+    <div id="schnell-score" style="font-size:2em;font-weight:700;color:var(--teal);">– / 21</div>
+    <div id="schnell-emoji" style="font-size:2em;margin:10px 0">–</div>
+    <div id="schnell-msg" style="font-size:0.9em;color:var(--slate-mid);">Alle Aufgaben lösen, dann Ergebnis berechnen.</div>
+    <button class="check-btn" onclick="calcSchnelltest()" style="margin-top:14px">Gesamtergebnis berechnen</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════
+var totalSecs = 25 * 60;
+var timerEl = document.getElementById('timer');
+var timerInterval = setInterval(function() {
+  totalSecs--;
+  if (totalSecs <= 0) { clearInterval(timerInterval); timerEl.textContent = '00:00'; return; }
+  var m = Math.floor(totalSecs / 60);
+  var s = totalSecs % 60;
+  timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  timerEl.className = totalSecs < 120 ? 'urgent' : totalSecs < 300 ? 'warn' : '';
+}, 1000);
+
+// ══════════════════════════════════════════════
+// SCORE SYSTEM
+// ══════════════════════════════════════════════
+var scores = {};
+function setScore(id, got, max) {
+  scores[id] = { got: got, max: max };
+  var total = 0, totalMax = 0;
+  for (var k in scores) { total += scores[k].got; totalMax += scores[k].max; }
+  document.getElementById('total-score').textContent = total;
+  document.getElementById('total-max').textContent = totalMax;
+}
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ══════════════════════════════════════════════
+// HELPER: showMsg
+// ══════════════════════════════════════════════
+function showMsg(el, got, total) {
+  el.classList.add('show');
+  if (got === total) { el.className = 'result-msg show ok'; el.textContent = 'Super! Alle ' + total + ' richtig! '; }
+  else if (got >= total * 0.6) { el.className = 'result-msg show partial'; el.textContent = got + ' / ' + total + ' richtig. Weiter so!'; }
+  else { el.className = 'result-msg show bad'; el.textContent = got + ' / ' + total + ' richtig. Noch einmal versuchen!'; }
+}
+
+// ══════════════════════════════════════════════
+// HELPER: checkDropdowns
+// ══════════════════════════════════════════════
+function checkDropdowns(cardId, max) {
+  var card = document.getElementById(cardId);
+  var drops = card.querySelectorAll('.dropdown');
+  var got = 0;
+  drops.forEach(function(d) {
+    d.classList.remove('correct', 'wrong');
+    if (d.value === d.dataset.ans) { d.classList.add('correct'); got++; }
+    else { d.classList.add('wrong'); }
+  });
+  showMsg(document.getElementById('res-' + cardId), got, max);
+  setScore(cardId, got, max);
+}
+function resetDropdowns(cardId) {
+  var card = document.getElementById(cardId);
+  card.querySelectorAll('.dropdown').forEach(function(d) {
+    d.classList.remove('correct','wrong'); d.value = '';
+  });
+  var msg = document.getElementById('res-' + cardId);
+  msg.className = 'result-msg'; msg.textContent = '';
+}
+
+// ══════════════════════════════════════════════
+// HELPER: checkBlanks (text inputs)
+// ══════════════════════════════════════════════
+function norm(s) { return s.trim().toLowerCase().replace(/\s+/g,' '); }
+function checkBlanks(cardId, max) {
+  var card = document.getElementById(cardId);
+  var inputs = card.querySelectorAll('.luecke');
+  var got = 0;
+  inputs.forEach(function(inp) {
+    inp.classList.remove('correct','wrong');
+    if (norm(inp.value) === norm(inp.dataset.ans)) { inp.classList.add('correct'); got++; }
+    else { inp.classList.add('wrong'); }
+  });
+  showMsg(document.getElementById('res-' + cardId), got, max);
+  setScore(cardId, got, max);
+}
+function resetBlanks(cardId) {
+  var card = document.getElementById(cardId);
+  card.querySelectorAll('.luecke').forEach(function(inp) {
+    inp.classList.remove('correct','wrong'); inp.value = '';
+  });
+  var msg = document.getElementById('res-' + cardId);
+  msg.className = 'result-msg'; msg.textContent = '';
+}
+
+// ══════════════════════════════════════════════
+// HELPER: multiple choice
+// ══════════════════════════════════════════════
+function buildMC(containerId, data, resultId) {
+  var c = document.getElementById(containerId);
+  c.innerHTML = '';
+  data.forEach(function(d, i) {
+    var div = document.createElement('div');
+    div.style.marginBottom = '14px';
+    var prompt = '<p class="item"><span class="item-num">' + (i+1) + '</span>' + d.sent + '</p>';
+    div.innerHTML = prompt;
+    var mc = document.createElement('div');
+    mc.className = 'mc-options';
+    mc.id = containerId + '-mc-' + i;
+    d.opts.forEach(function(opt, j) {
+      var btn = document.createElement('button');
+      btn.className = 'mc-btn';
+      btn.textContent = opt;
+      btn.dataset.idx = j;
+      btn.addEventListener('click', function() {
+        mc.querySelectorAll('.mc-btn').forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+      });
+      mc.appendChild(btn);
+    });
+    div.appendChild(mc);
+    c.appendChild(div);
+  });
+}
+function checkMC(baseId, data) {
+  var got = 0;
+  // detect containerId vs resultId pattern
+  data.forEach(function(d, i) {
+    var mc = document.getElementById(baseId + '-mc-' + i);
+    if (!mc) return;
+    mc.querySelectorAll('.mc-btn').forEach(function(btn) {
+      btn.classList.remove('correct','wrong');
+      if (btn.classList.contains('selected')) {
+        if (parseInt(btn.dataset.idx) === d.ans) { btn.classList.add('correct'); got++; }
+        else { btn.classList.add('wrong'); }
+      }
+    });
+  });
+  var resId = 'res-' + baseId.split('-mc')[0].replace(/([a-z])(\d)/,'$1$2');
+  // fallback: try res-baseId
+  var msgEl = document.getElementById('res-' + baseId) || document.getElementById('res-' + baseId.replace('-mc',''));
+  if (!msgEl) {
+    // try splitting
+    var parts = baseId.split('-');
+    msgEl = document.getElementById('res-' + parts[0]);
+  }
+  if (msgEl) showMsg(msgEl, got, data.length);
+  setScore(baseId, got, data.length);
+}
+function resetMC(baseId, data) {
+  data.forEach(function(d, i) {
+    var mc = document.getElementById(baseId + '-mc-' + i);
+    if (!mc) return;
+    mc.querySelectorAll('.mc-btn').forEach(function(btn) { btn.classList.remove('selected','correct','wrong'); });
+  });
+  var msgEl = document.getElementById('res-' + baseId) || document.getElementById('res-' + baseId.replace('-mc',''));
+  if (!msgEl) {
+    var parts = baseId.split('-');
+    msgEl = document.getElementById('res-' + parts[0]);
+  }
+  if (msgEl) { msgEl.className = 'result-msg'; msgEl.textContent = ''; }
+}
+
+// ══════════════════════════════════════════════
+// HELPER: sentence builder
+// ══════════════════════════════════════════════
+function buildSentBuilder(containerId, sbData, stateArr) {
+  var c = document.getElementById(containerId);
+  c.innerHTML = '';
+  sbData.forEach(function(d, i) {
+    stateArr[i] = { tokens: d.tokens.slice(), placed: [] };
+    var div = document.createElement('div');
+    div.style.marginBottom = '20px';
+    div.style.borderBottom = '1px dashed var(--teal-light)';
+    div.style.paddingBottom = '14px';
+    var label = '<p class="item"><span class="item-num">' + (i+1) + '</span>' + d.prompt + '</p>';
+    div.innerHTML = label;
+    // token pool
+    var pool = document.createElement('div');
+    pool.className = 'sent-tokens';
+    pool.id = containerId + '-pool-' + i;
+    // drop area
+    var area = document.createElement('div');
+    area.className = 'sent-area';
+    area.id = containerId + '-area-' + i;
+    area.title = 'Klicke auf ein Wort, um es zu entfernen';
+    // shuffle tokens
+    var shuffled = d.tokens.slice().sort(function() { return Math.random() - 0.5; });
+    shuffled.forEach(function(tok) {
+      var btn = document.createElement('button');
+      btn.className = 'token';
+      btn.textContent = tok;
+      btn.addEventListener('click', function() {
+        if (btn.classList.contains('placed')) return;
+        btn.classList.add('placed');
+        stateArr[i].placed.push({ tok: tok, btn: btn });
+        var pt = document.createElement('span');
+        pt.className = 'placed-token';
+        pt.textContent = tok;
+        pt.addEventListener('click', function() {
+          area.removeChild(pt);
+          btn.classList.remove('placed');
+          stateArr[i].placed = stateArr[i].placed.filter(function(p) { return p.btn !== btn; });
+        });
+        area.appendChild(pt);
+      });
+      pool.appendChild(btn);
+    });
+    div.appendChild(pool);
+    div.appendChild(area);
+    c.appendChild(div);
+  });
+}
+function checkSentBuilder(containerId, sbData, stateArr, resId, scoreId) {
+  var got = 0;
+  sbData.forEach(function(d, i) {
+    var built = stateArr[i].placed.map(function(p) { return p.tok; }).join(' ');
+    var builtN = built.toLowerCase().replace(/[,]/g,'').replace(/\s+/g,' ').trim();
+    var ansN = d.ans.toLowerCase().replace(/[,]/g,'').replace(/\s+/g,' ').trim();
+    var area = document.getElementById(containerId + '-area-' + i);
+    if (builtN === ansN) { area.style.borderColor = 'var(--correct)'; area.style.background = '#dcfce7'; got++; }
+    else { area.style.borderColor = 'var(--wrong)'; area.style.background = '#fee2e2'; }
+  });
+  showMsg(document.getElementById(resId), got, sbData.length);
+  setScore(scoreId, got, sbData.length);
+}
+
+// ══════════════════════════════════════════════
+// WORD BANK helper
+// ══════════════════════════════════════════════
+var bankSelected = {};
+function selectBankWord(el, bankId) {
+  if (el.classList.contains('used')) return;
+  bankSelected[bankId] = el.textContent;
+}
+
+// ══════════════════════════════════════════════
+// TAB 1: Futur I – Sentence Builder (U1B)
+// ══════════════════════════════════════════════
+var sb1Data = [
+  { prompt: 'niemand mehr / Briefe auf Papier / in zehn Jahren / schreiben', tokens: ['In','zehn','Jahren','wird','niemand','mehr','Briefe','auf','Papier','schreiben','.'], ans: 'In zehn Jahren wird niemand mehr Briefe auf Papier schreiben.' },
+  { prompt: 'noch viel mehr Müll / schwimmen / in zehn Jahren / in den Ozeanen', tokens: ['In','zehn','Jahren','wird','noch','viel','mehr','Müll','in','den','Ozeanen','schwimmen','.'], ans: 'In zehn Jahren wird noch viel mehr Müll in den Ozeanen schwimmen.' },
+  { prompt: 'Das / ich / gleich / machen', tokens: ['Das','werde','ich','gleich','machen','.'], ans: 'Das werde ich gleich machen.' }
+];
+var sb1States = [];
+function buildSB1() { buildSentBuilder('sb1-items', sb1Data, sb1States); }
+function checkSB1() { checkSentBuilder('sb1-items', sb1Data, sb1States, 'res-u1b', 'u1b'); }
+function resetSB1() { sb1States = []; buildSB1(); document.getElementById('res-u1b').className = 'result-msg'; }
+buildSB1();
+
+// ══════════════════════════════════════════════
+// TAB 2: ohne zu / ohne dass
+// ══════════════════════════════════════════════
+var u2aData = [
+  { sent: 'Er hat das Gerät zurückgeschickt, _____ es zu bezahlen.', opts: ['ohne', 'ohne dass'], ans: 0 },
+  { sent: 'Sie hat den Pullover umgetauscht, _____ der Verkäufer etwas gesagt hat.', opts: ['ohne … zu', 'ohne dass'], ans: 1 },
+  { sent: 'Ammar hat die Fahrkarte gekauft, _____ das Ziel zu prüfen.', opts: ['ohne', 'ohne dass'], ans: 0 },
+  { sent: 'Man kann die Ware zurückgeben, _____ man Gründe angeben muss.', opts: ['ohne … zu', 'ohne dass'], ans: 1 },
+  { sent: 'Sie hat den Laden verlassen, _____ sich zu bedanken.', opts: ['ohne', 'ohne dass'], ans: 0 }
+];
+buildMC('u2a-items', u2aData, 'res-u2a');
+
+var sb2Data = [
+  { prompt: 'Ich habe das Handy zurückgeschickt. (ausprobieren, ohne … zu)', tokens: ['Ich','habe','das','Handy','zurückgeschickt,','ohne','es','auszuprobieren','.'], ans: 'Ich habe das Handy zurückgeschickt, ohne es auszuprobieren.' },
+  { prompt: 'Sie hat die Jacke bezahlt. (anprobieren, ohne … zu)', tokens: ['Sie','hat','die','Jacke','bezahlt,','ohne','sie','anzuprobieren','.'], ans: 'Sie hat die Jacke bezahlt, ohne sie anzuprobieren.' },
+  { prompt: 'Er hat das Formular abgeschickt. (lesen, ohne … zu)', tokens: ['Er','hat','das','Formular','abgeschickt,','ohne','es','zu','lesen','.'], ans: 'Er hat das Formular abgeschickt, ohne es zu lesen.' }
+];
+var sb2States = [];
+function buildSB2() { buildSentBuilder('sb2-items', sb2Data, sb2States); }
+function checkSB2() { checkSentBuilder('sb2-items', sb2Data, sb2States, 'res-u2b', 'u2b'); }
+function resetSB2() { sb2States = []; buildSB2(); document.getElementById('res-u2b').className = 'result-msg'; }
+buildSB2();
+
+// ══════════════════════════════════════════════
+// TAB 3: Wortbildung Adjektive
+// ══════════════════════════════════════════════
+var u3bData = [
+  { sent: 'Der Händler war sehr unhöflich. Das Gespräch war sehr _____ .', opts: ['ärgerlich', 'windig', 'preiswert'], ans: 0 },
+  { sent: 'Das Ticket hat nur 5 Euro gekostet. Es war wirklich _____ .', opts: ['langweilig', 'preiswert', 'freundlich'], ans: 1 },
+  { sent: 'Heute weht ein starker Wind. Es ist _____ .', opts: ['staubig', 'windig', 'ärgerlich'], ans: 1 },
+  { sent: 'Dieses Reparaturcafé ist toll. Es ist sehr _____ .', opts: ['empfehlenswert', 'langweilig', 'preiswert'], ans: 0 },
+  { sent: 'Der Film war nicht interessant. Er war wirklich _____ .', opts: ['freundlich', 'langweilig', 'windig'], ans: 1 }
+];
+buildMC('u3b-items', u3bData, 'res-u3b');
+
+// ══════════════════════════════════════════════
+// TAB 4: zum + nominalisierte Verben
+// ══════════════════════════════════════════════
+var u4bData = [
+  { sent: 'Wozu braucht man ein Smartphone?', opts: ['Zum Schlafen.', 'Zum Telefonieren und Fotografieren.', 'Zum Kochen.'], ans: 1 },
+  { sent: 'Wozu ist ein DVD-Player gut?', opts: ['Zum Reparieren.', 'Zum Aufräumen.', 'Zum Abspielen von Filmen.'], ans: 2 },
+  { sent: 'Wozu eignet sich eine Softbox?', opts: ['Zum Waschen.', 'Zum Fotografieren mit gutem Licht.', 'Zum Aufräumen.'], ans: 1 },
+  { sent: 'Wozu gibt es ein Reparaturcafé?', opts: ['Zum Kaffeetrinken.', 'Zum Reparieren von kaputten Sachen.', 'Zum Schlafen.'], ans: 1 }
+];
+buildMC('u4b-items', u4bData, 'res-u4b');
+
+var sb4Data = [
+  { prompt: 'Das Kit ist perfekt – (Videos machen)', tokens: ['Das','Kit','ist','perfekt','zum','Aufnehmen','von','Videos','.'], ans: 'Das Kit ist perfekt zum Aufnehmen von Videos.' },
+  { prompt: 'Die Softbox eignet sich – (Porträtfotos machen)', tokens: ['Die','Softbox','eignet','sich','zum','Fotografieren','von','Porträts','.'], ans: 'Die Softbox eignet sich zum Fotografieren von Porträts.' }
+];
+var sb4States = [];
+function buildSB4() { buildSentBuilder('sb4-items', sb4Data, sb4States); }
+function checkSB4() { checkSentBuilder('sb4-items', sb4Data, sb4States, 'res-u4c', 'u4c'); }
+function resetSB4() { sb4States = []; buildSB4(); document.getElementById('res-u4c').className = 'result-msg'; }
+buildSB4();
+
+// ══════════════════════════════════════════════
+// TAB 5: Schnelltest
+// ══════════════════════════════════════════════
+
+// 2a – Futur Sentence Builder
+var st2aData = [
+  { prompt: 'Briefe auf Papier / in zehn Jahren / schreiben / niemand mehr', tokens: ['In','zehn','Jahren','wird','niemand','mehr','Briefe','auf','Papier','schreiben','.'], ans: 'In zehn Jahren wird niemand mehr Briefe auf Papier schreiben.' },
+  { prompt: 'noch viel mehr Müll / schwimmen / in den Ozeanen / in zehn Jahren', tokens: ['In','zehn','Jahren','wird','noch','viel','mehr','Müll','in','den','Ozeanen','schwimmen','.'], ans: 'In zehn Jahren wird noch viel mehr Müll in den Ozeanen schwimmen.' }
+];
+var st2aStates = [];
+function buildSB_st2a() { buildSentBuilder('st2a-items', st2aData, st2aStates); }
+function checkSB_st2a() { checkSentBuilder('st2a-items', st2aData, st2aStates, 'res-st2a', 'st2a'); }
+function resetSB_st2a() { st2aStates = []; buildSB_st2a(); document.getElementById('res-st2a').className = 'result-msg'; }
+buildSB_st2a();
+
+// 2b – ohne zu / ohne dass MC
+var st2bData = [
+  { sent: 'Ich habe den Wettbewerb gewonnen, _____ mich anstrengen zu müssen. (sich anstrengen müssen)', opts: ['ohne … zu', 'ohne dass'], ans: 0 },
+  { sent: 'Sie hat den Job gekündigt, _____ einen Grund anzugeben. (einen Grund angeben, ohne … zu)', opts: ['ohne … zu', 'ohne dass'], ans: 0 }
+];
+buildMC('st2b-mc', st2bData, 'res-st2b');
+
+// 3 – Kommunikation Match MC
+var st3Data = [
+  { sent: '1. „Was macht man damit?"', opts: ['nach dem Zustand fragen', 'nach dem Zweck fragen', 'über Preis verhandeln', 'etwas reklamieren'], ans: 1 },
+  { sent: '2. „Vermutlich gibt es …"', opts: ['Sorge ausdrücken', 'eine Hypothese aufstellen', 'nach dem Zweck fragen', 'informieren'], ans: 1 },
+  { sent: '3. „Ich fürchte, dass ..."', opts: ['Sorge ausdrücken', 'reklamieren', 'verhandeln', 'informieren'], ans: 0 },
+  { sent: '4. „Der Artikel wurde beschädigt geliefert."', opts: ['informieren', 'etwas reklamieren', 'fragen', 'Hypothese aufstellen'], ans: 1 },
+  { sent: '5. „Funktioniert das Gerät trotzdem?"', opts: ['Zustand fragen', 'Preis verhandeln', 'reklamieren', 'informieren'], ans: 0 },
+  { sent: '6. „Kann man am Preis noch was machen?"', opts: ['informieren', 'Sorge ausdrücken', 'über Preis verhandeln', 'fragen'], ans: 2 }
+];
+buildMC('st3-mc', st3Data, 'res-st3');
+
+// Schnelltest Gesamtergebnis
+function calcSchnelltest() {
+  var stKeys = ['st1','st2a','st2b-mc','st3-mc'];
+  var total = 0; var maxTotal = 21;
+  stKeys.forEach(function(k) { if (scores[k]) total += scores[k].got; });
+  document.getElementById('schnell-score').textContent = total + ' / 21';
+  var emoji, msg;
+  if (total >= 17) { emoji = ':-)'; msg = 'Bestanden! Sehr gut!'; document.getElementById('schnell-score').style.color = 'var(--correct)'; }
+  else if (total >= 11) { emoji = ':-|'; msg = 'Fast! Noch einmal üben.'; document.getElementById('schnell-score').style.color = '#ca8a04'; }
+  else { emoji = ':-('; msg = 'Nicht bestanden. Weiter lernen!'; document.getElementById('schnell-score').style.color = 'var(--wrong)'; }
+  document.getElementById('schnell-emoji').textContent = emoji;
+  document.getElementById('schnell-msg').textContent = msg + ' (' + document.getElementById('name-input').value + ')';
+}
+
+</script>
+</body>
+</html>
