@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Te-Ka-Mo-Lo Übungen</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --te: #3b6fd4;
+    --ka: #d4543b;
+    --mo: #27a06e;
+    --lo: #9b59b6;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #1a2340;
+    --muted: #7a85a0;
+    --border: #e2e6f0;
+    --shadow: 0 2px 16px rgba(60,80,160,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: linear-gradient(135deg, #1a2f7a 0%, #2d4fc0 100%);
+    padding: 18px 16px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(30,50,130,0.25);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    color: #fff;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+  }
+
+  .header-title span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.65);
+    display: block;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .score-badge {
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    border-radius: 24px;
+    padding: 5px 14px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  /* Name input */
+  .name-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .name-input {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 7px 12px;
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    outline: none;
+  }
+
+  .name-input::placeholder { color: rgba(255,255,255,0.55); }
+
+  /* ─── PILLS PROGRESS ─── */
+  .progress-pills {
+    display: flex;
+    gap: 4px;
+    padding: 10px 16px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .progress-pills::-webkit-scrollbar { display: none; }
+
+  .pill {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--card);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pill.active {
+    background: #2d4fc0;
+    border-color: #2d4fc0;
+    color: #fff;
+    transform: scale(1.12);
+    box-shadow: 0 2px 8px rgba(45,79,192,0.35);
+  }
+
+  .pill.done {
+    background: #27a06e;
+    border-color: #27a06e;
+    color: #fff;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  main {
+    padding: 8px 14px 100px;
+  }
+
+  /* ─── THEORY BOX ─── */
+  .theory-box {
+    background: linear-gradient(135deg, #1a2f7a 0%, #2d4fc0 100%);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+
+  .theory-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+    opacity: 0.95;
+  }
+
+  .tekamolo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .tg-item {
+    background: rgba(255,255,255,0.14);
+    border-radius: 10px;
+    padding: 9px 12px;
+  }
+
+  .tg-label {
+    font-size: 1.1rem;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tg-desc {
+    font-size: 0.72rem;
+    opacity: 0.8;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .te-c { color: #7eb8ff; }
+  .ka-c { color: #ff9d8a; }
+  .mo-c { color: #7deebc; }
+  .lo-c { color: #d4a8ff; }
+
+  .order-hint {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    opacity: 0.9;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── CARD ─── */
+  .aufgabe-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    padding: 13px 16px 10px;
+    background: linear-gradient(90deg, #f0f4ff 0%, #fafbff 100%);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .aufg-num {
+    background: #2d4fc0;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .originalsatz {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .card-body { padding: 14px 16px; }
+
+  /* ─── ADVERB CHIPS ─── */
+  .adverb-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .adverb-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 6px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 2px solid transparent;
+  }
+
+  .chip-te { background: #e8f0ff; border-color: #b0c6f5; color: #1a4bba; }
+  .chip-ka { background: #fff0ee; border-color: #f5b0a2; color: #ba2a1a; }
+  .chip-mo { background: #e6faf2; border-color: #8fe0c0; color: #1a7a52; }
+  .chip-lo { background: #f5eeff; border-color: #c8a0f5; color: #6a1aa0; }
+
+  .chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-te { background: var(--te); }
+  .dot-ka { background: var(--ka); }
+  .dot-mo { background: var(--mo); }
+  .dot-lo { background: var(--lo); }
+
+  /* ─── TEXTAREA ─── */
+  .textarea-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .textarea-label::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    background: #2d4fc0;
+    border-radius: 2px;
+  }
+
+  textarea {
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    min-height: 80px;
+    background: #fafbff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  textarea:focus {
+    border-color: #2d4fc0;
+    box-shadow: 0 0 0 3px rgba(45,79,192,0.12);
+    background: #fff;
+  }
+
+  textarea.correct {
+    border-color: var(--mo);
+    background: #edfbf4;
+  }
+
+  textarea.incorrect {
+    border-color: var(--ka);
+    background: #fff5f4;
+  }
+
+  /* ─── CHECK BUTTON ─── */
+  .check-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    background: linear-gradient(135deg, #1a2f7a, #2d4fc0);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .check-btn:active { transform: scale(0.97); }
+
+  .check-btn:disabled {
+    background: #c0c8e0;
+    cursor: default;
+  }
+
+  /* ─── FEEDBACK ─── */
+  .feedback {
+    margin-top: 12px;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .feedback.show { display: block; animation: popIn 0.2s ease; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .feedback.correct-fb {
+    background: #edfbf4;
+    border: 2px solid #27a06e;
+    color: #1a6648;
+  }
+
+  .feedback.incorrect-fb {
+    background: #fff5f4;
+    border: 2px solid #d4543b;
+    color: #8b2c1a;
+  }
+
+  .feedback-icon { font-size: 1.2rem; margin-right: 4px; }
+
+  .musterloesung {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    font-size: 0.84rem;
+    color: inherit;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  /* ─── NAV ─── */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px 14px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    box-shadow: 0 -2px 16px rgba(60,80,160,0.10);
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #f4f6fb;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn.primary {
+    background: linear-gradient(135deg, #1a2f7a, #2d4fc0);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .nav-btn:active { transform: scale(0.97); }
+  .nav-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* ─── RESULTS ─── */
+  .results-screen {
+    display: none;
+    padding: 20px 14px 100px;
+    animation: slideUp 0.4s ease;
+  }
+
+  .results-header {
+    background: linear-gradient(135deg, #1a2f7a 0%, #2d4fc0 100%);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  .results-emoji { font-size: 3rem; margin-bottom: 10px; }
+  .results-name { font-size: 1rem; opacity: 0.8; margin-bottom: 4px; }
+  .results-score { font-family: 'DM Serif Display', serif; font-size: 2.5rem; }
+  .results-sub { font-size: 0.85rem; opacity: 0.75; margin-top: 4px; }
+
+  .result-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .result-item {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .result-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+  .result-aufg { font-size: 0.75rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .result-text { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-top: 2px; line-height: 1.4; }
+  .result-correct { font-size: 0.8rem; color: var(--mo); font-weight: 700; margin-top: 4px; font-style: italic; }
+
+  .retry-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, #1a2f7a, #2d4fc0);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-title">
+      <span>Grammatik B1</span>
+      Te – Ka – Mo – Lo
+    </div>
+    <div class="score-badge" id="scoreBadge">0 / 12</div>
+  </div>
+  <div class="name-row">
+    <input class="name-input" type="text" id="nameInput" placeholder="Dein Name eingeben…" maxlength="40">
+  </div>
+</header>
+
+<div class="progress-pills" id="progressPills"></div>
+
+<!-- MAIN -->
+<main id="mainContent">
+
+  <div class="theory-box">
+    <div class="theory-title">📐 Die TeKaMoLo-Regel</div>
+    <div class="tekamolo-grid">
+      <div class="tg-item">
+        <span class="tg-label te-c">Te</span>
+        <span class="tg-desc">Temporal – Wann?</span>
+      </div>
+      <div class="tg-item">
+        <span class="tg-label ka-c">Ka</span>
+        <span class="tg-desc">Kausal – Warum?</span>
+      </div>
+      <div class="tg-item">
+        <span class="tg-label mo-c">Mo</span>
+        <span class="tg-desc">Modal – Wie?</span>
+      </div>
+      <div class="tg-item">
+        <span class="tg-label lo-c">Lo</span>
+        <span class="tg-desc">Lokal – Wo?</span>
+      </div>
+    </div>
+    <div class="order-hint">📌 Reihenfolge: Te → Ka → Mo → Lo</div>
+  </div>
+
+  <div id="cardContainer"></div>
+
+</main>
+
+<!-- RESULTS -->
+<div class="results-screen" id="resultsScreen">
+  <div class="results-header">
+    <div class="results-emoji" id="resultsEmoji">🎉</div>
+    <div class="results-name" id="resultsName"></div>
+    <div class="results-score" id="resultsScore"></div>
+    <div class="results-sub">von 12 Aufgaben richtig</div>
+  </div>
+  <div class="result-list" id="resultList"></div>
+  <button class="retry-btn" onclick="resetAll()">🔄 Nochmal versuchen</button>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Zurück</button>
+  <button class="nav-btn primary" id="nextBtn" onclick="navigate(1)">Weiter →</button>
+</div>
+
+<script>
+var aufgaben = [
+  {
+    nr: 1,
+    originalsatz: "Ich lerne Deutsch.",
+    te: "seit einem Jahr",
+    ka: "wegen meiner Ausbildung in Deutschland",
+    mo: "mit meiner Freundin",
+    lo: "in einem Sprachzentrum",
+    muster: "Ich lerne seit einem Jahr wegen meiner Ausbildung in Deutschland mit meiner Freundin in einem Sprachzentrum Deutsch."
+  },
+  {
+    nr: 2,
+    originalsatz: "Wir haben Pizza gegessen.",
+    te: "gestern Abend",
+    ka: "wegen der Geburtstagsfeier",
+    mo: "zusammen mit unseren Freunden",
+    lo: "in einem italienischen Restaurant",
+    muster: "Wir haben gestern Abend wegen der Geburtstagsfeier zusammen mit unseren Freunden in einem italienischen Restaurant Pizza gegessen."
+  },
+  {
+    nr: 3,
+    originalsatz: "Meine Mutter arbeitet.",
+    te: "jeden Tag",
+    ka: "wegen der hohen Lebenshaltungskosten",
+    mo: "sehr fleißig",
+    lo: "in einer großen Firma",
+    muster: "Meine Mutter arbeitet jeden Tag wegen der hohen Lebenshaltungskosten sehr fleißig in einer großen Firma."
+  },
+  {
+    nr: 4,
+    originalsatz: "Der Student hat geschlafen.",
+    te: "am Nachmittag",
+    ka: "wegen der starken Kopfschmerzen",
+    mo: "ohne Licht",
+    lo: "im Wohnheim",
+    muster: "Der Student hat am Nachmittag wegen der starken Kopfschmerzen ohne Licht im Wohnheim geschlafen."
+  },
+  {
+    nr: 5,
+    originalsatz: "Wir machen Fotos.",
+    te: "am Wochenende",
+    ka: "wegen des schönen Wetters",
+    mo: "mit einer professionellen Kamera",
+    lo: "im Park",
+    muster: "Wir machen am Wochenende wegen des schönen Wetters mit einer professionellen Kamera im Park Fotos."
+  },
+  {
+    nr: 6,
+    originalsatz: "Mein Bruder fährt Fahrrad.",
+    te: "jeden Morgen",
+    ka: "wegen seiner Gesundheit",
+    mo: "ganz schnell",
+    lo: "im Stadtzentrum",
+    muster: "Mein Bruder fährt jeden Morgen wegen seiner Gesundheit ganz schnell im Stadtzentrum Fahrrad."
+  },
+  {
+    nr: 7,
+    originalsatz: "Die Kinder spielen.",
+    te: "nach der Schule",
+    ka: "wegen des warmen Wetters",
+    mo: "fröhlich zusammen",
+    lo: "auf dem Spielplatz",
+    muster: "Die Kinder spielen nach der Schule wegen des warmen Wetters fröhlich zusammen auf dem Spielplatz."
+  },
+  {
+    nr: 8,
+    originalsatz: "Ich habe einen Kuchen gebacken.",
+    te: "gestern",
+    ka: "wegen des Geburtstags meiner Schwester",
+    mo: "mit viel Liebe",
+    lo: "zu Hause",
+    muster: "Ich habe gestern wegen des Geburtstags meiner Schwester mit viel Liebe zu Hause einen Kuchen gebacken."
+  },
+  {
+    nr: 9,
+    originalsatz: "Mein Vater liest die Zeitung.",
+    te: "jeden Morgen",
+    ka: "wegen seines Interesses an Politik",
+    mo: "ganz aufmerksam",
+    lo: "im Wohnzimmer",
+    muster: "Mein Vater liest jeden Morgen wegen seines Interesses an Politik ganz aufmerksam im Wohnzimmer die Zeitung."
+  },
+  {
+    nr: 10,
+    originalsatz: "Die Touristen haben viele Fotos gemacht.",
+    te: "im Sommer",
+    ka: "wegen der schönen Landschaft",
+    mo: "mit ihren Handys",
+    lo: "am Strand",
+    muster: "Die Touristen haben im Sommer wegen der schönen Landschaft mit ihren Handys am Strand viele Fotos gemacht."
+  },
+  {
+    nr: 11,
+    originalsatz: "Die Schüler lernen Grammatik.",
+    te: "vor der Prüfung",
+    ka: "wegen des wichtigen Tests",
+    mo: "sehr konzentriert",
+    lo: "in der Bibliothek",
+    muster: "Die Schüler lernen vor der Prüfung wegen des wichtigen Tests sehr konzentriert in der Bibliothek Grammatik."
+  },
+  {
+    nr: 12,
+    originalsatz: "Meine Freundin telefoniert.",
+    te: "am Abend",
+    ka: "wegen eines Problems",
+    mo: "ganz leise",
+    lo: "im Garten",
+    muster: "Meine Freundin telefoniert am Abend wegen eines Problems ganz leise im Garten."
+  }
+];
+
+var currentIndex = 0;
+var answers = new Array(12).fill('');
+var checked = new Array(12).fill(false);
+var correct = new Array(12).fill(false);
+var score = 0;
+
+function normalize(s) {
+  return s.trim()
+    .toLowerCase()
+    .replace(/[.,!?;]/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+}
+
+function checkSimilar(input, muster) {
+  var a = normalize(input);
+  var b = normalize(muster);
+  if (a === b) return true;
+  // Allow if all key adverbs are present in correct order
+  return false;
+}
+
+function checkAnswer(idx) {
+  var a = aufgaben[idx];
+  var ta = document.getElementById('ta_' + idx);
+  var val = ta ? ta.value : '';
+  answers[idx] = val;
+
+  var isCorrect = checkSimilar(val, a.muster);
+  checked[idx] = true;
+  correct[idx] = isCorrect;
+
+  // Update score
+  score = 0;
+  for (var i = 0; i < 12; i++) {
+    if (correct[i]) score++;
+  }
+  document.getElementById('scoreBadge').textContent = score + ' / 12';
+
+  // Show feedback
+  var fb = document.getElementById('fb_' + idx);
+  if (fb) {
+    if (isCorrect) {
+      ta.className = 'correct';
+      fb.className = 'feedback correct-fb show';
+      fb.innerHTML = '<span class="feedback-icon">✅</span> Richtig! Sehr gut!';
+    } else {
+      ta.className = 'incorrect';
+      fb.className = 'feedback incorrect-fb show';
+      fb.innerHTML = '<span class="feedback-icon">❌</span> Nicht ganz richtig. Musterlösung:<div class="musterloesung">' + a.muster + '</div>';
+    }
+  }
+
+  // Disable button
+  var btn = document.getElementById('checkBtn_' + idx);
+  if (btn) btn.disabled = true;
+
+  updatePills();
+}
+
+function buildCard(a, idx) {
+  var card = document.createElement('div');
+  card.className = 'aufgabe-card';
+  card.id = 'card_' + idx;
+  card.style.display = (idx === currentIndex) ? 'block' : 'none';
+
+  var savedVal = answers[idx] || '';
+  var isChecked = checked[idx];
+  var taClass = isChecked ? (correct[idx] ? 'correct' : 'incorrect') : '';
+  var fbClass = isChecked ? ('feedback show ' + (correct[idx] ? 'correct-fb' : 'incorrect-fb')) : 'feedback';
+  var fbHTML = '';
+  if (isChecked) {
+    if (correct[idx]) {
+      fbHTML = '<span class="feedback-icon">✅</span> Richtig! Sehr gut!';
+    } else {
+      fbHTML = '<span class="feedback-icon">❌</span> Nicht ganz richtig. Musterlösung:<div class="musterloesung">' + a.muster + '</div>';
+    }
+  }
+
+  card.innerHTML =
+    '<div class="card-header">' +
+      '<div class="aufg-num">' + a.nr + '</div>' +
+      '<div class="originalsatz">' + a.originalsatz + '</div>' +
+    '</div>' +
+    '<div class="card-body">' +
+      '<div class="adverb-group">' +
+        '<div class="adverb-chip chip-te"><span class="chip-dot dot-te"></span>Te: ' + a.te + '</div>' +
+        '<div class="adverb-chip chip-ka"><span class="chip-dot dot-ka"></span>Ka: ' + a.ka + '</div>' +
+        '<div class="adverb-chip chip-mo"><span class="chip-dot dot-mo"></span>Mo: ' + a.mo + '</div>' +
+        '<div class="adverb-chip chip-lo"><span class="chip-dot dot-lo"></span>Lo: ' + a.lo + '</div>' +
+      '</div>' +
+      '<div class="textarea-label">Vollständiger Satz mit Te-Ka-Mo-Lo</div>' +
+      '<textarea id="ta_' + idx + '" class="' + taClass + '" placeholder="Schreib den vollständigen Satz hier…" rows="3"' + (isChecked ? ' readonly' : '') + '>' + savedVal + '</textarea>' +
+      '<button class="check-btn" id="checkBtn_' + idx + '"' + (isChecked ? ' disabled' : '') + ' onclick="checkAnswer(' + idx + ')">✔ Antwort prüfen</button>' +
+      '<div class="' + fbClass + '" id="fb_' + idx + '">' + fbHTML + '</div>' +
+    '</div>';
+
+  return card;
+}
+
+function buildAll() {
+  var container = document.getElementById('cardContainer');
+  container.innerHTML = '';
+  for (var i = 0; i < aufgaben.length; i++) {
+    container.appendChild(buildCard(aufgaben[i], i));
+  }
+  updatePills();
+  updateNav();
+}
+
+function updatePills() {
+  var pills = document.getElementById('progressPills');
+  pills.innerHTML = '';
+  for (var i = 0; i < 12; i++) {
+    var p = document.createElement('div');
+    p.className = 'pill' + (i === currentIndex ? ' active' : '') + (checked[i] ? ' done' : '');
+    p.textContent = i + 1;
+    (function(idx) {
+      p.addEventListener('click', function() { goTo(idx); });
+    })(i);
+    pills.appendChild(p);
+  }
+}
+
+function navigate(dir) {
+  var newIdx = currentIndex + dir;
+  if (newIdx < 0) return;
+  if (newIdx >= 12) {
+    showResults();
+    return;
+  }
+  goTo(newIdx);
+}
+
+function goTo(idx) {
+  document.getElementById('card_' + currentIndex).style.display = 'none';
+  currentIndex = idx;
+  document.getElementById('card_' + currentIndex).style.display = 'block';
+  updatePills();
+  updateNav();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function updateNav() {
+  document.getElementById('prevBtn').disabled = (currentIndex === 0);
+  var nb = document.getElementById('nextBtn');
+  if (currentIndex === 11) {
+    nb.textContent = 'Ergebnis 🏁';
+  } else {
+    nb.textContent = 'Weiter →';
+  }
+}
+
+function showResults() {
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('progressPills').style.display = 'none';
+  document.getElementById('resultsScreen').style.display = 'block';
+
+  var name = document.getElementById('nameInput').value || 'Lernende(r)';
+  document.getElementById('resultsName').textContent = name;
+
+  var pct = Math.round((score / 12) * 100);
+  document.getElementById('resultsScore').textContent = score + ' / 12';
+
+  var emoji = pct >= 90 ? '🏆' : pct >= 70 ? '😊' : pct >= 50 ? '💪' : '📚';
+  document.getElementById('resultsEmoji').textContent = emoji;
+
+  var list = document.getElementById('resultList');
+  list.innerHTML = '';
+  for (var i = 0; i < 12; i++) {
+    var a = aufgaben[i];
+    var item = document.createElement('div');
+    item.className = 'result-item';
+    var icon = checked[i] ? (correct[i] ? '✅' : '❌') : '⬜';
+    var answerText = answers[i] || '(keine Antwort)';
+    var correctHtml = (!correct[i] && checked[i]) ? '<div class="result-correct">→ ' + a.muster + '</div>' : '';
+    item.innerHTML =
+      '<div class="result-icon">' + icon + '</div>' +
+      '<div>' +
+        '<div class="result-aufg">Aufgabe ' + a.nr + ': ' + a.originalsatz + '</div>' +
+        '<div class="result-text">' + answerText + '</div>' +
+        correctHtml +
+      '</div>';
+    list.appendChild(item);
+  }
+
+  // Hide nav
+  document.querySelector('.nav-bar').style.display = 'none';
+}
+
+function resetAll() {
+  answers = new Array(12).fill('');
+  checked = new Array(12).fill(false);
+  correct = new Array(12).fill(false);
+  score = 0;
+  currentIndex = 0;
+  document.getElementById('scoreBadge').textContent = '0 / 12';
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('progressPills').style.display = 'flex';
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.querySelector('.nav-bar').style.display = 'flex';
+  buildAll();
+}
+
+// Init
+buildAll();
+</script>
+</body>
+</html>
