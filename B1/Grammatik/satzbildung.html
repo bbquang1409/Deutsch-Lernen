@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satzbildung – Übungen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap');
+  :root {
+    --bg:#f5f0e8;--card:#fffdf7;--navy:#1a2744;--teal:#2a7c6f;
+    --teal-light:#e8f5f2;--amber:#e8a020;--amber-light:#fff8e6;
+    --red:#c0392b;--red-light:#fdecea;--green:#27ae60;
+    --green-light:#eafaf1;--border:#d8d0c0;--text:#2c2c2c;
+    --muted:#7a7060;--shadow:0 2px 12px rgba(26,39,68,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  /* ── TOP HEADER ── */
+  .top-header{background:var(--navy);color:#fff;padding:14px 16px 0;text-align:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.25);}
+  .top-header h1{font-size:1.05rem;font-weight:800;letter-spacing:0.02em;}
+  .top-header p{font-size:0.75rem;opacity:0.7;margin-top:2px;}
+
+  /* ── TAB BAR ── */
+  .tab-bar{display:flex;overflow-x:auto;gap:0;margin-top:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .tab-bar::-webkit-scrollbar{display:none;}
+  .tab-btn{flex-shrink:0;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.6);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+  .tab-btn.active{color:#fff;border-bottom-color:var(--amber);}
+
+  /* ── LEGEND ── */
+  .legend-bar{background:var(--navy);padding:6px 16px 10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:4px;font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.8);}
+  .legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .dot-perf{background:#5bc8b0;}.dot-praet{background:#f4a94e;}.dot-modal{background:#e07070;}
+
+  /* ── PROGRESS ── */
+  .prog-wrap{background:var(--navy);padding:0 16px 8px;}
+  .progress-bar-wrap{background:rgba(255,255,255,0.15);border-radius:99px;height:5px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:var(--amber);border-radius:99px;transition:width 0.4s ease;width:0%;}
+  .progress-label{font-size:0.68rem;color:rgba(255,255,255,0.65);margin-top:3px;text-align:right;}
+
+  /* ── PANELS ── */
+  .panel{display:none;}.panel.active{display:block;}
+  main{max-width:640px;margin:0 auto;padding:16px 12px 100px;}
+
+  .part-divider{display:flex;align-items:center;gap:10px;margin:20px 0 14px;}
+  .part-divider span{background:var(--navy);color:#fff;font-size:0.72rem;font-weight:800;padding:3px 11px;border-radius:99px;white-space:nowrap;}
+  .part-divider::before,.part-divider::after{content:'';flex:1;height:1.5px;background:var(--border);}
+
+  .intro-card{background:var(--amber-light);border:1.5px solid var(--amber);border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:0.84rem;line-height:1.65;}
+  .story-tag{display:inline-block;background:var(--amber);color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:99px;margin-bottom:6px;letter-spacing:0.05em;}
+  .tense-rule{margin-top:10px;padding:8px 12px;background:rgba(255,255,255,0.6);border-radius:8px;font-size:0.79rem;line-height:1.8;}
+  .pill{display:inline-block;border-radius:4px;padding:1px 6px;font-size:0.73rem;font-weight:800;vertical-align:middle;margin-right:3px;}
+  .pill-perf{background:#d4f4ec;color:#1a6b5a;border:1px solid #5bc8b0;}
+  .pill-praet{background:#fdefd8;color:#8b5e10;border:1px solid #f4a94e;}
+  .pill-modal{background:#fde8e8;color:#8b2020;border:1px solid #e07070;}
+
+  .ex-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);transition:border-color 0.2s;}
+  .ex-card.correct{border-color:var(--green);background:var(--green-light);}
+  .ex-card.wrong{border-color:var(--red);background:var(--red-light);}
+  .card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .ex-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--navy);color:#fff;border-radius:50%;font-size:0.75rem;font-weight:800;flex-shrink:0;}
+  .card-meta{font-size:0.73rem;color:var(--muted);font-weight:700;}
+  .tense-badges{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto;}
+  .tbadge{font-size:0.63rem;font-weight:800;padding:2px 5px;border-radius:4px;}
+
+  .prompt{font-family:'Source Serif 4',serif;font-size:0.86rem;color:var(--navy);line-height:1.9;background:var(--teal-light);border-left:3px solid var(--teal);padding:9px 12px;border-radius:0 8px 8px 0;margin-bottom:12px;}
+  .word{display:inline-block;background:#fff;border:1px solid var(--teal);border-radius:4px;padding:1px 6px;margin:2px 2px;font-size:0.82rem;font-weight:600;color:var(--teal);white-space:nowrap;}
+  .word.v-perf{border-color:#5bc8b0;color:#1a6b5a;background:#d4f4ec;}
+  .word.v-praet{border-color:#f4a94e;color:#8b5e10;background:#fdefd8;}
+  .word.v-modal{border-color:#e07070;color:#8b2020;background:#fde8e8;}
+
+  textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:0.92rem;resize:vertical;min-height:70px;background:#fff;color:var(--text);transition:border-color 0.2s;line-height:1.5;}
+  textarea:focus{outline:none;border-color:var(--teal);}
+  .correct textarea{border-color:var(--green);}.wrong textarea{border-color:var(--red);}
+
+  .feedback{display:none;margin-top:10px;padding:10px 12px;border-radius:8px;font-size:0.82rem;line-height:1.6;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:var(--green-light);border:1px solid var(--green);color:#1a6636;}
+  .feedback.bad{background:var(--red-light);border:1px solid var(--red);color:#8b1a10;}
+  .feedback .flabel{font-weight:800;font-size:0.79rem;margin-bottom:4px;}
+  .feedback .muster{margin-top:6px;font-family:'Source Serif 4',serif;font-size:0.87rem;color:var(--navy);line-height:1.7;}
+  .vt-perf{font-weight:800;color:#1a6b5a;}.vt-praet{font-weight:800;color:#8b5e10;}.vt-modal{font-weight:800;color:#8b2020;}
+
+  .hint-text{display:none;margin-top:6px;font-size:0.78rem;color:#b07010;font-style:italic;line-height:1.5;}
+  .hint-text.show{display:block;}
+
+  .btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .btn{border:none;border-radius:8px;padding:8px 14px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.81rem;cursor:pointer;transition:transform 0.1s;flex:1;min-width:65px;}
+  .btn:active{transform:scale(0.96);}
+  .btn-check{background:var(--teal);color:#fff;}
+  .btn-hint{background:var(--amber-light);color:var(--amber);border:1.5px solid var(--amber);}
+  .btn-reset{background:#f0ece4;color:var(--muted);}
+
+  .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1.5px solid var(--border);padding:10px 16px;display:flex;gap:10px;justify-content:center;z-index:100;box-shadow:0 -2px 10px rgba(0,0,0,0.07);}
+  .btn-all-check{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.93rem;cursor:pointer;flex:1;max-width:280px;}
+  .btn-all-reset{background:#f0ece4;color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:11px 18px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;}
+
+  #score-overlay{display:none;position:fixed;inset:0;background:rgba(26,39,68,0.7);z-index:300;align-items:center;justify-content:center;padding:20px;}
+  #score-overlay.show{display:flex;}
+  .score-card{background:var(--card);border-radius:20px;padding:30px 26px;text-align:center;max-width:320px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.3);animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+  @keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .score-emoji{font-size:2.8rem;margin-bottom:8px;}
+  .score-title{font-size:1.2rem;font-weight:800;color:var(--navy);margin-bottom:4px;}
+  .score-num{font-size:2.6rem;font-weight:800;color:var(--teal);line-height:1.1;}
+  .score-sub{font-size:0.83rem;color:var(--muted);margin-top:5px;}
+  .score-msg{font-size:0.87rem;margin-top:10px;color:var(--text);line-height:1.5;}
+  .btn-close-score{margin-top:18px;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:11px 28px;font-family:'Nunito',sans-serif;font-size:0.93rem;font-weight:800;cursor:pointer;width:100%;}
+
+  .word.v-plus{border-color:#9b59b6;color:#6c3483;background:#f5eef8;}
+  .vt-plus{font-weight:800;color:#6c3483;}
+  .dot-plus{background:#9b59b6;}
+  .pill-plus{background:#f5eef8;color:#6c3483;border:1px solid #9b59b6;}
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <h1>✏️ Satzbildung – Übungen</h1>
+  <p>Bilden Sie grammatisch korrekte Sätze!</p>
+  <div class="tab-bar" id="tab-bar"></div>
+</div>
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot dot-perf"></div>Perfekt (Vollverben)</div>
+  <div class="legend-item"><div class="legend-dot dot-praet"></div>Präteritum (sein / haben)</div>
+  <div class="legend-item"><div class="legend-dot dot-modal"></div>Präteritum (Modalverben)</div>
+    <div class="legend-item"><div class="legend-dot dot-plus"></div>Plusquamperfekt</div>
+</div>
+<div class="prog-wrap">
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill"></div></div>
+  <div class="progress-label" id="prog-label">0 / 10 bearbeitet</div>
+</div>
+
+<div id="panels"></div>
+
+<div class="bottom-bar">
+  <button class="btn-all-reset" onclick="resetAll()">↺ Zurücksetzen</button>
+  <button class="btn-all-check" onclick="checkAll()">Alle prüfen 📋</button>
+</div>
+
+<div id="score-overlay">
+  <div class="score-card">
+    <div class="score-emoji" id="sc-emoji">🎉</div>
+    <div class="score-title">Ergebnis</div>
+    <div class="score-num" id="sc-num">0/10</div>
+    <div class="score-sub">Aufgaben richtig</div>
+    <div class="score-msg" id="sc-msg"></div>
+    <button class="btn-close-score" onclick="closeScore()">Weiter üben</button>
+  </div>
+</div>
+
+<script>
+const W  = t => `<span class="word">${t}</span>`;
+const VP = t => `<span class="word v-perf">${t}</span>`;
+const VT = t => `<span class="word v-praet">${t}</span>`;
+const VM = t => `<span class="word v-modal">${t}</span>`;
+const vp = s => `<span class="vt-perf">${s}</span>`;
+const vt = s => `<span class="vt-praet">${s}</span>`;
+const vm = s => `<span class="vt-modal">${s}</span>`;
+
+// ════════════════════════════════════════════════════════════════
+// ALL LESSONS
+// ════════════════════════════════════════════════════════════════
+const lessons = [
+
+// ────────────────────────────────────────────────────────────────
+// TAB 1 – Jan Hoffmann
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t1', emoji:'✏️', title:'Jan Hoffmann',
+  intro:`<span class="story-tag">📖 GESCHICHTE</span>
+<p>Jan Hoffmann, ein Journalist, kommt nach einem langen Tag nach Hause und erlebt einen besonderen Abend mit seiner Frau.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben, es gibt</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'1-1',part:0,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Nach einem langen und stressigen Tag'),VT('sein fertig'),W('der Journalist Jan Hoffmann mit seiner Arbeit und'),VP('fahren'),W('mit seinem Auto nach Hause.')],
+     solution:"Nach einem langen und stressigen Tag war der Journalist Jan Hoffmann mit seiner Arbeit fertig und ist mit seinem Auto nach Hause gefahren.",
+     solutionHTML:`Nach einem langen und stressigen Tag ${vt('war')} der Journalist Jan Hoffmann mit seiner Arbeit fertig und ${vp('ist mit seinem Auto nach Hause gefahren')}.`,
+     hint:"sein → Präteritum: <b>war</b> | fahren → Perfekt: <b>ist … gefahren</b>"},
+    {id:'1-2',part:0,badges:[['Perfekt','perf']],
+     prompt:[W('Er'),VP('stehen'),W('vor der Tür seines kleinen Hauses und'),VP('klingeln'),W('. Frau Hoffmann'),VP('gehen'),W('an die Tür und'),VP('aufmachen (sie)'),W('.')],
+     solution:"Er hat vor der Tür seines kleinen Hauses gestanden und geklingelt. Frau Hoffmann ist an die Tür gegangen und hat sie aufgemacht.",
+     solutionHTML:`Er ${vp('hat vor der Tür seines kleinen Hauses gestanden und geklingelt')}. Frau Hoffmann ${vp('ist an die Tür gegangen')} und ${vp('hat sie aufgemacht')}.`,
+     hint:"stehen/klingeln → <b>hat gestanden/geklingelt</b> | gehen → <b>ist gegangen</b> | aufmachen (trennbar) → <b>hat aufgemacht</b>"},
+    {id:'1-3',part:0,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Sie'),VP('grüßen (ihn)'),W('und'),VP('küssen (ihn)'),W('. Ihr Mann'),VT('sein'),W('total fertig und'),VP('sich setzen'),W('auf seinen alten Sessel.')],
+     solution:"Sie hat ihn gegrüßt und geküsst. Ihr Mann war total fertig und hat sich auf seinen alten Sessel gesetzt.",
+     solutionHTML:`Sie ${vp('hat ihn gegrüßt und geküsst')}. Ihr Mann ${vt('war')} total fertig und ${vp('hat sich auf seinen alten Sessel gesetzt')}.`,
+     hint:"grüßen/küssen → <b>hat gegrüßt/geküsst</b> | sein → Präteritum: <b>war</b> | sich setzen → <b>hat sich gesetzt</b>"},
+    {id:'1-4',part:0,badges:[['Perfekt','perf']],
+     prompt:[W('Frau Hoffmann'),VP('bringen'),W('ihrem Mann ein Glas Limonade. Sie'),VP('stellen (es)'),W('erst auf den Tisch und'),VP('sich setzen'),W('neben ihn.')],
+     solution:"Frau Hoffmann hat ihrem Mann ein Glas Limonade gebracht. Sie hat es erst auf den Tisch gestellt und sich neben ihn gesetzt.",
+     solutionHTML:`Frau Hoffmann ${vp('hat ihrem Mann ein Glas Limonade gebracht')}. Sie ${vp('hat es erst auf den Tisch gestellt')} und ${vp('sich neben ihn gesetzt')}.`,
+     hint:"bringen → <b>hat gebracht</b> | stellen → <b>hat gestellt</b> | sich setzen → <b>hat sich gesetzt</b>"},
+    {id:'1-5',part:0,badges:[['Perfekt','perf']],
+     prompt:[W('Während er seiner Frau die Geschichte von seiner Arbeit'),VP('erzählen'),W(','),VP('trinken'),W('er langsam die Limonade. Sie'),VP('zuhören'),W('leidenschaftlich und'),VP('vorbereiten'),W('das Abendessen.')],
+     solution:"Während er seiner Frau die Geschichte von seiner Arbeit erzählt hat, hat er langsam die Limonade getrunken. Sie hat leidenschaftlich zugehört und das Abendessen vorbereitet.",
+     solutionHTML:`Während er seiner Frau die Geschichte von seiner Arbeit ${vp('erzählt hat')}, ${vp('hat')} er langsam die Limonade ${vp('getrunken')}. Sie ${vp('hat leidenschaftlich zugehört')} und das Abendessen ${vp('vorbereitet')}.`,
+     hint:"Nebensatz 'während' → Perfekt ans Ende: <b>erzählt hat</b> | zuhören/vorbereiten (trennbar)"},
+    {id:'1-6',part:0,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Nachdem'),VT('sein'),W('er mit dem Duschen fertig,'),VP('sehen'),W('er auf dem Tisch einen Briefumschlag.'),VP('schicken (Passiv)'),W('er von seinem Cousin.')],
+     solution:"Nachdem er mit dem Duschen fertig war, hat er auf dem Tisch einen Briefumschlag gesehen. Er ist von seinem Cousin geschickt worden.",
+     solutionHTML:`Nachdem er mit dem Duschen fertig ${vt('war')}, ${vp('hat')} er auf dem Tisch einen Briefumschlag ${vp('gesehen')}. Er ${vp('ist von seinem Cousin geschickt worden')}.`,
+     hint:"sein → Präteritum: <b>war</b> | sehen → <b>hat gesehen</b> | Passiv Perfekt: <b>ist … worden</b>"},
+    {id:'1-7',part:0,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Er'),VP('nehmen'),W('den Brief und'),VP('aufmachen (ihn)'),W('.'),VT('geben'),W('es eine kurze Mitteilung und eine Hochzeitseinladung von seinem Neffen.')],
+     solution:"Er hat den Brief genommen und ihn aufgemacht. Es gab eine kurze Mitteilung und eine Hochzeitseinladung von seinem Neffen.",
+     solutionHTML:`Er ${vp('hat den Brief genommen')} und ${vp('ihn aufgemacht')}. Es ${vt('gab')} eine kurze Mitteilung und eine Hochzeitseinladung von seinem Neffen.`,
+     hint:"nehmen → <b>hat genommen</b> | aufmachen → <b>hat aufgemacht</b> | es gibt → Präteritum: <b>gab</b>"},
+    {id:'1-8',part:0,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('In der Mitteilung'),VP('schreiben'),W('sein Cousin, dass sein Sohn'),VT('sein'),W('mit der Tochter von einem Baron verheiratet.')],
+     solution:"In der Mitteilung hat sein Cousin geschrieben, dass sein Sohn mit der Tochter von einem Baron verheiratet war.",
+     solutionHTML:`In der Mitteilung ${vp('hat sein Cousin geschrieben')}, dass sein Sohn mit der Tochter von einem Baron verheiratet ${vt('war')}.`,
+     hint:"schreiben → <b>hat geschrieben</b> | sein (im dass-Satz) → Präteritum: <b>war</b>"},
+    {id:'1-9',part:0,badges:[['Perfekt','perf']],
+     prompt:[W('Die Eltern'),VP('organisieren'),W('die Hochzeit von ihren Kindern in einem alten Schloss an einem großen See. Und natürlich'),VP('einladen (Passiv)'),W('Herr und Frau Hoffmann.')],
+     solution:"Die Eltern haben die Hochzeit von ihren Kindern in einem alten Schloss an einem großen See organisiert. Und natürlich sind Herr und Frau Hoffmann eingeladen worden.",
+     solutionHTML:`Die Eltern ${vp('haben die Hochzeit von ihren Kindern in einem alten Schloss an einem großen See organisiert')}. Und natürlich ${vp('sind Herr und Frau Hoffmann eingeladen worden')}.`,
+     hint:"organisieren → <b>haben organisiert</b> | Passiv Perfekt: <b>sind … worden</b>"},
+    {id:'1-10',part:0,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[W('Das Ehepaar'),VP('sich freuen (darüber)'),W('. Sie'),VP('genießen'),W('das Abendessen unter angenehmen Kerzenlicht und'),VP('trinken'),W('sogar eine Flasche Sekt. Danach'),VP('bummeln'),W('sie in einem kleinen Park, denn sie'),VM('wollen'),W('sich entspannen.')],
+     solution:"Das Ehepaar hat sich darüber gefreut. Sie haben das Abendessen unter angenehmen Kerzenlicht genossen und sogar eine Flasche Sekt getrunken. Danach sind sie in einem kleinen Park gebummelt, denn sie wollten sich entspannen.",
+     solutionHTML:`Das Ehepaar ${vp('hat sich darüber gefreut')}. Sie ${vp('haben das Abendessen unter angenehmen Kerzenlicht genossen')} und sogar eine Flasche Sekt ${vp('getrunken')}. Danach ${vp('sind sie in einem kleinen Park gebummelt')}, denn sie ${vm('wollten')} sich entspannen.`,
+     hint:"sich freuen → <b>hat sich gefreut</b> | bummeln → <b>ist gebummelt</b> (Bewegung!) | wollen → <b>wollten</b>"},
+  ]
+},
+
+// ────────────────────────────────────────────────────────────────
+// TAB 2 – Porsche Museum
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t2', emoji:'🏎️', title:'Porsche Museum',
+  intro:`<span class="story-tag">📖 GESCHICHTE</span>
+<p>Sami, ein Student, besucht das Porsche Museum in Stuttgart und trifft dort eine alte Schulfreundin.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'2-1',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal'],['Präteritum','praet']],
+     prompt:[VT('sein'),W('Sami ein Student an der Goethe-Universität Frankfurt. Am Samstag'),VP('fahren'),W('er mit dem Zug nach Stuttgart. Er'),VM('wollen'),W('das Porsche Museum besuchen, denn'),VT('sein'),W('sein Hobby das Auto.')],
+     solution:"Sami war ein Student an der Goethe-Universität Frankfurt. Am Samstag ist er mit dem Zug nach Stuttgart gefahren. Er wollte das Porsche Museum besuchen, denn sein Hobby war das Auto.",
+     solutionHTML:`Sami ${vt('war')} ein Student an der Goethe-Universität Frankfurt. Am Samstag ${vp('ist er mit dem Zug nach Stuttgart gefahren')}. Er ${vm('wollte')} das Porsche Museum besuchen, denn sein Hobby ${vt('war')} das Auto.`,
+     hint:"sein → Präteritum: <b>war</b> | fahren → <b>ist gefahren</b> | möchten → Präteritum: <b>wollte</b>"},
+    {id:'2-2',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[W('Bei der Ankunft in Stuttgart Hauptbahnhof'),VP('aussteigen'),W('er schnell, weil er dort umsteigen'),VM('müssen'),W('. Er'),VP('nehmen'),W('dann die S6 Richtung Zuffenhausen. Nach 4 Stationen'),VP('aussteigen'),W('er und'),VP('laufen'),W('ein bisschen zu Fuß.')],
+     solution:"Bei der Ankunft in Stuttgart Hauptbahnhof ist er schnell ausgestiegen, weil er dort umsteigen musste. Er hat dann die S6 Richtung Zuffenhausen genommen. Nach 4 Stationen ist er ausgestiegen und ein bisschen zu Fuß gelaufen.",
+     solutionHTML:`Bei der Ankunft in Stuttgart Hauptbahnhof ${vp('ist er schnell ausgestiegen')}, weil er dort umsteigen ${vm('musste')}. Er ${vp('hat dann die S6 Richtung Zuffenhausen genommen')}. Nach 4 Stationen ${vp('ist er ausgestiegen')} und ein bisschen zu Fuß ${vp('gelaufen')}.`,
+     hint:"aussteigen → <b>ist ausgestiegen</b> | müssen → Präteritum: <b>musste</b> | nehmen → <b>hat genommen</b>"},
+    {id:'2-3',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Bald'),VP('erreichen'),W('er das Museum. Vor dem modernen Museumsgebäude'),VT('sein'),W('er von der beeindruckenden Architektur begeistert. Am Eingang'),VP('sich kaufen'),W('er ein Ticket und'),VP('beginnen'),W('den Rundgang durch das Museum.')],
+     solution:"Bald hat er das Museum erreicht. Vor dem modernen Museumsgebäude war er von der beeindruckenden Architektur begeistert. Am Eingang hat er sich ein Ticket gekauft und den Rundgang durch das Museum begonnen.",
+     solutionHTML:`Bald ${vp('hat er das Museum erreicht')}. Vor dem modernen Museumsgebäude ${vt('war')} er von der beeindruckenden Architektur begeistert. Am Eingang ${vp('hat er sich ein Ticket gekauft')} und den Rundgang durch das Museum ${vp('begonnen')}.`,
+     hint:"erreichen → <b>hat erreicht</b> | sein → Präteritum: <b>war</b> | beginnen → <b>hat begonnen</b> (unregelmäßig!)"},
+    {id:'2-4',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Zuerst'),VP('sich anschauen'),W('er eine Sammlung von historischen Porsche-Fahrzeugen. Er'),VP('gehen'),W('durch verschiedene Themenräume. In einem Raum'),VP('sich ansehen'),W('er die Rennwagen. Besonders spannend'),VT('sein'),W('die interaktiven Ausstellungen.')],
+     solution:"Zuerst hat er sich eine Sammlung von historischen Porsche-Fahrzeugen angeschaut. Er ist durch verschiedene Themenräume gegangen. In einem Raum hat er sich die Rennwagen angesehen. Besonders spannend waren die interaktiven Ausstellungen.",
+     solutionHTML:`Zuerst ${vp('hat er sich eine Sammlung von historischen Porsche-Fahrzeugen angeschaut')}. Er ${vp('ist durch verschiedene Themenräume gegangen')}. In einem Raum ${vp('hat er sich die Rennwagen angesehen')}. Besonders spannend ${vt('waren')} die interaktiven Ausstellungen.`,
+     hint:"sich anschauen/ansehen (trennbar) | gehen → <b>ist gegangen</b> | sein (Pl.) → Präteritum: <b>waren</b>"},
+    {id:'2-5',part:1,badges:[['Perfekt','perf']],
+     prompt:[W('In einem Simulator'),VP('fahren'),W('er glücklicherweise virtuell einen Porsche.')],
+     solution:"In einem Simulator ist er glücklicherweise virtuell einen Porsche gefahren.",
+     solutionHTML:`In einem Simulator ${vp('ist er glücklicherweise virtuell einen Porsche gefahren')}.`,
+     hint:"fahren → Perfekt mit sein: <b>ist … gefahren</b>"},
+    {id:'2-6',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Zur Mittagszeit'),VP('machen'),W('er im Museumscafé eine Pause. Dort'),VP('sich treffen'),W('er überraschenderweise Sarah.'),VT('sein'),W('sie eine Schulfreundin von ihm. Nach der Schulzeit'),VP('sich sehen'),W('sie sich nicht mehr. Zusammen'),VP('sich setzen'),W('sie an einen Tisch,'),VP('sich unterhalten'),W('und danach'),VP('zu Mittag essen'),W('.')],
+     solution:"Zur Mittagszeit hat er im Museumscafé eine Pause gemacht. Dort hat er überraschenderweise Sarah getroffen. Sie war eine Schulfreundin von ihm. Nach der Schulzeit hatten sie sich nicht mehr gesehen. Zusammen haben sie sich an einen Tisch gesetzt, sich unterhalten und danach zu Mittag gegessen.",
+     solutionHTML:`Zur Mittagszeit ${vp('hat er im Museumscafé eine Pause gemacht')}. Dort ${vp('hat er überraschenderweise Sarah getroffen')}. Sie ${vt('war')} eine Schulfreundin von ihm. Nach der Schulzeit ${vp('hatten sie sich nicht mehr gesehen')}. Zusammen ${vp('haben sie sich an einen Tisch gesetzt')}, ${vp('sich unterhalten')} und danach zu Mittag ${vp('gegessen')}.`,
+     hint:"sich treffen → <b>hat getroffen</b> | sein → Präteritum: <b>war</b> | sich sehen → Plusquamperfekt: <b>hatten gesehen</b>"},
+    {id:'2-7',part:2,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Nach dem Mittagessen'),VP('weitermachen'),W('sie ihre Tour.'),VP('besuchen'),W('sie eine Sonderausstellung über die Zukunft der Mobilität.'),VT('sein'),W('Sami ein großer Autofan und'),VP('lesen'),W('viele Bücher darüber. Aber Sarah'),VT('haben'),W('keine Ahnung davon. Sie'),VM('wollen'),W('nur die neuen Autos sehen.')],
+     solution:"Nach dem Mittagessen haben sie ihre Tour weitergemacht. Sie haben eine Sonderausstellung über die Zukunft der Mobilität besucht. Sami war ein großer Autofan und hatte viele Bücher darüber gelesen. Aber Sarah hatte keine Ahnung davon. Sie wollte nur die neuen Autos sehen.",
+     solutionHTML:`Nach dem Mittagessen ${vp('haben sie ihre Tour weitergemacht')}. Sie ${vp('haben eine Sonderausstellung über die Zukunft der Mobilität besucht')}. Sami ${vt('war')} ein großer Autofan und ${vp('hatte viele Bücher darüber gelesen')}. Aber Sarah ${vt('hatte')} keine Ahnung davon. Sie ${vm('wollte')} nur die neuen Autos sehen.`,
+     hint:"weitermachen (trennbar) → <b>hat weitergemacht</b> | sein → <b>war</b> | haben → Präteritum: <b>hatte</b> | wollen → <b>wollte</b>"},
+    {id:'2-8',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Am Ende'),VP('sich umsehen'),W('sie im Museumsshop.'),VP('sich kaufen'),W('Sami ein Modellauto. Er'),VP('schenken'),W('seiner Schulfreundin ein Buch über die Geschichte von Porsche.')],
+     solution:"Am Ende haben sie sich im Museumsshop umgesehen. Sami hat sich ein Modellauto gekauft. Er hat seiner Schulfreundin ein Buch über die Geschichte von Porsche geschenkt.",
+     solutionHTML:`Am Ende ${vp('haben sie sich im Museumsshop umgesehen')}. Sami ${vp('hat sich ein Modellauto gekauft')}. Er ${vp('hat seiner Schulfreundin ein Buch über die Geschichte von Porsche geschenkt')}.`,
+     hint:"sich umsehen (trennbar) → <b>hat umgesehen</b> | schenken → <b>hat geschenkt</b>"},
+    {id:'2-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Am Nachmittag'),VP('fahren'),W('sie mit Sarahs Auto nach Hause. Tatsächlich'),VT('sein'),W('der nagelneue Porsche Cayenne ihr 18. Geburtstagsgeschenk von ihren Eltern.')],
+     solution:"Am Nachmittag sind sie mit Sarahs Auto nach Hause gefahren. Tatsächlich war der nagelneue Porsche Cayenne ihr 18. Geburtstagsgeschenk von ihren Eltern.",
+     solutionHTML:`Am Nachmittag ${vp('sind sie mit Sarahs Auto nach Hause gefahren')}. Tatsächlich ${vt('war')} der nagelneue Porsche Cayenne ihr 18. Geburtstagsgeschenk von ihren Eltern.`,
+     hint:"fahren → <b>sind gefahren</b> | sein → Präteritum: <b>war</b>"},
+    {id:'2-10',part:2,badges:[['Präteritum','praet']],
+     prompt:[W('Der Besuch im Porsche Museum'),VT('sein'),W('ein unvergessliches Erlebnis für Sami.')],
+     solution:"Der Besuch im Porsche Museum war ein unvergessliches Erlebnis für Sami.",
+     solutionHTML:`Der Besuch im Porsche Museum ${vt('war')} ein unvergessliches Erlebnis für Sami.`,
+     hint:"sein → Präteritum: <b>war</b> | 'im Museum' = Dat. | Adj.: unvergesslich<b>es</b> Erlebnis"},
+  ]
+},
+
+// ────────────────────────────────────────────────────────────────
+// TAB 3 – Miniatur Wunderland
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t3', emoji:'🚂', title:'Miniatur Wunderland',
+  intro:`<span class="story-tag">📖 GESCHICHTE</span>
+<p>Julia besucht das Miniatur Wunderland in Hamburg – eine faszinierende Welt voller winziger Details.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'3-1',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('An einem sonnigen Samstagmorgen'),VP('besuchen'),W('Julia das Miniatur Wunderland in Hamburg, dessen Ruf'),VT('sein'),W('weit über die Stadtgrenzen hinaus bekannt.'),VP('gucken'),W('sie schon viele Videos darüber und'),VT('sein'),W('daher unglaublich gespannt.')],
+     solution:"An einem sonnigen Samstagmorgen hat Julia das Miniatur Wunderland in Hamburg besucht, dessen Ruf weit über die Stadtgrenzen hinaus bekannt war. Sie hatte schon viele begeisterte Videos im Internet darüber geguckt und war daher unglaublich gespannt.",
+     solutionHTML:`An einem sonnigen Samstagmorgen ${vp('hat Julia das Miniatur Wunderland in Hamburg besucht')}, dessen Ruf weit über die Stadtgrenzen hinaus bekannt ${vt('war')}. Sie ${vp('hatte schon viele begeisterte Videos im Internet darüber geguckt')} und ${vt('war')} daher unglaublich gespannt.`,
+     hint:"besuchen → <b>hat besucht</b> | sein → Präteritum: <b>war</b> | gucken → Plusquamperfekt: <b>hatte geguckt</b>"},
+    {id:'3-2',part:1,badges:[['Perfekt','perf']],
+     prompt:[W('Am Eingang'),VP('kaufen'),W('sie ein goldenes Ticket und'),VP('betreten'),W('die weitläufige Ausstellungshalle.')],
+     solution:"Am Eingang hat sie ein goldenes Ticket gekauft und die weitläufige Ausstellungshalle betreten.",
+     solutionHTML:`Am Eingang ${vp('hat sie ein goldenes Ticket gekauft')} und die weitläufige Ausstellungshalle ${vp('betreten')}.`,
+     hint:"kaufen → <b>hat gekauft</b> | betreten → <b>hat betreten</b> (kein ge-!)"},
+    {id:'3-3',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Die erste Station'),VT('sein'),W('ein Miniaturflughafen, wo winzige Flugzeuge emsig'),VP('starten und landen'),W('. Dann'),VP('gehen'),W('sie weiter zur Schweiz-Abteilung, wo sie die majestätischen Alpen'),VP('bestaunen'),W('.')],
+     solution:"Die erste Station war ein Miniaturflughafen, wo winzige Flugzeuge emsig gestartet und gelandet waren. Dann ist sie weiter zur Schweiz-Abteilung gegangen, wo sie die majestätischen Alpen bestaunt hat.",
+     solutionHTML:`Die erste Station ${vt('war')} ein Miniaturflughafen, wo winzige Flugzeuge emsig ${vp('gestartet und gelandet waren')}. Dann ${vp('ist sie weiter zur Schweiz-Abteilung gegangen')}, wo sie die majestätischen Alpen ${vp('bestaunt hat')}.`,
+     hint:"sein → Präteritum: <b>war</b> | starten/landen → Plusquamperfekt: <b>waren gestartet/gelandet</b> | gehen → <b>ist gegangen</b>"},
+    {id:'3-4',part:1,badges:[['Präteritum','praet']],
+     prompt:[VT('sein'),W('sie von den winzigen Skifahrern auf den steilen Pisten und den kühnen Zügen, die durch die kunstvoll nachgebildeten Berge'),VP('fahren'),W(', beeindruckt. Julia'),VT('sein'),W('von den zahlreichen winzigen Details tief fasziniert.')],
+     solution:"Sie war von den winzigen Skifahrern auf den steilen Pisten und den kühnen Zügen, die durch die kunstvoll nachgebildeten Berge gefahren waren, beeindruckt. Julia war von den zahlreichen winzigen Details tief fasziniert.",
+     solutionHTML:`Sie ${vt('war')} von den winzigen Skifahrern auf den steilen Pisten und den kühnen Zügen, die durch die kunstvoll nachgebildeten Berge ${vp('gefahren waren')}, beeindruckt. Julia ${vt('war')} von den zahlreichen winzigen Details tief fasziniert.`,
+     hint:"sein → Präteritum: <b>war</b> | Züge, die … gefahren waren = Plusquamperfekt im Relativsatz"},
+    {id:'3-5',part:1,badges:[['Perfekt','perf']],
+     prompt:[W('Plötzlich'),VP('hören'),W('sie das faszinierende Geräusch eines simulierten Donners in der nächsten Amerika-Abteilung, wo ein dramatisches Gewitter'),VP('nachstellen (Passiv)'),W(', dessen realistische Blitze sie zauberhaft'),VP('betrachten'),W('.')],
+     solution:"Plötzlich hat sie das faszinierende Geräusch eines simulierten Donners in der nächsten Amerika-Abteilung gehört, wo ein dramatisches Gewitter nachgestellt wurde, dessen realistische Blitze sie zauberhaft betrachtet hat.",
+     solutionHTML:`Plötzlich ${vp('hat sie das faszinierende Geräusch eines simulierten Donners in der nächsten Amerika-Abteilung gehört')}, wo ein dramatisches Gewitter ${vp('nachgestellt wurde')}, dessen realistische Blitze sie zauberhaft ${vp('betrachtet hat')}.`,
+     hint:"hören → <b>hat gehört</b> | Passiv Perfekt: <b>nachgestellt wurde</b> | betrachten → <b>hat betrachtet</b>"},
+    {id:'3-6',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Nach einer Weile'),VP('sich setzen'),W('sie in ein gemütliches Café, um eine wohlverdiente Pause zu machen.')],
+     solution:"Nach einer Weile hat sie sich in ein gemütliches Café gesetzt, um eine wohlverdiente Pause zu machen.",
+     solutionHTML:`Nach einer Weile ${vp('hat sie sich in ein gemütliches Café gesetzt')}, um eine wohlverdiente Pause zu machen.`,
+     hint:"sich setzen → <b>hat sich gesetzt</b> | 'in ein Café' = Akk. (wohin?) | 'um … zu + Inf.'"},
+    {id:'3-7',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Ein junger freundlicher Mann neben ihr'),VP('erzählen'),W('seiner kleinen Tochter, dass das Wunderland'),VT('sein'),W('das größte und detailreichste Modelleisenbahnland der Welt.')],
+     solution:"Ein junger freundlicher Mann neben ihr hat seiner kleinen Tochter erzählt, dass das Wunderland das größte und detailreichste Modelleisenbahnland der Welt war.",
+     solutionHTML:`Ein junger freundlicher Mann neben ihr ${vp('hat seiner kleinen Tochter erzählt')}, dass das Wunderland das größte und detailreichste Modelleisenbahnland der Welt ${vt('war')}.`,
+     hint:"erzählen → <b>hat erzählt</b> | sein (im dass-Satz) → Präteritum: <b>war</b>"},
+    {id:'3-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Danach'),VP('besuchen'),W('Julia auch die Hamburger Abteilung, wo sie das exakte Miniaturmodell der historischen Speicherstadt'),VP('finden'),W(', deren ikonische Backsteinarchitektur sie besonders'),VP('faszinieren'),W('. Aufgrund ihrer zahlreichen Besuche in der originalen Speicherstadt'),VT('sein'),W('sie von der Miniaturversion atemberaubt.')],
+     solution:"Danach hat Julia auch die Hamburger Abteilung besucht, wo sie das exakte Miniaturmodell der historischen Speicherstadt gefunden hat, deren ikonische Backsteinarchitektur sie besonders fasziniert hat. Aufgrund ihrer zahlreichen Besuche in der originalen Speicherstadt war sie von der Miniaturversion atemberaubt.",
+     solutionHTML:`Danach ${vp('hat Julia auch die Hamburger Abteilung besucht')}, wo sie das exakte Miniaturmodell der historischen Speicherstadt ${vp('gefunden hat')}, deren ikonische Backsteinarchitektur sie besonders ${vp('fasziniert hat')}. Aufgrund ihrer zahlreichen Besuche in der originalen Speicherstadt ${vt('war')} sie von der Miniaturversion atemberaubt.`,
+     hint:"besuchen → <b>hat besucht</b> | finden → <b>hat gefunden</b> | faszinieren → <b>hat fasziniert</b> | sein → Präteritum: <b>war</b>"},
+    {id:'3-9',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Als der Tag bald zu Ende'),VP('gehen'),W(','),VP('sich freuen'),W('sie darauf, ihren Freunden von ihren wunderbaren Erlebnissen im Miniatur Wunderland zu erzählen.')],
+     solution:"Als der Tag bald zu Ende ging, hat sie sich darauf gefreut, ihren Freunden von ihren wunderbaren Erlebnissen im Miniatur Wunderland zu erzählen.",
+     solutionHTML:`Als der Tag bald zu Ende ${vp('ging')}, ${vp('hat sie sich darauf gefreut')}, ihren Freunden von ihren wunderbaren Erlebnissen im Miniatur Wunderland zu erzählen.`,
+     hint:"gehen (im als-Satz) → Präteritum: <b>ging</b> | sich freuen → Perfekt: <b>hat sich gefreut</b>"},
+    {id:'3-10',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Trotz ihrer Müdigkeit'),VT('sein'),W('sie tief in ihrem Herzen überzeugt, dass sie eines Tages hierher wiederkommen'),VM('würden'),W('.')],
+     solution:"Trotz ihrer Müdigkeit wusste sie tief in ihrem Herzen, dass sie eines Tages hierher wiederkommen würden.",
+     solutionHTML:`Trotz ihrer Müdigkeit ${vt('wusste')} sie tief in ihrem Herzen, dass sie eines Tages hierher wiederkommen ${vm('würden')}.`,
+     hint:"wissen → Präteritum: <b>wusste</b> | würden = Konjunktiv II | 'dass'-Satz → Verb ans Ende"},
+  ]
+},
+
+// ────────────────────────────────────────────────────────────────
+// TAB 4 – Stadtrundfahrt in Köln
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t4', emoji:'🏛️', title:'Stadtrundfahrt Köln',
+  intro:`<span class="story-tag">📖 TEXT</span>
+<p>Ein Text über eine Stadtrundfahrt in Köln – die bekanntesten Sehenswürdigkeiten der Domstadt.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben, es gibt</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'4-1',part:1,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('Köln eine wunderschöne Stadt am Rhein, die viele interessante Sehenswürdigkeiten'),VP('bieten'),W('. Bei einer Stadtrundfahrt'),VM('können'),W('Touristen die wichtigsten Orte der Stadt bequem entdecken.')],
+     solution:"Köln war eine wunderschöne Stadt am Rhein, die viele interessante Sehenswürdigkeiten geboten hat. Bei einer Stadtrundfahrt konnten Touristen die wichtigsten Orte der Stadt bequem entdecken.",
+     solutionHTML:`Köln ${vt('war')} eine wunderschöne Stadt am Rhein, die viele interessante Sehenswürdigkeiten ${vp('geboten hat')}. Bei einer Stadtrundfahrt ${vm('konnten')} Touristen die wichtigsten Orte der Stadt bequem entdecken.`,
+     hint:"sein → Präteritum: <b>war</b> | bieten → Perfekt im Rel.-Satz: <b>hat geboten</b> | können → Präteritum: <b>konnten</b>"},
+    {id:'4-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Die Rundfahrt'),VP('beginnen'),W('oft am Kölner Dom, dem beeindruckenden Wahrzeichen der Stadt.'),VT('sein'),W('dieser gotische Dom eines der höchsten Gebäude in Deutschland und'),VP('anziehen'),W('jedes Jahr Millionen von Besuchern.')],
+     solution:"Die Rundfahrt hat oft am Kölner Dom begonnen, dem beeindruckenden Wahrzeichen der Stadt. Dieser gotische Dom war eines der höchsten Gebäude in Deutschland und hat jedes Jahr Millionen von Besuchern angezogen.",
+     solutionHTML:`Die Rundfahrt ${vp('hat oft am Kölner Dom begonnen')}, dem beeindruckenden Wahrzeichen der Stadt. Dieser gotische Dom ${vt('war')} eines der höchsten Gebäude in Deutschland und ${vp('hat jedes Jahr Millionen von Besuchern angezogen')}.`,
+     hint:"beginnen → <b>hat begonnen</b> | sein → Präteritum: <b>war</b> | anziehen (trennbar) → <b>hat … angezogen</b>"},
+    {id:'4-3',part:1,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Neben dem Dom'),VT('geben'),W('es auch viele alte Gebäude, die die Geschichte Kölns'),VP('erzählen'),W('. Die Fahrt'),VP('führen'),W('auch durch die Altstadt, wo man die engen Gassen und historischen Häuser bewundern'),VM('können'),W('.')],
+     solution:"Neben dem Dom gab es auch viele alte Gebäude, die die Geschichte Kölns erzählt haben. Die Fahrt hat auch durch die Altstadt geführt, wo man die engen Gassen und historischen Häuser bewundern konnte.",
+     solutionHTML:`Neben dem Dom ${vt('gab')} es auch viele alte Gebäude, die die Geschichte Kölns ${vp('erzählt haben')}. Die Fahrt ${vp('hat auch durch die Altstadt geführt')}, wo man die engen Gassen und historischen Häuser bewundern ${vm('konnte')}.`,
+     hint:"es gibt → Präteritum: <b>gab</b> | erzählen → Perfekt im Rel.-Satz: <b>erzählt haben</b> | können → Präteritum: <b>konnte</b>"},
+    {id:'4-4',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('In der Altstadt'),VT('geben'),W('es zahlreiche gemütliche Cafés und Restaurants, die typische Kölner Gerichte'),VP('anbieten'),W('.')],
+     solution:"In der Altstadt gab es zahlreiche gemütliche Cafés und Restaurants, die typische Kölner Gerichte angeboten haben.",
+     solutionHTML:`In der Altstadt ${vt('gab')} es zahlreiche gemütliche Cafés und Restaurants, die typische Kölner Gerichte ${vp('angeboten haben')}.`,
+     hint:"es gibt → Präteritum: <b>gab</b> | anbieten (trennbar) → Perfekt: <b>angeboten haben</b>"},
+    {id:'4-5',part:1,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('ein weiteres Highlight der Stadtrundfahrt das Rheinufer. Hier'),VM('können'),W('man bei schönem Wetter einen herrlichen Blick auf den Fluss genießen und entspannte Spaziergänge machen.')],
+     solution:"Ein weiteres Highlight der Stadtrundfahrt war das Rheinufer. Hier konnte man bei schönem Wetter einen herrlichen Blick auf den Fluss genießen und entspannte Spaziergänge machen.",
+     solutionHTML:`Ein weiteres Highlight der Stadtrundfahrt ${vt('war')} das Rheinufer. Hier ${vm('konnte')} man bei schönem Wetter einen herrlichen Blick auf den Fluss genießen und entspannte Spaziergänge machen.`,
+     hint:"sein → Präteritum: <b>war</b> | können → Präteritum: <b>konnte</b> (man)"},
+    {id:'4-6',part:2,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('ein wichtiger Teil der Rundfahrt der Besuch des Schokoladenmuseums. In diesem Museum'),VP('erfahren'),W('Besucher alles über die Geschichte der Schokolade und'),VM('können'),W('verschiedene Sorten'),VP('probieren'),W('.')],
+     solution:"Ein wichtiger Teil der Rundfahrt war der Besuch des Schokoladenmuseums. In diesem Museum haben Besucher alles über die Geschichte der Schokolade erfahren und konnten verschiedene Sorten probieren.",
+     solutionHTML:`Ein wichtiger Teil der Rundfahrt ${vt('war')} der Besuch des Schokoladenmuseums. In diesem Museum ${vp('haben Besucher alles über die Geschichte der Schokolade erfahren')} und ${vm('konnten')} verschiedene Sorten ${vp('probieren')}.`,
+     hint:"sein → Präteritum: <b>war</b> | erfahren → <b>haben erfahren</b> | können → Präteritum: <b>konnten</b>"},
+    {id:'4-7',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Die Stadtrundfahrt'),VP('enden'),W('oft mit einem Blick auf die modernen Viertel von Köln, die eine interessante Mischung aus Tradition und Innovation'),VP('zeigen'),W('.')],
+     solution:"Die Stadtrundfahrt hat oft mit einem Blick auf die modernen Viertel von Köln geendet, die eine interessante Mischung aus Tradition und Innovation gezeigt haben.",
+     solutionHTML:`Die Stadtrundfahrt ${vp('hat oft mit einem Blick auf die modernen Viertel von Köln geendet')}, die eine interessante Mischung aus Tradition und Innovation ${vp('gezeigt haben')}.`,
+     hint:"enden → <b>hat geendet</b> | zeigen → Perfekt im Rel.-Satz: <b>gezeigt haben</b>"},
+    {id:'4-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Besucher'),VM('können'),W('so die Vielfalt der Stadt'),VP('erleben'),W('und'),VP('sehen'),W(', wie Altes und Neues harmonisch miteinander verbunden'),VT('sein'),W('.')],
+     solution:"Besucher konnten so die Vielfalt der Stadt erleben und sehen, wie Altes und Neues harmonisch miteinander verbunden waren.",
+     solutionHTML:`Besucher ${vm('konnten')} so die Vielfalt der Stadt ${vp('erleben')} und ${vp('sehen')}, wie Altes und Neues harmonisch miteinander verbunden ${vt('waren')}.`,
+     hint:"können → Präteritum: <b>konnten</b> | sein (Pl.) → Präteritum: <b>waren</b> | 'wie'-Satz → Verb ans Ende"},
+    {id:'4-9',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Insgesamt'),VP('bieten'),W('Stadtrundfahrten in Köln eine gute Möglichkeit, die Stadt in kurzer Zeit'),VP('kennenlernen'),W('und ihre vielen Facetten zu'),VP('entdecken'),W('.')],
+     solution:"Insgesamt haben Stadtrundfahrten in Köln eine gute Möglichkeit geboten, die Stadt in kurzer Zeit kennenzulernen und ihre vielen Facetten zu entdecken.",
+     solutionHTML:`Insgesamt ${vp('haben Stadtrundfahrten in Köln eine gute Möglichkeit geboten')}, die Stadt in kurzer Zeit ${vp('kennenzulernen')} und ihre vielen Facetten zu ${vp('entdecken')}.`,
+     hint:"bieten → <b>haben geboten</b> | kennenlernen (trennbar) → <b>kennenzulernen</b>"},
+    {id:'4-10',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[VT('sein'),W('der Besuch in Köln ein unvergessliches Erlebnis für Touristen. Die Stadt'),VP('bieten'),W('viele Highlights und'),VP('gewinnen'),W('die Herzen der Besucher.')],
+     solution:"Der Besuch in Köln war ein unvergessliches Erlebnis für Touristen. Die Stadt hat viele Highlights geboten und die Herzen der Besucher gewonnen.",
+     solutionHTML:`Der Besuch in Köln ${vt('war')} ein unvergessliches Erlebnis für Touristen. Die Stadt ${vp('hat viele Highlights geboten')} und die Herzen der Besucher ${vp('gewonnen')}.`,
+     hint:"sein → Präteritum: <b>war</b> | bieten → <b>hat geboten</b> | gewinnen → <b>hat gewonnen</b>"},
+  ]
+},
+
+// ────────────────────────────────────────────────────────────────
+// TAB 5 – Leipzig
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t5', emoji:'⚽', title:'Ein Ausflug in Leipzig',
+  intro:`<span class="story-tag">⚽ GESCHICHTE</span>
+<p>Manuel Neuer, Kapitän des FC Bayern München, besucht Leipzig nach einem Bundesligaspiel und erkundet die Stadt.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'5-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Manuel Neuer, der Kapitän des FC Bayern München, in Leipzig für ein wichtiges Bundesligaspiel gegen RB Leipzig.'),VT('sein'),W('es ein aufregender Tag im Stadion, wo die Fans von beiden Seiten gespannt auf das Duell'),VP('warten'),W('. Sobald das Spiel vorbei'),VT('sein'),W(','),VP('sich machen'),W('er auf den Weg, die Stadt zu erkunden.')],
+     solution:"Manuel Neuer, der Kapitän des FC Bayern München, war in Leipzig für ein wichtiges Bundesligaspiel gegen RB Leipzig. Es war ein aufregender Tag im Stadion, wo die Fans von beiden Seiten gespannt auf das Duell gewartet haben. Sobald das Spiel vorbei war, hat er sich auf den Weg gemacht, die Stadt zu erkunden.",
+     solutionHTML:`Manuel Neuer, der Kapitän des FC Bayern München, ${vt('war')} in Leipzig für ein wichtiges Bundesligaspiel gegen RB Leipzig. Es ${vt('war')} ein aufregender Tag im Stadion, wo die Fans von beiden Seiten gespannt auf das Duell ${vp('gewartet haben')}. Sobald das Spiel vorbei ${vt('war')}, ${vp('hat er sich auf den Weg gemacht')}, die Stadt zu erkunden.`,
+     hint:"sein → Präteritum: <b>war</b> | warten → Perfekt: <b>gewartet haben</b> | sich machen → <b>hat sich gemacht</b>"},
+    {id:'5-2',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('sein erster Halt der Leipziger Hauptbahnhof, einer der größten Kopfbahnhöfe Europas.'),VP('beeindrucken'),W('der Bahnhof ihn mit seiner gewaltigen Glasfassade und der Kombination aus historischer Pracht und modernen Details. Die riesigen Hallen, die mit Tageslicht'),VP('durchfluten (Passiv)'),W(','),VP('geben'),W('ihm das Gefühl, in einem monumentalen Bauwerk zu stehen.')],
+     solution:"Sein erster Halt war der Leipziger Hauptbahnhof, einer der größten Kopfbahnhöfe Europas. Der Bahnhof hat ihn mit seiner gewaltigen Glasfassade und der Kombination aus historischer Pracht und modernen Details beeindruckt. Die riesigen Hallen, die mit Tageslicht durchflutet wurden, haben ihm das Gefühl gegeben, in einem monumentalen Bauwerk zu stehen.",
+     solutionHTML:`Sein erster Halt ${vt('war')} der Leipziger Hauptbahnhof, einer der größten Kopfbahnhöfe Europas. Der Bahnhof ${vp('hat ihn mit seiner gewaltigen Glasfassade und der Kombination aus historischer Pracht und modernen Details beeindruckt')}. Die riesigen Hallen, die mit Tageslicht ${vp('durchflutet wurden')}, ${vp('haben ihm das Gefühl gegeben')}, in einem monumentalen Bauwerk zu stehen.`,
+     hint:"sein → Präteritum: <b>war</b> | beeindrucken → <b>hat beeindruckt</b> | Passiv Perfekt: <b>durchflutet wurden</b> | geben → <b>haben gegeben</b>"},
+    {id:'5-3',part:1,badges:[['Perfekt','perf']],
+     prompt:[W('Nach einem kurzen Spaziergang durch die Einkaufspassage'),VP('entscheiden'),W('Manuel, einen Snack zu holen – ein frisches Brötchen mit sächsischem Käse, das ihn an die Einfachheit des Alltags'),VP('erinnern'),W('.')],
+     solution:"Nach einem kurzen Spaziergang durch die Einkaufspassage hat Manuel entschieden, einen Snack zu holen – ein frisches Brötchen mit sächsischem Käse, das ihn an die Einfachheit des Alltags erinnert hat.",
+     solutionHTML:`Nach einem kurzen Spaziergang durch die Einkaufspassage ${vp('hat Manuel entschieden')}, einen Snack zu holen – ein frisches Brötchen mit sächsischem Käse, das ihn an die Einfachheit des Alltags ${vp('erinnert hat')}.`,
+     hint:"entscheiden → <b>hat entschieden</b> | erinnern → Perfekt im Rel.-Satz: <b>erinnert hat</b>"},
+    {id:'5-4',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Nach dem Snack'),VP('gehen'),W('er weiter in die Innenstadt, wo ihn die imposante Nikolaikirche'),VP('erwarten'),W('.'),VT('sein'),W('Manuel immer fasziniert von Orten mit Geschichte, und die Nikolaikirche, die eine zentrale Rolle in den friedlichen Demonstrationen von 1989'),VP('spielen'),W(','),VT('sein'),W('für ihn besonders inspirierend.')],
+     solution:"Nach dem Snack ist er weiter in die Innenstadt gegangen, wo ihn die imposante Nikolaikirche erwartet hat. Manuel war immer fasziniert von Orten mit Geschichte, und die Nikolaikirche, die eine zentrale Rolle in den friedlichen Demonstrationen von 1989 gespielt hat, war für ihn besonders inspirierend.",
+     solutionHTML:`Nach dem Snack ${vp('ist er weiter in die Innenstadt gegangen')}, wo ihn die imposante Nikolaikirche ${vp('erwartet hat')}. Manuel ${vt('war')} immer fasziniert von Orten mit Geschichte, und die Nikolaikirche, die eine zentrale Rolle in den friedlichen Demonstrationen von 1989 ${vp('gespielt hat')}, ${vt('war')} für ihn besonders inspirierend.`,
+     hint:"gehen → <b>ist gegangen</b> | erwarten → Perfekt: <b>erwartet hat</b> | sein → Präteritum: <b>war</b>"},
+    {id:'5-5',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[W('Danach'),VP('vorbeikommen'),W('er an der Mädlerpassage, wo er kurz'),VP('stehen bleiben'),W('und'),VP('überlegen'),W(', ob er vielleicht ein kleines Souvenir für seine Familie mitnehmen'),VM('sollen'),W('. Schließlich'),VP('kaufen'),W('er eine schöne Teekanne, die ihm'),VP('gefallen'),W(', da sie die sächsische Handwerkskunst'),VP('widerspiegeln'),W('.')],
+     solution:"Danach ist er an der Mädlerpassage vorbeigekommen, wo er kurz stehen geblieben ist und überlegt hat, ob er vielleicht ein kleines Souvenir für seine Familie mitnehmen sollte. Schließlich hat er eine schöne Teekanne gekauft, die ihm gefallen hat, da sie die sächsische Handwerkskunst widerspiegelt hat.",
+     solutionHTML:`Danach ${vp('ist er an der Mädlerpassage vorbeigekommen')}, wo er kurz ${vp('stehen geblieben ist')} und ${vp('überlegt hat')}, ob er vielleicht ein kleines Souvenir für seine Familie mitnehmen ${vm('sollte')}. Schließlich ${vp('hat er eine schöne Teekanne gekauft')}, die ihm ${vp('gefallen hat')}, da sie die sächsische Handwerkskunst ${vp('widerspiegelt hat')}.`,
+     hint:"vorbeikommen → <b>ist vorbeigekommen</b> | stehen bleiben → <b>ist stehen geblieben</b> | sollen → Präteritum: <b>sollte</b>"},
+    {id:'5-6',part:2,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Am Nachmittag'),VP('schlendern'),W('Manuel zum Völkerschlachtdenkmal. Das Denkmal, das an die Völkerschlacht von 1813'),VP('erinnern'),W(','),VT('sein'),W('einer der beeindruckendsten Orte Leipzigs. Und da Neuer die Aussicht von oben genießen'),VM('wollen'),W(','),VP('hinaufsteigen'),W('er die zahlreichen Stufen.')],
+     solution:"Am Nachmittag ist Manuel zum Völkerschlachtdenkmal geschlendert. Das Denkmal, das an die Völkerschlacht von 1813 erinnert hat, war einer der beeindruckendsten Orte Leipzigs. Und da Neuer die Aussicht von oben genießen wollte, ist er die zahlreichen Stufen hinaufgestiegen.",
+     solutionHTML:`Am Nachmittag ${vp('ist Manuel zum Völkerschlachtdenkmal geschlendert')}. Das Denkmal, das an die Völkerschlacht von 1813 ${vp('erinnert hat')}, ${vt('war')} einer der beeindruckendsten Orte Leipzigs. Und da Neuer die Aussicht von oben genießen ${vm('wollte')}, ${vp('ist er die zahlreichen Stufen hinaufgestiegen')}.`,
+     hint:"schlendern → <b>ist geschlendert</b> | sein → Präteritum: <b>war</b> | wollen → <b>wollte</b> | hinaufsteigen → <b>ist hinaufgestiegen</b>"},
+    {id:'5-7',part:2,badges:[['Perfekt','perf']],
+     prompt:[VP('nachdenken'),W('er darüber, wie der Ort so viel Geschichte und Bedeutung für Deutschland'),VP('bergen'),W(', ähnlich wie die vielen Stadien, in denen er selbst schon legendäre Spiele'),VP('spielen'),W('.')],
+     solution:"Er hat darüber nachgedacht, wie der Ort so viel Geschichte und Bedeutung für Deutschland geborgen hat, ähnlich wie die vielen Stadien, in denen er selbst schon legendäre Spiele gespielt hat.",
+     solutionHTML:`Er ${vp('hat darüber nachgedacht')}, wie der Ort so viel Geschichte und Bedeutung für Deutschland ${vp('geborgen hat')}, ähnlich wie die vielen Stadien, in denen er selbst schon legendäre Spiele ${vp('gespielt hat')}.`,
+     hint:"nachdenken (trennbar) → <b>hat nachgedacht</b> | bergen → <b>hat geborgen</b> | spielen → Perfekt im Rel.-Satz: <b>gespielt hat</b>"},
+    {id:'5-8',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Am Abend'),VP('finden'),W('er ein kleines Lokal in der Nähe des Augustusplatzes, wo viele sächsische Spezialitäten'),VP('serviert werden (Passiv)'),W('. Manuel'),VP('bestellen'),W('einen Teller Leipziger Allerlei, einem traditionellen Gemüsegericht, und dazu ein Glas Feldschlößchen, einem bekannten lokalen Bier.')],
+     solution:"Am Abend hat er ein kleines Lokal in der Nähe des Augustusplatzes gefunden, wo viele sächsische Spezialitäten serviert wurden. Manuel hat einen Teller Leipziger Allerlei, einem traditionellen Gemüsegericht, und dazu ein Glas Feldschlößchen, einem bekannten lokalen Bier, bestellt.",
+     solutionHTML:`Am Abend ${vp('hat er ein kleines Lokal in der Nähe des Augustusplatzes gefunden')}, wo viele sächsische Spezialitäten ${vp('serviert wurden')}. Manuel ${vp('hat einen Teller Leipziger Allerlei, einem traditionellen Gemüsegericht, und dazu ein Glas Feldschlößchen, einem bekannten lokalen Bier, bestellt')}.`,
+     hint:"finden → <b>hat gefunden</b> | Passiv Perfekt: <b>serviert wurden</b> | bestellen → <b>hat bestellt</b>"},
+    {id:'5-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Am Ende des Tages'),VP('gehen'),W('Manuel zurück zu seinem Hotel und'),VT('sein'),W('zufrieden mit dem, was er'),VP('erleben'),W('hatte. Leipzig'),VP('beeindrucken'),W('ihn wieder einmal, nicht nur durch seine Geschichte, sondern auch durch seine besondere Atmosphäre.')],
+     solution:"Am Ende des Tages ist Manuel zurück zu seinem Hotel gegangen und war zufrieden mit dem, was er erlebt hatte. Leipzig hatte ihn wieder einmal beeindruckt, nicht nur durch seine Geschichte, sondern auch durch seine besondere Atmosphäre.",
+     solutionHTML:`Am Ende des Tages ${vp('ist Manuel zurück zu seinem Hotel gegangen')} und ${vt('war')} zufrieden mit dem, was er ${vp('erlebt hatte')}. Leipzig ${vp('hatte ihn wieder einmal beeindruckt')}, nicht nur durch seine Geschichte, sondern auch durch seine besondere Atmosphäre.`,
+     hint:"gehen → <b>ist gegangen</b> | sein → Präteritum: <b>war</b> | erleben → Plusquamperfekt: <b>erlebt hatte</b>"},
+    {id:'5-10',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Die besondere Atmosphäre, die ihn jedes Mal auf eine neue Weise'),VP('berühren'),W('–'),VT('sein'),W('Leipzig für Manuel mehr als nur eine Stadt:'),VT('sein'),W('es ein Ort, den er immer gern'),VP('besuchen'),W('hatte.')],
+     solution:"Die besondere Atmosphäre, die ihn jedes Mal auf eine neue Weise berührt hatte – Leipzig war für Manuel mehr als nur eine Stadt: Es war ein Ort, den er immer gern besucht hatte.",
+     solutionHTML:`Die besondere Atmosphäre, die ihn jedes Mal auf eine neue Weise ${vp('berührt hatte')} – Leipzig ${vt('war')} für Manuel mehr als nur eine Stadt: Es ${vt('war')} ein Ort, den er immer gern ${vp('besucht hatte')}.`,
+     hint:"berühren → Plusquamperfekt: <b>berührt hatte</b> | sein → Präteritum: <b>war</b> (2x) | besuchen → Plusquamperfekt: <b>besucht hatte</b>"},
+  ]
+},
+
+// ────────────────────────────────────────────────────────────────
+// TAB 6 – Neuschwanstein
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t6', emoji:'🏰', title:'Neuschwansteinschloss',
+  intro:`<span class="story-tag">🏰 TEXT</span>
+<p>Neuschwanstein – Ein Märchenschloss in Bayern. Der Traum König Ludwigs II. und Inspirationsquelle für Walt Disney.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'6-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Neuschwanstein ein weltberühmtes Schloss in Bayern, das von König Ludwig II. in Auftrag'),VP('geben (Passiv)'),W('. Es'),VP('liegen'),W('in der Nähe von Füssen, wo es auf einem steilen Felsen majestätisch über das Tal'),VP('thronen'),W('.')],
+     solution:"Neuschwanstein war ein weltberühmtes Schloss in Bayern, das von König Ludwig II. in Auftrag gegeben worden war. Es hatte in der Nähe von Füssen gelegen, wo es auf einem steilen Felsen majestätisch über das Tal gethront hatte.",
+     solutionHTML:`Neuschwanstein ${vt('war')} ein weltberühmtes Schloss in Bayern, das von König Ludwig II. in Auftrag ${vp('gegeben worden war')}. Es ${vp('hatte in der Nähe von Füssen gelegen')}, wo es auf einem steilen Felsen majestätisch über das Tal ${vp('gethront hatte')}.`,
+     hint:"sein → Präteritum: <b>war</b> | in Auftrag geben (Passiv Plusquamperfekt): <b>gegeben worden war</b> | liegen → Plusquamperfekt: <b>hatte gelegen</b> | thronen → <b>hatte gethront</b>"},
+    {id:'6-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Schon beim ersten Anblick'),VP('sich vermeiden lassen (es)'),W('kaum, dass man von der Schönheit dieses Bauwerks'),VP('beeindrucken (Passiv)'),W('. Neuschwanstein'),VP('bauen (Passiv)'),W('im 19. Jahrhundert und'),VP('zeigen'),W('eine romantische Architektur, die von mittelalterlichen Burgen'),VP('inspirieren (Passiv)'),W('.')],
+     solution:"Schon beim ersten Anblick ließ es sich kaum vermeiden, dass man von der Schönheit dieses Bauwerks beeindruckt wurde. Neuschwanstein wurde im 19. Jahrhundert gebaut und hat eine romantische Architektur gezeigt, die von mittelalterlichen Burgen inspiriert worden war.",
+     solutionHTML:`Schon beim ersten Anblick ${vt('ließ')} es sich kaum vermeiden, dass man von der Schönheit dieses Bauwerks ${vp('beeindruckt wurde')}. Neuschwanstein ${vp('wurde im 19. Jahrhundert gebaut')} und ${vp('hat eine romantische Architektur gezeigt')}, die von mittelalterlichen Burgen ${vp('inspiriert worden war')}.`,
+     hint:"lassen → Präteritum: <b>ließ</b> | Passiv Perfekt: <b>beeindruckt wurde / gebaut wurde</b> | zeigen → <b>hat gezeigt</b> | inspiriert worden war = Passiv Plusquamperfekt"},
+    {id:'6-3',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Der Thronsaal und die Wohnräume des Königs'),VT('sein'),W('besonders sehenswert, wo jeder Raum mit aufwendigen Wandgemälden und kunstvollen Schnitzereien'),VP('dekorieren (Passiv)'),W('. Viele Touristen'),VP('sich begleiten lassen'),W('von einem Führer durch die Räume, um mehr über die Geschichte des Schlosses zu erfahren.')],
+     solution:"Der Thronsaal und die Wohnräume des Königs waren besonders sehenswert, wo jeder Raum mit aufwendigen Wandgemälden und kunstvollen Schnitzereien dekoriert worden war. Viele Touristen haben sich von einem Führer durch die Räume begleiten lassen, um mehr über die Geschichte des Schlosses zu erfahren.",
+     solutionHTML:`Der Thronsaal und die Wohnräume des Königs ${vt('waren')} besonders sehenswert, wo jeder Raum mit aufwendigen Wandgemälden und kunstvollen Schnitzereien ${vp('dekoriert worden war')}. Viele Touristen ${vp('haben sich von einem Führer durch die Räume begleiten lassen')}, um mehr über die Geschichte des Schlosses zu erfahren.`,
+     hint:"sein (Pl.) → Präteritum: <b>waren</b> | Passiv Plusquamperfekt: <b>dekoriert worden war</b> | sich begleiten lassen → <b>haben sich … begleiten lassen</b>"},
+    {id:'6-4',part:1,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Warum'),VP('erbauen lassen'),W('König Ludwig II. dieses Schloss? Er'),VM('wollen'),W('einen Ort schaffen, der seinen romantischen Vorstellungen'),VP('entsprechen'),W('. Das Schloss'),VM('sollen'),W('ihm als Rückzugsort dienen, wo er der Realität'),VP('entfliehen können'),W('.')],
+     solution:"Warum ließ König Ludwig II. dieses Schloss erbauen? Er wollte einen Ort schaffen, der seinen romantischen Vorstellungen entsprach. Das Schloss sollte ihm als Rückzugsort dienen, wo er der Realität entfliehen konnte.",
+     solutionHTML:`Warum ${vt('ließ')} König Ludwig II. dieses Schloss erbauen? Er ${vm('wollte')} einen Ort schaffen, der seinen romantischen Vorstellungen ${vt('entsprach')}. Das Schloss ${vm('sollte')} ihm als Rückzugsort dienen, wo er der Realität entfliehen ${vm('konnte')}.`,
+     hint:"lassen → Präteritum: <b>ließ</b> | wollen → Präteritum: <b>wollte</b> | entsprechen → Präteritum: <b>entsprach</b> | sollen → <b>sollte</b> | können → <b>konnte</b>"},
+    {id:'6-5',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[VT('sein'),W('es erstaunlich, wie viel Aufwand und Detail in den Bau dieses Schlosses'),VP('stecken (Passiv)'),W(', obwohl es nie vollständig'),VP('fertigstellen (Passiv)'),W('.')],
+     solution:"Es war erstaunlich, wie viel Aufwand und Detail in den Bau dieses Schlosses gesteckt worden war, obwohl es nie vollständig fertiggestellt worden war.",
+     solutionHTML:`Es ${vt('war')} erstaunlich, wie viel Aufwand und Detail in den Bau dieses Schlosses ${vp('gesteckt worden war')}, obwohl es nie vollständig ${vp('fertiggestellt worden war')}.`,
+     hint:"sein → Präteritum: <b>war</b> | Passiv Plusquamperfekt: <b>gesteckt worden war / fertiggestellt worden war</b> | 'obwohl'-Satz → Verb ans Ende"},
+    {id:'6-6',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Nicht nur das Innere des Schlosses'),VT('sein'),W('atemberaubend, sondern auch die Umgebung. Wenn man'),VP('fragen'),W(', wo man den besten Blick auf das Schloss haben'),VM('sollen'),W(', dann'),VM('sollen'),W('man zur Marienbrücke gehen.')],
+     solution:"Nicht nur das Innere des Schlosses war atemberaubend, sondern auch die Umgebung. Wenn man fragte, wo man den besten Blick auf das Schloss haben sollte, dann sollte man zur Marienbrücke gehen.",
+     solutionHTML:`Nicht nur das Innere des Schlosses ${vt('war')} atemberaubend, sondern auch die Umgebung. Wenn man ${vt('fragte')}, wo man den besten Blick auf das Schloss haben ${vm('sollte')}, dann ${vm('sollte')} man zur Marienbrücke gehen.`,
+     hint:"sein → Präteritum: <b>war</b> | fragen → Präteritum: <b>fragte</b> (im wenn-Satz) | sollen → Präteritum: <b>sollte</b> (2x)"},
+    {id:'6-7',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Von dort aus'),VP('haben'),W('man einen perfekten Ausblick auf Neuschwanstein und die umgebende Natur. Viele Besucher'),VP('entscheiden'),W(', eine Wanderung zu den naheliegenden Seen zu unternehmen, die genauso malerisch'),VT('sein'),W('wie das Schloss selbst.')],
+     solution:"Von dort aus hatte man einen perfekten Ausblick auf Neuschwanstein und die umgebende Natur. Viele Besucher haben entschieden, eine Wanderung zu den naheliegenden Seen zu unternehmen, die genauso malerisch waren wie das Schloss selbst.",
+     solutionHTML:`Von dort aus ${vp('hatte')} man einen perfekten Ausblick auf Neuschwanstein und die umgebende Natur. Viele Besucher ${vp('haben entschieden')}, eine Wanderung zu den naheliegenden Seen zu unternehmen, die genauso malerisch ${vt('waren')} wie das Schloss selbst.`,
+     hint:"haben → Plusquamperfekt: <b>hatte</b> (man = allgemein, Vorvergangenheit) | entscheiden → <b>haben entschieden</b> | sein (Pl.) → Präteritum: <b>waren</b>"},
+    {id:'6-8',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Besonders interessant'),VT('sein'),W('die Verwendung des Schlosses als Inspirationsquelle für viele moderne Märchen. Disney'),VP('sich inspirieren lassen'),W('beispielsweise von Neuschwanstein, um das Schloss im Film &bdquo;Dornröschen&rdquo; zu gestalten.')],
+     solution:"Besonders interessant war die Verwendung des Schlosses als Inspirationsquelle für viele moderne Märchen. Disney hat sich beispielsweise von Neuschwanstein inspirieren lassen, um das Schloss im Film &bdquo;Dornröschen&rdquo; zu gestalten.",
+     solutionHTML:`Besonders interessant ${vt('war')} die Verwendung des Schlosses als Inspirationsquelle für viele moderne Märchen. Disney ${vp('hat sich beispielsweise von Neuschwanstein inspirieren lassen')}, um das Schloss im Film &bdquo;Dornröschen&rdquo; zu gestalten.`,
+     hint:"sein → Präteritum: <b>war</b> | sich inspirieren lassen → <b>hat sich … inspirieren lassen</b> | 'um … zu + Infinitiv' = Finalsatz"},
+    {id:'6-9',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('Neuschwanstein nicht nur ein Symbol für die bayrische Geschichte, sondern auch ein Ort, wo man in eine andere Welt eintauchen'),VM('können'),W('.')],
+     solution:"Neuschwanstein war nicht nur ein Symbol für die bayrische Geschichte, sondern auch ein Ort, wo man in eine andere Welt eintauchen konnte.",
+     solutionHTML:`Neuschwanstein ${vt('war')} nicht nur ein Symbol für die bayrische Geschichte, sondern auch ein Ort, wo man in eine andere Welt eintauchen ${vm('konnte')}.`,
+     hint:"sein → Präteritum: <b>war</b> | können → Präteritum: <b>konnte</b> | 'wo'-Satz → Verb ans Ende"},
+    {id:'6-10',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Egal, wohin die Reise'),VP('gehen'),W(', das Schloss'),VP('bleiben'),W('ein unvergessliches Ziel für alle, die von seiner Magie verzaubert'),VM('lassen'),W('möchten.')],
+     solution:"Egal, wohin die Reise ging, das Schloss blieb ein unvergessliches Ziel für alle, die sich von seiner Magie verzaubern lassen wollten.",
+     solutionHTML:`Egal, wohin die Reise ${vt('ging')}, das Schloss ${vt('blieb')} ein unvergessliches Ziel für alle, die sich von seiner Magie verzaubern lassen ${vm('wollten')}.`,
+     hint:"gehen → Präteritum: <b>ging</b> | bleiben → Präteritum: <b>blieb</b> | wollen → Präteritum: <b>wollten</b> | sich verzaubern lassen = Passiv mit lassen"},
+  ]
+}
+
+,
+// ────────────────────────────────────────────────────────────────
+// TAB 7 – Tropical Islands
+// ────────────────────────────────────────────────────────────────
+{
+  id:'t7', emoji:'🌴', title:'Tropical Islands',
+  intro:`<span class="story-tag">📖 TEXT</span>
+<p>Tropical Islands – ein tropisches Paradies in einem ehemaligen Luftschiffhangar, etwa 60 km von Berlin entfernt.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    // 1. Tropical Islands/ befinden/ in/ ein_/ ehemalig/ Luftschiffhangar/ in/ etwa/ 60/ Kilometer/
+    //    von/ Berlin/ entfernt, sein/ ein/ beliebt/ Ziel/ für/ Menschen,
+    //    d_/ suchen/ in/ d_/ kalt/ Jahreszeit/ Sonne/ und/ Wärme.
+    {id:'7-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VP('befinden'),W('sich Tropical Islands in einem ehemaligen Luftschiffhangar in etwa 60 Kilometern von Berlin entfernt und'),VT('sein'),W('ein beliebtes Ziel für Menschen, die in der kalten Jahreszeit Sonne und Wärme'),VP('suchen'),W('.')],
+     solution:"Tropical Islands befand sich in einem ehemaligen Luftschiffhangar in etwa 60 Kilometern von Berlin entfernt und war ein beliebtes Ziel für Menschen, die in der kalten Jahreszeit Sonne und Wärme gesucht haben.",
+     solutionHTML:`Tropical Islands ${vp('befand sich')} in einem ehemaligen Luftschiffhangar in etwa 60 Kilometern von Berlin entfernt und ${vt('war')} ein beliebtes Ziel für Menschen, die in der kalten Jahreszeit Sonne und Wärme ${vp('gesucht haben')}.`,
+     hint:"befinden → Präteritum: <b>befand sich</b> (Zustand/Lage) | sein → Präteritum: <b>war</b> | suchen → Perfekt im Rel.-Satz: <b>gesucht haben</b>"},
+
+    // 2. Viel/ Besucher/ lassen/ von/ d_/ exotisch/ Atmosphäre/ verzaubern,
+    //    d_/ herrschen/ in/ dies_/ groß/ Indoor-Wasserpark.
+    //    D_/ groß/ tropisch/ Landschaft, d_/ sein/ mit/ viel/ Palmen/ und/ bunt/ Pflanzen/ gestaltet,
+    //    sorgen/ da_/, dass/ fühlen/ d_/ Gäste/ wie/ in/ Urlaub.
+    {id:'7-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Viele Besucher'),VP('sich verzaubern lassen'),W('von der exotischen Atmosphäre, die in diesem großen Indoor-Wasserpark'),VP('herrschen'),W('. Die große tropische Landschaft, die mit vielen Palmen und bunten Pflanzen'),VP('gestalten (Passiv)'),VT('sein'),W(','),VP('sorgen'),W('dafür, dass die Gäste sich wie im Urlaub'),VP('fühlen'),W('.')],
+     solution:"Viele Besucher haben sich von der exotischen Atmosphäre verzaubern lassen, die in diesem großen Indoor-Wasserpark geherrscht hat. Die große tropische Landschaft, die mit vielen Palmen und bunten Pflanzen gestaltet worden war, hat dafür gesorgt, dass die Gäste sich wie im Urlaub gefühlt haben.",
+     solutionHTML:`Viele Besucher ${vp('haben sich von der exotischen Atmosphäre verzaubern lassen')}, die in diesem großen Indoor-Wasserpark ${vp('geherrscht hat')}. Die große tropische Landschaft, die mit vielen Palmen und bunten Pflanzen ${vp('gestaltet worden war')}, ${vp('hat dafür gesorgt')}, dass die Gäste sich wie im Urlaub ${vp('gefühlt haben')}.`,
+     hint:"sich verzaubern lassen → <b>haben sich … lassen</b> | herrschen → Perfekt im Rel.-Satz: <b>geherrscht hat</b> | Passiv Plusquamperfekt: <b>gestaltet worden war</b> | sorgen → <b>hat gesorgt</b> | fühlen → <b>gefühlt haben</b>"},
+
+    // 3. In/ riesig/ Wasserbereich/ können/ d_/ Besucher/ in/ verschieden/ Pools/ schwimmen,
+    //    d_/ sein/ mit/ warm/ Wasser/ gefüllt.
+    {id:'7-3',part:1,badges:[['Modalverb Prät.','modal'],['Präteritum','praet']],
+     prompt:[W('Im riesigen Wasserbereich'),VM('können'),W('die Besucher in verschiedenen Pools schwimmen, die mit warmem Wasser'),VP('gefüllt sein (Passiv)'),VT('sein'),W('.')],
+     solution:"Im riesigen Wasserbereich konnten die Besucher in verschiedenen Pools schwimmen, die mit warmem Wasser gefüllt worden waren.",
+     solutionHTML:`Im riesigen Wasserbereich ${vm('konnten')} die Besucher in verschiedenen Pools schwimmen, die mit warmem Wasser ${vp('gefüllt worden waren')}.`,
+     hint:"können → Präteritum: <b>konnten</b> | Passiv Plusquamperfekt im Rel.-Satz: <b>gefüllt worden waren</b> | 'in verschiedenen Pools' = Dat."},
+
+    // 4. Besonders/ beliebt/ d_/ groß/ Wellenpool/ sein,
+    //    in/ d_/ werden/ d_/ Wellen/ durch/ ein/ ausgeklügelt/ System/ erzeugen.
+    //    D_/ Kinder, d_/ oft/ mit/ ihr/ Eltern/ kommen, können/ austoben/
+    //    in/ Abenteuerbereich, d_/ sein/ mit/ Rutschen/ und/ Spielplätzen/ ausgestattet.
+    {id:'7-4',part:1,badges:[['Präteritum','praet'],['Modalverb Prät.','modal'],['Perfekt','perf']],
+     prompt:[W('Besonders beliebt'),VT('sein'),W('der große Wellenpool, in dem die Wellen durch ein ausgeklügeltes System'),VP('erzeugen (Passiv)'),W('. Die Kinder, die oft mit ihren Eltern'),VP('kommen'),W(','),VM('können'),W('sich im Abenteuerbereich austoben, der mit Rutschen und Spielplätzen'),VP('ausstatten (Passiv)'),VT('sein'),W('.')],
+     solution:"Besonders beliebt war der große Wellenpool, in dem die Wellen durch ein ausgeklügeltes System erzeugt worden waren. Die Kinder, die oft mit ihren Eltern gekommen sind, konnten sich im Abenteuerbereich austoben, der mit Rutschen und Spielplätzen ausgestattet worden war.",
+     solutionHTML:`Besonders beliebt ${vt('war')} der große Wellenpool, in dem die Wellen durch ein ausgeklügeltes System ${vp('erzeugt worden waren')}. Die Kinder, die oft mit ihren Eltern ${vp('gekommen sind')}, ${vm('konnten')} sich im Abenteuerbereich austoben, der mit Rutschen und Spielplätzen ${vp('ausgestattet worden war')}.`,
+     hint:"sein → Präteritum: <b>war</b> | Passiv Plusquamperfekt: <b>erzeugt worden waren</b> | kommen → Perfekt im Rel.-Satz: <b>gekommen sind</b> | können → Präteritum: <b>konnten</b> | ausstatten → Passiv Plusquamperfekt: <b>ausgestattet worden war</b>"},
+
+    // 5. Für/ Entspannung/ sorgen/ d_/ zahlreich/ Liegen, d_/ sein/ um/ d_/ Pools/ verteilt.
+    //    Viel/ Gäste/ lassen/ auch/ in/ Wellnessbereich/ verwöhnen,
+    //    wo/ werden/ Massagen/ und/ Saunen/ angeboten.
+    {id:'7-5',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Für Entspannung'),VP('sorgen'),W('die zahlreichen Liegen, die um die Pools'),VP('verteilen (Passiv)'),VT('sein'),W('. Viele Gäste'),VP('sich verwöhnen lassen'),W('auch im Wellnessbereich, wo Massagen und Saunen'),VP('anbieten (Passiv)'),W('.')],
+     solution:"Für Entspannung haben die zahlreichen Liegen gesorgt, die um die Pools verteilt worden waren. Viele Gäste haben sich auch im Wellnessbereich verwöhnen lassen, wo Massagen und Saunen angeboten wurden.",
+     solutionHTML:`Für Entspannung ${vp('haben die zahlreichen Liegen gesorgt')}, die um die Pools ${vp('verteilt worden waren')}. Viele Gäste ${vp('haben sich auch im Wellnessbereich verwöhnen lassen')}, wo Massagen und Saunen ${vp('angeboten wurden')}.`,
+     hint:"sorgen → <b>haben gesorgt</b> | Passiv Plusquamperfekt: <b>verteilt worden waren</b> | sich verwöhnen lassen → <b>haben sich … lassen</b> | Passiv Perfekt: <b>angeboten wurden</b>"},
+
+    // 6. In/ d_/ Restaurants, d_/ köstlich/ Speisen/ aus/ alle/ Welt/ servieren,
+    //    können/ d_/ Besucher/ stärken.
+    //    Ein/ besonders/ beliebt/ Gericht/ sein/ d_/ frisch/ Obst,
+    //    d_/ in/ d_/ tropisch/ Umgebung/ besonders/ lecker/ schmecken.
+    {id:'7-6',part:2,badges:[['Modalverb Prät.','modal'],['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('In den Restaurants, die köstliche Speisen aus aller Welt'),VP('servieren'),W(','),VM('können'),W('die Besucher sich stärken.'),W('Ein besonders beliebtes Gericht'),VT('sein'),W('das frische Obst, das in der tropischen Umgebung besonders lecker'),VP('schmecken'),W('.')],
+     solution:"In den Restaurants, die köstliche Speisen aus aller Welt serviert haben, konnten die Besucher sich stärken. Ein besonders beliebtes Gericht war das frische Obst, das in der tropischen Umgebung besonders lecker geschmeckt hat.",
+     solutionHTML:`In den Restaurants, die köstliche Speisen aus aller Welt ${vp('serviert haben')}, ${vm('konnten')} die Besucher sich stärken. Ein besonders beliebtes Gericht ${vt('war')} das frische Obst, das in der tropischen Umgebung besonders lecker ${vp('geschmeckt hat')}.`,
+     hint:"servieren → Perfekt im Rel.-Satz: <b>serviert haben</b> | können → Präteritum: <b>konnten</b> | sein → Präteritum: <b>war</b> | schmecken → Perfekt im Rel.-Satz: <b>geschmeckt hat</b>"},
+
+    // 7. D_/ Eintrittspreise/ für/ Tropical Islands/ liegen/ in/ d_/ Regel/ bei/ etwa/ 46/ Euro/
+    //    für/ Erwachsene/ und/ 36/ Euro/ für/ Kinder.
+    //    Dies_/ Preise/ können/ jedoch/ je/ nach/ Saison/ und/ speziell/ Angeboten/ variieren.
+    //    Oft/ es/ geben/ auch/ Familienangebote, d_/ d_/ Eintrittspreis/ reduzieren.
+    {id:'7-7',part:2,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[W('Die Eintrittspreise für Tropical Islands'),VP('liegen'),W('in der Regel bei etwa 46 Euro für Erwachsene und 36 Euro für Kinder.'),W('Diese Preise'),VM('können'),W('jedoch je nach Saison und speziellen Angeboten variieren.'),W('Oft'),VT('geben'),W('es auch Familienangebote, die den Eintrittspreis'),VP('reduzieren'),W('.')],
+     solution:"Die Eintrittspreise für Tropical Islands haben in der Regel bei etwa 46 Euro für Erwachsene und 36 Euro für Kinder gelegen. Diese Preise konnten jedoch je nach Saison und speziellen Angeboten variieren. Oft gab es auch Familienangebote, die den Eintrittspreis reduziert haben.",
+     solutionHTML:`Die Eintrittspreise für Tropical Islands ${vp('haben in der Regel bei etwa 46 Euro für Erwachsene und 36 Euro für Kinder gelegen')}. Diese Preise ${vm('konnten')} jedoch je nach Saison und speziellen Angeboten variieren. Oft ${vt('gab')} es auch Familienangebote, die den Eintrittspreis ${vp('reduziert haben')}.`,
+     hint:"liegen → <b>haben gelegen</b> | können → Präteritum: <b>konnten</b> | es gibt → Präteritum: <b>gab</b> | reduzieren → Perfekt im Rel.-Satz: <b>reduziert haben</b>"},
+
+    // 8. Die/ einzigartig/ Atmosphäre/ und d_/ verschieden/ Freizeitmöglichkeiten,
+    //    d_/ Tropical Islands/ bieten, anziehen/ jed_/ Jahr/ Tausende/ von/ Besucher.
+    {id:'7-8',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Die einzigartige Atmosphäre und die verschiedenen Freizeitmöglichkeiten, die Tropical Islands'),VP('bieten'),W(','),VP('anziehen'),W('jedes Jahr Tausende von Besuchern.')],
+     solution:"Die einzigartige Atmosphäre und die verschiedenen Freizeitmöglichkeiten, die Tropical Islands geboten hat, haben jedes Jahr Tausende von Besuchern angezogen.",
+     solutionHTML:`Die einzigartige Atmosphäre und die verschiedenen Freizeitmöglichkeiten, die Tropical Islands ${vp('geboten hat')}, ${vp('haben jedes Jahr Tausende von Besuchern angezogen')}.`,
+     hint:"bieten → Perfekt im Rel.-Satz: <b>geboten hat</b> | anziehen (trennbar) → <b>haben … angezogen</b>"},
+
+    // 9. D_/ meiste/ Menschen, d_/ dort/ sein, empfehlen/ es/ gerne/ weiter,
+    //    weil/ sie/ d_/ Erfahrung/ unvergesslich/ finden.
+    {id:'7-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Die meisten Menschen, die dort'),VT('sein'),W(','),VP('empfehlen'),W('es gerne weiter, weil sie die Erfahrung unvergesslich'),VP('finden'),W('.')],
+     solution:"Die meisten Menschen, die dort gewesen sind, haben es gerne weiterempfohlen, weil sie die Erfahrung unvergesslich gefunden haben.",
+     solutionHTML:`Die meisten Menschen, die dort ${vp('gewesen sind')}, ${vp('haben es gerne weiterempfohlen')}, weil sie die Erfahrung unvergesslich ${vp('gefunden haben')}.`,
+     hint:"sein → Perfekt im Rel.-Satz: <b>gewesen sind</b> | weiterempfehlen (trennbar) → <b>haben … weiterempfohlen</b> | finden → Perfekt im weil-Satz: <b>gefunden haben</b>"},
+
+    // 10. Tropical Islands/ sein/ also/ nicht/ nur/ ein/ Ort/ zu/ Baden,
+    //     sondern/ auch/ ein/ Erlebnis/ für/ d_/ ganz/ Familie.
+    //     Wer/ d_/ kalt/ Wintertage/ überstehen/ möchten,
+    //     sollen/ dies_/ Paradies/ unbedingt/ besuchen!
+    {id:'7-10',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('Tropical Islands also nicht nur ein Ort zum Baden, sondern auch ein Erlebnis für die ganze Familie.'),W('Wer die kalten Wintertage überstehen'),VM('möchten'),W(','),VM('sollen'),W('dieses Paradies unbedingt besuchen!')],
+     solution:"Tropical Islands war also nicht nur ein Ort zum Baden, sondern auch ein Erlebnis für die ganze Familie. Wer die kalten Wintertage überstehen wollte, sollte dieses Paradies unbedingt besuchen!",
+     solutionHTML:`Tropical Islands ${vt('war')} also nicht nur ein Ort zum Baden, sondern auch ein Erlebnis für die ganze Familie. Wer die kalten Wintertage überstehen ${vm('wollte')}, ${vm('sollte')} dieses Paradies unbedingt besuchen!`,
+     hint:"sein → Präteritum: <b>war</b> | möchten → Präteritum: <b>wollte</b> | sollen → Präteritum: <b>sollte</b> | 'Wer'-Satz → Verb ans Ende"},
+  ]
+}
+
+,
+{
+  id:'t8', emoji:'🌲', title:'Ben und Clara',
+  intro:`<span class="story-tag">📖 GESCHICHTE</span>
+<p>Ben und Clara, zwei Studenten an der Freien Universität Berlin, verbringen ein abenteuerliches Wochenende – Wandern im Grunewald und ein Besuch im Freizeitpark.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+    {id:'8-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Ben und Clara Studenten an der Freien Universität Berlin, die gerne gemeinsam aufregende Abenteuer'),VP('erleben'),W('. Ben'),VP('studieren'),W('Sportwissenschaften und'),VP('lieben'),W('alle Arten von körperlichen Herausforderungen. Clara'),VP('studieren'),W('Kunstgeschichte und'),VT('sein'),W('bekannt für ihre kreative und einfühlsame Art.')],
+     solution:"Ben und Clara waren Studenten an der Freien Universität Berlin, die gerne gemeinsam aufregende Abenteuer erlebt haben. Ben hat Sportwissenschaften studiert und alle Arten von körperlichen Herausforderungen geliebt. Clara hat Kunstgeschichte studiert und war bekannt für ihre kreative und einfühlsame Art.",
+     solutionHTML:`Ben und Clara ${vt('waren')} Studenten an der Freien Universität Berlin, die gerne gemeinsam aufregende Abenteuer ${vp('erlebt haben')}. Ben ${vp('hat Sportwissenschaften studiert')} und alle Arten von körperlichen Herausforderungen ${vp('geliebt')}. Clara ${vp('hat Kunstgeschichte studiert')} und ${vt('war')} bekannt für ihre kreative und einfühlsame Art.`,
+     hint:"sein (Pl.) → Präteritum: <b>waren</b> | erleben → Perfekt im Rel.-Satz: <b>erlebt haben</b> | studieren/lieben → <b>hat studiert / hat geliebt</b>"},
+    {id:'8-2',part:1,badges:[['Perfekt','perf']],
+     prompt:[W('Sie'),VP('sich kennenlernen'),W('im ersten Semester während einer spannenden Einführungsveranstaltung und'),VP('aufbauen'),W('sofort eine tiefe Freundschaft. Trotz ihrer verschiedenen Eigenschaften'),VP('sich verlieben'),W('sie im Laufe der Zeit ineinander.')],
+     solution:"Sie haben sich im ersten Semester während einer spannenden Einführungsveranstaltung kennengelernt und sofort eine tiefe Freundschaft aufgebaut. Trotz ihrer verschiedenen Eigenschaften haben sie sich im Laufe der Zeit ineinander verliebt.",
+     solutionHTML:`Sie ${vp('haben sich im ersten Semester während einer spannenden Einführungsveranstaltung kennengelernt')} und sofort eine tiefe Freundschaft ${vp('aufgebaut')}. Trotz ihrer verschiedenen Eigenschaften ${vp('haben sie sich im Laufe der Zeit ineinander verliebt')}.`,
+     hint:"sich kennenlernen (trennbar) → <b>haben sich kennengelernt</b> | aufbauen → <b>haben aufgebaut</b> | sich verlieben → <b>haben sich verliebt</b>"},
+    {id:'8-3',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[W('Am Freitagabend'),VP('sich streiten'),W('die beiden darüber, wo sie das abwechslungsreiche Wochenende verbringen'),VM('sollen'),W('. Ben'),VP('bevorzugen'),W('aufregende Aktivitäten und'),VM('möchten'),W('etwas mit viel Adrenalin unternehmen, während Clara es'),VP('vorziehen'),W(', im schönen Grunewald zu wandern. Schließlich'),VP('sich entscheiden'),W('sie, das Wochenende zu teilen und beide Wünsche zu berücksichtigen.')],
+     solution:"Am Freitagabend haben die beiden darüber gestritten, wo sie das abwechslungsreiche Wochenende verbringen sollten. Ben hat aufregende Aktivitäten bevorzugt und wollte etwas mit viel Adrenalin unternehmen, während Clara es vorgezogen hat, im schönen Grunewald zu wandern. Schließlich haben sie sich entschieden, das Wochenende zu teilen und beide Wünsche zu berücksichtigen.",
+     solutionHTML:`Am Freitagabend ${vp('haben die beiden darüber gestritten')}, wo sie das abwechslungsreiche Wochenende verbringen ${vm('sollten')}. Ben ${vp('hat aufregende Aktivitäten bevorzugt')} und ${vm('wollte')} etwas mit viel Adrenalin unternehmen, während Clara es ${vp('vorgezogen hat')}, im schönen Grunewald zu wandern. Schließlich ${vp('haben sie sich entschieden')}, das Wochenende zu teilen und beide Wünsche zu berücksichtigen.`,
+     hint:"sich streiten → <b>haben gestritten</b> | sollen → Präteritum: <b>sollten</b> | bevorzugen → <b>hat bevorzugt</b> | möchten → Präteritum: <b>wollte</b> | vorziehen → <b>hat vorgezogen</b>"},
+    {id:'8-4',part:1,badges:[['Perfekt','perf']],
+     prompt:[W('Am Samstag'),VP('fahren'),W('Ben und Clara mit dem Bus zum grünen Grunewald. Nach zwei Stunden Wandern'),VP('machen'),W('sie eine Pause an einem ruhigen See. Sie'),VP('legen'),W('eine bunte Matte auf den weichen Rasen und'),VP('sich setzen'),W('darauf für eine entspannte Mittagspause.')],
+     solution:"Am Samstag sind Ben und Clara mit dem Bus zum grünen Grunewald gefahren. Nach zwei Stunden Wandern haben sie eine Pause an einem ruhigen See gemacht. Sie haben eine bunte Matte auf den weichen Rasen gelegt und sich darauf für eine entspannte Mittagspause gesetzt.",
+     solutionHTML:`Am Samstag ${vp('sind Ben und Clara mit dem Bus zum grünen Grunewald gefahren')}. Nach zwei Stunden Wandern ${vp('haben sie eine Pause an einem ruhigen See gemacht')}. Sie ${vp('haben eine bunte Matte auf den weichen Rasen gelegt')} und ${vp('sich darauf für eine entspannte Mittagspause gesetzt')}.`,
+     hint:"fahren → <b>sind gefahren</b> (Bewegung) | machen → <b>haben gemacht</b> | legen → <b>haben gelegt</b> | sich setzen → <b>haben sich gesetzt</b>"},
+    {id:'8-5',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Während sie'),VP('essen'),W(','),VP('beobachten'),W('sie die schwimmenden Schwäne, die elegant auf dem Wasser'),VP('gleiten'),W('. Auf dem Weg'),VP('finden'),W('sie eine Igelmutter mit drei Babys, die weiche Haare'),VT('haben'),W('.'),VT('sein'),W('Clara total begeistert,'),VP('spielen'),W('eine halbe Stunde mit den Igelbabys und'),VP('füttern'),W('die Igelmutter.')],
+     solution:"Während sie gegessen haben, haben sie die schwimmenden Schwäne beobachtet, die elegant auf dem Wasser geglitten sind. Auf dem Weg haben sie eine Igelmutter mit drei Babys gefunden, die weiche Haare hatten. Clara war total begeistert, hat eine halbe Stunde mit den Igelbabys gespielt und die Igelmutter gefüttert.",
+     solutionHTML:`Während sie ${vp('gegessen haben')}, ${vp('haben sie die schwimmenden Schwäne beobachtet')}, die elegant auf dem Wasser ${vp('geglitten sind')}. Auf dem Weg ${vp('haben sie eine Igelmutter mit drei Babys gefunden')}, die weiche Haare ${vt('hatten')}. Clara ${vt('war')} total begeistert, ${vp('hat eine halbe Stunde mit den Igelbabys gespielt')} und die Igelmutter ${vp('gefüttert')}.`,
+     hint:"essen → Perfekt im während-Satz: <b>gegessen haben</b> | gleiten → <b>geglitten sind</b> | haben → Präteritum im Rel.-Satz: <b>hatten</b> | sein → Präteritum: <b>war</b>"},
+    {id:'8-6',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Nach dieser liebevollen Begegnung'),VP('fortsetzen'),W('das Paar ihre Wanderung und'),VP('genießen'),W('die frische Luft und die idyllische Natur. Spät am Nachmittag'),VP('gehen'),W('sie zurück zur Bushaltestelle und'),VP('beenden'),W('ihre Waldwanderung in Wohlgefühl.')],
+     solution:"Nach dieser liebevollen Begegnung hat das Paar ihre Wanderung fortgesetzt und die frische Luft und die idyllische Natur genossen. Spät am Nachmittag sind sie zurück zur Bushaltestelle gegangen und haben ihre Waldwanderung in Wohlgefühl beendet.",
+     solutionHTML:`Nach dieser liebevollen Begegnung ${vp('hat das Paar ihre Wanderung fortgesetzt')} und die frische Luft und die idyllische Natur ${vp('genossen')}. Spät am Nachmittag ${vp('sind sie zurück zur Bushaltestelle gegangen')} und ${vp('haben ihre Waldwanderung in Wohlgefühl beendet')}.`,
+     hint:"fortsetzen (trennbar) → <b>hat fortgesetzt</b> | genießen → <b>hat genossen</b> | gehen → <b>sind gegangen</b> | beenden → <b>haben beendet</b>"},
+    {id:'8-7',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Am Sonntag'),VP('beschließen'),W('sie, in den aufregenden Freizeitpark zu gehen, dessen vielfältige Attraktionen sie'),VP('lieben'),W('. Am Eingang'),VP('sich kaufen'),W('sie die teuren Eintrittskarten.')],
+     solution:"Am Sonntag haben sie beschlossen, in den aufregenden Freizeitpark zu gehen, dessen vielfältige Attraktionen sie geliebt haben. Am Eingang haben sie sich die teuren Eintrittskarten gekauft.",
+     solutionHTML:`Am Sonntag ${vp('haben sie beschlossen')}, in den aufregenden Freizeitpark zu gehen, dessen vielfältige Attraktionen sie ${vp('geliebt haben')}. Am Eingang ${vp('haben sie sich die teuren Eintrittskarten gekauft')}.`,
+     hint:"beschließen → <b>haben beschlossen</b> | lieben → Perfekt im Rel.-Satz: <b>geliebt haben</b> | 'dessen' = Genitiv-Relativpronomen"},
+    {id:'8-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Nachdem sie den Eingang des Freizeitparks'),VP('passieren'),W(','),VP('laufen'),W('sie eilig zuerst zur gigantischen Achterbahn, die sehr hoch und schnell'),VT('sein'),W('.'),VP('sich freuen'),W('Ben darüber, weil er schnelle Achterbahnen'),VP('lieben'),W('. Obwohl Clara Höhenangst'),VP('haben'),W('und sich nervös'),VP('fühlen'),W(', fuhr sie trotzdem mit.')],
+     solution:"Nachdem sie den Eingang des Freizeitparks passiert hatten, sind sie eilig zuerst zur gigantischen Achterbahn gelaufen, die sehr hoch und schnell war. Ben hat sich darüber gefreut, weil er schnelle Achterbahnen geliebt hat. Obwohl Clara Höhenangst gehabt hat und sich nervös gefühlt hat, fuhr sie trotzdem mit.",
+     solutionHTML:`Nachdem sie den Eingang des Freizeitparks ${vp('passiert hatten')}, ${vp('sind sie eilig zuerst zur gigantischen Achterbahn gelaufen')}, die sehr hoch und schnell ${vt('war')}. Ben ${vp('hat sich darüber gefreut')}, weil er schnelle Achterbahnen ${vp('geliebt hat')}. Obwohl Clara Höhenangst ${vp('gehabt hat')} und sich nervös ${vp('gefühlt hat')}, fuhr sie trotzdem mit.`,
+     hint:"passieren → Plusquamperfekt (nachdem): <b>passiert hatten</b> | laufen → <b>sind gelaufen</b> | sein → Präteritum: <b>war</b> | haben → <b>hat gehabt</b> | fühlen → <b>hat sich gefühlt</b>"},
+    {id:'8-9',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Nach einem aufregenden Tag im Freizeitpark'),VP('sich setzen'),W('sie in ein gemütliches Café und'),VP('essen'),W('eine große Portion Eis. Am Ende des Tages'),VP('fahren'),W('sie nach Hause.')],
+     solution:"Nach einem aufregenden Tag im Freizeitpark haben sie sich in ein gemütliches Café gesetzt und eine große Portion Eis gegessen. Am Ende des Tages sind sie nach Hause gefahren.",
+     solutionHTML:`Nach einem aufregenden Tag im Freizeitpark ${vp('haben sie sich in ein gemütliches Café gesetzt')} und eine große Portion Eis ${vp('gegessen')}. Am Ende des Tages ${vp('sind sie nach Hause gefahren')}.`,
+     hint:"sich setzen → <b>haben sich gesetzt</b> | essen → <b>haben gegessen</b> | fahren → <b>sind gefahren</b> (Bewegung)"},
+    {id:'8-10',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('In ihrem ruhigen und gemütlichen Zuhause'),VT('sein'),W('das Paar glücklich, aber müde, und'),VP('sich freuen'),W('auf ihr nächstes Abenteuer.')],
+     solution:"In ihrem ruhigen und gemütlichen Zuhause war das Paar glücklich, aber müde, und hat sich auf ihr nächstes Abenteuer gefreut.",
+     solutionHTML:`In ihrem ruhigen und gemütlichen Zuhause ${vt('war')} das Paar glücklich, aber müde, und ${vp('hat sich auf ihr nächstes Abenteuer gefreut')}.`,
+     hint:"sein → Präteritum: <b>war</b> | sich freuen → <b>hat sich gefreut</b> | 'auf ihr nächstes Abenteuer' = Akk."},
+  ]
+}
+
+,
+{
+  id:'t9', emoji:'☀️', title:'Sommerausflug am See',
+  intro:`<span class="story-tag">☀️ GESCHICHTE</span>
+<p>Maria macht einen langen Sommerausflug an einen schönen See. Diese Übung konzentriert sich auf <strong>Präteritum</strong> (Vollverben &amp; sein/haben) und <strong>Plusquamperfekt</strong> (Vorvergangenheit).</p>
+<div class="tense-rule">
+  <p><span class="pill pill-praet">Präteritum</span> → alle Vollverben + sein / haben</p>
+  <p><span class="pill pill-plus">Plusquamperfekt</span> → Vorvergangenheit (hatte/war + Partizip II)</p>
+</div>`,
+  exercises:[
+
+    // 1. Es / sein / ein / schön / Sommertag, als / Maria / beschließen,
+    //    ein / lang / Ausflug / zu machen, denn / sie / warten / schon / seit / 2 Monate / auf / gut / Wetter.
+    {id:'9-1',part:1,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[VT('sein'),W('es ein schöner Sommertag, als Maria'),VT('beschließen'),W(', einen langen Ausflug zu machen, denn sie'),W('schon seit 2 Monaten auf gutes Wetter'),VP('warten (PqP)'),W('.')],
+     solution:"Es war ein schöner Sommertag, als Maria beschloss, einen langen Ausflug zu machen, denn sie hatte schon seit 2 Monaten auf gutes Wetter gewartet.",
+     solutionHTML:`Es ${vt('war')} ein schöner Sommertag, als Maria ${vt('beschloss')}, einen langen Ausflug zu machen, denn sie ${vp('hatte schon seit 2 Monaten auf gutes Wetter gewartet')}.`,
+     hint:"sein → Präteritum: <b>war</b> | beschließen → Präteritum: <b>beschloss</b> | warten → Plusquamperfekt: <b>hatte gewartet</b> (Vorvergangenheit: sie wartete schon BEVOR der schöne Tag kam)"},
+
+    // 2. Bevor / sie / losfahren, sie / ihren / alt / Rucksack / aus / d__ Schrank / herausnehmen
+    //    und / ihn / mit / zwei / groß / Flasche / Mineralwasser / füllen.
+    {id:'9-2',part:1,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[W('Bevor sie'),VT('losfahren'),W(', nahm sie ihren alten Rucksack aus dem Schrank'),VP('herausnehmen (PqP)'),W('und'),VP('füllen (PqP)'),W('ihn mit zwei großen Flaschen Mineralwasser.')],
+     solution:"Bevor sie losfuhr, hatte sie ihren alten Rucksack aus dem Schrank herausgenommen und ihn mit zwei großen Flaschen Mineralwasser gefüllt.",
+     solutionHTML:`Bevor sie ${vt('losfuhr')}, ${vp('hatte sie ihren alten Rucksack aus dem Schrank herausgenommen')} und ihn mit zwei großen Flaschen Mineralwasser ${vp('gefüllt')}.`,
+     hint:"losfahren → Präteritum im Hauptsatz: <b>losfuhr</b> | herausnehmen → Plusquamperfekt: <b>hatte herausgenommen</b> | füllen → <b>hatte gefüllt</b> | 'Bevor'-Satz: Aktion VOR dem Losfahren → Plusquamperfekt"},
+
+    // 3. Unterwegs / sie / an / ein / klein / Bäcker / anhalten / und /
+    //    ein / groß / Packung / von / frisch / Kuchen / kaufen,
+    //    weil / sie / noch / nicht frühstücken.
+    {id:'9-3',part:1,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[W('Unterwegs'),VT('anhalten'),W('sie an einem kleinen Bäcker und'),VT('kaufen'),W('eine große Packung frischen Kuchen, weil sie noch nicht'),VP('frühstücken (PqP)'),W('.')],
+     solution:"Unterwegs hielt sie an einem kleinen Bäcker an und kaufte eine große Packung frischen Kuchen, weil sie noch nicht gefrühstückt hatte.",
+     solutionHTML:`Unterwegs ${vt('hielt sie an einem kleinen Bäcker an')} und ${vt('kaufte')} eine große Packung frischen Kuchen, weil sie noch nicht ${vp('gefrühstückt hatte')}.`,
+     hint:"anhalten (trennbar) → Präteritum: <b>hielt … an</b> | kaufen → Präteritum: <b>kaufte</b> | frühstücken → Plusquamperfekt im weil-Satz: <b>gefrühstückt hatte</b> (sie hatte VORHER noch nicht gefrühstückt)"},
+
+    // 4. Als / sie / an / d__ / schön / See / ankommen,
+    //    sie / ein / schattig / Platz / unter / ein / alt / Baum / suchen.
+    //    Danach / sie / ihr / groß / Decke / ausbreiten
+    //    und / sich / legen / auf / d__ / Decke, um / sich / auszuruhen und essen.
+    {id:'9-4',part:1,badges:[['Präteritum','praet']],
+     prompt:[W('Als sie an dem schönen See'),VT('ankommen'),W(', suchte sie einen schattigen Platz unter einem alten Baum.'),VT('ausbreiten'),W('sie danach ihre große Decke und'),VT('legen'),W('sich darauf, um sich auszuruhen und zu essen.')],
+     solution:"Als sie an dem schönen See ankam, suchte sie einen schattigen Platz unter einem alten Baum. Sie breitete danach ihre große Decke aus und legte sich darauf, um sich auszuruhen und zu essen.",
+     solutionHTML:`Als sie an dem schönen See ${vt('ankam')}, ${vt('suchte')} sie einen schattigen Platz unter einem alten Baum. Sie ${vt('breitete')} danach ihre große Decke ${vt('aus')} und ${vt('legte')} sich darauf, um sich auszuruhen und zu essen.`,
+     hint:"ankommen (trennbar) → Präteritum: <b>ankam</b> | suchen → <b>suchte</b> | ausbreiten (trennbar) → <b>breitete … aus</b> | legen → <b>legte</b> | 'um … zu + Infinitiv' bleibt unverändert"},
+
+    // 5. Nachdem / sie / mit / ihr / Mahlzeit / fertig / sein,
+    //    sie / fühlen sich / müde, weil / sie / seit / d__ / früh / Morgen / unterwegs / sein.
+    //    Maria / sich entscheiden, dass / sie / sollen / ein / kurz / Nickerchen / machen.
+    {id:'9-5',part:1,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[W('Nachdem sie mit ihrer Mahlzeit fertig'),VP('sein (PqP)'),W(', fühlte sie sich müde, weil sie seit dem frühen Morgen'),VP('unterwegs sein (PqP)'),W('. Maria entschied sich, dass sie ein kurzes Nickerchen machen'),VT('sollen'),W('.')],
+     solution:"Nachdem sie mit ihrer Mahlzeit fertig gewesen war, fühlte sie sich müde, weil sie seit dem frühen Morgen unterwegs gewesen war. Maria entschied sich, dass sie ein kurzes Nickerchen machen sollte.",
+     solutionHTML:`Nachdem sie mit ihrer Mahlzeit fertig ${vp('gewesen war')}, ${vt('fühlte')} sie sich müde, weil sie seit dem frühen Morgen ${vp('unterwegs gewesen war')}. Maria ${vt('entschied')} sich, dass sie ein kurzes Nickerchen machen ${vt('sollte')}.`,
+     hint:"sein (nachdem) → Plusquamperfekt: <b>gewesen war</b> | fühlen → Präteritum: <b>fühlte</b> | sein (unterwegs) → Plusquamperfekt: <b>gewesen war</b> | sollen → Präteritum: <b>sollte</b>"},
+
+    // 6. Wenn / sie / aufwachen, sie / sich / erfrischt / fühlen
+    //    und / bereit / sein, / ein / klein / Spaziergang / zu machen.
+    {id:'9-6',part:2,badges:[['Präteritum','praet']],
+     prompt:[W('Als sie'),VT('aufwachen'),W(', fühlte sie sich erfrischt und'),VT('sein'),W('bereit, einen kleinen Spaziergang zu machen.')],
+     solution:"Als sie aufwachte, fühlte sie sich erfrischt und war bereit, einen kleinen Spaziergang zu machen.",
+     solutionHTML:`Als sie ${vt('aufwachte')}, ${vt('fühlte')} sie sich erfrischt und ${vt('war')} bereit, einen kleinen Spaziergang zu machen.`,
+     hint:"aufwachen → Präteritum: <b>aufwachte</b> | fühlen → Präteritum: <b>fühlte</b> | sein → Präteritum: <b>war</b> | 'um … zu' → 'bereit, … zu machen' bleibt Infinitiv"},
+
+    // 7. Sie / ihr / bequem / Schuhe / ausziehen und / ihr / nackt / Füße /
+    //    in / kühl / Wasser / baumeln lassen, nachdem / sie / sicher / sein,
+    //    dass / d__ / Wassertemperatur / nicht / zu / kalt / sein.
+    {id:'9-7',part:2,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[VT('ausziehen'),W('sie ihre bequemen Schuhe und ließ ihre nackten Füße im kühlen Wasser baumeln, nachdem sie sicher'),VP('sein (PqP)'),W(', dass die Wassertemperatur nicht zu kalt'),VP('sein (PqP)'),W('.')],
+     solution:"Sie zog ihre bequemen Schuhe aus und ließ ihre nackten Füße im kühlen Wasser baumeln, nachdem sie sicher gewesen war, dass die Wassertemperatur nicht zu kalt gewesen war.",
+     solutionHTML:`Sie ${vt('zog')} ihre bequemen Schuhe ${vt('aus')} und ${vt('ließ')} ihre nackten Füße im kühlen Wasser baumeln, nachdem sie sicher ${vp('gewesen war')}, dass die Wassertemperatur nicht zu kalt ${vp('gewesen war')}.`,
+     hint:"ausziehen (trennbar) → Präteritum: <b>zog … aus</b> | lassen → Präteritum: <b>ließ</b> | sein (nachdem/dass) → Plusquamperfekt: <b>gewesen war</b> (2x Vorvergangenheit)"},
+
+    // 8. Nachdem / sie / d__ / groß / See / umrunden,
+    //    sie / sich / auf / ein / alt / und / verrottet / Baumstumpf / setzen
+    //    und / d__ / wunderbar / Aussicht / genießen.
+    {id:'9-8',part:2,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[W('Nachdem sie den großen See'),VP('umrunden (PqP)'),W(', setzte sie sich auf einen alten und verrotteten Baumstumpf und'),VT('genießen'),W('die wunderbare Aussicht.')],
+     solution:"Nachdem sie den großen See umrundet hatte, setzte sie sich auf einen alten und verrotteten Baumstumpf und genoss die wunderbare Aussicht.",
+     solutionHTML:`Nachdem sie den großen See ${vp('umrundet hatte')}, ${vt('setzte')} sie sich auf einen alten und verrotteten Baumstumpf und ${vt('genoss')} die wunderbare Aussicht.`,
+     hint:"umrunden → Plusquamperfekt (nachdem): <b>umrundet hatte</b> | setzen → Präteritum: <b>setzte</b> | genießen → Präteritum: <b>genoss</b> (unregelmäßig!)"},
+
+    // 9. Da / es / spät / werden, sie / ihr / Sachen / zusammenpacken
+    //    und / sich / auf / d__ / lang / Heimweg / machen.
+    {id:'9-9',part:2,badges:[['Präteritum','praet']],
+     prompt:[W('Da es spät'),VT('werden'),W(', packte sie ihre Sachen'),VT('zusammenpacken'),W('und'),VT('machen'),W('sich auf den langen Heimweg.')],
+     solution:"Da es spät wurde, packte sie ihre Sachen zusammen und machte sich auf den langen Heimweg.",
+     solutionHTML:`Da es spät ${vt('wurde')}, ${vt('packte')} sie ihre Sachen ${vt('zusammen')} und ${vt('machte')} sich auf den langen Heimweg.`,
+     hint:"werden → Präteritum: <b>wurde</b> | zusammenpacken (trennbar) → <b>packte … zusammen</b> | machen → Präteritum: <b>machte</b> | 'da' (weil/als) → Nebensatz mit Verb ans Ende"},
+
+    // 10. Wenn / sie / Zuhause / ankommen, entdecken / sie / ärgerlich,
+    //     dass / sie / ihr / neu / und / teuer / Sonnenbrille / irgendwo / vergessen.
+    {id:'9-10',part:2,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
+     prompt:[W('Als sie zu Hause'),VT('ankommen'),W(', entdeckte sie ärgerlich, dass sie ihre neue und teure Sonnenbrille irgendwo'),VP('vergessen (PqP)'),W('.')],
+     solution:"Als sie zu Hause ankam, entdeckte sie ärgerlich, dass sie ihre neue und teure Sonnenbrille irgendwo vergessen hatte.",
+     solutionHTML:`Als sie zu Hause ${vt('ankam')}, ${vt('entdeckte')} sie ärgerlich, dass sie ihre neue und teure Sonnenbrille irgendwo ${vp('vergessen hatte')}.`,
+     hint:"ankommen → Präteritum: <b>ankam</b> | entdecken → Präteritum: <b>entdeckte</b> | vergessen → Plusquamperfekt im dass-Satz: <b>vergessen hatte</b> (das Vergessen war VOR dem Heimkommen) | Verb ans Ende im dass-Satz"},
+  ]
+}
+
+,
+{
+  id:'t10', emoji:'🍺', title:'Wochenende in München',
+  intro:`<span class="story-tag">🍺 GESCHICHTE</span>
+<p>Thomas fährt mit dem 49-Euro-Ticket von Hamburg nach München und erkundet die bayerische Hauptstadt übers Wochenende.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+
+    // 1. An/ letzte/ Wochenende/ Thomas/ entscheiden, zu/ fahren/nach/ München,
+    //    denn/ er/ schon/ lange/ d_/ berühmt/ Sehenswürdigkeiten/ d_/ Stadt/ sehen/ möchten
+    //    und/ interessieren/ für/ d_/ bayerische/ Kultur.
+    {id:'10-1',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[W('Am letzten Wochenende'),VP('entscheiden'),W('Thomas, nach München zu fahren, denn er'),VM('möchten'),W('schon lange die berühmten Sehenswürdigkeiten der Stadt'),VP('sehen'),W('und'),VP('sich interessieren'),W('für die bayerische Kultur.')],
+     solution:"Am letzten Wochenende hat Thomas entschieden, nach München zu fahren, denn er wollte schon lange die berühmten Sehenswürdigkeiten der Stadt sehen und hatte sich für die bayerische Kultur interessiert.",
+     solutionHTML:`Am letzten Wochenende ${vp('hat Thomas entschieden')}, nach München zu fahren, denn er ${vm('wollte')} schon lange die berühmten Sehenswürdigkeiten der Stadt sehen und ${vp('hatte sich für die bayerische Kultur interessiert')}.`,
+     hint:"entscheiden → <b>hat entschieden</b> | möchten → Präteritum: <b>wollte</b> | sich interessieren → Plusquamperfekt: <b>hatte sich interessiert</b> (Vorvergangenheit – er interessierte sich SCHON vorher)"},
+
+    // 2. ein/ günstig/ 49-Euro-Ticket/ er/ kaufen,
+    //    d_/ werden/ auch/ bezeichnen/ als/ Deutschland-Ticket,
+    //    mit/ d_/ er/ können/ unbegrenzt/ durch/ ganz/ Deutschland/ fahren.
+    //    Dies_/ Ticket/ ermöglichen/ (er), d_/ Strecke/ von/ Hamburg/ nach/ München/ kostengünstig/ zurücklegen.
+    {id:'10-2',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[VP('kaufen'),W('er ein günstiges 49-Euro-Ticket, das auch als Deutschland-Ticket'),VP('bezeichnen (Passiv)'),W(', mit dem er unbegrenzt durch ganz Deutschland fahren'),VM('können'),W('. Dieses Ticket'),VP('ermöglichen'),W('ihm, die Strecke von Hamburg nach München kostengünstig zurückzulegen.')],
+     solution:"Er hat ein günstiges 49-Euro-Ticket gekauft, das auch als Deutschland-Ticket bezeichnet wurde, mit dem er unbegrenzt durch ganz Deutschland fahren konnte. Dieses Ticket hat es ihm ermöglicht, die Strecke von Hamburg nach München kostengünstig zurückzulegen.",
+     solutionHTML:`Er ${vp('hat ein günstiges 49-Euro-Ticket gekauft')}, das auch als Deutschland-Ticket ${vp('bezeichnet wurde')}, mit dem er unbegrenzt durch ganz Deutschland fahren ${vm('konnte')}. Dieses Ticket ${vp('hat es ihm ermöglicht')}, die Strecke von Hamburg nach München kostengünstig zurückzulegen.`,
+     hint:"kaufen → <b>hat gekauft</b> | Passiv Perfekt: <b>bezeichnet wurde</b> | können → Präteritum: <b>konnte</b> | ermöglichen → <b>hat ermöglicht</b> | 'zurückzulegen' = trennbares Verb im Infinitiv"},
+
+    // 3. Sein/ Reise/ ganz/ einfach/ jedoch/ nicht, da/ müssen/ er/ zweimal/ umsteigen.
+    //    Sein/ d_/ erst/ Umstieg/ in/ Hannover, wo/ haben/ Thomas/ nur/ wenig/ Minute/ Zeit,
+    //    um/ zu/ erreichen/ d_/ Anschlusszug.
+    //    D_/ zweit/ Umstieg/ stattfinden/ in/ Nürnberg.
+    {id:'10-3',part:1,badges:[['Präteritum','praet'],['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('seine Reise jedoch nicht ganz einfach, da er zweimal umsteigen'),VM('müssen'),W('. Der erste Umstieg'),VT('sein'),W('in Hannover, wo Thomas nur wenige Minuten Zeit'),VT('haben'),W(', um den Anschlusszug zu erreichen. Der zweite Umstieg'),VP('stattfinden'),W('in Nürnberg.')],
+     solution:"Seine Reise war jedoch nicht ganz einfach, da er zweimal umsteigen musste. Der erste Umstieg war in Hannover, wo Thomas nur wenige Minuten Zeit hatte, um den Anschlusszug zu erreichen. Der zweite Umstieg fand in Nürnberg statt.",
+     solutionHTML:`Seine Reise ${vt('war')} jedoch nicht ganz einfach, da er zweimal umsteigen ${vm('musste')}. Der erste Umstieg ${vt('war')} in Hannover, wo Thomas nur wenige Minuten Zeit ${vt('hatte')}, um den Anschlusszug zu erreichen. Der zweite Umstieg ${vp('fand in Nürnberg statt')}.`,
+     hint:"sein → Präteritum: <b>war</b> | müssen → Präteritum: <b>musste</b> | haben → Präteritum: <b>hatte</b> | stattfinden (trennbar) → Perfekt: <b>fand … statt</b>"},
+
+    // 4. Trotz/ Umstände/ Thomas/ froh/sein, ein/ so/ preiswert/ und/ flexible/ Reisemöglichkeit/ finden/ zu/ haben.
+    //    Als/ Thomas/ankommen/ in/ München, er/suchen/ ein/ preiswert/ Hotel.
+    //    Er/ finden/ ein/ einfach/ Zimmer/ in/ ein/ klein aber/ gemütlich/ Hotel/ in/ Nähe/ d_/ Hauptbahnhof.
+    {id:'10-4',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Trotz der Umstände'),VT('sein'),W('Thomas froh, eine so preiswerte und flexible Reisemöglichkeit'),VP('finden'),W('zu haben. Als Thomas in München'),VP('ankommen'),W(', suchte er ein preiswertes Hotel. Er'),VP('finden'),W('ein einfaches Zimmer in einem kleinen, aber gemütlichen Hotel in der Nähe des Hauptbahnhofs.')],
+     solution:"Trotz der Umstände war Thomas froh, eine so preiswerte und flexible Reisemöglichkeit gefunden zu haben. Als Thomas in München ankam, suchte er ein preiswertes Hotel. Er fand ein einfaches Zimmer in einem kleinen, aber gemütlichen Hotel in der Nähe des Hauptbahnhofs.",
+     solutionHTML:`Trotz der Umstände ${vt('war')} Thomas froh, eine so preiswerte und flexible Reisemöglichkeit ${vp('gefunden zu haben')}. Als Thomas in München ${vt('ankam')}, ${vt('suchte')} er ein preiswertes Hotel. Er ${vt('fand')} ein einfaches Zimmer in einem kleinen, aber gemütlichen Hotel in der Nähe des Hauptbahnhofs.`,
+     hint:"sein → Präteritum: <b>war</b> | gefunden zu haben = Infinitiv Perfekt (nach 'froh') | ankommen → Präteritum: <b>ankam</b> | suchen → <b>suchte</b> | finden → Präteritum: <b>fand</b>"},
+
+    // 5. Zimmer/ haben/ ein/ schlicht/ Einrichtung, aber/ d_/ sein/ (er)/ egal,
+    //    da/ werden/ er/ sowieso/ d_/ meist/ Zeit/ unterwegs/ sein.
+    //    Er/ sich niederlassen/ in/ Zimmer/ und/ auspacken/ sein/ wenig/ Sachen.
+    //    Danach/ an/ Tag/ verlassen/ Thomas/ d_/ Hotel/ früh, um/ sein/ Erkundungstour/ zu/ beginnen.
+    //    Er/ lassen/ sein/ schwer/ Taschen/ in/ Hotel/ und/ mitnehmen/ nur/ ein/ klein/ Rucksack.
+    {id:'10-5',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Das Zimmer'),VT('haben'),W('eine schlichte Einrichtung, aber das'),VT('sein'),W('ihm egal, da er sowieso die meiste Zeit unterwegs'),VP('werden sein'),W('. Er'),VP('sich niederlassen'),W('im Zimmer und'),VP('auspacken'),W('seine wenigen Sachen. Danach'),VP('verlassen'),W('Thomas das Hotel früh, um seine Erkundungstour zu beginnen. Er'),VP('lassen'),W('seine schweren Taschen im Hotel und'),VP('mitnehmen'),W('nur einen kleinen Rucksack.')],
+     solution:"Das Zimmer hatte eine schlichte Einrichtung, aber das war ihm egal, da er sowieso die meiste Zeit unterwegs sein würde. Er ließ sich im Zimmer nieder und packte seine wenigen Sachen aus. Danach verließ Thomas das Hotel früh, um seine Erkundungstour zu beginnen. Er ließ seine schweren Taschen im Hotel und nahm nur einen kleinen Rucksack mit.",
+     solutionHTML:`Das Zimmer ${vt('hatte')} eine schlichte Einrichtung, aber das ${vt('war')} ihm egal, da er sowieso die meiste Zeit unterwegs sein ${vt('würde')}. Er ${vt('ließ')} sich im Zimmer ${vt('nieder')} und ${vp('packte seine wenigen Sachen aus')}. Danach ${vt('verließ')} Thomas das Hotel früh, um seine Erkundungstour zu beginnen. Er ${vt('ließ')} seine schweren Taschen im Hotel und ${vp('nahm nur einen kleinen Rucksack mit')}.`,
+     hint:"haben → Präteritum: <b>hatte</b> | sein → Präteritum: <b>war / würde</b> | sich niederlassen (trennbar) → Präteritum: <b>ließ sich nieder</b> | auspacken (trennbar) → Perfekt: <b>packte aus</b> | verlassen → Präteritum: <b>verließ</b> | mitnehmen (trennbar) → Perfekt: <b>nahm mit</b>"},
+
+    // 6. Zuerst/ besuchen/ Thomas/ d_/ berühmt/ Marienplatz,
+    //    wo/ er/ genießen/ d_/ wunderschöne/ Blick/ auf/ d_/ alt/ Rathaus.
+    //    Anschließend/ Thomas/ zum/ Englischen/ Garten/ gehen,
+    //    wo/ er/ sich setzen/ auf/ ein/ Bank/ und/ genießen/ d_/ Ruhe.
+    {id:'10-6',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Zuerst'),VP('besuchen'),W('Thomas den berühmten Marienplatz, wo er den wunderschönen Blick auf das alte Rathaus'),VP('genießen'),W('. Anschließend'),VP('gehen'),W('Thomas zum Englischen Garten, wo er sich auf eine Bank'),VP('setzen'),W('und die Ruhe'),VP('genießen'),W('.')],
+     solution:"Zuerst hat Thomas den berühmten Marienplatz besucht, wo er den wunderschönen Blick auf das alte Rathaus genossen hat. Anschließend ist Thomas zum Englischen Garten gegangen, wo er sich auf eine Bank gesetzt und die Ruhe genossen hat.",
+     solutionHTML:`Zuerst ${vp('hat Thomas den berühmten Marienplatz besucht')}, wo er den wunderschönen Blick auf das alte Rathaus ${vp('genossen hat')}. Anschließend ${vp('ist Thomas zum Englischen Garten gegangen')}, wo er sich auf eine Bank ${vp('gesetzt')} und die Ruhe ${vp('genossen hat')}.`,
+     hint:"besuchen → <b>hat besucht</b> | genießen → Perfekt im Rel.-Satz: <b>genossen hat</b> | gehen → <b>ist gegangen</b> (Bewegung) | sich setzen → <b>hat sich gesetzt</b>"},
+
+    // 7. Thomas/ auch/ vorhaben, einig/ Museen/ zu/ besuchen,
+    //    und/ sich lassen/ nicht/ davon/ abhalten,
+    //    trotz/ d_/ leicht/ Regen/ weiter/ d_/ Stadt/ zu/ erkunden.
+    {id:'10-7',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Thomas'),VP('vorhaben'),W('auch, einige Museen zu besuchen, und'),VP('sich abhalten lassen'),W('nicht davon, trotz des leichten Regens weiter die Stadt zu erkunden.')],
+     solution:"Thomas hatte auch vorgehabt, einige Museen zu besuchen, und hat sich nicht davon abhalten lassen, trotz des leichten Regens weiter die Stadt zu erkunden.",
+     solutionHTML:`Thomas ${vp('hatte auch vorgehabt')}, einige Museen zu besuchen, und ${vp('hat sich nicht davon abhalten lassen')}, trotz des leichten Regens weiter die Stadt zu erkunden.`,
+     hint:"vorhaben (trennbar) → Plusquamperfekt: <b>hatte vorgehabt</b> (Plan bestand schon vorher) | sich abhalten lassen → <b>hat sich … abhalten lassen</b> | 'trotz + Genitiv': des leichten Regens"},
+
+    // 8. An/ Abend/ Thomas/ in/ ein/ traditionell/ bayerisch/ Restaurant/ gehen,
+    //    wo/ er/ bestellen/ ein/ lecker/ Abendessen.
+    //    Er/ sich lassen/ ein/ groß/ Glas/ Bier/ bringen
+    //    und/ d_/ bayerisch/ Atmosphäre/ genießen.
+    {id:'10-8',part:2,badges:[['Perfekt','perf']],
+     prompt:[W('Am Abend'),VP('gehen'),W('Thomas in ein traditionelles bayerisches Restaurant, wo er ein leckeres Abendessen'),VP('bestellen'),W('. Er'),VP('sich bringen lassen'),W('ein großes Glas Bier und'),VP('genießen'),W('die bayerische Atmosphäre.')],
+     solution:"Am Abend ist Thomas in ein traditionelles bayerisches Restaurant gegangen, wo er ein leckeres Abendessen bestellt hat. Er hat sich ein großes Glas Bier bringen lassen und die bayerische Atmosphäre genossen.",
+     solutionHTML:`Am Abend ${vp('ist Thomas in ein traditionelles bayerisches Restaurant gegangen')}, wo er ein leckeres Abendessen ${vp('bestellt hat')}. Er ${vp('hat sich ein großes Glas Bier bringen lassen')} und die bayerische Atmosphäre ${vp('genossen')}.`,
+     hint:"gehen → <b>ist gegangen</b> (Bewegung) | bestellen → Perfekt im Rel.-Satz: <b>bestellt hat</b> | sich bringen lassen → <b>hat sich … bringen lassen</b> | genießen → <b>hat genossen</b>"},
+
+    // 9. Thomas/ an/ Sonntag/ früh/ aufstehen/ müssen,
+    //    um/ rechtzeitig/ d_/ Zug/ zurück/ nach/ Hamburg/ zu/ nehmen.
+    //    Er/ zurücklassen/ d_/ Hotelzimmer/ in/ ein/ ordentlich/ Zustand
+    //    und/ sich begeben/ auf/ d_/ Weg/ zu/ Bahnhof.
+    {id:'10-9',part:2,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
+     prompt:[W('Thomas'),VM('müssen'),W('am Sonntag früh aufstehen, um rechtzeitig den Zug zurück nach Hamburg zu nehmen. Er'),VP('zurücklassen'),W('das Hotelzimmer in einem ordentlichen Zustand und'),VP('sich begeben'),W('auf den Weg zum Bahnhof.')],
+     solution:"Thomas musste am Sonntag früh aufstehen, um rechtzeitig den Zug zurück nach Hamburg zu nehmen. Er hat das Hotelzimmer in einem ordentlichen Zustand zurückgelassen und hat sich auf den Weg zum Bahnhof begeben.",
+     solutionHTML:`Thomas ${vm('musste')} am Sonntag früh aufstehen, um rechtzeitig den Zug zurück nach Hamburg zu nehmen. Er ${vp('hat das Hotelzimmer in einem ordentlichen Zustand zurückgelassen')} und ${vp('hat sich auf den Weg zum Bahnhof begeben')}.`,
+     hint:"müssen → Präteritum: <b>musste</b> | zurücklassen (trennbar) → Perfekt: <b>hat zurückgelassen</b> | sich begeben → <b>hat sich begeben</b> | 'um … zu + Infinitiv' bleibt unverändert"},
+
+    // 10. Obwohl/ sein/ d_/ Reise/ anstrengend,
+    //     Thomas/ sein/ froh, dass/ sehen und erleben/ er/ so/ viel/ von/ München.
+    {id:'10-10',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Obwohl die Reise anstrengend'),VT('sein'),W(','),VT('sein'),W('Thomas froh, dass er so viel von München'),VP('sehen'),W('und'),VP('erleben'),W('hatte.')],
+     solution:"Obwohl die Reise anstrengend war, war Thomas froh, dass er so viel von München gesehen und erlebt hatte.",
+     solutionHTML:`Obwohl die Reise anstrengend ${vt('war')}, ${vt('war')} Thomas froh, dass er so viel von München ${vp('gesehen')} und ${vp('erlebt hatte')}.`,
+     hint:"sein → Präteritum: <b>war</b> (2x) | sehen/erleben → Plusquamperfekt im dass-Satz: <b>gesehen und erlebt hatte</b> (er sah/erlebte WÄHREND der Reise, die jetzt vorbei ist) | Verb ans Ende im dass-Satz"},
+  ]
+}
+
+,
+{
+  id:'t11', emoji:'⚽', title:'Bayern München FC',
+  intro:`<span class="story-tag">⚽ TEXT</span>
+<p>Bayern München – einer der bekanntesten Fußballvereine der Welt und die Allianz Arena als modernes Wahrzeichen des europäischen Fußballs.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+</div>`,
+  exercises:[
+
+    // 1. Bayern München / sein / ein/ d___/ bekanntest / Fußballverein / d___ Welt.
+    //    D___ Verein / gründen / in Jahr 1900
+    //    und / haben / sein / Sitz / in München, Deutschland.
+    {id:'11-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Bayern München einer der bekanntesten Fußballvereine der Welt.'),VP('gründen (Passiv)'),W('der Verein im Jahr 1900 und'),VT('haben'),W('seinen Sitz in München, Deutschland.')],
+     solution:"Bayern München war einer der bekanntesten Fußballvereine der Welt. Der Verein wurde im Jahr 1900 gegründet und hatte seinen Sitz in München, Deutschland.",
+     solutionHTML:`Bayern München ${vt('war')} einer der bekanntesten Fußballvereine der Welt. Der Verein ${vp('wurde im Jahr 1900 gegründet')} und ${vt('hatte')} seinen Sitz in München, Deutschland.`,
+     hint:"sein → Präteritum: <b>war</b> | gründen → Passiv Perfekt: <b>wurde gegründet</b> | haben → Präteritum: <b>hatte</b> | 'einer der bekanntesten' = Genitiv Pl."},
+
+    // 2. Bayern / sein / d___/ erfolgreichste / Klub / in Deutschland
+    //    und / gewinnen / viele / Titel / in/ d___ Bundesliga, in DFB-Pokal
+    //    und in / d___/ UEFA Champions League.
+    {id:'11-2',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Bayern der erfolgreichste Klub in Deutschland und'),VP('gewinnen'),W('viele Titel in der Bundesliga, im DFB-Pokal und in der UEFA Champions League.')],
+     solution:"Bayern war der erfolgreichste Klub in Deutschland und hat viele Titel in der Bundesliga, im DFB-Pokal und in der UEFA Champions League gewonnen.",
+     solutionHTML:`Bayern ${vt('war')} der erfolgreichste Klub in Deutschland und ${vp('hat viele Titel in der Bundesliga, im DFB-Pokal und in der UEFA Champions League gewonnen')}.`,
+     hint:"sein → Präteritum: <b>war</b> | gewinnen → Perfekt: <b>hat gewonnen</b> | Superlativ: der erfolgreichst<b>e</b> Klub | 'im DFB-Pokal' = Dat. (in + dem)"},
+
+    // 3. D___/ Spitzname / d___/ Verein / sein / „Die Roten",
+    //    weil / spielen / d___ Mannschaft / traditionell / in / rot / Trikot.
+    {id:'11-3',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('der Spitzname des Vereins'),W('"Die Roten", weil die Mannschaft traditionell in roten Trikots'),VP('spielen'),W('.')],
+     solution:'Der Spitzname des Vereins war "Die Roten", weil die Mannschaft traditionell in roten Trikots gespielt hat.',
+     solutionHTML:`Der Spitzname des Vereins ${vt('war')} "Die Roten", weil die Mannschaft traditionell in roten Trikots ${vp('gespielt hat')}.`,
+     hint:"sein → Präteritum: <b>war</b> | spielen → Perfekt im weil-Satz: <b>gespielt hat</b> | 'in roten Trikots' = Dat. | Verb ans Ende im weil-Satz"},
+
+    // 4. Es/ in / d___ / Geschichte / d___ Verein / geben / viel/ berühmst / Spieler /
+    //    wie Franz Beckenbauer, Oliver Kahn
+    //    und in/ d___/ letzte_ / Jahre / Robert Lewandowski und Manuel Neuer.
+    {id:'11-4',part:1,badges:[['Präteritum','praet']],
+     prompt:[VT('geben'),W('es in der Geschichte des Vereins viele berühmte Spieler wie Franz Beckenbauer, Oliver Kahn und in den letzten Jahren Robert Lewandowski und Manuel Neuer.')],
+     solution:"Es gab in der Geschichte des Vereins viele berühmte Spieler wie Franz Beckenbauer, Oliver Kahn und in den letzten Jahren Robert Lewandowski und Manuel Neuer.",
+     solutionHTML:`Es ${vt('gab')} in der Geschichte des Vereins viele berühmte Spieler wie Franz Beckenbauer, Oliver Kahn und in den letzten Jahren Robert Lewandowski und Manuel Neuer.`,
+     hint:"es gibt → Präteritum: <b>gab</b> | 'in der Geschichte des Vereins' = Genitiv | 'in den letzten Jahren' = Dat. Pl."},
+
+    // 5. Bayern / sein / auch/ für/ sein/ offensiv / Spielweise /
+    //    und d___/ beste / Jugendarbeit / bekannt.
+    {id:'11-5',part:1,badges:[['Präteritum','praet']],
+     prompt:[VT('sein'),W('Bayern auch für seine offensive Spielweise und die beste Jugendarbeit bekannt.')],
+     solution:"Bayern war auch für seine offensive Spielweise und die beste Jugendarbeit bekannt.",
+     solutionHTML:`Bayern ${vt('war')} auch für seine offensive Spielweise und die beste Jugendarbeit bekannt.`,
+     hint:"sein → Präteritum: <b>war</b> | 'für seine offensive Spielweise' = Akk. | Superlativ: die best<b>e</b> Jugendarbeit"},
+
+    // 6. Bayern München / spielen / sein / Heimspiel / in/ d___/ Allianz Arena,
+    //    ein/ d___ / modernst / Stadion / d___ Welt.
+    //    D___ Stadion / eröffnen / 2005
+    //    und / bieten / Platz für etwa 75.000 / Zuschauer.
+    {id:'11-6',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[VP('spielen'),W('Bayern München seine Heimspiele in der Allianz Arena, einem der modernsten Stadien der Welt.'),VP('eröffnen (Passiv)'),W('das Stadion 2005 und'),VP('bieten'),W('Platz für etwa 75.000 Zuschauer.')],
+     solution:"Bayern München hat seine Heimspiele in der Allianz Arena, einem der modernsten Stadien der Welt, gespielt. Das Stadion wurde 2005 eröffnet und hat Platz für etwa 75.000 Zuschauer geboten.",
+     solutionHTML:`Bayern München ${vp('hat seine Heimspiele in der Allianz Arena, einem der modernsten Stadien der Welt, gespielt')}. Das Stadion ${vp('wurde 2005 eröffnet')} und ${vp('hat Platz für etwa 75.000 Zuschauer geboten')}.`,
+     hint:"spielen → <b>hat gespielt</b> | eröffnen → Passiv Perfekt: <b>wurde eröffnet</b> | bieten → <b>hat geboten</b> | 'einem der modernsten Stadien' = Apposition im Dat."},
+
+    // 7. Ein / besondere / Eigenschaft / d___/ Allianz Arena / sein / d___/ Außenfassade,
+    //    d___ / ihr / Farbe / ändern / können.
+    //    Wenn Bayern München / spielen, leuchten / d___ Stadion / in/ rot.
+    {id:'11-7',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
+     prompt:[VT('sein'),W('eine besondere Eigenschaft der Allianz Arena die Außenfassade, die ihre Farbe ändern'),VM('können'),W('. Wenn Bayern München'),VP('spielen'),W(', leuchtete das Stadion in Rot.')],
+     solution:"Eine besondere Eigenschaft der Allianz Arena war die Außenfassade, die ihre Farbe ändern konnte. Wenn Bayern München gespielt hat, leuchtete das Stadion in Rot.",
+     solutionHTML:`Eine besondere Eigenschaft der Allianz Arena ${vt('war')} die Außenfassade, die ihre Farbe ändern ${vm('konnte')}. Wenn Bayern München ${vp('gespielt hat')}, ${vt('leuchtete')} das Stadion in Rot.`,
+     hint:"sein → Präteritum: <b>war</b> | können → Präteritum: <b>konnte</b> | spielen → Perfekt im wenn-Satz: <b>gespielt hat</b> | leuchten → Präteritum: <b>leuchtete</b>"},
+
+    // 8. Werden/ d___/ Allianz Arena / nutzen / nicht nur für / Spiel / von Bayern München,
+    //    sondern auch für groß/ international / Turnier.
+    //    Sie / sein / ein / Spielort / bei / d___/ Weltmeisterschaft 2006
+    //    und d___ Europameisterschaft 2020.
+    {id:'11-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[VP('nutzen (Passiv)'),W('die Allianz Arena nicht nur für Spiele von Bayern München, sondern auch für große internationale Turniere.'),VT('sein'),W('sie ein Spielort bei der Weltmeisterschaft 2006 und der Europameisterschaft 2020.')],
+     solution:"Die Allianz Arena wurde nicht nur für Spiele von Bayern München, sondern auch für große internationale Turniere genutzt. Sie war ein Spielort bei der Weltmeisterschaft 2006 und der Europameisterschaft 2020.",
+     solutionHTML:`Die Allianz Arena ${vp('wurde nicht nur für Spiele von Bayern München, sondern auch für große internationale Turniere genutzt')}. Sie ${vt('war')} ein Spielort bei der Weltmeisterschaft 2006 und der Europameisterschaft 2020.`,
+     hint:"nutzen → Passiv Perfekt: <b>wurde genutzt</b> | sein → Präteritum: <b>war</b> | 'nicht nur … sondern auch' = zweiteilige Konjunktion"},
+
+    // 9. Mit/ sein/ ihr /einzigartig / Architektur / und modern / Technologie /
+    //    d___ / Allianz Arena/ ein / Wahrzeichen / d___/ europäisch / Fußball.
+    {id:'11-9',part:2,badges:[['Präteritum','praet']],
+     prompt:[W('Mit ihrer einzigartigen Architektur und modernen Technologie'),VT('sein'),W('die Allianz Arena ein Wahrzeichen des europäischen Fußballs.')],
+     solution:"Mit ihrer einzigartigen Architektur und modernen Technologie war die Allianz Arena ein Wahrzeichen des europäischen Fußballs.",
+     solutionHTML:`Mit ihrer einzigartigen Architektur und modernen Technologie ${vt('war')} die Allianz Arena ein Wahrzeichen des europäischen Fußballs.`,
+     hint:"sein → Präteritum: <b>war</b> | 'mit + Dat.': ihrer einzigartigen Architektur | 'des europäischen Fußballs' = Genitiv"},
+
+    // 10. Bayern München und d___ Allianz Arena / sein / ein/ wichtigste / Teil /
+    //     d___/ deutsch / Fußballgeschichte /
+    //     und / begeistern / Millionen von / Fans / auf/ d___ ganz / Welt.
+    {id:'11-10',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Bayern München und die Allianz Arena ein wichtigster Teil der deutschen Fußballgeschichte und'),VP('begeistern'),W('Millionen von Fans auf der ganzen Welt.')],
+     solution:"Bayern München und die Allianz Arena waren ein wichtigster Teil der deutschen Fußballgeschichte und haben Millionen von Fans auf der ganzen Welt begeistert.",
+     solutionHTML:`Bayern München und die Allianz Arena ${vt('waren')} ein wichtigster Teil der deutschen Fußballgeschichte und ${vp('haben Millionen von Fans auf der ganzen Welt begeistert')}.`,
+     hint:"sein (Pl.) → Präteritum: <b>waren</b> | begeistern → <b>haben begeistert</b> | 'der deutschen Fußballgeschichte' = Genitiv | 'auf der ganzen Welt' = Dat."},
+  ]
+}
+
+,
+{
+  id:'t12', emoji:'🏰', title:'Stadtrundfahrt Dresden',
+  intro:`<span class="story-tag">🏰 GESCHICHTE</span>
+<p>Anna und Paul verbringen einen langen und abwechslungsreichen Tag in Dresden – Frauenkirche, Zwinger, Grünes Gewölbe, Semperoper und die lebhafte Neustadt.</p>
+<div class="tense-rule">
+  <p><span class="pill pill-perf">Perfekt</span> → Vollverben</p>
+  <p><span class="pill pill-praet">Präteritum</span> → <em>sein, haben</em></p>
+  <p><span class="pill pill-modal">Präteritum</span> → Modalverben</p>
+  <p style="margin-top:6px;font-size:0.78rem;color:#c0392b;font-weight:700;">⚠️ Achtung: Partizipialattribute, Relativsätze, Genitiv – anspruchsvolles Niveau!</p>
+</div>`,
+  exercises:[
+
+    // 1. Anna und Paul / verbringen / ein / lang / und abwechslungsreich / Tag / in / Dresden.
+    //    Bei / Frühstück / genießen / Paar / d_ / frisch / gebacken / Brötchen,
+    //    d_ / sein / mit / lecker / Marmeladen / bestrichen
+    //    und trinken / frisch / und / aromatisch / Kaffee.
+    {id:'12-1',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[VP('verbringen'),W('Anna und Paul einen langen und abwechslungsreichen Tag in Dresden. Beim Frühstück'),VP('genießen'),W('das Paar die frisch gebackenen Brötchen, die mit leckeren Marmeladen'),VP('bestreichen (Passiv)'),VT('sein'),W(', und'),VP('trinken'),W('frischen und aromatischen Kaffee.')],
+     solution:"Anna und Paul haben einen langen und abwechslungsreichen Tag in Dresden verbracht. Beim Frühstück hat das Paar die frisch gebackenen Brötchen, die mit leckeren Marmeladen bestrichen worden waren, genossen und frischen und aromatischen Kaffee getrunken.",
+     solutionHTML:`Anna und Paul ${vp('haben einen langen und abwechslungsreichen Tag in Dresden verbracht')}. Beim Frühstück ${vp('hat das Paar die frisch gebackenen Brötchen, die mit leckeren Marmeladen bestrichen worden waren, genossen')} und frischen und aromatischen Kaffee ${vp('getrunken')}.`,
+     hint:"verbringen → <b>haben verbracht</b> | genießen → <b>hat genossen</b> | bestreichen → Passiv Plusquamperfekt im Rel.-Satz: <b>bestrichen worden waren</b> | trinken → <b>haben getrunken</b>"},
+
+    // 2. Nach / Frühstück / sich machen / sie / auf / d__ / Weg / zu / bekannt / Frauenkirche.
+    //    D_ / gotisch / Kirche, deren / sich erheben / majestätisch / Kuppel / über / d__ / Dächer / Dresdens,
+    //    bieten / ein / atemberaubend / Ausblick / auf / d__ / Altstadt.
+    {id:'12-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Nach dem Frühstück'),VP('sich machen'),W('sie sich auf den Weg zur bekannten Frauenkirche. Die gotische Kirche, deren majestätische Kuppel sich über die Dächer Dresdens'),VP('erheben'),W(','),VP('bieten'),W('einen atemberaubenden Ausblick auf die Altstadt.')],
+     solution:"Nach dem Frühstück haben sie sich auf den Weg zur bekannten Frauenkirche gemacht. Die gotische Kirche, deren majestätische Kuppel sich über die Dächer Dresdens erhoben hatte, hat einen atemberaubenden Ausblick auf die Altstadt geboten.",
+     solutionHTML:`Nach dem Frühstück ${vp('haben sie sich auf den Weg zur bekannten Frauenkirche gemacht')}. Die gotische Kirche, deren majestätische Kuppel sich über die Dächer Dresdens ${vp('erhoben hatte')}, ${vp('hat einen atemberaubenden Ausblick auf die Altstadt geboten')}.`,
+     hint:"sich machen → <b>haben sich gemacht</b> | erheben → Plusquamperfekt im Rel.-Satz: <b>erhoben hatte</b> (Kuppel existierte schon vorher) | bieten → <b>hat geboten</b> | 'deren' = Genitiv-Relativpronomen (f.)"},
+
+    // 3. Anna / sein / besonders / von / d__ / kunstvoll__ / Verzierungen / in / Inneren / d__ / Kirche / fasziniert,
+    //    während / Paul / sehr / schätzen / d__ / Aussicht / von / d_ / Kuppel.
+    {id:'12-3',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[VT('sein'),W('Anna besonders von den kunstvollen Verzierungen im Inneren der Kirche fasziniert, während Paul die Aussicht von der Kuppel sehr'),VP('schätzen'),W('.')],
+     solution:"Anna war besonders von den kunstvollen Verzierungen im Inneren der Kirche fasziniert, während Paul die Aussicht von der Kuppel sehr geschätzt hat.",
+     solutionHTML:`Anna ${vt('war')} besonders von den kunstvollen Verzierungen im Inneren der Kirche fasziniert, während Paul die Aussicht von der Kuppel sehr ${vp('geschätzt hat')}.`,
+     hint:"sein → Präteritum: <b>war</b> | schätzen → Perfekt im während-Satz: <b>geschätzt hat</b> | 'von den kunstvollen Verzierungen' = Dat. Pl. | 'im Inneren der Kirche' = Genitiv"},
+
+    // 4. Sie / in / Anschluss / besuchen / d__ / Zwinger,
+    //    d__ / für / sein / prächtig / Architektur / und / sein / beeindruckend / Sammlungen / bekannt / sein.
+    //    Besonders / ziehen / d_ / Gemäldegalerie Alte Meister / Anna und Paul / in / ihr / Bann.
+    {id:'12-4',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Im Anschluss'),VP('besuchen'),W('sie den Zwinger, der für seine prächtige Architektur und seine beeindruckenden Sammlungen bekannt'),VT('sein'),W('. Besonders'),VP('ziehen'),W('die Gemäldegalerie Alte Meister Anna und Paul in ihren Bann.')],
+     solution:"Im Anschluss haben sie den Zwinger besucht, der für seine prächtige Architektur und seine beeindruckenden Sammlungen bekannt war. Besonders hat die Gemäldegalerie Alte Meister Anna und Paul in ihren Bann gezogen.",
+     solutionHTML:`Im Anschluss ${vp('haben sie den Zwinger besucht')}, der für seine prächtige Architektur und seine beeindruckenden Sammlungen bekannt ${vt('war')}. Besonders ${vp('hat die Gemäldegalerie Alte Meister Anna und Paul in ihren Bann gezogen')}.`,
+     hint:"besuchen → <b>haben besucht</b> | sein (im Rel.-Satz) → Präteritum: <b>war</b> | ziehen → <b>hat gezogen</b> | Inversion nach 'Besonders': hat die Galerie …"},
+
+    // 5. Sein / d_ / viel / berühmt / Werke / von / Künstler / wie / Raphael / und Rembrandt /
+    //    sorgfältig / ausstellen / und bieten / faszinierende / Einblicke / in / d_ / Kunstgeschichte.
+    {id:'12-5',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[VT('sein'),W('die vielen berühmten Werke von Künstlern wie Raphael und Rembrandt sorgfältig'),VP('ausstellen (Passiv)'),W('und'),VP('bieten'),W('faszinierende Einblicke in die Kunstgeschichte.')],
+     solution:"Die vielen berühmten Werke von Künstlern wie Raphael und Rembrandt waren sorgfältig ausgestellt worden und haben faszinierende Einblicke in die Kunstgeschichte geboten.",
+     solutionHTML:`Die vielen berühmten Werke von Künstlern wie Raphael und Rembrandt ${vp('waren sorgfältig ausgestellt worden')} und ${vp('haben faszinierende Einblicke in die Kunstgeschichte geboten')}.`,
+     hint:"ausstellen → Passiv Plusquamperfekt: <b>waren ausgestellt worden</b> | bieten → Perfekt: <b>haben geboten</b> | 'von Künstlern' = Dat. Pl. | Partizipialattribut: sorgfältig ausgestellt"},
+
+    // 6. Besonders / sein / hervorzuheben / auch / d__ / Grüne Gewölbe,
+    //    d__ / sich befinden / in / Residenzschloss.
+    //    In / dies_ / Museum / Anna / und / Paul / bewundern / ein / außergewöhnlich / Sammlung /
+    //    von / Juwelen und kunstvoll / gestaltet / Schatzstücken.
+    {id:'12-6',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Besonders'),VP('hervorzuheben sein'),W('auch das Grüne Gewölbe, das sich im Residenzschloss'),VP('befinden'),W('. In diesem Museum'),VP('bewundern'),W('Anna und Paul eine außergewöhnliche Sammlung von Juwelen und kunstvoll gestalteten Schatzstücken.')],
+     solution:"Besonders hervorzuheben war auch das Grüne Gewölbe, das sich im Residenzschloss befunden hatte. In diesem Museum haben Anna und Paul eine außergewöhnliche Sammlung von Juwelen und kunstvoll gestalteten Schatzstücken bewundert.",
+     solutionHTML:`Besonders hervorzuheben ${vt('war')} auch das Grüne Gewölbe, das sich im Residenzschloss ${vp('befunden hatte')}. In diesem Museum ${vp('haben Anna und Paul eine außergewöhnliche Sammlung von Juwelen und kunstvoll gestalteten Schatzstücken bewundert')}.`,
+     hint:"sein → Präteritum: <b>war</b> | sich befinden → Plusquamperfekt: <b>befunden hatte</b> (das Gewölbe war dort schon vor ihrem Besuch) | bewundern → <b>haben bewundert</b> | Partizipialattribut: kunstvoll gestaltet<b>en</b> Schatzstücken"},
+
+    // 7. D__ / beeindruckend / Exponate, d_ / sein / aufwendig / verziert
+    //    und in / glanzvollen / Vitrinen / präsentiert,
+    //    bieten / ein__ / Einblick / in / d__ / opulent__ / Kunst / und / d__ / Reichtum / vergangen_ / Zeiten.
+    {id:'12-7',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
+     prompt:[W('Die beeindruckenden Exponate, die aufwendig verziert und in glanzvollen Vitrinen präsentiert'),VT('sein'),W(','),VP('bieten'),W('einen Einblick in die opulente Kunst und den Reichtum vergangener Zeiten.')],
+     solution:"Die beeindruckenden Exponate, die aufwendig verziert und in glanzvollen Vitrinen präsentiert worden waren, haben einen Einblick in die opulente Kunst und den Reichtum vergangener Zeiten geboten.",
+     solutionHTML:`Die beeindruckenden Exponate, die aufwendig verziert und in glanzvollen Vitrinen präsentiert ${vp('worden waren')}, ${vp('haben einen Einblick in die opulente Kunst und den Reichtum vergangener Zeiten geboten')}.`,
+     hint:"sein → Passiv Plusquamperfekt im Rel.-Satz: <b>worden waren</b> (verziert und präsentiert worden waren) | bieten → <b>haben geboten</b> | 'vergangener Zeiten' = Genitiv Pl."},
+
+    // 8. Zu / Mittagszeit / einkehren / Anna und Paul / in / d__ / traditionsreich / Watzke Gasthaus.
+    //    Dort / bestellen / sie / d__ / schmackhaft und knusprig / Haxen
+    //    und genießen / erfrischend / Bier / von / Haus.
+    //    An / Nachmittag / besichtigen / sie / d__ / Semperoper / von / außen.
+    //    D__ / beeindruckend / Gebäude / mit / sein / prächtig / Fassade / begeistern / Anna / und / Paul.
+    {id:'12-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Zur Mittagszeit'),VP('einkehren'),W('Anna und Paul im traditionsreichen Watzke Gasthaus. Dort'),VP('bestellen'),W('sie die schmackhaften und knusprigen Haxen und'),VP('genießen'),W('erfrischendes Bier vom Haus. Am Nachmittag'),VP('besichtigen'),W('sie die Semperoper von außen.'),VT('sein'),W('das beeindruckende Gebäude mit seiner prächtigen Fassade, das Anna und Paul'),VP('begeistern'),W('.')],
+     solution:"Zur Mittagszeit sind Anna und Paul im traditionsreichen Watzke Gasthaus eingekehrt. Dort haben sie die schmackhaften und knusprigen Haxen bestellt und erfrischendes Bier vom Haus genossen. Am Nachmittag haben sie die Semperoper von außen besichtigt. Das beeindruckende Gebäude mit seiner prächtigen Fassade war es, das Anna und Paul begeistert hat.",
+     solutionHTML:`Zur Mittagszeit ${vp('sind Anna und Paul im traditionsreichen Watzke Gasthaus eingekehrt')}. Dort ${vp('haben sie die schmackhaften und knusprigen Haxen bestellt')} und erfrischendes Bier vom Haus ${vp('genossen')}. Am Nachmittag ${vp('haben sie die Semperoper von außen besichtigt')}. Das beeindruckende Gebäude mit seiner prächtigen Fassade ${vt('war')} es, das Anna und Paul ${vp('begeistert hat')}.`,
+     hint:"einkehren → <b>sind eingekehrt</b> | bestellen → <b>haben bestellt</b> | genießen → <b>haben genossen</b> | besichtigen → <b>haben besichtigt</b> | sein → Präteritum: <b>war</b> | begeistern → <b>hat begeistert</b>"},
+
+    // 9. Danach / bummeln / sie / entlang / d__ / Terrassenufer,
+    //    d__ / sein / für / sein / malerisch / Ausblicke / und / d__ / entspannend / Atmosphäre / bekannt.
+    //    An / Abend / fahren / Anna und Paul / mit / d__ / Straßenbahnlinie 3 / in / d__ / Neustadt.
+    //    D__ / lebendig / Atmosphäre / und / d__ / vielfältig / Auswahl / machen /
+    //    d__ / Abendessen / zu / ein / besondere / Erlebnis.
+    {id:'12-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Danach'),VP('bummeln'),W('sie entlang des Terrassenufers, das für seine malerischen Ausblicke und die entspannende Atmosphäre bekannt'),VT('sein'),W('. Am Abend'),VP('fahren'),W('Anna und Paul mit der Straßenbahnlinie 3 in die Neustadt.'),VT('sein'),W('die lebendige Atmosphäre und die vielfältige Auswahl es, die das Abendessen zu einem besonderen Erlebnis'),VP('machen'),W('.')],
+     solution:"Danach sind sie entlang des Terrassenufers gebummelt, das für seine malerischen Ausblicke und die entspannende Atmosphäre bekannt war. Am Abend sind Anna und Paul mit der Straßenbahnlinie 3 in die Neustadt gefahren. Die lebendige Atmosphäre und die vielfältige Auswahl waren es, die das Abendessen zu einem besonderen Erlebnis gemacht haben.",
+     solutionHTML:`Danach ${vp('sind sie entlang des Terrassenufers gebummelt')}, das für seine malerischen Ausblicke und die entspannende Atmosphäre bekannt ${vt('war')}. Am Abend ${vp('sind Anna und Paul mit der Straßenbahnlinie 3 in die Neustadt gefahren')}. Die lebendige Atmosphäre und die vielfältige Auswahl ${vt('waren')} es, die das Abendessen zu einem besonderen Erlebnis ${vp('gemacht haben')}.`,
+     hint:"bummeln → <b>sind gebummelt</b> (Bewegung) | sein → Präteritum: <b>war / waren</b> | fahren → <b>sind gefahren</b> | machen → Perfekt im Rel.-Satz: <b>gemacht haben</b> | 'entlang des Terrassenufers' = Genitiv"},
+
+    // 10. Nach / d__ / Essen / schlendern / sie / durch / d__ / schmal / Straßen / d__ / Neustadt.
+    //     D__ / Bars / und / Kneipen / sein / voll / von / Menschen,
+    //     und / sein / d__ / Stimmung / fröhlich und einladend.
+    //     Anna und Paul / genießen / d__ / Abend / bei / ein / Drink / in / ein / gemütlich / Bar
+    //     und / lassen / d__ / Tag / in / d__ / belebt / Neustadt / ausklingen.
+    //     Nach / ein / ereignisreich / Tag / sich fühlen / Anna und Paul / zufrieden / und glücklich.
+    //     D__ / viel / Erlebnisse / aus / Dresden / bleiben / (sie) / in / best / Erinnerung.
+    //     Sie / sein / beeindruckt / von / d__ / Vielfalt und Schönheit / d__ / Stadt
+    //     und sich freuen / dar___, bald zu wiederkommen.
+    {id:'12-10',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
+     prompt:[W('Nach dem Essen'),VP('schlendern'),W('sie durch die schmalen Straßen der Neustadt.'),VT('sein'),W('die Bars und Kneipen voll von Menschen, und'),VT('sein'),W('die Stimmung fröhlich und einladend. Anna und Paul'),VP('genießen'),W('den Abend bei einem Drink in einer gemütlichen Bar und'),VP('ausklingen lassen'),W('den Tag in der belebten Neustadt. Nach einem ereignisreichen Tag'),VP('sich fühlen'),W('Anna und Paul zufrieden und glücklich.'),VP('bleiben'),W('die vielen Erlebnisse aus Dresden ihnen in bester Erinnerung.'),VT('sein'),W('sie beeindruckt von der Vielfalt und Schönheit der Stadt und'),VP('sich freuen'),W('darauf, bald wiederzukommen.')],
+     solution:"Nach dem Essen sind sie durch die schmalen Straßen der Neustadt geschlendert. Die Bars und Kneipen waren voll von Menschen, und die Stimmung war fröhlich und einladend. Anna und Paul haben den Abend bei einem Drink in einer gemütlichen Bar genossen und den Tag in der belebten Neustadt ausklingen lassen. Nach einem ereignisreichen Tag haben sich Anna und Paul zufrieden und glücklich gefühlt. Die vielen Erlebnisse aus Dresden sind ihnen in bester Erinnerung geblieben. Sie waren beeindruckt von der Vielfalt und Schönheit der Stadt und haben sich darauf gefreut, bald wiederzukommen.",
+     solutionHTML:`Nach dem Essen ${vp('sind sie durch die schmalen Straßen der Neustadt geschlendert')}. Die Bars und Kneipen ${vt('waren')} voll von Menschen, und die Stimmung ${vt('war')} fröhlich und einladend. Anna und Paul ${vp('haben den Abend bei einem Drink in einer gemütlichen Bar genossen')} und den Tag in der belebten Neustadt ${vp('ausklingen lassen')}. Nach einem ereignisreichen Tag ${vp('haben sich Anna und Paul zufrieden und glücklich gefühlt')}. Die vielen Erlebnisse aus Dresden ${vp('sind ihnen in bester Erinnerung geblieben')}. Sie ${vt('waren')} beeindruckt von der Vielfalt und Schönheit der Stadt und ${vp('haben sich darauf gefreut')}, bald wiederzukommen.`,
+     hint:"schlendern → <b>sind geschlendert</b> | sein → Präteritum: <b>waren / war</b> | genießen → <b>haben genossen</b> | ausklingen lassen → <b>haben ausklingen lassen</b> | sich fühlen → <b>haben sich gefühlt</b> | bleiben → <b>sind geblieben</b> | sich freuen → <b>haben sich gefreut</b> | 'darauf, bald wiederzukommen' = Infinitivkonstruktion"},
+  ]
+}
+
+]; // end lessons
+
+// ════════════════════════════════════════════════════════════════
+// STATE & ENGINE
+// ════════════════════════════════════════════════════════════════
+let currentTab = 0;
+const state = {}; // keyed by exercise id
+
+function norm(s){
+  return s.toLowerCase().replace(/[.,!?;:\-–&bdquo;"]/g,'').replace(/\s+/g,' ').trim()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+}
+
+function buildAll(){
+  // Tab buttons
+  const tabBar = document.getElementById('tab-bar');
+  const panelsDiv = document.getElementById('panels');
+  lessons.forEach((lesson, i) => {
+    // Tab button
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (i===0?' active':'');
+    btn.textContent = lesson.emoji + ' ' + lesson.title;
+    btn.onclick = () => switchTab(i);
+    tabBar.appendChild(btn);
+
+    // Panel
+    const panel = document.createElement('div');
+    panel.className = 'panel' + (i===0?' active':'');
+    panel.id = 'panel-' + i;
+    panel.innerHTML = `<main>${buildPanel(lesson)}</main>`;
+    panelsDiv.appendChild(panel);
+
+    // Init state
+    lesson.exercises.forEach(ex => {
+      state[ex.id] = { answered: false, correct: false };
+    });
+  });
+  updateProgress();
+}
+
+function buildPanel(lesson){
+  let html = `<div class="intro-card">${lesson.intro}</div>`;
+  let currentPart = -1;
+  lesson.exercises.forEach(ex => {
+    if (ex.part !== undefined && ex.part !== currentPart) {
+      currentPart = ex.part;
+      if (ex.part > 0) html += `<div class="part-divider"><span>${lesson.emoji} Teil ${ex.part}</span></div>`;
+    }
+    const badgeHTML = ex.badges.map(([label, type]) => {
+      const cls = type==='perf'?'tbadge pill-perf':type==='modal'?'tbadge pill-modal':'tbadge pill-praet';
+      return `<span class="${cls}">${label}</span>`;
+    }).join('');
+    const num = ex.id.split('-')[1];
+    html += `
+    <div class="ex-card" id="card-${ex.id}">
+      <div class="card-header">
+        <div class="ex-num">${num}</div>
+        <span class="card-meta">Aufgabe ${num} / ${lesson.exercises.length}</span>
+        <div class="tense-badges">${badgeHTML}</div>
+      </div>
+      <div class="prompt">${ex.prompt.join(' ')}</div>
+      <textarea id="ta-${ex.id}" placeholder="Schreiben Sie Ihre Sätze hier …" oninput="onInput('${ex.id}')"></textarea>
+      <div class="hint-text" id="hint-${ex.id}">💡 ${ex.hint}</div>
+      <div class="btn-row">
+        <button class="btn btn-check" onclick="checkOne('${ex.id}')">✔ Prüfen</button>
+        <button class="btn btn-hint"  onclick="toggleHint('${ex.id}')">💡 Tipp</button>
+        <button class="btn btn-reset" onclick="resetOne('${ex.id}')">↺</button>
+      </div>
+      <div class="feedback" id="fb-${ex.id}"></div>
+    </div>`;
+  });
+  return html;
+}
+
+function switchTab(i){
+  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  currentTab = i;
+  updateProgress();
+  window.scrollTo(0,0);
+}
+
+function toggleHint(id){document.getElementById('hint-'+id).classList.toggle('show');}
+
+function onInput(id){
+  document.getElementById('card-'+id).classList.remove('correct','wrong');
+  document.getElementById('fb-'+id).className='feedback';
+  state[id]={answered:false,correct:false};
+  updateProgress();
+}
+
+function checkOne(id){
+  const lesson = lessons[currentTab];
+  const ex = lesson.exercises.find(e=>e.id===id);
+  const ta = document.getElementById('ta-'+id);
+  const fb = document.getElementById('fb-'+id);
+  const card = document.getElementById('card-'+id);
+  const val = ta.value.trim();
+  if(!val){ta.style.borderColor='var(--amber)';return;}
+  const sols = Array.isArray(ex.solution)?ex.solution:[ex.solution];
+  const ok = sols.some(s=>norm(val)===norm(s));
+  state[id]={answered:true,correct:ok};
+  if(ok){
+    card.classList.add('correct');card.classList.remove('wrong');
+    fb.className='feedback ok show';
+    fb.innerHTML='<div class="flabel">✅ Sehr gut!</div><div class="muster">Ihre Antwort ist korrekt.</div>';
+  }else{
+    card.classList.add('wrong');card.classList.remove('correct');
+    fb.className='feedback bad show';
+    fb.innerHTML=`<div class="flabel">❌ Nicht ganz richtig.</div><div class="muster">📝 Musterlösung:<br>${ex.solutionHTML}</div>`;
+  }
+  updateProgress();
+}
+
+function checkAll(){
+  const lesson = lessons[currentTab];
+  lesson.exercises.forEach(ex=>{
+    if(document.getElementById('ta-'+ex.id).value.trim()) checkOne(ex.id);
+  });
+  const correct = lesson.exercises.filter(ex=>state[ex.id]&&state[ex.id].correct).length;
+  showScore(correct, lesson.exercises.length);
+}
+
+function resetOne(id){
+  document.getElementById('ta-'+id).value='';
+  document.getElementById('card-'+id).classList.remove('correct','wrong');
+  document.getElementById('fb-'+id).className='feedback';
+  document.getElementById('hint-'+id).classList.remove('show');
+  state[id]={answered:false,correct:false};
+  updateProgress();
+}
+
+function resetAll(){
+  lessons[currentTab].exercises.forEach(ex=>resetOne(ex.id));
+}
+
+function updateProgress(){
+  const lesson = lessons[currentTab];
+  const done = lesson.exercises.filter(ex=>state[ex.id]&&state[ex.id].answered).length;
+  const total = lesson.exercises.length;
+  document.getElementById('prog-fill').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('prog-label').textContent=`${done} / ${total} bearbeitet`;
+  document.getElementById('sc-num').textContent=`0/${total}`;
+}
+
+function showScore(correct,total){
+  document.getElementById('sc-num').textContent=`${correct}/${total}`;
+  const pct=Math.round(correct/total*100);
+  const [emoji,msg]=pct===100?['🏆','Perfekt! Alle Aufgaben richtig!']:pct>=70?['🌟','Sehr gut! Fast alles stimmt.']:pct>=50?['👍','Gut gemacht! Weiter üben.']:['📚','Schau dir die Musterlösungen an!'];
+  document.getElementById('sc-emoji').textContent=emoji;
+  document.getElementById('sc-msg').textContent=msg;
+  document.getElementById('score-overlay').classList.add('show');
+}
+function closeScore(){document.getElementById('score-overlay').classList.remove('show');}
+
+buildAll();
+</script>
+</body>
+</html>
