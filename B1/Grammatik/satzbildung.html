@@ -111,36 +111,68 @@
   .vt-plus{font-weight:800;color:#6c3483;}
   .dot-plus{background:#9b59b6;}
   .pill-plus{background:#f5eef8;color:#6c3483;border:1px solid #9b59b6;}
+
+  /* ── PROMPT LINE slash format ── */
+  .prompt-line{font-size:0.9rem;line-height:2;padding:10px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;margin-bottom:10px;word-break:break-word;}
+  .pv-word{color:var(--navy);font-weight:700;}
+  .pv-sep{color:#bbc;font-size:0.78rem;margin:0 1px;}
+  .pv-perf{color:#1a6b57;font-weight:800;background:#e8f5f1;border-radius:4px;padding:1px 5px;}
+  .pv-praet{color:#7b3a00;font-weight:800;background:#fef3e2;border-radius:4px;padding:1px 5px;}
+  .pv-modal{color:#4a1f7a;font-weight:800;background:#f3eaff;border-radius:4px;padding:1px 5px;}
+  .pv-plus{color:#6c3483;font-weight:800;background:#f5eef8;border-radius:4px;padding:1px 5px;}
+  /* ── HOME SCREEN ── */
+  #home-screen{background:var(--bg);min-height:100vh;}
+  .home-header{background:var(--navy);color:#fff;padding:24px 16px 20px;text-align:center;}
+  .home-header h1{font-size:1.2rem;font-weight:800;margin:0;}
+  .home-header p{font-size:0.78rem;opacity:0.7;margin:6px 0 0;}
+  .home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 12px 80px;max-width:520px;margin:0 auto;}
+  .lesson-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px 8px 12px;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s;box-shadow:var(--shadow);position:relative;-webkit-tap-highlight-color:transparent;}
+  .lesson-card:active{transform:scale(0.93);}
+  .lesson-card:hover{border-color:var(--teal);}
+  .lc-emoji{font-size:1.9rem;display:block;margin-bottom:6px;}
+  .lc-title{font-size:0.68rem;font-weight:800;color:var(--navy);line-height:1.35;}
+  .lc-count{font-size:0.62rem;color:var(--muted);font-weight:600;margin-top:4px;}
+  .lesson-card.lc-done{border-color:#27ae60;background:#f0faf4;}
+  .lesson-card.lc-done .lc-title{color:#1a5e36;}
+  .lc-badge{position:absolute;top:7px;right:7px;background:#27ae60;color:#fff;border-radius:99px;width:17px;height:17px;font-size:0.6rem;font-weight:800;display:none;align-items:center;justify-content:center;}
+  .lc-badge.show{display:flex;}
+  .back-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;margin-bottom:8px;}
+  .back-btn:active{background:rgba(255,255,255,0.3);}
 </style>
 </head>
 <body>
-
-<div class="top-header">
-  <h1>✏️ Satzbildung – Übungen</h1>
-  <p>Bilden Sie grammatisch korrekte Sätze!</p>
-  <div class="tab-bar" id="tab-bar"></div>
+<div id="home-screen">
+  <div class="home-header">
+    <h1>&#9999;&#65039; Satzbildung &ndash; Übungen</h1>
+    <p>Wählen Sie eine Geschichte aus</p>
+  </div>
+  <div class="home-grid" id="home-grid"></div>
 </div>
-<div class="legend-bar">
-  <div class="legend-item"><div class="legend-dot dot-perf"></div>Perfekt (Vollverben)</div>
-  <div class="legend-item"><div class="legend-dot dot-praet"></div>Präteritum (sein / haben)</div>
-  <div class="legend-item"><div class="legend-dot dot-modal"></div>Präteritum (Modalverben)</div>
+<div id="exercise-screen" style="display:none">
+  <div class="top-header">
+    <button class="back-btn" id="back-btn">&#8592; Zurück</button>
+    <h1 id="ex-title"></h1>
+    <p>Bilden Sie grammatisch korrekte Sätze!</p>
+  </div>
+  <div class="legend-bar">
+    <div class="legend-item"><div class="legend-dot dot-perf"></div>Perfekt (Vollverben)</div>
+    <div class="legend-item"><div class="legend-dot dot-praet"></div>Präteritum (sein / haben)</div>
+    <div class="legend-item"><div class="legend-dot dot-modal"></div>Präteritum (Modalverben)</div>
     <div class="legend-item"><div class="legend-dot dot-plus"></div>Plusquamperfekt</div>
+  </div>
+  <div class="prog-wrap">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill"></div></div>
+    <div class="progress-label" id="prog-label">0 / 0 bearbeitet</div>
+  </div>
+  <div id="panels"></div>
+  <div class="bottom-bar">
+    <button class="btn-all-reset" onclick="resetAll()">&#8634; Zurücksetzen</button>
+    <button class="btn-all-check" onclick="checkAll()">Alle prüfen &#128203;</button>
+  </div>
 </div>
-<div class="prog-wrap">
-  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill"></div></div>
-  <div class="progress-label" id="prog-label">0 / 10 bearbeitet</div>
-</div>
-
-<div id="panels"></div>
-
-<div class="bottom-bar">
-  <button class="btn-all-reset" onclick="resetAll()">↺ Zurücksetzen</button>
-  <button class="btn-all-check" onclick="checkAll()">Alle prüfen 📋</button>
-</div>
-
 <div id="score-overlay">
   <div class="score-card">
-    <div class="score-emoji" id="sc-emoji">🎉</div>
+    <div class="score-emoji" id="sc-emoji">&#127881;</div>
     <div class="score-title">Ergebnis</div>
     <div class="score-num" id="sc-num">0/10</div>
     <div class="score-sub">Aufgaben richtig</div>
@@ -240,7 +272,7 @@ const lessons = [
 </div>`,
   exercises:[
     {id:'2-1',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal'],['Präteritum','praet']],
-     prompt:[VT('sein'),W('Sami'),W('ein__'),W('Student'),W('an'),W('d__'),W('Goethe-Universität'),W('Frankfurt'),W('Am'),W('Samstag'),VP('fahren'),W('er'),W('mit'),W('d__'),W('Zug'),W('nach'),W('Stuttgart'),W('Er'),VM('wollen'),W('d__'),W('Porsche'),W('Museum'),W('besuch__'),W('denn'),VT('sein'),W('sein__'),W('Hobby'),W('d__'),W('Auto')],
+     prompt:[VT('sein'),W('Sami'),W('ein__'),W('Student'),W('an'),W('d__'),W('Goethe-Universität'),W('Frankfurt'),W('An'),W('Samstag'),VP('fahren'),W('er'),W('mit'),W('d__'),W('Zug'),W('nach'),W('Stuttgart'),W('Er'),VM('wollen'),W('d__'),W('Porsche'),W('Museum'),W('besuch__'),W('denn'),VT('sein'),W('sein__'),W('Hobby'),W('d__'),W('Auto')],
      solution:"Sami war ein Student an der Goethe-Universität Frankfurt. Am Samstag ist er mit dem Zug nach Stuttgart gefahren. Er wollte das Porsche Museum besuchen, denn sein Hobby war das Auto.",
      solutionHTML:`Sami ${vt('war')} ein Student an der Goethe-Universität Frankfurt. Am Samstag ${vp('ist er mit dem Zug nach Stuttgart gefahren')}. Er ${vm('wollte')} das Porsche Museum besuchen, denn sein Hobby ${vt('war')} das Auto.`,
      hint:"sein → Präteritum: <b>war</b> | fahren → <b>ist gefahren</b> | möchten → Präteritum: <b>wollte</b>"},
@@ -250,7 +282,7 @@ const lessons = [
      solutionHTML:`Bei der Ankunft in Stuttgart Hauptbahnhof ${vp('ist er schnell ausgestiegen')}, weil er dort umsteigen ${vm('musste')}. Er ${vp('hat dann die S6 Richtung Zuffenhausen genommen')}. Nach 4 Stationen ${vp('ist er ausgestiegen')} und ein bisschen zu Fuß ${vp('gelaufen')}.`,
      hint:"aussteigen → <b>ist ausgestiegen</b> | müssen → Präteritum: <b>musste</b> | nehmen → <b>hat genommen</b>"},
     {id:'2-3',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Bald'),VP('erreichen'),W('er'),W('d__'),W('Museum'),W('Vor'),W('d__'),W('modern__'),W('Museumsgebäude'),VT('sein'),W('er'),W('von'),W('d__'),W('beeindruckenden'),W('Architektur'),W('begeistert'),W('Am'),W('Eingang'),VP('sich kaufen'),W('er'),W('ein__'),W('Ticket'),W('und'),VP('beginnen'),W('d__'),W('Rundgang'),W('durch'),W('d__'),W('Museum')],
+     prompt:[W('Bald'),VP('erreichen'),W('er'),W('d__'),W('Museum'),W('Vor'),W('d__'),W('modern__'),W('Museumsgebäude'),VT('sein'),W('er'),W('von'),W('d__'),W('beeindruckenden'),W('Architektur'),W('begeistert'),W('An'),W('Eingang'),VP('sich kaufen'),W('er'),W('ein__'),W('Ticket'),W('und'),VP('beginnen'),W('d__'),W('Rundgang'),W('durch'),W('d__'),W('Museum')],
      solution:"Bald hat er das Museum erreicht. Vor dem modernen Museumsgebäude war er von der beeindruckenden Architektur begeistert. Am Eingang hat er sich ein Ticket gekauft und den Rundgang durch das Museum begonnen.",
      solutionHTML:`Bald ${vp('hat er das Museum erreicht')}. Vor dem modernen Museumsgebäude ${vt('war')} er von der beeindruckenden Architektur begeistert. Am Eingang ${vp('hat er sich ein Ticket gekauft')} und den Rundgang durch das Museum ${vp('begonnen')}.`,
      hint:"erreichen → <b>hat erreicht</b> | sein → Präteritum: <b>war</b> | beginnen → <b>hat begonnen</b> (unregelmäßig!)"},
@@ -265,7 +297,7 @@ const lessons = [
      solutionHTML:`In einem Simulator ${vp('ist er glücklicherweise virtuell einen Porsche gefahren')}.`,
      hint:"fahren → Perfekt mit sein: <b>ist … gefahren</b>"},
     {id:'2-6',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Zur'),W('Mittagszeit'),VP('machen'),W('er'),W('im'),W('Museumscafé'),W('ein__'),W('Pause'),W('Dort'),VP('sich treffen'),W('er'),W('überraschenderweis__'),W('Sarah'),VT('sein'),W('sie'),W('ein__'),W('Schulfreundin'),W('von'),W('ihm'),W('Nach'),W('d__'),W('Schulzeit'),VP('sich sehen'),W('sie'),W('sich'),W('nicht'),W('mehr'),W('Zusammen'),VP('sich setzen'),W('sie'),W('an'),W('ein__'),W('Tisch'),VP('sich unterhalten'),W('und'),W('danach'),VP('zu Mittag essen')],
+     prompt:[W('Zu'),W('Mittagszeit'),VP('machen'),W('er'),W('in'),W('Museumscafé'),W('ein__'),W('Pause'),W('Dort'),VP('sich treffen'),W('er'),W('überraschenderweis__'),W('Sarah'),VT('sein'),W('sie'),W('ein__'),W('Schulfreundin'),W('von'),W('ihm'),W('Nach'),W('d__'),W('Schulzeit'),VP('sich sehen'),W('sie'),W('sich'),W('nicht'),W('mehr'),W('Zusammen'),VP('sich setzen'),W('sie'),W('an'),W('ein__'),W('Tisch'),VP('sich unterhalten'),W('und'),W('danach'),VP('zu Mittag essen')],
      solution:"Zur Mittagszeit hat er im Museumscafé eine Pause gemacht. Dort hat er überraschenderweise Sarah getroffen. Sie war eine Schulfreundin von ihm. Nach der Schulzeit hatten sie sich nicht mehr gesehen. Zusammen haben sie sich an einen Tisch gesetzt, sich unterhalten und danach zu Mittag gegessen.",
      solutionHTML:`Zur Mittagszeit ${vp('hat er im Museumscafé eine Pause gemacht')}. Dort ${vp('hat er überraschenderweise Sarah getroffen')}. Sie ${vt('war')} eine Schulfreundin von ihm. Nach der Schulzeit ${vp('hatten sie sich nicht mehr gesehen')}. Zusammen ${vp('haben sie sich an einen Tisch gesetzt')}, ${vp('sich unterhalten')} und danach zu Mittag ${vp('gegessen')}.`,
      hint:"sich treffen → <b>hat getroffen</b> | sein → Präteritum: <b>war</b> | sich sehen → Plusquamperfekt: <b>hatten gesehen</b>"},
@@ -275,17 +307,17 @@ const lessons = [
      solutionHTML:`Nach dem Mittagessen ${vp('haben sie ihre Tour weitergemacht')}. Sie ${vp('haben eine Sonderausstellung über die Zukunft der Mobilität besucht')}. Sami ${vt('war')} ein großer Autofan und ${vp('hatte viele Bücher darüber gelesen')}. Aber Sarah ${vt('hatte')} keine Ahnung davon. Sie ${vm('wollte')} nur die neuen Autos sehen.`,
      hint:"weitermachen (trennbar) → <b>hat weitergemacht</b> | sein → <b>war</b> | haben → Präteritum: <b>hatte</b> | wollen → <b>wollte</b>"},
     {id:'2-8',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Am'),W('Ende'),VP('sich umsehen'),W('sie'),W('im'),W('Museumsshop'),VP('sich kaufen'),W('Sami'),W('ein__'),W('Modellauto'),W('Er'),VP('schenken'),W('sein__'),W('Schulfreundin'),W('ein__'),W('Buch'),W('über'),W('d__'),W('Geschichte'),W('von'),W('Porsche')],
+     prompt:[W('An'),W('Ende'),VP('sich umsehen'),W('sie'),W('in'),W('Museumsshop'),VP('sich kaufen'),W('Sami'),W('ein__'),W('Modellauto'),W('Er'),VP('schenken'),W('sein__'),W('Schulfreundin'),W('ein__'),W('Buch'),W('über'),W('d__'),W('Geschichte'),W('von'),W('Porsche')],
      solution:"Am Ende haben sie sich im Museumsshop umgesehen. Sami hat sich ein Modellauto gekauft. Er hat seiner Schulfreundin ein Buch über die Geschichte von Porsche geschenkt.",
      solutionHTML:`Am Ende ${vp('haben sie sich im Museumsshop umgesehen')}. Sami ${vp('hat sich ein Modellauto gekauft')}. Er ${vp('hat seiner Schulfreundin ein Buch über die Geschichte von Porsche geschenkt')}.`,
      hint:"sich umsehen (trennbar) → <b>hat umgesehen</b> | schenken → <b>hat geschenkt</b>"},
     {id:'2-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Am'),W('Nachmittag'),VP('fahren'),W('sie'),W('mit'),W('Sarahs'),W('Auto'),W('nach'),W('Hause'),W('Tatsächlich'),VT('sein'),W('d__'),W('nagelneu__'),W('Porsche'),W('Cayenne'),W('ihr__'),W('18'),W('Geburtstagsgeschenk'),W('von'),W('ihr__'),W('Eltern')],
+     prompt:[W('An'),W('Nachmittag'),VP('fahren'),W('sie'),W('mit'),W('Sarahs'),W('Auto'),W('nach'),W('Hause'),W('Tatsächlich'),VT('sein'),W('d__'),W('nagelneu__'),W('Porsche'),W('Cayenne'),W('ihr__'),W('18'),W('Geburtstagsgeschenk'),W('von'),W('ihr__'),W('Eltern')],
      solution:"Am Nachmittag sind sie mit Sarahs Auto nach Hause gefahren. Tatsächlich war der nagelneue Porsche Cayenne ihr 18. Geburtstagsgeschenk von ihren Eltern.",
      solutionHTML:`Am Nachmittag ${vp('sind sie mit Sarahs Auto nach Hause gefahren')}. Tatsächlich ${vt('war')} der nagelneue Porsche Cayenne ihr 18. Geburtstagsgeschenk von ihren Eltern.`,
      hint:"fahren → <b>sind gefahren</b> | sein → Präteritum: <b>war</b>"},
     {id:'2-10',part:2,badges:[['Präteritum','praet']],
-     prompt:[W('d__'),W('Besuch'),W('im'),W('Porsche'),W('Museum'),VT('sein'),W('ein__'),W('unvergesslich__'),W('Erlebnis'),W('für'),W('Sami')],
+     prompt:[W('d__'),W('Besuch'),W('in'),W('Porsche'),W('Museum'),VT('sein'),W('ein__'),W('unvergesslich__'),W('Erlebnis'),W('für'),W('Sami')],
      solution:"Der Besuch im Porsche Museum war ein unvergessliches Erlebnis für Sami.",
      solutionHTML:`Der Besuch im Porsche Museum ${vt('war')} ein unvergessliches Erlebnis für Sami.`,
      hint:"sein → Präteritum: <b>war</b> | 'im Museum' = Dat. | Adj.: unvergesslich<b>es</b> Erlebnis"},
@@ -312,17 +344,17 @@ const lessons = [
      solutionHTML:`Ben und Clara ${vt('waren')} Studenten an der Freien Universität Berlin, die gerne gemeinsam aufregende Abenteuer ${vp('erlebt haben')}. Ben ${vp('hat Sportwissenschaften studiert')} und alle Arten von körperlichen Herausforderungen ${vp('geliebt')}. Clara ${vp('hat Kunstgeschichte studiert')} und ${vt('war')} bekannt für ihre kreative und einfühlsame Art.`,
      hint:"sein (Pl.) → Präteritum: <b>waren</b> | erleben → Perfekt im Rel.-Satz: <b>erlebt haben</b> | studieren/lieben → <b>hat studiert / hat geliebt</b>"},
     {id:'8-2',part:1,badges:[['Perfekt','perf']],
-     prompt:[W('Sie'),VP('sich kennenlernen'),W('im'),W('erst__'),W('Semester'),W('während'),W('ein__'),W('spannenden'),W('Einführungsveranstaltung'),W('und'),VP('aufbauen'),W('sofort'),W('ein__'),W('tief__'),W('Freundschaft'),W('Trotz'),W('ihr__'),W('verschiedenen'),W('Eigenschaften'),VP('sich verlieben'),W('sie'),W('im'),W('Laufe'),W('d__'),W('Zeit'),W('ineinand__')],
+     prompt:[W('Sie'),VP('sich kennenlernen'),W('in'),W('erst__'),W('Semester'),W('während'),W('ein__'),W('spannenden'),W('Einführungsveranstaltung'),W('und'),VP('aufbauen'),W('sofort'),W('ein__'),W('tief__'),W('Freundschaft'),W('Trotz'),W('ihr__'),W('verschiedenen'),W('Eigenschaften'),VP('sich verlieben'),W('sie'),W('in'),W('Laufe'),W('d__'),W('Zeit'),W('ineinand__')],
      solution:"Sie haben sich im ersten Semester während einer spannenden Einführungsveranstaltung kennengelernt und sofort eine tiefe Freundschaft aufgebaut. Trotz ihrer verschiedenen Eigenschaften haben sie sich im Laufe der Zeit ineinander verliebt.",
      solutionHTML:`Sie ${vp('haben sich im ersten Semester während einer spannenden Einführungsveranstaltung kennengelernt')} und sofort eine tiefe Freundschaft ${vp('aufgebaut')}. Trotz ihrer verschiedenen Eigenschaften ${vp('haben sie sich im Laufe der Zeit ineinander verliebt')}.`,
      hint:"sich kennenlernen (trennbar) → <b>haben sich kennengelernt</b> | aufbauen → <b>haben aufgebaut</b> | sich verlieben → <b>haben sich verliebt</b>"},
     {id:'8-3',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
-     prompt:[W('Am'),W('Freitagabend'),VP('sich streiten'),W('d__'),W('beiden'),W('darüber'),W('wo'),W('sie'),W('d__'),W('abwechslungsreich__'),W('Wochenende'),W('verbring__'),VM('sollen'),W('Ben'),VP('bevorzugen'),W('aufregend__'),W('Aktivitäten'),W('und'),VM('möchten'),W('etwas'),W('mit'),W('viel'),W('Adrenalin'),W('unternehm__'),W('während'),W('Clara'),W('es'),VP('vorziehen'),W('im'),W('schön__'),W('Grunewald'),W('zu'),W('wandern'),W('Schließlich'),VP('sich entscheiden'),W('sie'),W('d__'),W('Wochenende'),W('zu'),W('teil__'),W('und'),W('beide'),W('Wünsche'),W('zu'),W('berücksichtig__')],
+     prompt:[W('An'),W('Freitagabend'),VP('sich streiten'),W('d__'),W('beiden'),W('darüber'),W('wo'),W('sie'),W('d__'),W('abwechslungsreich__'),W('Wochenende'),W('verbring__'),VM('sollen'),W('Ben'),VP('bevorzugen'),W('aufregend__'),W('Aktivitäten'),W('und'),VM('möchten'),W('etwas'),W('mit'),W('viel'),W('Adrenalin'),W('unternehm__'),W('während'),W('Clara'),W('es'),VP('vorziehen'),W('in'),W('schön__'),W('Grunewald'),W('zu'),W('wandern'),W('Schließlich'),VP('sich entscheiden'),W('sie'),W('d__'),W('Wochenende'),W('zu'),W('teil__'),W('und'),W('beide'),W('Wünsche'),W('zu'),W('berücksichtig__')],
      solution:"Am Freitagabend haben die beiden darüber gestritten, wo sie das abwechslungsreiche Wochenende verbringen sollten. Ben hat aufregende Aktivitäten bevorzugt und wollte etwas mit viel Adrenalin unternehmen, während Clara es vorgezogen hat, im schönen Grunewald zu wandern. Schließlich haben sie sich entschieden, das Wochenende zu teilen und beide Wünsche zu berücksichtigen.",
      solutionHTML:`Am Freitagabend ${vp('haben die beiden darüber gestritten')}, wo sie das abwechslungsreiche Wochenende verbringen ${vm('sollten')}. Ben ${vp('hat aufregende Aktivitäten bevorzugt')} und ${vm('wollte')} etwas mit viel Adrenalin unternehmen, während Clara es ${vp('vorgezogen hat')}, im schönen Grunewald zu wandern. Schließlich ${vp('haben sie sich entschieden')}, das Wochenende zu teilen und beide Wünsche zu berücksichtigen.`,
      hint:"sich streiten → <b>haben gestritten</b> | sollen → Präteritum: <b>sollten</b> | bevorzugen → <b>hat bevorzugt</b> | möchten → Präteritum: <b>wollte</b> | vorziehen → <b>hat vorgezogen</b>"},
     {id:'8-4',part:1,badges:[['Perfekt','perf']],
-     prompt:[W('Am'),W('Samstag'),VP('fahren'),W('Ben'),W('und'),W('Clara'),W('mit'),W('d__'),W('Bus'),W('zum'),W('grün__'),W('Grunewald'),W('Nach'),W('zwei'),W('Stunden'),W('Wandern'),VP('machen'),W('sie'),W('ein__'),W('Pause'),W('an'),W('ein__'),W('ruhig__'),W('See'),W('Sie'),VP('legen'),W('ein__'),W('bunt__'),W('Matte'),W('auf'),W('d__'),W('weich__'),W('Rasen'),W('und'),VP('sich setzen'),W('darauf'),W('für'),W('ein__'),W('entspannt__'),W('Mittagspause')],
+     prompt:[W('An'),W('Samstag'),VP('fahren'),W('Ben'),W('und'),W('Clara'),W('mit'),W('d__'),W('Bus'),W('zu'),W('grün__'),W('Grunewald'),W('Nach'),W('zwei'),W('Stunden'),W('Wandern'),VP('machen'),W('sie'),W('ein__'),W('Pause'),W('an'),W('ein__'),W('ruhig__'),W('See'),W('Sie'),VP('legen'),W('ein__'),W('bunt__'),W('Matte'),W('auf'),W('d__'),W('weich__'),W('Rasen'),W('und'),VP('sich setzen'),W('darauf'),W('für'),W('ein__'),W('entspannt__'),W('Mittagspause')],
      solution:"Am Samstag sind Ben und Clara mit dem Bus zum grünen Grunewald gefahren. Nach zwei Stunden Wandern haben sie eine Pause an einem ruhigen See gemacht. Sie haben eine bunte Matte auf den weichen Rasen gelegt und sich darauf für eine entspannte Mittagspause gesetzt.",
      solutionHTML:`Am Samstag ${vp('sind Ben und Clara mit dem Bus zum grünen Grunewald gefahren')}. Nach zwei Stunden Wandern ${vp('haben sie eine Pause an einem ruhigen See gemacht')}. Sie ${vp('haben eine bunte Matte auf den weichen Rasen gelegt')} und ${vp('sich darauf für eine entspannte Mittagspause gesetzt')}.`,
      hint:"fahren → <b>sind gefahren</b> (Bewegung) | machen → <b>haben gemacht</b> | legen → <b>haben gelegt</b> | sich setzen → <b>haben sich gesetzt</b>"},
@@ -332,22 +364,22 @@ const lessons = [
      solutionHTML:`Während sie ${vp('gegessen haben')}, ${vp('haben sie die schwimmenden Schwäne beobachtet')}, die elegant auf dem Wasser ${vp('geglitten sind')}. Auf dem Weg ${vp('haben sie eine Igelmutter mit drei Babys gefunden')}, die weiche Haare ${vt('hatten')}. Clara ${vt('war')} total begeistert, ${vp('hat eine halbe Stunde mit den Igelbabys gespielt')} und die Igelmutter ${vp('gefüttert')}.`,
      hint:"essen → Perfekt im während-Satz: <b>gegessen haben</b> | gleiten → <b>geglitten sind</b> | haben → Präteritum im Rel.-Satz: <b>hatten</b> | sein → Präteritum: <b>war</b>"},
     {id:'8-6',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Nach'),W('dies__'),W('liebevoll__'),W('Begegnung'),VP('fortsetzen'),W('d__'),W('Paar'),W('ihr__'),W('Wanderung'),W('und'),VP('genießen'),W('d__'),W('frisch__'),W('Luft'),W('und'),W('d__'),W('idyllisch__'),W('Natur'),W('Spät'),W('am'),W('Nachmittag'),VP('gehen'),W('sie'),W('zurück'),W('zur'),W('Bushaltestelle'),W('und'),VP('beenden'),W('ihr__'),W('Waldwanderung'),W('in'),W('Wohlgefühl')],
+     prompt:[W('Nach'),W('dies__'),W('liebevoll__'),W('Begegnung'),VP('fortsetzen'),W('d__'),W('Paar'),W('ihr__'),W('Wanderung'),W('und'),VP('genießen'),W('d__'),W('frisch__'),W('Luft'),W('und'),W('d__'),W('idyllisch__'),W('Natur'),W('Spät'),W('an'),W('Nachmittag'),VP('gehen'),W('sie'),W('zurück'),W('zu'),W('Bushaltestelle'),W('und'),VP('beenden'),W('ihr__'),W('Waldwanderung'),W('in'),W('Wohlgefühl')],
      solution:"Nach dieser liebevollen Begegnung hat das Paar ihre Wanderung fortgesetzt und die frische Luft und die idyllische Natur genossen. Spät am Nachmittag sind sie zurück zur Bushaltestelle gegangen und haben ihre Waldwanderung in Wohlgefühl beendet.",
      solutionHTML:`Nach dieser liebevollen Begegnung ${vp('hat das Paar ihre Wanderung fortgesetzt')} und die frische Luft und die idyllische Natur ${vp('genossen')}. Spät am Nachmittag ${vp('sind sie zurück zur Bushaltestelle gegangen')} und ${vp('haben ihre Waldwanderung in Wohlgefühl beendet')}.`,
      hint:"fortsetzen (trennbar) → <b>hat fortgesetzt</b> | genießen → <b>hat genossen</b> | gehen → <b>sind gegangen</b> | beenden → <b>haben beendet</b>"},
     {id:'8-7',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Am'),W('Sonntag'),VP('beschließen'),W('sie'),W('in'),W('d__'),W('aufregenden'),W('Freizeitpark'),W('zu'),W('gehen'),W('dess__'),W('vielfältig__'),W('Attraktionen'),W('sie'),VP('lieben'),W('Am'),W('Eingang'),VP('sich kaufen'),W('sie'),W('d__'),W('teur__'),W('Eintrittskarten')],
+     prompt:[W('An'),W('Sonntag'),VP('beschließen'),W('sie'),W('in'),W('d__'),W('aufregenden'),W('Freizeitpark'),W('zu'),W('gehen'),W('dess__'),W('vielfältig__'),W('Attraktionen'),W('sie'),VP('lieben'),W('An'),W('Eingang'),VP('sich kaufen'),W('sie'),W('d__'),W('teur__'),W('Eintrittskarten')],
      solution:"Am Sonntag haben sie beschlossen, in den aufregenden Freizeitpark zu gehen, dessen vielfältige Attraktionen sie geliebt haben. Am Eingang haben sie sich die teuren Eintrittskarten gekauft.",
      solutionHTML:`Am Sonntag ${vp('haben sie beschlossen')}, in den aufregenden Freizeitpark zu gehen, dessen vielfältige Attraktionen sie ${vp('geliebt haben')}. Am Eingang ${vp('haben sie sich die teuren Eintrittskarten gekauft')}.`,
      hint:"beschließen → <b>haben beschlossen</b> | lieben → Perfekt im Rel.-Satz: <b>geliebt haben</b> | 'dessen' = Genitiv-Relativpronomen"},
     {id:'8-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Nachdem'),W('sie'),W('d__'),W('Eingang'),W('d__'),W('Freizeitparks'),VP('passieren'),VP('laufen'),W('sie'),W('eilig'),W('zuerst'),W('zur'),W('gigantisch__'),W('Achterbahn'),W('d__'),W('sehr'),W('hoch'),W('und'),W('schnell'),VT('sein'),VP('sich freuen'),W('Ben'),W('darüber'),W('weil'),W('er'),W('schnell__'),W('Achterbahnen'),VP('lieben'),W('Obwohl'),W('Clara'),W('Höhenangst'),VP('haben'),W('und'),W('sich'),W('nervös'),VP('fühlen'),W('fuhr'),W('sie'),W('trotzd__'),W('mit')],
+     prompt:[W('Nachdem'),W('sie'),W('d__'),W('Eingang'),W('d__'),W('Freizeitparks'),VP('passieren'),VP('laufen'),W('sie'),W('eilig'),W('zuerst'),W('zu'),W('gigantisch__'),W('Achterbahn'),W('d__'),W('sehr'),W('hoch'),W('und'),W('schnell'),VT('sein'),VP('sich freuen'),W('Ben'),W('darüber'),W('weil'),W('er'),W('schnell__'),W('Achterbahnen'),VP('lieben'),W('Obwohl'),W('Clara'),W('Höhenangst'),VP('haben'),W('und'),W('sich'),W('nervös'),VP('fühlen'),W('fuhr'),W('sie'),W('trotzd__'),W('mit')],
      solution:"Nachdem sie den Eingang des Freizeitparks passiert hatten, sind sie eilig zuerst zur gigantischen Achterbahn gelaufen, die sehr hoch und schnell war. Ben hat sich darüber gefreut, weil er schnelle Achterbahnen geliebt hat. Obwohl Clara Höhenangst gehabt hat und sich nervös gefühlt hat, fuhr sie trotzdem mit.",
      solutionHTML:`Nachdem sie den Eingang des Freizeitparks ${vp('passiert hatten')}, ${vp('sind sie eilig zuerst zur gigantischen Achterbahn gelaufen')}, die sehr hoch und schnell ${vt('war')}. Ben ${vp('hat sich darüber gefreut')}, weil er schnelle Achterbahnen ${vp('geliebt hat')}. Obwohl Clara Höhenangst ${vp('gehabt hat')} und sich nervös ${vp('gefühlt hat')}, fuhr sie trotzdem mit.`,
      hint:"passieren → Plusquamperfekt (nachdem): <b>passiert hatten</b> | laufen → <b>sind gelaufen</b> | sein → Präteritum: <b>war</b> | haben → <b>hat gehabt</b> | fühlen → <b>hat sich gefühlt</b>"},
     {id:'8-9',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Nach'),W('ein__'),W('aufregenden'),W('Tag'),W('im'),W('Freizeitpark'),VP('sich setzen'),W('sie'),W('in'),W('ein__'),W('gemütlich__'),W('Café'),W('und'),VP('essen'),W('ein__'),W('groß__'),W('Portion'),W('Eis'),W('Am'),W('Ende'),W('d__'),W('Tages'),VP('fahren'),W('sie'),W('nach'),W('Hause')],
+     prompt:[W('Nach'),W('ein__'),W('aufregenden'),W('Tag'),W('in'),W('Freizeitpark'),VP('sich setzen'),W('sie'),W('in'),W('ein__'),W('gemütlich__'),W('Café'),W('und'),VP('essen'),W('ein__'),W('groß__'),W('Portion'),W('Eis'),W('An'),W('Ende'),W('d__'),W('Tages'),VP('fahren'),W('sie'),W('nach'),W('Hause')],
      solution:"Nach einem aufregenden Tag im Freizeitpark haben sie sich in ein gemütliches Café gesetzt und eine große Portion Eis gegessen. Am Ende des Tages sind sie nach Hause gefahren.",
      solutionHTML:`Nach einem aufregenden Tag im Freizeitpark ${vp('haben sie sich in ein gemütliches Café gesetzt')} und eine große Portion Eis ${vp('gegessen')}. Am Ende des Tages ${vp('sind sie nach Hause gefahren')}.`,
      hint:"sich setzen → <b>haben sich gesetzt</b> | essen → <b>haben gegessen</b> | fahren → <b>sind gefahren</b> (Bewegung)"},
@@ -374,7 +406,7 @@ const lessons = [
     //    D___ Verein / gründen / in Jahr 1900
     //    und / haben / sein / Sitz / in München, Deutschland.
     {id:'11-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[VT('sein'),W('Bayern'),W('München'),W('ein__'),W('d__'),W('bekanntest__'),W('Fußballvereine'),W('d__'),W('Welt'),VP('gründen (Passiv)'),W('d__'),W('Verein'),W('im'),W('Jahr'),W('1900'),W('und'),VT('haben'),W('sein__'),W('Sitz'),W('in'),W('München'),W('Deutschland')],
+     prompt:[VT('sein'),W('Bayern'),W('München'),W('ein__'),W('d__'),W('bekanntest__'),W('Fußballvereine'),W('d__'),W('Welt'),VP('gründen (Passiv)'),W('d__'),W('Verein'),W('in'),W('Jahr'),W('1900'),W('und'),VT('haben'),W('sein__'),W('Sitz'),W('in'),W('München'),W('Deutschland')],
      solution:"Bayern München war einer der bekanntesten Fußballvereine der Welt. Der Verein wurde im Jahr 1900 gegründet und hatte seinen Sitz in München, Deutschland.",
      solutionHTML:`Bayern München ${vt('war')} einer der bekanntesten Fußballvereine der Welt. Der Verein ${vp('wurde im Jahr 1900 gegründet')} und ${vt('hatte')} seinen Sitz in München, Deutschland.`,
      hint:"sein → Präteritum: <b>war</b> | gründen → Passiv Perfekt: <b>wurde gegründet</b> | haben → Präteritum: <b>hatte</b> | 'einer der bekanntesten' = Genitiv Pl."},
@@ -383,7 +415,7 @@ const lessons = [
     //    und / gewinnen / viele / Titel / in/ d___ Bundesliga, in DFB-Pokal
     //    und in / d___/ UEFA Champions League.
     {id:'11-2',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[VT('sein'),W('Bayern'),W('d__'),W('erfolgreichst__'),W('Klub'),W('in'),W('Deutschland'),W('und'),VP('gewinnen'),W('viele'),W('Titel'),W('in'),W('d__'),W('Bundesliga'),W('im'),W('DFB-Pokal'),W('und'),W('in'),W('d__'),W('UEFA'),W('Champions'),W('League')],
+     prompt:[VT('sein'),W('Bayern'),W('d__'),W('erfolgreichst__'),W('Klub'),W('in'),W('Deutschland'),W('und'),VP('gewinnen'),W('viele'),W('Titel'),W('in'),W('d__'),W('Bundesliga'),W('in'),W('DFB-Pokal'),W('und'),W('in'),W('d__'),W('UEFA'),W('Champions'),W('League')],
      solution:"Bayern war der erfolgreichste Klub in Deutschland und hat viele Titel in der Bundesliga, im DFB-Pokal und in der UEFA Champions League gewonnen.",
      solutionHTML:`Bayern ${vt('war')} der erfolgreichste Klub in Deutschland und ${vp('hat viele Titel in der Bundesliga, im DFB-Pokal und in der UEFA Champions League gewonnen')}.`,
      hint:"sein → Präteritum: <b>war</b> | gewinnen → Perfekt: <b>hat gewonnen</b> | Superlativ: der erfolgreichst<b>e</b> Klub | 'im DFB-Pokal' = Dat. (in + dem)"},
@@ -472,12 +504,12 @@ const lessons = [
 </div>`,
   exercises:[
     {id:'4-1',part:1,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
-     prompt:[VT('sein'),W('Köln'),W('ein__'),W('wunderschön__'),W('Stadt'),W('am'),W('Rhein'),W('d__'),W('viele'),W('interessant__'),W('Sehenswürdigkeiten'),VP('bieten'),W('Bei'),W('ein__'),W('Stadtrundfahrt'),VM('können'),W('Touristen'),W('d__'),W('wichtigst__'),W('Orte'),W('d__'),W('Stadt'),W('bequ__'),W('entdeck__')],
+     prompt:[VT('sein'),W('Köln'),W('ein__'),W('wunderschön__'),W('Stadt'),W('an'),W('Rhein'),W('d__'),W('viele'),W('interessant__'),W('Sehenswürdigkeiten'),VP('bieten'),W('Bei'),W('ein__'),W('Stadtrundfahrt'),VM('können'),W('Touristen'),W('d__'),W('wichtigst__'),W('Orte'),W('d__'),W('Stadt'),W('bequ__'),W('entdeck__')],
      solution:"Köln war eine wunderschöne Stadt am Rhein, die viele interessante Sehenswürdigkeiten geboten hat. Bei einer Stadtrundfahrt konnten Touristen die wichtigsten Orte der Stadt bequem entdecken.",
      solutionHTML:`Köln ${vt('war')} eine wunderschöne Stadt am Rhein, die viele interessante Sehenswürdigkeiten ${vp('geboten hat')}. Bei einer Stadtrundfahrt ${vm('konnten')} Touristen die wichtigsten Orte der Stadt bequem entdecken.`,
      hint:"sein → Präteritum: <b>war</b> | bieten → Perfekt im Rel.-Satz: <b>hat geboten</b> | können → Präteritum: <b>konnten</b>"},
     {id:'4-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('d__'),W('Rundfahrt'),VP('beginnen'),W('oft'),W('am'),W('Kölner'),W('Dom'),W('d__'),W('beeindruckenden'),W('Wahrzeichen'),W('d__'),W('Stadt'),VT('sein'),W('dies__'),W('gotisch__'),W('Dom'),W('ein__'),W('d__'),W('höchst__'),W('Gebäude'),W('in'),W('Deutschland'),W('und'),VP('anziehen'),W('jed__'),W('Jahr'),W('Millionen'),W('von'),W('Besuchern')],
+     prompt:[W('d__'),W('Rundfahrt'),VP('beginnen'),W('oft'),W('an'),W('Kölner'),W('Dom'),W('d__'),W('beeindruckenden'),W('Wahrzeichen'),W('d__'),W('Stadt'),VT('sein'),W('dies__'),W('gotisch__'),W('Dom'),W('ein__'),W('d__'),W('höchst__'),W('Gebäude'),W('in'),W('Deutschland'),W('und'),VP('anziehen'),W('jed__'),W('Jahr'),W('Millionen'),W('von'),W('Besuchern')],
      solution:"Die Rundfahrt hat oft am Kölner Dom begonnen, dem beeindruckenden Wahrzeichen der Stadt. Dieser gotische Dom war eines der höchsten Gebäude in Deutschland und hat jedes Jahr Millionen von Besuchern angezogen.",
      solutionHTML:`Die Rundfahrt ${vp('hat oft am Kölner Dom begonnen')}, dem beeindruckenden Wahrzeichen der Stadt. Dieser gotische Dom ${vt('war')} eines der höchsten Gebäude in Deutschland und ${vp('hat jedes Jahr Millionen von Besuchern angezogen')}.`,
      hint:"beginnen → <b>hat begonnen</b> | sein → Präteritum: <b>war</b> | anziehen (trennbar) → <b>hat … angezogen</b>"},
@@ -552,7 +584,7 @@ const lessons = [
     //    D_/ groß/ tropisch/ Landschaft, d_/ sein/ mit/ viel/ Palmen/ und/ bunt/ Pflanzen/ gestaltet,
     //    sorgen/ da_/, dass/ fühlen/ d_/ Gäste/ wie/ in/ Urlaub.
     {id:'7-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Viele'),W('Besucher'),VP('sich verzaubern lassen'),W('von'),W('d__'),W('exotisch__'),W('Atmosphäre'),W('d__'),W('in'),W('dies__'),W('groß__'),W('Indoor-Wasserpark'),VP('herrschen'),W('d__'),W('groß__'),W('tropisch__'),W('Landschaft'),W('d__'),W('mit'),W('vielen'),W('Palmen'),W('und'),W('bunt__'),W('Pflanzen'),VP('gestalten (Passiv)'),VT('sein'),VP('sorgen'),W('dafür'),W('dass'),W('d__'),W('Gäste'),W('sich'),W('wie'),W('im'),W('Urlaub'),VP('fühlen')],
+     prompt:[W('Viele'),W('Besucher'),VP('sich verzaubern lassen'),W('von'),W('d__'),W('exotisch__'),W('Atmosphäre'),W('d__'),W('in'),W('dies__'),W('groß__'),W('Indoor-Wasserpark'),VP('herrschen'),W('d__'),W('groß__'),W('tropisch__'),W('Landschaft'),W('d__'),W('mit'),W('vielen'),W('Palmen'),W('und'),W('bunt__'),W('Pflanzen'),VP('gestalten (Passiv)'),VT('sein'),VP('sorgen'),W('dafür'),W('dass'),W('d__'),W('Gäste'),W('sich'),W('wie'),W('in'),W('Urlaub'),VP('fühlen')],
      solution:"Viele Besucher haben sich von der exotischen Atmosphäre verzaubern lassen, die in diesem großen Indoor-Wasserpark geherrscht hat. Die große tropische Landschaft, die mit vielen Palmen und bunten Pflanzen gestaltet worden war, hat dafür gesorgt, dass die Gäste sich wie im Urlaub gefühlt haben.",
      solutionHTML:`Viele Besucher ${vp('haben sich von der exotischen Atmosphäre verzaubern lassen')}, die in diesem großen Indoor-Wasserpark ${vp('geherrscht hat')}. Die große tropische Landschaft, die mit vielen Palmen und bunten Pflanzen ${vp('gestaltet worden war')}, ${vp('hat dafür gesorgt')}, dass die Gäste sich wie im Urlaub ${vp('gefühlt haben')}.`,
      hint:"sich verzaubern lassen → <b>haben sich … lassen</b> | herrschen → Perfekt im Rel.-Satz: <b>geherrscht hat</b> | Passiv Plusquamperfekt: <b>gestaltet worden war</b> | sorgen → <b>hat gesorgt</b> | fühlen → <b>gefühlt haben</b>"},
@@ -560,7 +592,7 @@ const lessons = [
     // 3. In/ riesig/ Wasserbereich/ können/ d_/ Besucher/ in/ verschieden/ Pools/ schwimmen,
     //    d_/ sein/ mit/ warm/ Wasser/ gefüllt.
     {id:'7-3',part:1,badges:[['Modalverb Prät.','modal'],['Präteritum','praet']],
-     prompt:[W('Im'),W('riesig__'),W('Wasserbereich'),VM('können'),W('d__'),W('Besucher'),W('in'),W('verschiedenen'),W('Pools'),W('schwimm__'),W('d__'),W('mit'),W('warm__'),W('Wasser'),VP('gefüllt sein (Passiv)'),VT('sein')],
+     prompt:[W('In'),W('riesig__'),W('Wasserbereich'),VM('können'),W('d__'),W('Besucher'),W('in'),W('verschiedenen'),W('Pools'),W('schwimm__'),W('d__'),W('mit'),W('warm__'),W('Wasser'),VP('gefüllt sein (Passiv)'),VT('sein')],
      solution:"Im riesigen Wasserbereich konnten die Besucher in verschiedenen Pools schwimmen, die mit warmem Wasser gefüllt worden waren.",
      solutionHTML:`Im riesigen Wasserbereich ${vm('konnten')} die Besucher in verschiedenen Pools schwimmen, die mit warmem Wasser ${vp('gefüllt worden waren')}.`,
      hint:"können → Präteritum: <b>konnten</b> | Passiv Plusquamperfekt im Rel.-Satz: <b>gefüllt worden waren</b> | 'in verschiedenen Pools' = Dat."},
@@ -570,7 +602,7 @@ const lessons = [
     //    D_/ Kinder, d_/ oft/ mit/ ihr/ Eltern/ kommen, können/ austoben/
     //    in/ Abenteuerbereich, d_/ sein/ mit/ Rutschen/ und/ Spielplätzen/ ausgestattet.
     {id:'7-4',part:1,badges:[['Präteritum','praet'],['Modalverb Prät.','modal'],['Perfekt','perf']],
-     prompt:[W('Besonders'),W('beliebt'),VT('sein'),W('d__'),W('groß__'),W('Wellenpool'),W('in'),W('d__'),W('d__'),W('Wellen'),W('durch'),W('ein__'),W('ausgeklügelt__'),W('System'),VP('erzeugen (Passiv)'),W('d__'),W('Kinder'),W('d__'),W('oft'),W('mit'),W('ihr__'),W('Eltern'),VP('kommen'),VM('können'),W('sich'),W('im'),W('Abenteuerbereich'),W('austob__'),W('d__'),W('mit'),W('Rutschen'),W('und'),W('Spielplätzen'),VP('ausstatten (Passiv)'),VT('sein')],
+     prompt:[W('Besonders'),W('beliebt'),VT('sein'),W('d__'),W('groß__'),W('Wellenpool'),W('in'),W('d__'),W('d__'),W('Wellen'),W('durch'),W('ein__'),W('ausgeklügelt__'),W('System'),VP('erzeugen (Passiv)'),W('d__'),W('Kinder'),W('d__'),W('oft'),W('mit'),W('ihr__'),W('Eltern'),VP('kommen'),VM('können'),W('sich'),W('in'),W('Abenteuerbereich'),W('austob__'),W('d__'),W('mit'),W('Rutschen'),W('und'),W('Spielplätzen'),VP('ausstatten (Passiv)'),VT('sein')],
      solution:"Besonders beliebt war der große Wellenpool, in dem die Wellen durch ein ausgeklügeltes System erzeugt worden waren. Die Kinder, die oft mit ihren Eltern gekommen sind, konnten sich im Abenteuerbereich austoben, der mit Rutschen und Spielplätzen ausgestattet worden war.",
      solutionHTML:`Besonders beliebt ${vt('war')} der große Wellenpool, in dem die Wellen durch ein ausgeklügeltes System ${vp('erzeugt worden waren')}. Die Kinder, die oft mit ihren Eltern ${vp('gekommen sind')}, ${vm('konnten')} sich im Abenteuerbereich austoben, der mit Rutschen und Spielplätzen ${vp('ausgestattet worden war')}.`,
      hint:"sein → Präteritum: <b>war</b> | Passiv Plusquamperfekt: <b>erzeugt worden waren</b> | kommen → Perfekt im Rel.-Satz: <b>gekommen sind</b> | können → Präteritum: <b>konnten</b> | ausstatten → Passiv Plusquamperfekt: <b>ausgestattet worden war</b>"},
@@ -579,7 +611,7 @@ const lessons = [
     //    Viel/ Gäste/ lassen/ auch/ in/ Wellnessbereich/ verwöhnen,
     //    wo/ werden/ Massagen/ und/ Saunen/ angeboten.
     {id:'7-5',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Für'),W('Entspannung'),VP('sorgen'),W('d__'),W('zahlreich__'),W('Liegen'),W('d__'),W('um'),W('d__'),W('Pools'),VP('verteilen (Passiv)'),VT('sein'),W('Viele'),W('Gäste'),VP('sich verwöhnen lassen'),W('auch'),W('im'),W('Wellnessbereich'),W('wo'),W('Massagen'),W('und'),W('Saunen'),VP('anbieten (Passiv)')],
+     prompt:[W('Für'),W('Entspannung'),VP('sorgen'),W('d__'),W('zahlreich__'),W('Liegen'),W('d__'),W('um'),W('d__'),W('Pools'),VP('verteilen (Passiv)'),VT('sein'),W('Viele'),W('Gäste'),VP('sich verwöhnen lassen'),W('auch'),W('in'),W('Wellnessbereich'),W('wo'),W('Massagen'),W('und'),W('Saunen'),VP('anbieten (Passiv)')],
      solution:"Für Entspannung haben die zahlreichen Liegen gesorgt, die um die Pools verteilt worden waren. Viele Gäste haben sich auch im Wellnessbereich verwöhnen lassen, wo Massagen und Saunen angeboten wurden.",
      solutionHTML:`Für Entspannung ${vp('haben die zahlreichen Liegen gesorgt')}, die um die Pools ${vp('verteilt worden waren')}. Viele Gäste ${vp('haben sich auch im Wellnessbereich verwöhnen lassen')}, wo Massagen und Saunen ${vp('angeboten wurden')}.`,
      hint:"sorgen → <b>haben gesorgt</b> | Passiv Plusquamperfekt: <b>verteilt worden waren</b> | sich verwöhnen lassen → <b>haben sich … lassen</b> | Passiv Perfekt: <b>angeboten wurden</b>"},
@@ -625,7 +657,7 @@ const lessons = [
     //     Wer/ d_/ kalt/ Wintertage/ überstehen/ möchten,
     //     sollen/ dies_/ Paradies/ unbedingt/ besuchen!
     {id:'7-10',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
-     prompt:[VT('sein'),W('Tropical'),W('Islands'),W('also'),W('nicht'),W('nur'),W('ein__'),W('Ort'),W('zum'),W('Baden'),W('sondern'),W('auch'),W('ein__'),W('Erlebnis'),W('für'),W('d__'),W('ganz__'),W('Familie'),W('Wer'),W('d__'),W('kalt__'),W('Wintertage'),W('übersteh__'),VM('möchten'),VM('sollen'),W('dies__'),W('Paradies'),W('unbedingt'),W('besuch__')],
+     prompt:[VT('sein'),W('Tropical'),W('Islands'),W('also'),W('nicht'),W('nur'),W('ein__'),W('Ort'),W('zu'),W('Baden'),W('sondern'),W('auch'),W('ein__'),W('Erlebnis'),W('für'),W('d__'),W('ganz__'),W('Familie'),W('Wer'),W('d__'),W('kalt__'),W('Wintertage'),W('übersteh__'),VM('möchten'),VM('sollen'),W('dies__'),W('Paradies'),W('unbedingt'),W('besuch__')],
      solution:"Tropical Islands war also nicht nur ein Ort zum Baden, sondern auch ein Erlebnis für die ganze Familie. Wer die kalten Wintertage überstehen wollte, sollte dieses Paradies unbedingt besuchen!",
      solutionHTML:`Tropical Islands ${vt('war')} also nicht nur ein Ort zum Baden, sondern auch ein Erlebnis für die ganze Familie. Wer die kalten Wintertage überstehen ${vm('wollte')}, ${vm('sollte')} dieses Paradies unbedingt besuchen!`,
      hint:"sein → Präteritum: <b>war</b> | möchten → Präteritum: <b>wollte</b> | sollen → Präteritum: <b>sollte</b> | 'Wer'-Satz → Verb ans Ende"},
@@ -648,12 +680,12 @@ const lessons = [
      solutionHTML:`An einem sonnigen Samstagmorgen ${vp('hat Julia das Miniatur Wunderland in Hamburg besucht')}, dessen Ruf weit über die Stadtgrenzen hinaus bekannt ${vt('war')}. Sie ${vp('hatte schon viele begeisterte Videos im Internet darüber geguckt')} und ${vt('war')} daher unglaublich gespannt.`,
      hint:"besuchen → <b>hat besucht</b> | sein → Präteritum: <b>war</b> | gucken → Plusquamperfekt: <b>hatte geguckt</b>"},
     {id:'3-2',part:1,badges:[['Perfekt','perf']],
-     prompt:[W('Am'),W('Eingang'),VP('kaufen'),W('sie'),W('ein__'),W('golden__'),W('Ticket'),W('und'),VP('betreten'),W('d__'),W('weitläufig__'),W('Ausstellungshalle')],
+     prompt:[W('An'),W('Eingang'),VP('kaufen'),W('sie'),W('ein__'),W('golden__'),W('Ticket'),W('und'),VP('betreten'),W('d__'),W('weitläufig__'),W('Ausstellungshalle')],
      solution:"Am Eingang hat sie ein goldenes Ticket gekauft und die weitläufige Ausstellungshalle betreten.",
      solutionHTML:`Am Eingang ${vp('hat sie ein goldenes Ticket gekauft')} und die weitläufige Ausstellungshalle ${vp('betreten')}.`,
      hint:"kaufen → <b>hat gekauft</b> | betreten → <b>hat betreten</b> (kein ge-!)"},
     {id:'3-3',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('d__'),W('erst__'),W('Station'),VT('sein'),W('ein__'),W('Miniaturflughafen'),W('wo'),W('winzig__'),W('Flugzeuge'),W('emsig'),VP('starten und landen'),W('Dann'),VP('gehen'),W('sie'),W('weit__'),W('zur'),W('Schweiz-Abteilung'),W('wo'),W('sie'),W('d__'),W('majestätisch__'),W('Alpen'),VP('bestaunen')],
+     prompt:[W('d__'),W('erst__'),W('Station'),VT('sein'),W('ein__'),W('Miniaturflughafen'),W('wo'),W('winzig__'),W('Flugzeuge'),W('emsig'),VP('starten und landen'),W('Dann'),VP('gehen'),W('sie'),W('weit__'),W('zu'),W('Schweiz-Abteilung'),W('wo'),W('sie'),W('d__'),W('majestätisch__'),W('Alpen'),VP('bestaunen')],
      solution:"Die erste Station war ein Miniaturflughafen, wo winzige Flugzeuge emsig gestartet und gelandet waren. Dann ist sie weiter zur Schweiz-Abteilung gegangen, wo sie die majestätischen Alpen bestaunt hat.",
      solutionHTML:`Die erste Station ${vt('war')} ein Miniaturflughafen, wo winzige Flugzeuge emsig ${vp('gestartet und gelandet waren')}. Dann ${vp('ist sie weiter zur Schweiz-Abteilung gegangen')}, wo sie die majestätischen Alpen ${vp('bestaunt hat')}.`,
      hint:"sein → Präteritum: <b>war</b> | starten/landen → Plusquamperfekt: <b>waren gestartet/gelandet</b> | gehen → <b>ist gegangen</b>"},
@@ -683,7 +715,7 @@ const lessons = [
      solutionHTML:`Danach ${vp('hat Julia auch die Hamburger Abteilung besucht')}, wo sie das exakte Miniaturmodell der historischen Speicherstadt ${vp('gefunden hat')}, deren ikonische Backsteinarchitektur sie besonders ${vp('fasziniert hat')}. Aufgrund ihrer zahlreichen Besuche in der originalen Speicherstadt ${vt('war')} sie von der Miniaturversion atemberaubt.`,
      hint:"besuchen → <b>hat besucht</b> | finden → <b>hat gefunden</b> | faszinieren → <b>hat fasziniert</b> | sein → Präteritum: <b>war</b>"},
     {id:'3-9',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Als'),W('d__'),W('Tag'),W('bald'),W('zu'),W('Ende'),VP('gehen'),VP('sich freuen'),W('sie'),W('darauf'),W('ihr__'),W('Freunden'),W('von'),W('ihr__'),W('wunderbar__'),W('Erlebnissen'),W('im'),W('Miniatur'),W('Wunderland'),W('zu'),W('erzähl__')],
+     prompt:[W('Als'),W('d__'),W('Tag'),W('bald'),W('zu'),W('Ende'),VP('gehen'),VP('sich freuen'),W('sie'),W('darauf'),W('ihr__'),W('Freunden'),W('von'),W('ihr__'),W('wunderbar__'),W('Erlebnissen'),W('in'),W('Miniatur'),W('Wunderland'),W('zu'),W('erzähl__')],
      solution:"Als der Tag bald zu Ende ging, hat sie sich darauf gefreut, ihren Freunden von ihren wunderbaren Erlebnissen im Miniatur Wunderland zu erzählen.",
      solutionHTML:`Als der Tag bald zu Ende ${vp('ging')}, ${vp('hat sie sich darauf gefreut')}, ihren Freunden von ihren wunderbaren Erlebnissen im Miniatur Wunderland zu erzählen.`,
      hint:"gehen (im als-Satz) → Präteritum: <b>ging</b> | sich freuen → Perfekt: <b>hat sich gefreut</b>"},
@@ -714,7 +746,7 @@ const lessons = [
     //    denn/ er/ schon/ lange/ d_/ berühmt/ Sehenswürdigkeiten/ d_/ Stadt/ sehen/ möchten
     //    und/ interessieren/ für/ d_/ bayerische/ Kultur.
     {id:'10-1',part:1,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
-     prompt:[W('Am'),W('letzt__'),W('Wochenende'),VP('entscheiden'),W('Thomas'),W('nach'),W('München'),W('zu'),W('fahren'),W('denn'),W('er'),VM('möchten'),W('schon'),W('lang__'),W('d__'),W('berühmt__'),W('Sehenswürdigkeiten'),W('d__'),W('Stadt'),VP('sehen'),W('und'),VP('sich interessieren'),W('für'),W('d__'),W('bayerisch__'),W('Kultur')],
+     prompt:[W('An'),W('letzt__'),W('Wochenende'),VP('entscheiden'),W('Thomas'),W('nach'),W('München'),W('zu'),W('fahren'),W('denn'),W('er'),VM('möchten'),W('schon'),W('lang__'),W('d__'),W('berühmt__'),W('Sehenswürdigkeiten'),W('d__'),W('Stadt'),VP('sehen'),W('und'),VP('sich interessieren'),W('für'),W('d__'),W('bayerisch__'),W('Kultur')],
      solution:"Am letzten Wochenende hat Thomas entschieden, nach München zu fahren, denn er wollte schon lange die berühmten Sehenswürdigkeiten der Stadt sehen und hatte sich für die bayerische Kultur interessiert.",
      solutionHTML:`Am letzten Wochenende ${vp('hat Thomas entschieden')}, nach München zu fahren, denn er ${vm('wollte')} schon lange die berühmten Sehenswürdigkeiten der Stadt sehen und ${vp('hatte sich für die bayerische Kultur interessiert')}.`,
      hint:"entscheiden → <b>hat entschieden</b> | möchten → Präteritum: <b>wollte</b> | sich interessieren → Plusquamperfekt: <b>hatte sich interessiert</b> (Vorvergangenheit – er interessierte sich SCHON vorher)"},
@@ -754,7 +786,7 @@ const lessons = [
     //    Danach/ an/ Tag/ verlassen/ Thomas/ d_/ Hotel/ früh, um/ sein/ Erkundungstour/ zu/ beginnen.
     //    Er/ lassen/ sein/ schwer/ Taschen/ in/ Hotel/ und/ mitnehmen/ nur/ ein/ klein/ Rucksack.
     {id:'10-5',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[W('d__'),W('Zimmer'),VT('haben'),W('ein__'),W('schlicht__'),W('Einrichtung'),W('aber'),W('d__'),VT('sein'),W('ihm'),W('egal'),W('da'),W('er'),W('sowieso'),W('d__'),W('meist__'),W('Zeit'),W('unterwegs'),VP('werden sein'),W('Er'),VP('sich niederlassen'),W('im'),W('Zimmer'),W('und'),VP('auspacken'),W('sein__'),W('wenig__'),W('Sachen'),W('Danach'),VP('verlassen'),W('Thomas'),W('d__'),W('Hotel'),W('früh'),W('um'),W('sein__'),W('Erkundungstour'),W('zu'),W('beginn__'),W('Er'),VP('lassen'),W('sein__'),W('schwer__'),W('Taschen'),W('im'),W('Hotel'),W('und'),VP('mitnehmen'),W('nur'),W('ein__'),W('klein__'),W('Rucksack')],
+     prompt:[W('d__'),W('Zimmer'),VT('haben'),W('ein__'),W('schlicht__'),W('Einrichtung'),W('aber'),W('d__'),VT('sein'),W('ihm'),W('egal'),W('da'),W('er'),W('sowieso'),W('d__'),W('meist__'),W('Zeit'),W('unterwegs'),VP('werden sein'),W('Er'),VP('sich niederlassen'),W('in'),W('Zimmer'),W('und'),VP('auspacken'),W('sein__'),W('wenig__'),W('Sachen'),W('Danach'),VP('verlassen'),W('Thomas'),W('d__'),W('Hotel'),W('früh'),W('um'),W('sein__'),W('Erkundungstour'),W('zu'),W('beginn__'),W('Er'),VP('lassen'),W('sein__'),W('schwer__'),W('Taschen'),W('in'),W('Hotel'),W('und'),VP('mitnehmen'),W('nur'),W('ein__'),W('klein__'),W('Rucksack')],
      solution:"Das Zimmer hatte eine schlichte Einrichtung, aber das war ihm egal, da er sowieso die meiste Zeit unterwegs sein würde. Er ließ sich im Zimmer nieder und packte seine wenigen Sachen aus. Danach verließ Thomas das Hotel früh, um seine Erkundungstour zu beginnen. Er ließ seine schweren Taschen im Hotel und nahm nur einen kleinen Rucksack mit.",
      solutionHTML:`Das Zimmer ${vt('hatte')} eine schlichte Einrichtung, aber das ${vt('war')} ihm egal, da er sowieso die meiste Zeit unterwegs sein ${vt('würde')}. Er ${vt('ließ')} sich im Zimmer ${vt('nieder')} und ${vp('packte seine wenigen Sachen aus')}. Danach ${vt('verließ')} Thomas das Hotel früh, um seine Erkundungstour zu beginnen. Er ${vt('ließ')} seine schweren Taschen im Hotel und ${vp('nahm nur einen kleinen Rucksack mit')}.`,
      hint:"haben → Präteritum: <b>hatte</b> | sein → Präteritum: <b>war / würde</b> | sich niederlassen (trennbar) → Präteritum: <b>ließ sich nieder</b> | auspacken (trennbar) → Perfekt: <b>packte aus</b> | verlassen → Präteritum: <b>verließ</b> | mitnehmen (trennbar) → Perfekt: <b>nahm mit</b>"},
@@ -764,7 +796,7 @@ const lessons = [
     //    Anschließend/ Thomas/ zum/ Englischen/ Garten/ gehen,
     //    wo/ er/ sich setzen/ auf/ ein/ Bank/ und/ genießen/ d_/ Ruhe.
     {id:'10-6',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Zuerst'),VP('besuchen'),W('Thomas'),W('d__'),W('berühmt__'),W('Marienplatz'),W('wo'),W('er'),W('d__'),W('wunderschön__'),W('Blick'),W('auf'),W('d__'),W('alt__'),W('Rathaus'),VP('genießen'),W('Anschließend'),VP('gehen'),W('Thomas'),W('zum'),W('Englischen'),W('Garten'),W('wo'),W('er'),W('sich'),W('auf'),W('ein__'),W('Bank'),VP('setzen'),W('und'),W('d__'),W('Ruhe'),VP('genießen')],
+     prompt:[W('Zuerst'),VP('besuchen'),W('Thomas'),W('d__'),W('berühmt__'),W('Marienplatz'),W('wo'),W('er'),W('d__'),W('wunderschön__'),W('Blick'),W('auf'),W('d__'),W('alt__'),W('Rathaus'),VP('genießen'),W('Anschließend'),VP('gehen'),W('Thomas'),W('zu'),W('Englischen'),W('Garten'),W('wo'),W('er'),W('sich'),W('auf'),W('ein__'),W('Bank'),VP('setzen'),W('und'),W('d__'),W('Ruhe'),VP('genießen')],
      solution:"Zuerst hat Thomas den berühmten Marienplatz besucht, wo er den wunderschönen Blick auf das alte Rathaus genossen hat. Anschließend ist Thomas zum Englischen Garten gegangen, wo er sich auf eine Bank gesetzt und die Ruhe genossen hat.",
      solutionHTML:`Zuerst ${vp('hat Thomas den berühmten Marienplatz besucht')}, wo er den wunderschönen Blick auf das alte Rathaus ${vp('genossen hat')}. Anschließend ${vp('ist Thomas zum Englischen Garten gegangen')}, wo er sich auf eine Bank ${vp('gesetzt')} und die Ruhe ${vp('genossen hat')}.`,
      hint:"besuchen → <b>hat besucht</b> | genießen → Perfekt im Rel.-Satz: <b>genossen hat</b> | gehen → <b>ist gegangen</b> (Bewegung) | sich setzen → <b>hat sich gesetzt</b>"},
@@ -783,7 +815,7 @@ const lessons = [
     //    Er/ sich lassen/ ein/ groß/ Glas/ Bier/ bringen
     //    und/ d_/ bayerisch/ Atmosphäre/ genießen.
     {id:'10-8',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Am'),W('Abend'),VP('gehen'),W('Thomas'),W('in'),W('ein__'),W('traditionell__'),W('bayerisch__'),W('Restaurant'),W('wo'),W('er'),W('ein__'),W('lecker__'),W('Abendessen'),VP('bestellen'),W('Er'),VP('sich bringen lassen'),W('ein__'),W('groß__'),W('Glas'),W('Bier'),W('und'),VP('genießen'),W('d__'),W('bayerisch__'),W('Atmosphäre')],
+     prompt:[W('An'),W('Abend'),VP('gehen'),W('Thomas'),W('in'),W('ein__'),W('traditionell__'),W('bayerisch__'),W('Restaurant'),W('wo'),W('er'),W('ein__'),W('lecker__'),W('Abendessen'),VP('bestellen'),W('Er'),VP('sich bringen lassen'),W('ein__'),W('groß__'),W('Glas'),W('Bier'),W('und'),VP('genießen'),W('d__'),W('bayerisch__'),W('Atmosphäre')],
      solution:"Am Abend ist Thomas in ein traditionelles bayerisches Restaurant gegangen, wo er ein leckeres Abendessen bestellt hat. Er hat sich ein großes Glas Bier bringen lassen und die bayerische Atmosphäre genossen.",
      solutionHTML:`Am Abend ${vp('ist Thomas in ein traditionelles bayerisches Restaurant gegangen')}, wo er ein leckeres Abendessen ${vp('bestellt hat')}. Er ${vp('hat sich ein großes Glas Bier bringen lassen')} und die bayerische Atmosphäre ${vp('genossen')}.`,
      hint:"gehen → <b>ist gegangen</b> (Bewegung) | bestellen → Perfekt im Rel.-Satz: <b>bestellt hat</b> | sich bringen lassen → <b>hat sich … bringen lassen</b> | genießen → <b>hat genossen</b>"},
@@ -793,7 +825,7 @@ const lessons = [
     //    Er/ zurücklassen/ d_/ Hotelzimmer/ in/ ein/ ordentlich/ Zustand
     //    und/ sich begeben/ auf/ d_/ Weg/ zu/ Bahnhof.
     {id:'10-9',part:2,badges:[['Perfekt','perf'],['Modalverb Prät.','modal']],
-     prompt:[W('Thomas'),VM('müssen'),W('am'),W('Sonntag'),W('früh'),W('aufsteh__'),W('um'),W('rechtzeitig'),W('d__'),W('Zug'),W('zurück'),W('nach'),W('Hamburg'),W('zu'),W('nehm__'),W('Er'),VP('zurücklassen'),W('d__'),W('Hotelzimmer'),W('in'),W('ein__'),W('ordentlich__'),W('Zustand'),W('und'),VP('sich begeben'),W('auf'),W('d__'),W('Weg'),W('zum'),W('Bahnhof')],
+     prompt:[W('Thomas'),VM('müssen'),W('an'),W('Sonntag'),W('früh'),W('aufsteh__'),W('um'),W('rechtzeitig'),W('d__'),W('Zug'),W('zurück'),W('nach'),W('Hamburg'),W('zu'),W('nehm__'),W('Er'),VP('zurücklassen'),W('d__'),W('Hotelzimmer'),W('in'),W('ein__'),W('ordentlich__'),W('Zustand'),W('und'),VP('sich begeben'),W('auf'),W('d__'),W('Weg'),W('zu'),W('Bahnhof')],
      solution:"Thomas musste am Sonntag früh aufstehen, um rechtzeitig den Zug zurück nach Hamburg zu nehmen. Er hat das Hotelzimmer in einem ordentlichen Zustand zurückgelassen und hat sich auf den Weg zum Bahnhof begeben.",
      solutionHTML:`Thomas ${vm('musste')} am Sonntag früh aufstehen, um rechtzeitig den Zug zurück nach Hamburg zu nehmen. Er ${vp('hat das Hotelzimmer in einem ordentlichen Zustand zurückgelassen')} und ${vp('hat sich auf den Weg zum Bahnhof begeben')}.`,
      hint:"müssen → Präteritum: <b>musste</b> | zurücklassen (trennbar) → Perfekt: <b>hat zurückgelassen</b> | sich begeben → <b>hat sich begeben</b> | 'um … zu + Infinitiv' bleibt unverändert"},
@@ -819,7 +851,7 @@ const lessons = [
 </div>`,
   exercises:[
     {id:'5-1',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[VT('sein'),W('Manuel'),W('Neuer'),W('d__'),W('Kapitän'),W('d__'),W('FC'),W('Bayern'),W('München'),W('in'),W('Leipzig'),W('für'),W('ein__'),W('wichtig__'),W('Bundesligaspiel'),W('gegen'),W('RB'),W('Leipzig'),VT('sein'),W('es'),W('ein__'),W('aufregend__'),W('Tag'),W('im'),W('Stadion'),W('wo'),W('d__'),W('Fans'),W('von'),W('beiden'),W('Seiten'),W('gespannt'),W('auf'),W('d__'),W('Duell'),VP('warten'),W('Sobald'),W('d__'),W('Spiel'),W('vorbei'),VT('sein'),VP('sich machen'),W('er'),W('auf'),W('d__'),W('Weg'),W('d__'),W('Stadt'),W('zu'),W('erkund__')],
+     prompt:[VT('sein'),W('Manuel'),W('Neuer'),W('d__'),W('Kapitän'),W('d__'),W('FC'),W('Bayern'),W('München'),W('in'),W('Leipzig'),W('für'),W('ein__'),W('wichtig__'),W('Bundesligaspiel'),W('gegen'),W('RB'),W('Leipzig'),VT('sein'),W('es'),W('ein__'),W('aufregend__'),W('Tag'),W('in'),W('Stadion'),W('wo'),W('d__'),W('Fans'),W('von'),W('beiden'),W('Seiten'),W('gespannt'),W('auf'),W('d__'),W('Duell'),VP('warten'),W('Sobald'),W('d__'),W('Spiel'),W('vorbei'),VT('sein'),VP('sich machen'),W('er'),W('auf'),W('d__'),W('Weg'),W('d__'),W('Stadt'),W('zu'),W('erkund__')],
      solution:"Manuel Neuer, der Kapitän des FC Bayern München, war in Leipzig für ein wichtiges Bundesligaspiel gegen RB Leipzig. Es war ein aufregender Tag im Stadion, wo die Fans von beiden Seiten gespannt auf das Duell gewartet haben. Sobald das Spiel vorbei war, hat er sich auf den Weg gemacht, die Stadt zu erkunden.",
      solutionHTML:`Manuel Neuer, der Kapitän des FC Bayern München, ${vt('war')} in Leipzig für ein wichtiges Bundesligaspiel gegen RB Leipzig. Es ${vt('war')} ein aufregender Tag im Stadion, wo die Fans von beiden Seiten gespannt auf das Duell ${vp('gewartet haben')}. Sobald das Spiel vorbei ${vt('war')}, ${vp('hat er sich auf den Weg gemacht')}, die Stadt zu erkunden.`,
      hint:"sein → Präteritum: <b>war</b> | warten → Perfekt: <b>gewartet haben</b> | sich machen → <b>hat sich gemacht</b>"},
@@ -844,7 +876,7 @@ const lessons = [
      solutionHTML:`Danach ${vp('ist er an der Mädlerpassage vorbeigekommen')}, wo er kurz ${vp('stehen geblieben ist')} und ${vp('überlegt hat')}, ob er vielleicht ein kleines Souvenir für seine Familie mitnehmen ${vm('sollte')}. Schließlich ${vp('hat er eine schöne Teekanne gekauft')}, die ihm ${vp('gefallen hat')}, da sie die sächsische Handwerkskunst ${vp('widerspiegelt hat')}.`,
      hint:"vorbeikommen → <b>ist vorbeigekommen</b> | stehen bleiben → <b>ist stehen geblieben</b> | sollen → Präteritum: <b>sollte</b>"},
     {id:'5-6',part:2,badges:[['Perfekt','perf'],['Präteritum','praet'],['Modalverb Prät.','modal']],
-     prompt:[W('Am'),W('Nachmittag'),VP('schlendern'),W('Manuel'),W('zum'),W('Völkerschlachtdenkmal'),W('d__'),W('Denkmal'),W('d__'),W('an'),W('d__'),W('Völkerschlacht'),W('von'),W('1813'),VP('erinnern'),VT('sein'),W('ein__'),W('d__'),W('beeindruckendst__'),W('Orte'),W('Leipzigs'),W('Und'),W('da'),W('Neuer'),W('d__'),W('Aussicht'),W('von'),W('oben'),W('genieß__'),VM('wollen'),VP('hinaufsteigen'),W('er'),W('d__'),W('zahlreich__'),W('Stufen')],
+     prompt:[W('An'),W('Nachmittag'),VP('schlendern'),W('Manuel'),W('zu'),W('Völkerschlachtdenkmal'),W('d__'),W('Denkmal'),W('d__'),W('an'),W('d__'),W('Völkerschlacht'),W('von'),W('1813'),VP('erinnern'),VT('sein'),W('ein__'),W('d__'),W('beeindruckendst__'),W('Orte'),W('Leipzigs'),W('Und'),W('da'),W('Neuer'),W('d__'),W('Aussicht'),W('von'),W('oben'),W('genieß__'),VM('wollen'),VP('hinaufsteigen'),W('er'),W('d__'),W('zahlreich__'),W('Stufen')],
      solution:"Am Nachmittag ist Manuel zum Völkerschlachtdenkmal geschlendert. Das Denkmal, das an die Völkerschlacht von 1813 erinnert hat, war einer der beeindruckendsten Orte Leipzigs. Und da Neuer die Aussicht von oben genießen wollte, ist er die zahlreichen Stufen hinaufgestiegen.",
      solutionHTML:`Am Nachmittag ${vp('ist Manuel zum Völkerschlachtdenkmal geschlendert')}. Das Denkmal, das an die Völkerschlacht von 1813 ${vp('erinnert hat')}, ${vt('war')} einer der beeindruckendsten Orte Leipzigs. Und da Neuer die Aussicht von oben genießen ${vm('wollte')}, ${vp('ist er die zahlreichen Stufen hinaufgestiegen')}.`,
      hint:"schlendern → <b>ist geschlendert</b> | sein → Präteritum: <b>war</b> | wollen → <b>wollte</b> | hinaufsteigen → <b>ist hinaufgestiegen</b>"},
@@ -854,12 +886,12 @@ const lessons = [
      solutionHTML:`Er ${vp('hat darüber nachgedacht')}, wie der Ort so viel Geschichte und Bedeutung für Deutschland ${vp('geborgen hat')}, ähnlich wie die vielen Stadien, in denen er selbst schon legendäre Spiele ${vp('gespielt hat')}.`,
      hint:"nachdenken (trennbar) → <b>hat nachgedacht</b> | bergen → <b>hat geborgen</b> | spielen → Perfekt im Rel.-Satz: <b>gespielt hat</b>"},
     {id:'5-8',part:2,badges:[['Perfekt','perf']],
-     prompt:[W('Am'),W('Abend'),VP('finden'),W('er'),W('ein__'),W('klein__'),W('Lokal'),W('in'),W('d__'),W('Nähe'),W('d__'),W('Augustusplatzes'),W('wo'),W('viele'),W('sächsisch__'),W('Spezialitäten'),VP('serviert werden (Passiv)'),W('Manuel'),VP('bestellen'),W('ein__'),W('Teller'),W('Leipziger'),W('Allerlei'),W('ein__'),W('traditionell__'),W('Gemüsegericht'),W('und'),W('dazu'),W('ein__'),W('Glas'),W('Feldschlößchen'),W('ein__'),W('bekannt__'),W('lokal__'),W('Bier')],
+     prompt:[W('An'),W('Abend'),VP('finden'),W('er'),W('ein__'),W('klein__'),W('Lokal'),W('in'),W('d__'),W('Nähe'),W('d__'),W('Augustusplatzes'),W('wo'),W('viele'),W('sächsisch__'),W('Spezialitäten'),VP('serviert werden (Passiv)'),W('Manuel'),VP('bestellen'),W('ein__'),W('Teller'),W('Leipziger'),W('Allerlei'),W('ein__'),W('traditionell__'),W('Gemüsegericht'),W('und'),W('dazu'),W('ein__'),W('Glas'),W('Feldschlößchen'),W('ein__'),W('bekannt__'),W('lokal__'),W('Bier')],
      solution:"Am Abend hat er ein kleines Lokal in der Nähe des Augustusplatzes gefunden, wo viele sächsische Spezialitäten serviert wurden. Manuel hat einen Teller Leipziger Allerlei, einem traditionellen Gemüsegericht, und dazu ein Glas Feldschlößchen, einem bekannten lokalen Bier, bestellt.",
      solutionHTML:`Am Abend ${vp('hat er ein kleines Lokal in der Nähe des Augustusplatzes gefunden')}, wo viele sächsische Spezialitäten ${vp('serviert wurden')}. Manuel ${vp('hat einen Teller Leipziger Allerlei, einem traditionellen Gemüsegericht, und dazu ein Glas Feldschlößchen, einem bekannten lokalen Bier, bestellt')}.`,
      hint:"finden → <b>hat gefunden</b> | Passiv Perfekt: <b>serviert wurden</b> | bestellen → <b>hat bestellt</b>"},
     {id:'5-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Am'),W('Ende'),W('d__'),W('Tages'),VP('gehen'),W('Manuel'),W('zurück'),W('zu'),W('sein__'),W('Hotel'),W('und'),VT('sein'),W('zufried__'),W('mit'),W('d__'),W('was'),W('er'),VP('erleben'),W('hatt__'),W('Leipzig'),VP('beeindrucken'),W('ihn'),W('wied__'),W('einmal'),W('nicht'),W('nur'),W('durch'),W('sein__'),W('Geschichte'),W('sondern'),W('auch'),W('durch'),W('sein__'),W('besonder__'),W('Atmosphäre')],
+     prompt:[W('An'),W('Ende'),W('d__'),W('Tages'),VP('gehen'),W('Manuel'),W('zurück'),W('zu'),W('sein__'),W('Hotel'),W('und'),VT('sein'),W('zufried__'),W('mit'),W('d__'),W('was'),W('er'),VP('erleben'),W('hatt__'),W('Leipzig'),VP('beeindrucken'),W('ihn'),W('wied__'),W('einmal'),W('nicht'),W('nur'),W('durch'),W('sein__'),W('Geschichte'),W('sondern'),W('auch'),W('durch'),W('sein__'),W('besonder__'),W('Atmosphäre')],
      solution:"Am Ende des Tages ist Manuel zurück zu seinem Hotel gegangen und war zufrieden mit dem, was er erlebt hatte. Leipzig hatte ihn wieder einmal beeindruckt, nicht nur durch seine Geschichte, sondern auch durch seine besondere Atmosphäre.",
      solutionHTML:`Am Ende des Tages ${vp('ist Manuel zurück zu seinem Hotel gegangen')} und ${vt('war')} zufrieden mit dem, was er ${vp('erlebt hatte')}. Leipzig ${vp('hatte ihn wieder einmal beeindruckt')}, nicht nur durch seine Geschichte, sondern auch durch seine besondere Atmosphäre.`,
      hint:"gehen → <b>ist gegangen</b> | sein → Präteritum: <b>war</b> | erleben → Plusquamperfekt: <b>erlebt hatte</b>"},
@@ -941,7 +973,7 @@ const lessons = [
     //    in / kühl / Wasser / baumeln lassen, nachdem / sie / sicher / sein,
     //    dass / d__ / Wassertemperatur / nicht / zu / kalt / sein.
     {id:'9-7',part:2,badges:[['Präteritum','praet'],['Plusquamperfekt','plus']],
-     prompt:[VT('ausziehen'),W('sie'),W('ihr__'),W('bequem__'),W('Schuhe'),W('und'),W('ließ'),W('ihr__'),W('nackt__'),W('Füße'),W('im'),W('kühl__'),W('Wasser'),W('baumeln'),W('nachdem'),W('sie'),W('sich__'),VP('sein (PqP)'),W('dass'),W('d__'),W('Wassertemperatur'),W('nicht'),W('zu'),W('kalt'),VP('sein (PqP)')],
+     prompt:[VT('ausziehen'),W('sie'),W('ihr__'),W('bequem__'),W('Schuhe'),W('und'),W('ließ'),W('ihr__'),W('nackt__'),W('Füße'),W('in'),W('kühl__'),W('Wasser'),W('baumeln'),W('nachdem'),W('sie'),W('sich__'),VP('sein (PqP)'),W('dass'),W('d__'),W('Wassertemperatur'),W('nicht'),W('zu'),W('kalt'),VP('sein (PqP)')],
      solution:"Sie zog ihre bequemen Schuhe aus und ließ ihre nackten Füße im kühlen Wasser baumeln, nachdem sie sicher gewesen war, dass die Wassertemperatur nicht zu kalt gewesen war.",
      solutionHTML:`Sie ${vt('zog')} ihre bequemen Schuhe ${vt('aus')} und ${vt('ließ')} ihre nackten Füße im kühlen Wasser baumeln, nachdem sie sicher ${vp('gewesen war')}, dass die Wassertemperatur nicht zu kalt ${vp('gewesen war')}.`,
      hint:"ausziehen (trennbar) → Präteritum: <b>zog … aus</b> | lassen → Präteritum: <b>ließ</b> | sein (nachdem/dass) → Plusquamperfekt: <b>gewesen war</b> (2x Vorvergangenheit)"},
@@ -989,7 +1021,7 @@ const lessons = [
      solutionHTML:`Neuschwanstein ${vt('war')} ein weltberühmtes Schloss in Bayern, das von König Ludwig II. in Auftrag ${vp('gegeben worden war')}. Es ${vp('hatte in der Nähe von Füssen gelegen')}, wo es auf einem steilen Felsen majestätisch über das Tal ${vp('gethront hatte')}.`,
      hint:"sein → Präteritum: <b>war</b> | in Auftrag geben (Passiv Plusquamperfekt): <b>gegeben worden war</b> | liegen → Plusquamperfekt: <b>hatte gelegen</b> | thronen → <b>hatte gethront</b>"},
     {id:'6-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Schon'),W('beim'),W('erst__'),W('Anblick'),VP('sich vermeiden lassen (es)'),W('kaum'),W('dass'),W('man'),W('von'),W('d__'),W('Schönheit'),W('dies__'),W('Bauwerks'),VP('beeindrucken (Passiv)'),W('Neuschwanstein'),VP('bauen (Passiv)'),W('im'),W('19'),W('Jahrhundert'),W('und'),VP('zeigen'),W('ein__'),W('romantisch__'),W('Architektur'),W('d__'),W('von'),W('mittelalterlich__'),W('Burgen'),VP('inspirieren (Passiv)')],
+     prompt:[W('Schon'),W('bei'),W('erst__'),W('Anblick'),VP('sich vermeiden lassen (es)'),W('kaum'),W('dass'),W('man'),W('von'),W('d__'),W('Schönheit'),W('dies__'),W('Bauwerks'),VP('beeindrucken (Passiv)'),W('Neuschwanstein'),VP('bauen (Passiv)'),W('in'),W('19'),W('Jahrhundert'),W('und'),VP('zeigen'),W('ein__'),W('romantisch__'),W('Architektur'),W('d__'),W('von'),W('mittelalterlich__'),W('Burgen'),VP('inspirieren (Passiv)')],
      solution:"Schon beim ersten Anblick ließ es sich kaum vermeiden, dass man von der Schönheit dieses Bauwerks beeindruckt wurde. Neuschwanstein wurde im 19. Jahrhundert gebaut und hat eine romantische Architektur gezeigt, die von mittelalterlichen Burgen inspiriert worden war.",
      solutionHTML:`Schon beim ersten Anblick ${vt('ließ')} es sich kaum vermeiden, dass man von der Schönheit dieses Bauwerks ${vp('beeindruckt wurde')}. Neuschwanstein ${vp('wurde im 19. Jahrhundert gebaut')} und ${vp('hat eine romantische Architektur gezeigt')}, die von mittelalterlichen Burgen ${vp('inspiriert worden war')}.`,
      hint:"lassen → Präteritum: <b>ließ</b> | Passiv Perfekt: <b>beeindruckt wurde / gebaut wurde</b> | zeigen → <b>hat gezeigt</b> | inspiriert worden war = Passiv Plusquamperfekt"},
@@ -1009,7 +1041,7 @@ const lessons = [
      solutionHTML:`Es ${vt('war')} erstaunlich, wie viel Aufwand und Detail in den Bau dieses Schlosses ${vp('gesteckt worden war')}, obwohl es nie vollständig ${vp('fertiggestellt worden war')}.`,
      hint:"sein → Präteritum: <b>war</b> | Passiv Plusquamperfekt: <b>gesteckt worden war / fertiggestellt worden war</b> | 'obwohl'-Satz → Verb ans Ende"},
     {id:'6-6',part:2,badges:[['Präteritum','praet'],['Modalverb Prät.','modal']],
-     prompt:[W('Nicht'),W('nur'),W('d__'),W('Innere'),W('d__'),W('Schlosses'),VT('sein'),W('atemberaubend'),W('sondern'),W('auch'),W('d__'),W('Umgebung'),W('Wenn'),W('man'),VP('fragen'),W('wo'),W('man'),W('d__'),W('best__'),W('Blick'),W('auf'),W('d__'),W('Schloss'),W('haben'),VM('sollen'),W('dann'),VM('sollen'),W('man'),W('zur'),W('Marienbrücke'),W('gehen')],
+     prompt:[W('Nicht'),W('nur'),W('d__'),W('Innere'),W('d__'),W('Schlosses'),VT('sein'),W('atemberaubend'),W('sondern'),W('auch'),W('d__'),W('Umgebung'),W('Wenn'),W('man'),VP('fragen'),W('wo'),W('man'),W('d__'),W('best__'),W('Blick'),W('auf'),W('d__'),W('Schloss'),W('haben'),VM('sollen'),W('dann'),VM('sollen'),W('man'),W('zu'),W('Marienbrücke'),W('gehen')],
      solution:"Nicht nur das Innere des Schlosses war atemberaubend, sondern auch die Umgebung. Wenn man fragte, wo man den besten Blick auf das Schloss haben sollte, dann sollte man zur Marienbrücke gehen.",
      solutionHTML:`Nicht nur das Innere des Schlosses ${vt('war')} atemberaubend, sondern auch die Umgebung. Wenn man ${vt('fragte')}, wo man den besten Blick auf das Schloss haben ${vm('sollte')}, dann ${vm('sollte')} man zur Marienbrücke gehen.`,
      hint:"sein → Präteritum: <b>war</b> | fragen → Präteritum: <b>fragte</b> (im wenn-Satz) | sollen → Präteritum: <b>sollte</b> (2x)"},
@@ -1019,7 +1051,7 @@ const lessons = [
      solutionHTML:`Von dort aus ${vp('hatte')} man einen perfekten Ausblick auf Neuschwanstein und die umgebende Natur. Viele Besucher ${vp('haben entschieden')}, eine Wanderung zu den naheliegenden Seen zu unternehmen, die genauso malerisch ${vt('waren')} wie das Schloss selbst.`,
      hint:"haben → Plusquamperfekt: <b>hatte</b> (man = allgemein, Vorvergangenheit) | entscheiden → <b>haben entschieden</b> | sein (Pl.) → Präteritum: <b>waren</b>"},
     {id:'6-8',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[W('Besonders'),W('interessant'),VT('sein'),W('d__'),W('Verwendung'),W('d__'),W('Schlosses'),W('als'),W('Inspirationsquelle'),W('für'),W('viele'),W('modern__'),W('Märchen'),W('Disney'),VP('sich inspirieren lassen'),W('beispielsweis__'),W('von'),W('Neuschwanstein'),W('um'),W('d__'),W('Schloss'),W('im'),W('Film'),W('&bdquo;Dornröschen&rdquo'),W('zu'),W('gestalt__')],
+     prompt:[W('Besonders'),W('interessant'),VT('sein'),W('d__'),W('Verwendung'),W('d__'),W('Schlosses'),W('als'),W('Inspirationsquelle'),W('für'),W('viele'),W('modern__'),W('Märchen'),W('Disney'),VP('sich inspirieren lassen'),W('beispielsweis__'),W('von'),W('Neuschwanstein'),W('um'),W('d__'),W('Schloss'),W('in'),W('Film'),W('&bdquo;Dornröschen&rdquo'),W('zu'),W('gestalt__')],
      solution:"Besonders interessant war die Verwendung des Schlosses als Inspirationsquelle für viele moderne Märchen. Disney hat sich beispielsweise von Neuschwanstein inspirieren lassen, um das Schloss im Film &bdquo;Dornröschen&rdquo; zu gestalten.",
      solutionHTML:`Besonders interessant ${vt('war')} die Verwendung des Schlosses als Inspirationsquelle für viele moderne Märchen. Disney ${vp('hat sich beispielsweise von Neuschwanstein inspirieren lassen')}, um das Schloss im Film &bdquo;Dornröschen&rdquo; zu gestalten.`,
      hint:"sein → Präteritum: <b>war</b> | sich inspirieren lassen → <b>hat sich … inspirieren lassen</b> | 'um … zu + Infinitiv' = Finalsatz"},
@@ -1058,7 +1090,7 @@ const lessons = [
     //    d_ / sein / mit / lecker / Marmeladen / bestrichen
     //    und trinken / frisch / und / aromatisch / Kaffee.
     {id:'12-1',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[VP('verbringen'),W('Anna'),W('und'),W('Paul'),W('ein__'),W('lang__'),W('und'),W('abwechslungsreich__'),W('Tag'),W('in'),W('Dresden'),W('Beim'),W('Frühstück'),VP('genießen'),W('d__'),W('Paar'),W('d__'),W('frisch'),W('gebackenen'),W('Brötchen'),W('d__'),W('mit'),W('lecker__'),W('Marmeladen'),VP('bestreichen (Passiv)'),VT('sein'),W('und'),VP('trinken'),W('frisch__'),W('und'),W('aromatisch__'),W('Kaffee')],
+     prompt:[VP('verbringen'),W('Anna'),W('und'),W('Paul'),W('ein__'),W('lang__'),W('und'),W('abwechslungsreich__'),W('Tag'),W('in'),W('Dresden'),W('Bei'),W('Frühstück'),VP('genießen'),W('d__'),W('Paar'),W('d__'),W('frisch'),W('gebackenen'),W('Brötchen'),W('d__'),W('mit'),W('lecker__'),W('Marmeladen'),VP('bestreichen (Passiv)'),VT('sein'),W('und'),VP('trinken'),W('frisch__'),W('und'),W('aromatisch__'),W('Kaffee')],
      solution:"Anna und Paul haben einen langen und abwechslungsreichen Tag in Dresden verbracht. Beim Frühstück hat das Paar die frisch gebackenen Brötchen, die mit leckeren Marmeladen bestrichen worden waren, genossen und frischen und aromatischen Kaffee getrunken.",
      solutionHTML:`Anna und Paul ${vp('haben einen langen und abwechslungsreichen Tag in Dresden verbracht')}. Beim Frühstück ${vp('hat das Paar die frisch gebackenen Brötchen, die mit leckeren Marmeladen bestrichen worden waren, genossen')} und frischen und aromatischen Kaffee ${vp('getrunken')}.`,
      hint:"verbringen → <b>haben verbracht</b> | genießen → <b>hat genossen</b> | bestreichen → Passiv Plusquamperfekt im Rel.-Satz: <b>bestrichen worden waren</b> | trinken → <b>haben getrunken</b>"},
@@ -1067,7 +1099,7 @@ const lessons = [
     //    D_ / gotisch / Kirche, deren / sich erheben / majestätisch / Kuppel / über / d__ / Dächer / Dresdens,
     //    bieten / ein / atemberaubend / Ausblick / auf / d__ / Altstadt.
     {id:'12-2',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Nach'),W('d__'),W('Frühstück'),VP('sich machen'),W('sie'),W('sich'),W('auf'),W('d__'),W('Weg'),W('zur'),W('bekannt__'),W('Frauenkirche'),W('d__'),W('gotisch__'),W('Kirche'),W('der__'),W('majestätisch__'),W('Kuppel'),W('sich'),W('über'),W('d__'),W('Dächer'),W('Dresdens'),VP('erheben'),VP('bieten'),W('ein__'),W('atemberaubenden'),W('Ausblick'),W('auf'),W('d__'),W('Altstadt')],
+     prompt:[W('Nach'),W('d__'),W('Frühstück'),VP('sich machen'),W('sie'),W('sich'),W('auf'),W('d__'),W('Weg'),W('zu'),W('bekannt__'),W('Frauenkirche'),W('d__'),W('gotisch__'),W('Kirche'),W('der__'),W('majestätisch__'),W('Kuppel'),W('sich'),W('über'),W('d__'),W('Dächer'),W('Dresdens'),VP('erheben'),VP('bieten'),W('ein__'),W('atemberaubenden'),W('Ausblick'),W('auf'),W('d__'),W('Altstadt')],
      solution:"Nach dem Frühstück haben sie sich auf den Weg zur bekannten Frauenkirche gemacht. Die gotische Kirche, deren majestätische Kuppel sich über die Dächer Dresdens erhoben hatte, hat einen atemberaubenden Ausblick auf die Altstadt geboten.",
      solutionHTML:`Nach dem Frühstück ${vp('haben sie sich auf den Weg zur bekannten Frauenkirche gemacht')}. Die gotische Kirche, deren majestätische Kuppel sich über die Dächer Dresdens ${vp('erhoben hatte')}, ${vp('hat einen atemberaubenden Ausblick auf die Altstadt geboten')}.`,
      hint:"sich machen → <b>haben sich gemacht</b> | erheben → Plusquamperfekt im Rel.-Satz: <b>erhoben hatte</b> (Kuppel existierte schon vorher) | bieten → <b>hat geboten</b> | 'deren' = Genitiv-Relativpronomen (f.)"},
@@ -1075,7 +1107,7 @@ const lessons = [
     // 3. Anna / sein / besonders / von / d__ / kunstvoll__ / Verzierungen / in / Inneren / d__ / Kirche / fasziniert,
     //    während / Paul / sehr / schätzen / d__ / Aussicht / von / d_ / Kuppel.
     {id:'12-3',part:1,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[VT('sein'),W('Anna'),W('besonders'),W('von'),W('d__'),W('kunstvoll__'),W('Verzierungen'),W('im'),W('Inneren'),W('d__'),W('Kirche'),W('fasziniert'),W('während'),W('Paul'),W('d__'),W('Aussicht'),W('von'),W('d__'),W('Kuppel'),W('sehr'),VP('schätzen')],
+     prompt:[VT('sein'),W('Anna'),W('besonders'),W('von'),W('d__'),W('kunstvoll__'),W('Verzierungen'),W('in'),W('Inneren'),W('d__'),W('Kirche'),W('fasziniert'),W('während'),W('Paul'),W('d__'),W('Aussicht'),W('von'),W('d__'),W('Kuppel'),W('sehr'),VP('schätzen')],
      solution:"Anna war besonders von den kunstvollen Verzierungen im Inneren der Kirche fasziniert, während Paul die Aussicht von der Kuppel sehr geschätzt hat.",
      solutionHTML:`Anna ${vt('war')} besonders von den kunstvollen Verzierungen im Inneren der Kirche fasziniert, während Paul die Aussicht von der Kuppel sehr ${vp('geschätzt hat')}.`,
      hint:"sein → Präteritum: <b>war</b> | schätzen → Perfekt im während-Satz: <b>geschätzt hat</b> | 'von den kunstvollen Verzierungen' = Dat. Pl. | 'im Inneren der Kirche' = Genitiv"},
@@ -1084,7 +1116,7 @@ const lessons = [
     //    d__ / für / sein / prächtig / Architektur / und / sein / beeindruckend / Sammlungen / bekannt / sein.
     //    Besonders / ziehen / d_ / Gemäldegalerie Alte Meister / Anna und Paul / in / ihr / Bann.
     {id:'12-4',part:1,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Im'),W('Anschluss'),VP('besuchen'),W('sie'),W('d__'),W('Zwinger'),W('d__'),W('für'),W('sein__'),W('prächtig__'),W('Architektur'),W('und'),W('sein__'),W('beeindruckenden'),W('Sammlungen'),W('bekannt'),VT('sein'),W('Besonders'),VP('ziehen'),W('d__'),W('Gemäldegalerie'),W('Alte'),W('Meister'),W('Anna'),W('und'),W('Paul'),W('in'),W('ihr__'),W('Bann')],
+     prompt:[W('In'),W('Anschluss'),VP('besuchen'),W('sie'),W('d__'),W('Zwinger'),W('d__'),W('für'),W('sein__'),W('prächtig__'),W('Architektur'),W('und'),W('sein__'),W('beeindruckenden'),W('Sammlungen'),W('bekannt'),VT('sein'),W('Besonders'),VP('ziehen'),W('d__'),W('Gemäldegalerie'),W('Alte'),W('Meister'),W('Anna'),W('und'),W('Paul'),W('in'),W('ihr__'),W('Bann')],
      solution:"Im Anschluss haben sie den Zwinger besucht, der für seine prächtige Architektur und seine beeindruckenden Sammlungen bekannt war. Besonders hat die Gemäldegalerie Alte Meister Anna und Paul in ihren Bann gezogen.",
      solutionHTML:`Im Anschluss ${vp('haben sie den Zwinger besucht')}, der für seine prächtige Architektur und seine beeindruckenden Sammlungen bekannt ${vt('war')}. Besonders ${vp('hat die Gemäldegalerie Alte Meister Anna und Paul in ihren Bann gezogen')}.`,
      hint:"besuchen → <b>haben besucht</b> | sein (im Rel.-Satz) → Präteritum: <b>war</b> | ziehen → <b>hat gezogen</b> | Inversion nach 'Besonders': hat die Galerie …"},
@@ -1102,7 +1134,7 @@ const lessons = [
     //    In / dies_ / Museum / Anna / und / Paul / bewundern / ein / außergewöhnlich / Sammlung /
     //    von / Juwelen und kunstvoll / gestaltet / Schatzstücken.
     {id:'12-6',part:2,badges:[['Präteritum','praet'],['Perfekt','perf']],
-     prompt:[W('Besonders'),VP('hervorzuheben sein'),W('auch'),W('d__'),W('Grüne'),W('Gewölbe'),W('d__'),W('sich'),W('im'),W('Residenzschloss'),VP('befinden'),W('In'),W('dies__'),W('Museum'),VP('bewundern'),W('Anna'),W('und'),W('Paul'),W('ein__'),W('außergewöhnlich__'),W('Sammlung'),W('von'),W('Juwelen'),W('und'),W('kunstvoll'),W('gestaltet__'),W('Schatzstücken')],
+     prompt:[W('Besonders'),VP('hervorzuheben sein'),W('auch'),W('d__'),W('Grüne'),W('Gewölbe'),W('d__'),W('sich'),W('in'),W('Residenzschloss'),VP('befinden'),W('In'),W('dies__'),W('Museum'),VP('bewundern'),W('Anna'),W('und'),W('Paul'),W('ein__'),W('außergewöhnlich__'),W('Sammlung'),W('von'),W('Juwelen'),W('und'),W('kunstvoll'),W('gestaltet__'),W('Schatzstücken')],
      solution:"Besonders hervorzuheben war auch das Grüne Gewölbe, das sich im Residenzschloss befunden hatte. In diesem Museum haben Anna und Paul eine außergewöhnliche Sammlung von Juwelen und kunstvoll gestalteten Schatzstücken bewundert.",
      solutionHTML:`Besonders hervorzuheben ${vt('war')} auch das Grüne Gewölbe, das sich im Residenzschloss ${vp('befunden hatte')}. In diesem Museum ${vp('haben Anna und Paul eine außergewöhnliche Sammlung von Juwelen und kunstvoll gestalteten Schatzstücken bewundert')}.`,
      hint:"sein → Präteritum: <b>war</b> | sich befinden → Plusquamperfekt: <b>befunden hatte</b> (das Gewölbe war dort schon vor ihrem Besuch) | bewundern → <b>haben bewundert</b> | Partizipialattribut: kunstvoll gestaltet<b>en</b> Schatzstücken"},
@@ -1122,7 +1154,7 @@ const lessons = [
     //    An / Nachmittag / besichtigen / sie / d__ / Semperoper / von / außen.
     //    D__ / beeindruckend / Gebäude / mit / sein / prächtig / Fassade / begeistern / Anna / und / Paul.
     {id:'12-8',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Zur'),W('Mittagszeit'),VP('einkehren'),W('Anna'),W('und'),W('Paul'),W('im'),W('traditionsreich__'),W('Watzke'),W('Gasthaus'),W('Dort'),VP('bestellen'),W('sie'),W('d__'),W('schmackhaft__'),W('und'),W('knusprig__'),W('Haxen'),W('und'),VP('genießen'),W('erfrischend__'),W('Bier'),W('vom'),W('Haus'),W('Am'),W('Nachmittag'),VP('besichtigen'),W('sie'),W('d__'),W('Semperoper'),W('von'),W('außen'),VT('sein'),W('d__'),W('beeindruckend__'),W('Gebäude'),W('mit'),W('sein__'),W('prächtig__'),W('Fassade'),W('d__'),W('Anna'),W('und'),W('Paul'),VP('begeistern')],
+     prompt:[W('Zu'),W('Mittagszeit'),VP('einkehren'),W('Anna'),W('und'),W('Paul'),W('in'),W('traditionsreich__'),W('Watzke'),W('Gasthaus'),W('Dort'),VP('bestellen'),W('sie'),W('d__'),W('schmackhaft__'),W('und'),W('knusprig__'),W('Haxen'),W('und'),VP('genießen'),W('erfrischend__'),W('Bier'),W('von'),W('Haus'),W('An'),W('Nachmittag'),VP('besichtigen'),W('sie'),W('d__'),W('Semperoper'),W('von'),W('außen'),VT('sein'),W('d__'),W('beeindruckend__'),W('Gebäude'),W('mit'),W('sein__'),W('prächtig__'),W('Fassade'),W('d__'),W('Anna'),W('und'),W('Paul'),VP('begeistern')],
      solution:"Zur Mittagszeit sind Anna und Paul im traditionsreichen Watzke Gasthaus eingekehrt. Dort haben sie die schmackhaften und knusprigen Haxen bestellt und erfrischendes Bier vom Haus genossen. Am Nachmittag haben sie die Semperoper von außen besichtigt. Das beeindruckende Gebäude mit seiner prächtigen Fassade war es, das Anna und Paul begeistert hat.",
      solutionHTML:`Zur Mittagszeit ${vp('sind Anna und Paul im traditionsreichen Watzke Gasthaus eingekehrt')}. Dort ${vp('haben sie die schmackhaften und knusprigen Haxen bestellt')} und erfrischendes Bier vom Haus ${vp('genossen')}. Am Nachmittag ${vp('haben sie die Semperoper von außen besichtigt')}. Das beeindruckende Gebäude mit seiner prächtigen Fassade ${vt('war')} es, das Anna und Paul ${vp('begeistert hat')}.`,
      hint:"einkehren → <b>sind eingekehrt</b> | bestellen → <b>haben bestellt</b> | genießen → <b>haben genossen</b> | besichtigen → <b>haben besichtigt</b> | sein → Präteritum: <b>war</b> | begeistern → <b>hat begeistert</b>"},
@@ -1133,7 +1165,7 @@ const lessons = [
     //    D__ / lebendig / Atmosphäre / und / d__ / vielfältig / Auswahl / machen /
     //    d__ / Abendessen / zu / ein / besondere / Erlebnis.
     {id:'12-9',part:2,badges:[['Perfekt','perf'],['Präteritum','praet']],
-     prompt:[W('Danach'),VP('bummeln'),W('sie'),W('entlang'),W('d__'),W('Terrassenufers'),W('d__'),W('für'),W('sein__'),W('malerisch__'),W('Ausblicke'),W('und'),W('d__'),W('entspannend__'),W('Atmosphäre'),W('bekannt'),VT('sein'),W('Am'),W('Abend'),VP('fahren'),W('Anna'),W('und'),W('Paul'),W('mit'),W('d__'),W('Straßenbahnlinie'),W('3'),W('in'),W('d__'),W('Neustadt'),VT('sein'),W('d__'),W('lebendig__'),W('Atmosphäre'),W('und'),W('d__'),W('vielfältig__'),W('Auswahl'),W('es'),W('d__'),W('d__'),W('Abendessen'),W('zu'),W('ein__'),W('besonder__'),W('Erlebnis'),VP('machen')],
+     prompt:[W('Danach'),VP('bummeln'),W('sie'),W('entlang'),W('d__'),W('Terrassenufers'),W('d__'),W('für'),W('sein__'),W('malerisch__'),W('Ausblicke'),W('und'),W('d__'),W('entspannend__'),W('Atmosphäre'),W('bekannt'),VT('sein'),W('An'),W('Abend'),VP('fahren'),W('Anna'),W('und'),W('Paul'),W('mit'),W('d__'),W('Straßenbahnlinie'),W('3'),W('in'),W('d__'),W('Neustadt'),VT('sein'),W('d__'),W('lebendig__'),W('Atmosphäre'),W('und'),W('d__'),W('vielfältig__'),W('Auswahl'),W('es'),W('d__'),W('d__'),W('Abendessen'),W('zu'),W('ein__'),W('besonder__'),W('Erlebnis'),VP('machen')],
      solution:"Danach sind sie entlang des Terrassenufers gebummelt, das für seine malerischen Ausblicke und die entspannende Atmosphäre bekannt war. Am Abend sind Anna und Paul mit der Straßenbahnlinie 3 in die Neustadt gefahren. Die lebendige Atmosphäre und die vielfältige Auswahl waren es, die das Abendessen zu einem besonderen Erlebnis gemacht haben.",
      solutionHTML:`Danach ${vp('sind sie entlang des Terrassenufers gebummelt')}, das für seine malerischen Ausblicke und die entspannende Atmosphäre bekannt ${vt('war')}. Am Abend ${vp('sind Anna und Paul mit der Straßenbahnlinie 3 in die Neustadt gefahren')}. Die lebendige Atmosphäre und die vielfältige Auswahl ${vt('waren')} es, die das Abendessen zu einem besonderen Erlebnis ${vp('gemacht haben')}.`,
      hint:"bummeln → <b>sind gebummelt</b> (Bewegung) | sein → Präteritum: <b>war / waren</b> | fahren → <b>sind gefahren</b> | machen → Perfekt im Rel.-Satz: <b>gemacht haben</b> | 'entlang des Terrassenufers' = Genitiv"},
@@ -1161,123 +1193,181 @@ const lessons = [
 // STATE & ENGINE
 // ════════════════════════════════════════════════════════════════
 let currentTab = 0;
-const state = {}; // keyed by exercise id
+const state = {};
 
-function norm(s){
-  return s.toLowerCase().replace(/[.,!?;:\-–&bdquo;"]/g,'').replace(/\s+/g,' ').trim()
-    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
-}
-
-function buildAll(){
-  // Tab buttons
-  const tabBar = document.getElementById('tab-bar');
-  const panelsDiv = document.getElementById('panels');
-  lessons.forEach((lesson, i) => {
-    // Tab button
-    const btn = document.createElement('button');
-    btn.className = 'tab-btn' + (i===0?' active':'');
-    btn.textContent = lesson.emoji + ' ' + lesson.title;
-    btn.onclick = () => switchTab(i);
-    tabBar.appendChild(btn);
-
-    // Panel
-    const panel = document.createElement('div');
-    panel.className = 'panel' + (i===0?' active':'');
-    panel.id = 'panel-' + i;
-    panel.innerHTML = `<main>${buildPanel(lesson)}</main>`;
-    panelsDiv.appendChild(panel);
-
-    // Init state
-    lesson.exercises.forEach(ex => {
-      state[ex.id] = { answered: false, correct: false };
-    });
+/* ── HOME ── */
+function buildHomeGrid(){
+  var grid = document.getElementById('home-grid');
+  lessons.forEach(function(lesson, i){
+    var card = document.createElement('div');
+    card.className = 'lesson-card';
+    card.id = 'hcard-' + i;
+    card.innerHTML =
+      '<span class="lc-emoji">' + lesson.emoji + '</span>' +
+      '<div class="lc-title">' + lesson.title + '</div>' +
+      '<div class="lc-count">' + lesson.exercises.length + ' Aufgaben</div>' +
+      '<div class="lc-badge" id="hbadge-' + i + '">\u2713</div>';
+    card.addEventListener('click', (function(idx){ return function(){ openLesson(idx); }; })(i));
+    grid.appendChild(card);
   });
-  updateProgress();
 }
 
-function buildPanel(lesson){
-  let html = `<div class="intro-card">${lesson.intro}</div>`;
-  let currentPart = -1;
-  lesson.exercises.forEach(ex => {
-    if (ex.part !== undefined && ex.part !== currentPart) {
-      currentPart = ex.part;
-      if (ex.part > 0) html += `<div class="part-divider"><span>${lesson.emoji} Teil ${ex.part}</span></div>`;
-    }
-    const badgeHTML = ex.badges.map(([label, type]) => {
-      const cls = type==='perf'?'tbadge pill-perf':type==='modal'?'tbadge pill-modal':'tbadge pill-praet';
-      return `<span class="${cls}">${label}</span>`;
-    }).join('');
-    const num = ex.id.split('-')[1];
-    html += `
-    <div class="ex-card" id="card-${ex.id}">
-      <div class="card-header">
-        <div class="ex-num">${num}</div>
-        <span class="card-meta">Aufgabe ${num} / ${lesson.exercises.length}</span>
-        <div class="tense-badges">${badgeHTML}</div>
-      </div>
-      <div class="prompt">${ex.prompt.join(' ')}</div>
-      <textarea id="ta-${ex.id}" placeholder="Schreiben Sie Ihre Sätze hier …" oninput="onInput('${ex.id}')"></textarea>
-      <div class="hint-text" id="hint-${ex.id}">💡 ${ex.hint}</div>
-      <div class="btn-row">
-        <button class="btn btn-check" onclick="checkOne('${ex.id}')">✔ Prüfen</button>
-        <button class="btn btn-hint"  onclick="toggleHint('${ex.id}')">💡 Tipp</button>
-        <button class="btn btn-reset" onclick="resetOne('${ex.id}')">↺</button>
-      </div>
-      <div class="feedback" id="fb-${ex.id}"></div>
-    </div>`;
-  });
-  return html;
-}
-
-function switchTab(i){
-  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
-  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+function openLesson(i){
   currentTab = i;
+  /* show only panel i */
+  for(var j=0; j<lessons.length; j++){
+    var p = document.getElementById('panel-' + j);
+    if(p) p.style.display = (j===i) ? 'block' : 'none';
+  }
+  document.getElementById('ex-title').textContent = lessons[i].emoji + ' ' + lessons[i].title;
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('exercise-screen').style.display = 'block';
   updateProgress();
   window.scrollTo(0,0);
 }
 
-function toggleHint(id){document.getElementById('hint-'+id).classList.toggle('show');}
+function goHome(){
+  document.getElementById('exercise-screen').style.display = 'none';
+  document.getElementById('home-screen').style.display = 'block';
+  updateHomeCards();
+  window.scrollTo(0,0);
+}
 
+function updateHomeCards(){
+  lessons.forEach(function(lesson, i){
+    var allOk = lesson.exercises.every(function(ex){ return state[ex.id] && state[ex.id].correct; });
+    var card  = document.getElementById('hcard-'  + i);
+    var badge = document.getElementById('hbadge-' + i);
+    if(card)  card.classList.toggle('lc-done', allOk);
+    if(badge) badge.classList.toggle('show', allOk);
+  });
+}
+
+/* ── PROMPT RENDERER ── */
+function promptToken(spanHTML){
+  var cls = '', txt = spanHTML;
+  var mc = spanHTML.match(/class="([^"]*)"/);  if(mc) cls = mc[1];
+  var mt = spanHTML.match(/>([^<]*)</);         if(mt) txt = mt[1];
+  if(cls.indexOf('v-perf')  >= 0) return '<span class="pv-perf">'  + txt + '</span>';
+  if(cls.indexOf('v-praet') >= 0) return '<span class="pv-praet">' + txt + '</span>';
+  if(cls.indexOf('v-modal') >= 0) return '<span class="pv-modal">' + txt + '</span>';
+  if(cls.indexOf('v-plus')  >= 0) return '<span class="pv-plus">'  + txt + '</span>';
+  return '<span class="pv-word">' + txt + '</span>';
+}
+function renderPrompt(arr){
+  return arr.map(promptToken).join('<span class="pv-sep"> / </span>');
+}
+
+/* ── PANEL BUILDER ── */
+function buildPanel(lesson){
+  var html = '<div class="intro-card">' + lesson.intro + '</div>';
+  var curPart = -1;
+  lesson.exercises.forEach(function(ex){
+    if(ex.part !== undefined && ex.part !== curPart){
+      curPart = ex.part;
+      if(ex.part > 0) html += '<div class="part-divider"><span>' + lesson.emoji + ' Teil ' + ex.part + '</span></div>';
+    }
+    var badgeHTML = ex.badges.map(function(b){
+      var cls = b[1]==='perf'?'tbadge pill-perf': b[1]==='modal'?'tbadge pill-modal': b[1]==='plus'?'tbadge pill-plus':'tbadge pill-praet';
+      return '<span class="' + cls + '">' + b[0] + '</span>';
+    }).join('');
+    var num = ex.id.split('-')[1];
+    html +=
+      '<div class="ex-card" id="card-' + ex.id + '">' +
+        '<div class="card-header">' +
+          '<div class="ex-num">' + num + '</div>' +
+          '<span class="card-meta">Aufgabe ' + num + ' / ' + lesson.exercises.length + '</span>' +
+          '<div class="tense-badges">' + badgeHTML + '</div>' +
+        '</div>' +
+        '<div class="prompt-line">' + renderPrompt(ex.prompt) + '</div>' +
+        '<textarea id="ta-' + ex.id + '" placeholder="Schreiben Sie Ihre S\u00e4tze hier \u2026"></textarea>' +
+        '<div class="hint-text" id="hint-' + ex.id + '">\ud83d\udca1 ' + ex.hint + '</div>' +
+        '<div class="btn-row">' +
+          '<button class="btn btn-check" data-id="' + ex.id + '">\u2714 Pr\u00fcfen</button>' +
+          '<button class="btn btn-hint"  data-id="' + ex.id + '">\ud83d\udca1 Tipp</button>' +
+          '<button class="btn btn-reset" data-id="' + ex.id + '">\u21ba</button>' +
+        '</div>' +
+        '<div class="feedback" id="fb-' + ex.id + '"></div>' +
+      '</div>';
+  });
+  return html;
+}
+
+/* ── INIT ── */
+function buildAll(){
+  var panelsDiv = document.getElementById('panels');
+  lessons.forEach(function(lesson, i){
+    var panel = document.createElement('div');
+    panel.id = 'panel-' + i;
+    /* hide all except panel-0 */
+    panel.style.display = (i===0) ? 'block' : 'none';
+    panel.innerHTML = '<main>' + buildPanel(lesson) + '</main>';
+    panelsDiv.appendChild(panel);
+    lesson.exercises.forEach(function(ex){
+      state[ex.id] = { answered:false, correct:false };
+    });
+  });
+  buildHomeGrid();
+  document.getElementById('back-btn').addEventListener('click', goHome);
+}
+
+/* ── EVENT DELEGATION ── */
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-id]');
+  if(!btn) return;
+  var id = btn.dataset.id;
+  if(btn.classList.contains('btn-check'))      checkOne(id);
+  else if(btn.classList.contains('btn-hint'))  toggleHint(id);
+  else if(btn.classList.contains('btn-reset')) resetOne(id);
+});
+document.addEventListener('input', function(e){
+  if(e.target.tagName==='TEXTAREA' && e.target.id.startsWith('ta-'))
+    onInput(e.target.id.slice(3));
+});
+
+/* ── LOGIC ── */
+function norm(s){
+  return s.toLowerCase()
+    .replace(/[.,!?;:\-\u2013\u201e"]/g,'').replace(/\s+/g,' ').trim()
+    .replace(/\u00e4/g,'ae').replace(/\u00f6/g,'oe').replace(/\u00fc/g,'ue').replace(/\u00df/g,'ss');
+}
+function toggleHint(id){ document.getElementById('hint-'+id).classList.toggle('show'); }
 function onInput(id){
   document.getElementById('card-'+id).classList.remove('correct','wrong');
   document.getElementById('fb-'+id).className='feedback';
   state[id]={answered:false,correct:false};
   updateProgress();
 }
-
 function checkOne(id){
-  const lesson = lessons[currentTab];
-  const ex = lesson.exercises.find(e=>e.id===id);
-  const ta = document.getElementById('ta-'+id);
-  const fb = document.getElementById('fb-'+id);
-  const card = document.getElementById('card-'+id);
-  const val = ta.value.trim();
+  var lesson=lessons[currentTab];
+  var ex=lesson.exercises.find(function(e){return e.id===id;});
+  var ta=document.getElementById('ta-'+id);
+  var fb=document.getElementById('fb-'+id);
+  var card=document.getElementById('card-'+id);
+  var val=ta.value.trim();
   if(!val){ta.style.borderColor='var(--amber)';return;}
-  const sols = Array.isArray(ex.solution)?ex.solution:[ex.solution];
-  const ok = sols.some(s=>norm(val)===norm(s));
+  var sols=Array.isArray(ex.solution)?ex.solution:[ex.solution];
+  var ok=sols.some(function(s){return norm(val)===norm(s);});
   state[id]={answered:true,correct:ok};
   if(ok){
     card.classList.add('correct');card.classList.remove('wrong');
     fb.className='feedback ok show';
-    fb.innerHTML='<div class="flabel">✅ Sehr gut!</div><div class="muster">Ihre Antwort ist korrekt.</div>';
+    fb.innerHTML='<div class="flabel">\u2705 Sehr gut!</div><div class="muster">Ihre Antwort ist korrekt.</div>';
   }else{
     card.classList.add('wrong');card.classList.remove('correct');
     fb.className='feedback bad show';
-    fb.innerHTML=`<div class="flabel">❌ Nicht ganz richtig.</div><div class="muster">📝 Musterlösung:<br>${ex.solutionHTML}</div>`;
+    fb.innerHTML='<div class="flabel">\u274c Nicht ganz richtig.</div><div class="muster">\ud83d\udcdd Musterl\u00f6sung:<br>'+ex.solutionHTML+'</div>';
   }
   updateProgress();
 }
-
 function checkAll(){
-  const lesson = lessons[currentTab];
-  lesson.exercises.forEach(ex=>{
+  var lesson=lessons[currentTab];
+  lesson.exercises.forEach(function(ex){
     if(document.getElementById('ta-'+ex.id).value.trim()) checkOne(ex.id);
   });
-  const correct = lesson.exercises.filter(ex=>state[ex.id]&&state[ex.id].correct).length;
-  showScore(correct, lesson.exercises.length);
+  var correct=lesson.exercises.filter(function(ex){return state[ex.id]&&state[ex.id].correct;}).length;
+  showScore(correct,lesson.exercises.length);
 }
-
 function resetOne(id){
   document.getElementById('ta-'+id).value='';
   document.getElementById('card-'+id).classList.remove('correct','wrong');
@@ -1286,24 +1376,22 @@ function resetOne(id){
   state[id]={answered:false,correct:false};
   updateProgress();
 }
-
-function resetAll(){
-  lessons[currentTab].exercises.forEach(ex=>resetOne(ex.id));
-}
-
+function resetAll(){lessons[currentTab].exercises.forEach(function(ex){resetOne(ex.id);});}
 function updateProgress(){
-  const lesson = lessons[currentTab];
-  const done = lesson.exercises.filter(ex=>state[ex.id]&&state[ex.id].answered).length;
-  const total = lesson.exercises.length;
+  var lesson=lessons[currentTab];
+  var done=lesson.exercises.filter(function(ex){return state[ex.id]&&state[ex.id].answered;}).length;
+  var total=lesson.exercises.length;
   document.getElementById('prog-fill').style.width=Math.round(done/total*100)+'%';
-  document.getElementById('prog-label').textContent=`${done} / ${total} bearbeitet`;
-  document.getElementById('sc-num').textContent=`0/${total}`;
+  document.getElementById('prog-label').textContent=done+' / '+total+' bearbeitet';
 }
-
 function showScore(correct,total){
-  document.getElementById('sc-num').textContent=`${correct}/${total}`;
-  const pct=Math.round(correct/total*100);
-  const [emoji,msg]=pct===100?['🏆','Perfekt! Alle Aufgaben richtig!']:pct>=70?['🌟','Sehr gut! Fast alles stimmt.']:pct>=50?['👍','Gut gemacht! Weiter üben.']:['📚','Schau dir die Musterlösungen an!'];
+  document.getElementById('sc-num').textContent=correct+'/'+total;
+  var pct=Math.round(correct/total*100);
+  var emoji,msg;
+  if(pct===100){emoji='\ud83c\udfc6';msg='Perfekt! Alle Aufgaben richtig!';}
+  else if(pct>=70){emoji='\ud83c\udf1f';msg='Sehr gut! Fast alles stimmt.';}
+  else if(pct>=50){emoji='\ud83d\udc4d';msg='Gut gemacht! Weiter \u00fcben.';}
+  else{emoji='\ud83d\udcda';msg='Schau dir die Musterl\u00f6sungen an!';}
   document.getElementById('sc-emoji').textContent=emoji;
   document.getElementById('sc-msg').textContent=msg;
   document.getElementById('score-overlay').classList.add('show');
