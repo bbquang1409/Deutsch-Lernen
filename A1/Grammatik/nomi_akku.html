@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Nominativ & Akkusativ</title>
+<style>
+:root {
+  --bg: #f2f1ed;
+  --card: #ffffff;
+  --border: #e0ded6;
+  --text: #1a1917;
+  --text2: #5c5a57;
+  --text3: #9a9892;
+  --teal: #0f6e56;
+  --teal-l: #e1f5ee;
+  --teal-m: #1d9e75;
+  --red: #a32d2d;
+  --red-l: #fcebeb;
+  --amber: #854f0b;
+  --amber-l: #faeeda;
+  --blue: #185fa5;
+  --blue-l: #e6f1fb;
+  --blue-m: #378add;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ── HOME ── */
+.home-header{
+  background:var(--teal);
+  padding:2rem 1.25rem 1.5rem;
+  color:#fff;
+}
+.home-header h1{font-size:1.3rem;font-weight:700;letter-spacing:-0.01em;}
+.home-header p{font-size:0.78rem;opacity:0.72;margin-top:4px;}
+.home-totals{
+  display:flex;gap:10px;margin-top:1rem;
+}
+.home-stat{
+  background:rgba(255,255,255,0.14);
+  border-radius:10px;
+  padding:8px 14px;
+  font-size:0.75rem;
+  text-align:center;
+}
+.home-stat strong{display:block;font-size:1.1rem;font-weight:700;}
+
+.home-body{flex:1;padding:1rem 1rem 2rem;}
+.home-body h2{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px;}
+
+.level-card{
+  background:var(--card);
+  border-radius:16px;
+  border:1px solid var(--border);
+  padding:1rem 1.1rem;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  cursor:pointer;
+  transition:transform 0.12s,box-shadow 0.12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.level-card:active{transform:scale(0.97);}
+.level-card.done{border-color:var(--teal-m);}
+
+.level-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+}
+.level-info{flex:1;min-width:0;}
+.level-title{font-size:1rem;font-weight:700;color:var(--text);}
+.level-desc{font-size:0.75rem;color:var(--text2);margin-top:2px;line-height:1.4;}
+.level-meta{display:flex;align-items:center;gap:8px;margin-top:6px;}
+.diff-badge{
+  font-size:0.65rem;font-weight:700;
+  padding:2px 8px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.d1{background:#e1f5ee;color:#0f6e56;}
+.d2{background:#e6f1fb;color:#185fa5;}
+.d3{background:#faeeda;color:#854f0b;}
+.d4{background:#faece7;color:#993c1d;}
+.d5{background:#f7c1c1;color:#a32d2d;}
+.level-score-txt{font-size:0.72rem;color:var(--text3);}
+
+.mini-progress{
+  height:3px;background:var(--border);border-radius:2px;
+  overflow:hidden;margin-top:6px;
+}
+.mini-progress-fill{height:100%;background:var(--teal-m);border-radius:2px;transition:width 0.4s;}
+
+.level-chevron{color:var(--text3);font-size:1.2rem;flex-shrink:0;}
+
+/* ── EXERCISE SCREEN ── */
+.ex-header{
+  background:var(--teal);
+  padding:0.9rem 1rem;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:50;
+}
+.back-btn{
+  background:rgba(255,255,255,0.18);
+  border:none;color:#fff;
+  width:36px;height:36px;border-radius:50%;
+  font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.back-btn:active{background:rgba(255,255,255,0.3);}
+.ex-header-info{flex:1;min-width:0;}
+.ex-header-title{font-size:0.95rem;font-weight:700;color:#fff;}
+.ex-header-sub{font-size:0.7rem;color:rgba(255,255,255,0.7);margin-top:1px;}
+.ex-score-chip{
+  background:rgba(255,255,255,0.18);
+  border-radius:20px;padding:4px 11px;
+  font-size:0.78rem;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+
+.ex-progress{height:3px;background:rgba(255,255,255,0.2);}
+.ex-progress-fill{height:100%;background:#fff;transition:width 0.4s;}
+
+.ex-body{flex:1;padding:0.875rem 0.875rem 3rem;}
+
+.q-list{display:flex;flex-direction:column;gap:0.75rem;}
+.q-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:0.875rem 1rem;
+}
+.q-num{
+  font-size:0.62rem;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;
+}
+.q-sent{
+  font-size:1.02rem;line-height:1.8;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:0 1px;
+}
+.blank{
+  display:inline-block;
+  min-width:46px;padding:1px 6px;
+  border-bottom:2px solid #b0ada5;
+  text-align:center;
+  border-radius:4px 4px 0 0;
+  font-size:0.95rem;
+  cursor:pointer;
+  transition:all 0.13s;
+  -webkit-tap-highlight-color:transparent;
+}
+.blank:active{opacity:0.7;}
+.blank.sel{border-bottom-color:var(--blue-m);background:var(--blue-l);}
+.blank.ok{border-bottom-color:var(--teal-m);background:var(--teal-l);color:var(--teal);font-weight:700;cursor:default;}
+.blank.bad{border-bottom-color:var(--red);background:var(--red-l);color:var(--red);}
+.blank.rev{border-bottom-color:var(--blue-m);background:var(--blue-l);color:var(--blue);cursor:default;}
+
+.opts-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+.opt{
+  padding:7px 16px;border-radius:22px;
+  border:1.5px solid var(--border);
+  background:var(--bg);
+  font-size:0.9rem;font-weight:600;
+  cursor:pointer;color:var(--text);
+  transition:all 0.12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.opt:active{transform:scale(0.94);background:var(--teal-l);border-color:var(--teal-m);color:var(--teal);}
+
+.analysis{
+  margin-top:10px;padding:10px 12px;
+  border-radius:8px;border-left:3px solid;
+  font-size:0.79rem;line-height:1.55;
+}
+.analysis.wrong{background:#fff8f3;border-color:var(--amber);color:#3d2506;}
+.analysis.hint{background:var(--teal-l);border-color:var(--teal-m);color:#063d28;}
+.analysis-label{
+  font-size:0.65rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.07em;
+  margin-bottom:5px;opacity:0.65;
+}
+.ktag{
+  display:inline-block;font-size:0.67rem;font-weight:700;
+  padding:1px 7px;border-radius:10px;margin-right:4px;
+  vertical-align:middle;
+}
+.ktag-n{background:var(--blue-l);color:var(--blue);}
+.ktag-a{background:var(--amber-l);color:var(--amber);}
+
+.hint-row{display:flex;justify-content:flex-end;margin-top:8px;}
+.hint-btn{
+  font-size:0.72rem;color:var(--text3);
+  background:none;border:none;cursor:pointer;
+  text-decoration:underline;padding:2px 0;
+}
+
+/* Result */
+.result{
+  text-align:center;padding:3rem 1rem 2rem;
+}
+.result-big{font-size:4rem;font-weight:800;color:var(--teal);line-height:1;}
+.result-pct{font-size:0.85rem;color:var(--text2);margin-top:6px;}
+.result-msg{font-size:1rem;margin-top:14px;color:var(--text);line-height:1.5;}
+.result-btns{display:flex;flex-direction:column;gap:10px;margin-top:24px;max-width:260px;margin-left:auto;margin-right:auto;}
+.btn-primary{
+  padding:12px 0;border-radius:10px;
+  background:var(--teal);color:#fff;border:none;
+  font-size:0.9rem;font-weight:700;cursor:pointer;
+}
+.btn-secondary{
+  padding:11px 0;border-radius:10px;
+  background:var(--card);color:var(--teal);
+  border:1.5px solid var(--teal-m);
+  font-size:0.9rem;font-weight:700;cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div class="screen active" id="screen-home">
+  <div class="home-header">
+    <h1>Nominativ &amp; Akkusativ</h1>
+    <p>Miteinander! Deutsch A1 · Grammatikübungen</p>
+    <div class="home-totals">
+      <div class="home-stat"><strong id="ht-correct">0</strong>Richtig</div>
+      <div class="home-stat"><strong id="ht-total">65</strong>Gesamt</div>
+      <div class="home-stat"><strong id="ht-pct">0%</strong>Fortschritt</div>
+    </div>
+  </div>
+  <div class="home-body">
+    <h2>Wähle eine Übung</h2>
+    <div id="level-list"></div>
+  </div>
+</div>
+
+<!-- EXERCISE SCREEN -->
+<div class="screen" id="screen-ex">
+  <div class="ex-header">
+    <button class="back-btn" onclick="goHome()">&#8592;</button>
+    <div class="ex-header-info">
+      <div class="ex-header-title" id="ex-title"></div>
+      <div class="ex-header-sub" id="ex-sub"></div>
+    </div>
+    <div class="ex-score-chip" id="ex-chip">0/0</div>
+  </div>
+  <div class="ex-progress"><div class="ex-progress-fill" id="ex-bar" style="width:0%"></div></div>
+  <div class="ex-body" id="ex-body"></div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const TABS = [
+  {
+    id:0, title:"Leicht 1", diff:1, diffLabel:"Leicht",
+    icon:"✏️", iconBg:"#e1f5ee",
+    desc:"Nur Akkusativ · definiter Artikel · 1 Lücke",
+    sentences:[
+      {text:["Der Schüler fragt "," Lehrer."],blanks:[{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „fragen" → Wen/Was? „der Lehrer" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["den","die","das","ein"]},
+      {text:["Herr Braun nimmt "," Buch."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „nehmen" → Wen/Was? „das Buch" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b> (unverändert).`}],opts:["den","die","das","ein"]},
+      {text:["Robert schreibt "," Satz."],blanks:[{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „schreiben" → Wen/Was? „der Satz" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["den","die","das","ein"]},
+      {text:["Frau Meyer trifft "," Lehrerin."],blanks:[{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „treffen" → Wen/Was? „die Lehrerin" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b> (unverändert).`}],opts:["den","die","das","eine"]},
+      {text:["Wir üben fleißig "," Grammatik."],blanks:[{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „üben" → Wen/Was? „die Grammatik" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["den","die","das"]},
+      {text:["Die Studenten lernen "," Wörter."],blanks:[{answer:"die",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „lernen" → Wen/Was? „die Wörter" = <b>Plural</b>. Im Akkusativ Plural: <b>die → die</b>.`}],opts:["den","die","das"]},
+      {text:["Der Pilot fliegt "," Flugzeug."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „fliegen" → Wen/Was? „das Flugzeug" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["den","die","das"]},
+      {text:["Die Katze fängt "," Maus."],blanks:[{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „fangen" → Wen/Was? „die Maus" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["den","die","das"]},
+      {text:["Der Hund bringt "," Stock."],blanks:[{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „bringen" → Wen/Was? „der Stock" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["den","die","das"]},
+      {text:["Der Koch bereitet "," Gericht zu."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Gericht" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["den","die","das"]},
+      {text:["Der Opa liest "," Zeitschrift."],blanks:[{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Zeitschrift" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["den","die","das"]},
+      {text:["Der Junge fängt "," Ball."],blanks:[{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Ball" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["den","die","das"]},
+      {text:["Der Dichter schreibt "," Gedicht."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Gedicht" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["den","die","das"]},
+    ]
+  },
+  {
+    id:1, title:"Leicht 2", diff:2, diffLabel:"Leicht",
+    icon:"📝", iconBg:"#e6f1fb",
+    desc:"Akkusativ · ein/einen, kein/keinen",
+    sentences:[
+      {text:["Haben Sie "," Bleistift? Nein, ich habe "," Bleistift."],blanks:[{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „haben" → Wen/Was? „der Bleistift" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`},{answer:"keinen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> Verneinung + maskulin Sg. Im Akkusativ: <b>kein → keinen</b>.`}],opts:["einen","keinen","eine","kein","ein"]},
+      {text:["Ich habe heute "," Geld und "," Zeit."],blanks:[{answer:"kein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Geld" = <b>Neutrum Sg</b>. Negation: <b>kein</b> (Neutrum unverändert).`},{answer:"keine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Zeit" = <b>feminin Sg</b>. Negation: <b>keine</b>.`}],opts:["kein","keine","keinen","einen"]},
+      {text:["Der Fotograf macht "," Foto."],blanks:[{answer:"ein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Foto" = <b>Neutrum Sg</b>. Indefiniter Artikel: <b>ein</b> (unverändert).`}],opts:["einen","eine","ein","das"]},
+      {text:["Die Künstlerin malt "," Bild."],blanks:[{answer:"ein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Bild" = <b>Neutrum Sg</b>. Indefiniter Artikel: <b>ein</b>.`}],opts:["einen","eine","ein"]},
+      {text:["Die Frau kauft "," Roman."],blanks:[{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Roman" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`}],opts:["einen","eine","ein"]},
+      {text:["Die Familie kauft "," neue Wohnung."],blanks:[{answer:"eine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Wohnung" = <b>feminin Sg</b>. Indefiniter Artikel: <b>eine</b> (unverändert).`}],opts:["einen","eine","ein"]},
+      {text:["Der Dieb stiehlt "," Uhr."],blanks:[{answer:"eine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Uhr" = <b>feminin Sg</b>. Indefiniter Artikel: <b>eine</b>.`}],opts:["einen","eine","ein"]},
+      {text:["Herr Müller sieht "," Tisch, aber "," Stuhl."],blanks:[{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Tisch" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`},{answer:"keinen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> Negation + maskulin Sg. Im Akkusativ: <b>kein → keinen</b>.`}],opts:["einen","keinen","eine","kein","ein"]},
+      {text:["Der Sportler gewinnt "," Rennen."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Rennen" = <b>Neutrum Sg</b>. Definiter Artikel: <b>das → das</b>.`}],opts:["den","die","das","ein"]},
+      {text:["Die Sängerin singt "," Lied."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Lied" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["den","die","das","ein"]},
+      {text:["Der Mechaniker repariert "," Auto."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Auto" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["den","die","das","ein"]},
+      {text:["Der Ingenieur konstruiert "," Brücke."],blanks:[{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Brücke" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["den","die","das","eine"]},
+      {text:["Der Bauarbeiter baut "," Haus."],blanks:[{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Haus" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["den","die","das","ein"]},
+    ]
+  },
+  {
+    id:2, title:"Mittel 1", diff:3, diffLabel:"Mittel",
+    icon:"🔍", iconBg:"#faeeda",
+    desc:"Nominativ (Subjekt) + Akkusativ (Objekt)",
+    sentences:[
+      {text:[""," Kinder lesen "," Buch."],blanks:[{answer:"Die",kasus:"Nom",genus:"pl",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „Kinder" = <b>Plural</b>. Im Nominativ Plural: <b>die</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „lesen" → Wen/Was? „das Buch" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["Die","Der","Das","den","die","das"]},
+      {text:[""," Lehrerin erklärt "," Regel."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Lehrerin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Regel" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["Die","Der","Das","den","die","das"]},
+      {text:[""," Mann kennt "," Weg nach Hannover gut."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Mann" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „kennen" → Wen/Was? „der Weg" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Lehrer beginnt "," Unterricht."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Lehrer" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Unterricht" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Gärtnerin gießt "," Blumen."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Gärtnerin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"die",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Blumen" = <b>Plural</b>. Im Akkusativ Plural: <b>die → die</b>.`}],opts:["Die","Der","Das","den","die","das"]},
+      {text:[""," Mädchen trägt "," Tasche."],blanks:[{answer:"Das",kasus:"Nom",genus:"n",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „das Mädchen" = <b>Neutrum Sg</b>. Achtung: Wörter auf -chen sind immer Neutrum! Im Nominativ: <b>das</b>.`},{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Tasche" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Architekt plant "," Gebäude."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Architekt" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Gebäude" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Polizist kontrolliert "," Verkehr."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Polizist" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Verkehr" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Flugzeug fliegt über "," Stadt."],blanks:[{answer:"Das",kasus:"Nom",genus:"n",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „das Flugzeug" = <b>Neutrum Sg</b>. Im Nominativ: <b>das</b>.`},{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „über" als Richtungsangabe → Akkusativ. „die Stadt" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Sekretärin tippt "," Brief."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Sekretärin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Brief" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Bäcker verkauft "," Brot und "," Kuchen."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Bäcker" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Brot" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Kuchen" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Mutter kocht "," Abendessen für ihre Familie."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Mutter" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Abendessen" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Techniker repariert "," Computer."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Techniker" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Computer" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+    ]
+  },
+  {
+    id:3, title:"Mittel 2", diff:4, diffLabel:"Mittel",
+    icon:"⚡", iconBg:"#faece7",
+    desc:"Nomi + Akku · mehrere Objekte pro Satz",
+    sentences:[
+      {text:[""," Mann kauft "," Laptop und "," Drucker."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Mann" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Laptop" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Drucker" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Lehrerin erklärt "," Aufgabe und "," Regeln."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Lehrerin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Aufgabe" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`},{answer:"die",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Regeln" = <b>Plural</b>. Im Akkusativ Plural: <b>die → die</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Hund bellt "," Katze und "," Igel an."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Hund" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"die",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „anbellen" → Wen? „die Katze" = <b>feminin Sg</b>. Im Akkusativ: <b>die → die</b>.`},{answer:"den",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Igel" = <b>maskulin Sg</b>. Im Akkusativ: <b>der → den</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Schüler isst "," Apfel und "," Birne."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Schüler" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Apfel" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`},{answer:"eine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Birne" = <b>feminin Sg</b>. Indefiniter Artikel: <b>eine</b> (unverändert).`}],opts:["Der","Die","Das","den","die","das","einen","eine","ein"]},
+      {text:[""," Musiker spielen "," Instrument und "," Klavier."],blanks:[{answer:"Die",kasus:"Nom",genus:"pl",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Musiker" = <b>Plural</b>. Im Nominativ Plural: <b>die</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Instrument" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Klavier" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Kind hat "," Brüder und "," Schwestern."],blanks:[{answer:"Das",kasus:"Nom",genus:"n",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „das Kind" = <b>Neutrum Sg</b>. Im Nominativ: <b>das</b>.`},{answer:"keine",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „Brüder" = <b>Plural</b>. Negation Plural im Akkusativ: <b>keine</b>.`},{answer:"keine",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „Schwestern" = <b>Plural</b>. Negation Plural: <b>keine</b>.`}],opts:["Der","Die","Das","keine","keinen","kein"]},
+      {text:[""," Tourist macht "," Stadtrundfahrt."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Tourist" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"eine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Stadtrundfahrt" = <b>feminin Sg</b>. Indefiniter Artikel: <b>eine</b>.`}],opts:["Der","Die","Das","einen","eine","ein"]},
+      {text:[""," Arzt untersucht seinen "," Patienten."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Arzt" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"seinen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „untersuchen" → Wen? Possessivartikel „sein" + maskulin Sg. Im Akkusativ: <b>sein → seinen</b>.`}],opts:["Der","Die","Das","seinen","seine","sein"]},
+      {text:[""," Schriftstellerin schreibt "," Text."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Schriftstellerin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Text" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`}],opts:["Der","Die","Das","einen","eine","ein"]},
+      {text:[""," Lehrer korrigiert "," Prüfungen."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Lehrer" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"die",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Prüfungen" = <b>Plural</b>. Im Akkusativ Plural: <b>die → die</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Vater kauft "," Auto für seine "," Tochter."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Vater" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"ein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Auto" = <b>Neutrum Sg</b>. Indefiniter Artikel Neutrum im Akkusativ: <b>ein</b> (unverändert).`},{answer:"seine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Tochter" = <b>feminin Sg</b>. Possessivartikel „sein" + feminin: <b>seine</b>.`}],opts:["Der","Die","Das","ein","eine","seinen","seine","sein"]},
+      {text:[""," Meteorologe beobachtet "," Wetter."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Meteorologe" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Wetter" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["Der","Die","Das","den","die","das"]},
+      {text:[""," Herr und "," Dame kaufen "," Wagen."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Herr" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Zweites Subjekt: „die Dame" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „kaufen" → Wen/Was? „der Wagen" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`}],opts:["Der","Die","Das","den","die","das","einen","eine","ein"]},
+    ]
+  },
+  {
+    id:4, title:"Schwer", diff:5, diffLabel:"Schwer",
+    icon:"🏆", iconBg:"#f7c1c1",
+    desc:"Nomi + Akku + Possessivartikel (sein/ihr/unser/euer)",
+    sentences:[
+      {text:[""," Junge ruft seinen "," Freund und seine "," Freundin."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Junge" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"seinen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „rufen" → Wen? „der Freund" = <b>maskulin Sg</b>. Possessivartikel „sein" im Akkusativ maskulin: <b>sein → seinen</b>.`},{answer:"seine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Freundin" = <b>feminin Sg</b>. Possessivartikel „sein" + feminin: <b>seine</b> (wie „eine" – unverändert).`}],opts:["Der","Die","Das","seinen","seine","sein"]},
+      {text:[""," Kinder lieben ihre "," Eltern und ihre "," Großeltern."],blanks:[{answer:"Die",kasus:"Nom",genus:"pl",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Kinder" = <b>Plural</b>. Im Nominativ Plural: <b>die</b>.`},{answer:"ihre",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Eltern" = <b>Plural</b>. Possessivartikel „ihr" + Plural im Akkusativ: <b>ihre</b>.`},{answer:"ihre",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Großeltern" = <b>Plural</b>. Possessivartikel „ihr" + Plural: <b>ihre</b>.`}],opts:["Die","Der","Das","ihre","ihren","ihrem"]},
+      {text:[""," Lehrerin lobt ihre "," Schüler."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Lehrerin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"ihre",kasus:"Akk",genus:"pl",analysis:`<span class="ktag ktag-a">Akkusativ</span> „loben" → Wen? „die Schüler" = <b>Plural</b>. Possessivartikel „ihr" + Plural: <b>ihre</b>.`}],opts:["Die","Der","Das","ihre","ihren","ihrer"]},
+      {text:[""," Student findet seinen "," Füllfederhalter nicht; er nimmt "," Kugelschreiber."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Student" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"seinen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „finden" → Wen/Was? „der Füllfederhalter" = <b>maskulin Sg</b>. Possessivartikel: <b>sein → seinen</b>.`},{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „nehmen" → Wen/Was? „der Kugelschreiber" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`}],opts:["Der","Die","Das","seinen","seine","sein","einen","eine","ein"]},
+      {text:[""," Eltern unterstützen ihr "," Kind."],blanks:[{answer:"Die",kasus:"Nom",genus:"pl",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Eltern" = <b>Plural</b>. Im Nominativ Plural: <b>die</b>.`},{answer:"ihr",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Kind" = <b>Neutrum Sg</b>. Possessivartikel „ihr" + Neutrum im Akkusativ: <b>ihr</b> (unverändert, wie „ein").`}],opts:["Die","Der","Das","ihr","ihre","ihren"]},
+      {text:[""," Fahrer parkt sein "," Motorrad."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Fahrer" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"sein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Motorrad" = <b>Neutrum Sg</b>. Possessivartikel „sein" + Neutrum im Akkusativ: <b>sein</b> (unverändert).`}],opts:["Der","Die","Das","sein","seine","seinen"]},
+      {text:["Wir rufen unseren "," Vater und unsere "," Mutter."],blanks:[{answer:"unseren",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „rufen" → Wen? „der Vater" = <b>maskulin Sg</b>. Possessivartikel „unser" im Akkusativ maskulin: <b>unser → unseren</b>.`},{answer:"unsere",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Mutter" = <b>feminin Sg</b>. Possessivartikel „unser" + feminin im Akkusativ: <b>unsere</b>.`}],opts:["unseren","unsere","unser","unserer"]},
+      {text:["Seht ihr euren "," Bruder und eure "," Schwester?"],blanks:[{answer:"euren",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „sehen" → Wen? „der Bruder" = <b>maskulin Sg</b>. Possessivartikel „euer" im Akkusativ maskulin: <b>euer → euren</b>.`},{answer:"eure",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Schwester" = <b>feminin Sg</b>. Possessivartikel „euer" + feminin: <b>eure</b>.`}],opts:["euren","eure","euer","eurer"]},
+      {text:[""," Ärztin behandelt ihre "," Patientin."],blanks:[{answer:"Die",kasus:"Nom",genus:"f",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „die Ärztin" = <b>feminin Sg</b>. Im Nominativ: <b>die</b>.`},{answer:"ihre",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „behandeln" → Wen? „die Patientin" = <b>feminin Sg</b>. Possessivartikel „ihr" + feminin im Akkusativ: <b>ihre</b>.`}],opts:["Die","Der","Das","ihre","ihren","ihrer"]},
+      {text:[""," Chef lobt seine "," Mitarbeiterin."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Chef" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"seine",kasus:"Akk",genus:"f",analysis:`<span class="ktag ktag-a">Akkusativ</span> „die Mitarbeiterin" = <b>feminin Sg</b>. Possessivartikel „sein" + feminin im Akkusativ: <b>seine</b>.`}],opts:["Der","Die","Das","seine","seinen","sein"]},
+      {text:[""," Vater sagt "," Wort, aber "," Kinder verstehen "," Wort nicht."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Vater" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"ein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „sagen" → Wen/Was? „das Wort" = <b>Neutrum Sg</b>. Indefiniter Artikel Neutrum: <b>ein</b>.`},{answer:"die",kasus:"Nom",genus:"pl",analysis:`<span class="ktag ktag-n">Nominativ</span> Zweites Subjekt im Nebensatz: „die Kinder" = <b>Plural</b>. Im Nominativ Plural: <b>die</b>.`},{answer:"das",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „verstehen" → Wen/Was? Anaphorisch = das genannte Wort. „das Wort" = <b>Neutrum Sg</b>. Im Akkusativ: <b>das → das</b>.`}],opts:["Der","Die","Das","den","die","das","einen","eine","ein"]},
+      {text:[""," Schüler nimmt "," Kugelschreiber, sondern "," Bleistift."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Schüler" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"keinen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> „der Kugelschreiber" = <b>maskulin Sg</b>. Negation im Akkusativ: <b>kein → keinen</b>.`},{answer:"einen",kasus:"Akk",genus:"m",analysis:`<span class="ktag ktag-a">Akkusativ</span> Nach „sondern": „der Bleistift" = <b>maskulin Sg</b>. Indefiniter Artikel: <b>ein → einen</b>.`}],opts:["Der","Die","Das","keinen","keine","kein","einen","eine","ein"]},
+      {text:[""," Ingenieur braucht "," Auto und "," Fahrrad."],blanks:[{answer:"Der",kasus:"Nom",genus:"m",analysis:`<span class="ktag ktag-n">Nominativ</span> Subjekt: „der Ingenieur" = <b>maskulin Sg</b>. Im Nominativ: <b>der</b>.`},{answer:"ein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Auto" = <b>Neutrum Sg</b>. Indefiniter Artikel Neutrum im Akkusativ: <b>ein</b>.`},{answer:"ein",kasus:"Akk",genus:"n",analysis:`<span class="ktag ktag-a">Akkusativ</span> „das Fahrrad" = <b>Neutrum Sg</b>. Indefiniter Artikel Neutrum: <b>ein</b>.`}],opts:["Der","Die","Das","ein","eine","einen"]},
+    ]
+  }
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+const S = {
+  tab: null,
+  ans: TABS.map(t=>t.sentences.map(s=>s.blanks.map(()=>null))),
+  rev: TABS.map(t=>t.sentences.map(s=>s.blanks.map(()=>false))),
+  sel: null
+};
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function tabStats(ti){
+  let c=0,tot=0,filled=0;
+  TABS[ti].sentences.forEach((s,si)=>s.blanks.forEach((b,bi)=>{
+    tot++;
+    if(S.ans[ti][si][bi]!==null||S.rev[ti][si][bi]) filled++;
+    if(S.ans[ti][si][bi]===b.answer) c++;
+  }));
+  return{c,tot,filled,pct:Math.round(filled/tot*100)};
+}
+function totalStats(){
+  let c=0,tot=0;
+  TABS.forEach((t,ti)=>t.sentences.forEach((s,si)=>s.blanks.forEach((b,bi)=>{
+    tot++;if(S.ans[ti][si][bi]===b.answer)c++;
+  })));
+  return{c,tot};
+}
+function isDone(ti){
+  return TABS[ti].sentences.every((s,si)=>s.blanks.every((_,bi)=>S.rev[ti][si][bi]||S.ans[ti][si][bi]!==null));
+}
+
+// ─── SCREENS ────────────────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goHome(){
+  S.tab=null; S.sel=null;
+  renderHome();
+  showScreen('screen-home');
+}
+
+function openTab(ti){
+  S.tab=ti; S.sel=null;
+  renderEx();
+  showScreen('screen-ex');
+}
+
+// ─── RENDER HOME ────────────────────────────────────────────────────────────
+function renderHome(){
+  const{c,tot}=totalStats();
+  document.getElementById('ht-correct').textContent=c;
+  document.getElementById('ht-total').textContent=tot;
+  document.getElementById('ht-pct').textContent=Math.round(c/tot*100)+'%';
+
+  const diffC=['','d1','d2','d3','d4','d5'];
+  document.getElementById('level-list').innerHTML=TABS.map((t,i)=>{
+    const{c,tot,pct}=tabStats(i);
+    const done=isDone(i);
+    return`<div class="level-card${done?' done':''}" onclick="openTab(${i})">
+      <div class="level-icon" style="background:${t.iconBg}">${t.icon}</div>
+      <div class="level-info">
+        <div class="level-title">${t.title}</div>
+        <div class="level-desc">${t.desc}</div>
+        <div class="level-meta">
+          <span class="diff-badge ${diffC[t.diff]}">${t.diffLabel}</span>
+          <span class="level-score-txt">${c}/${tot} richtig${done?' · ✓ Fertig':''}</span>
+        </div>
+        <div class="mini-progress"><div class="mini-progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="level-chevron">›</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER EXERCISE ────────────────────────────────────────────────────────
+function renderEx(){
+  const ti=S.tab, tab=TABS[ti];
+  const{c,tot,pct}=tabStats(ti);
+  document.getElementById('ex-title').textContent=tab.title+' – '+tab.diffLabel;
+  document.getElementById('ex-sub').textContent=tab.desc;
+  document.getElementById('ex-chip').textContent=c+'/'+tot;
+  document.getElementById('ex-bar').style.width=pct+'%';
+
+  if(isDone(ti)){
+    const p=Math.round(c/tot*100);
+    const msg=p===100?'🎯 Perfekt! Alle richtig!':p>=80?'👍 Sehr gut! Fast perfekt.':p>=60?'📖 Gut! Noch ein bisschen üben.':'💪 Weiter so! Du schaffst das.';
+    document.getElementById('ex-body').innerHTML=`<div class="result">
+      <div class="result-big">${c}/${tot}</div>
+      <div class="result-pct">${p}% richtig</div>
+      <div class="result-msg">${msg}</div>
+      <div class="result-btns">
+        <button class="btn-primary" onclick="resetTab(${ti})">↺ Nochmal üben</button>
+        <button class="btn-secondary" onclick="goHome()">← Zurück zur Übersicht</button>
+      </div>
+    </div>`;
+    return;
+  }
+
+  document.getElementById('ex-body').innerHTML='<div class="q-list">'+
+    tab.sentences.map((s,si)=>buildCard(ti,si,s)).join('')+'</div>';
+}
+
+function buildCard(ti,si,s){
+  const parts=s.text;
+  let sent='';
+  parts.forEach((p,pi)=>{
+    if(p) sent+=`<span>${p}</span>`;
+    if(pi<s.blanks.length){
+      const b=s.blanks[pi];
+      const ans=S.ans[ti][si][pi], rev=S.rev[ti][si][pi];
+      const isSel=S.sel&&S.sel[0]===ti&&S.sel[1]===si&&S.sel[2]===pi;
+      let cls='blank';
+      if(rev) cls+=' rev';
+      else if(ans===b.answer) cls+=' ok';
+      else if(ans!==null) cls+=' bad';
+      else if(isSel) cls+=' sel';
+      const clickable=!rev&&ans!==b.answer;
+      const show=rev?b.answer:(ans||'_____');
+      sent+=`<span class="${cls}"${clickable?` onclick="selBlank(${ti},${si},${pi})"`:''} style="cursor:${clickable?'pointer':'default'}">${show}</span>`;
+    }
+  });
+
+  let analysis='';
+  s.blanks.forEach((b,bi)=>{
+    const ans=S.ans[ti][si][bi], rev=S.rev[ti][si][bi];
+    if(rev)
+      analysis+=`<div class="analysis hint"><div class="analysis-label">Grammatik-Erklärung</div>${b.analysis}</div>`;
+    else if(ans!==null&&ans!==b.answer)
+      analysis+=`<div class="analysis wrong"><div class="analysis-label">⚠ Falsch – Warum?</div>${b.analysis}<br><b>Richtige Antwort: „${b.answer}"</b></div>`;
+  });
+
+  let opts='';
+  if(S.sel&&S.sel[0]===ti&&S.sel[1]===si){
+    const bi=S.sel[2], b=s.blanks[bi];
+    if(!S.rev[ti][si][bi]&&S.ans[ti][si][bi]!==b.answer)
+      opts=`<div class="opts-row">${s.opts.map(o=>`<button class="opt" onclick="choose(${ti},${si},${bi},'${o}')">${o}</button>`).join('')}</div>`;
+  }
+
+  const allFilled=s.blanks.every((_,bi)=>S.ans[ti][si][bi]!==null||S.rev[ti][si][bi]);
+  const hint=!allFilled?`<div class="hint-row"><button class="hint-btn" onclick="reveal(${ti},${si})">Lösung anzeigen</button></div>`:'';
+
+  return`<div class="q-card" id="qc-${ti}-${si}">
+    <div class="q-num">Satz ${si+1} von ${TABS[ti].sentences.length}</div>
+    <div class="q-sent">${sent}</div>
+    ${opts}${analysis}${hint}
+  </div>`;
+}
+
+// ─── ACTIONS ────────────────────────────────────────────────────────────────
+function selBlank(ti,si,bi){
+  S.sel=(S.sel&&S.sel[0]===ti&&S.sel[1]===si&&S.sel[2]===bi)?null:[ti,si,bi];
+  renderEx();
+}
+
+function choose(ti,si,bi,val){
+  S.ans[ti][si][bi]=val;
+  const b=TABS[ti].sentences[si].blanks[bi];
+  if(val===b.answer){
+    const next=TABS[ti].sentences[si].blanks.findIndex((_,i)=>i>bi&&S.ans[ti][si][i]===null&&!S.rev[ti][si][i]);
+    S.sel=next!==-1?[ti,si,next]:null;
+  }
+  renderEx();
+  // scroll card into view smoothly
+  setTimeout(()=>{
+    const el=document.getElementById(`qc-${ti}-${si}`);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },50);
+}
+
+function reveal(ti,si){
+  TABS[ti].sentences[si].blanks.forEach((_,bi)=>{S.rev[ti][si][bi]=true;S.ans[ti][si][bi]=null;});
+  S.sel=null;
+  renderEx();
+}
+
+function resetTab(ti){
+  S.ans[ti]=TABS[ti].sentences.map(s=>s.blanks.map(()=>null));
+  S.rev[ti]=TABS[ti].sentences.map(s=>s.blanks.map(()=>false));
+  S.sel=null;
+  renderEx();
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+goHome();
+</script>
+</body>
+</html>

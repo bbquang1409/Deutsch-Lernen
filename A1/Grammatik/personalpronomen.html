@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1 – Personalpronomen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Lato:ital,wght@0,400;0,700;1,400&display=swap');
+:root {
+  --bg:#f0f4ff; --card:#fff; --border:#dde3f5;
+  --p1:#3b5bdb; --p1bg:#e8f0ff; --p1dark:#2c44b0;
+  --p2:#e36400; --p2bg:#fff0e3;
+  --p3g:#1e7a3e; --p3gbg:#f0fff4;
+  --red:#c92a2a; --redbg:#ffe3e3;
+  --gold:#7c5e00; --goldbg:#fff3bf;
+  --text:#1a1a2e; --muted:#6b7280;
+  --correct:#2f9e44; --wrong:#c92a2a;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#1e3a8a 0%,#3b5bdb 100%);color:white;text-align:center;padding:28px 20px 24px;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,0.06);border-radius:50%}
+header::after{content:'';position:absolute;bottom:-50px;left:-30px;width:150px;height:150px;background:rgba(255,255,255,0.04);border-radius:50%}
+.h-pill{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:3px 14px;border-radius:20px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-family:'Nunito',sans-serif;font-weight:700;position:relative;z-index:1}
+header h1{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;line-height:1.2;position:relative;z-index:1}
+header p{font-size:13px;opacity:.8;margin-top:6px;position:relative;z-index:1}
+
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--border);padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--p1);border-color:var(--p1)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+.container{max-width:660px;margin:0 auto;padding:24px 16px 70px}
+
+/* SECTION TITLE */
+.stitle{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:var(--p1);display:flex;align-items:center;gap:8px;margin:28px 0 14px}
+.stitle::after{content:'';flex:1;height:2px;background:linear-gradient(to right,var(--border),transparent);border-radius:2px}
+
+/* INTRO CARD */
+.intro-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 2px 14px rgba(59,91,219,.09);margin-bottom:16px;border-left:5px solid var(--p1)}
+.intro-card h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:16px;color:var(--p1);margin-bottom:10px}
+.intro-card p{font-size:14px;line-height:1.75;color:var(--text)}
+.intro-card .vn-compare{background:var(--p1bg);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;line-height:1.8}
+.intro-card .vn-compare strong{color:var(--p1);display:block;margin-bottom:4px;font-family:'Nunito',sans-serif}
+.vn-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:13px}
+.vn-flag{flex-shrink:0;font-size:15px}
+.hl{background:rgba(59,91,219,.12);padding:1px 6px;border-radius:4px;font-family:'Nunito',sans-serif;font-weight:800;color:var(--p1);font-size:13px}
+.hl.red{background:var(--redbg);color:var(--red)}
+.hl.org{background:var(--p2bg);color:var(--p2)}
+.hl.grn{background:var(--p3gbg);color:var(--p3g)}
+.hl.gld{background:var(--goldbg);color:var(--gold)}
+
+/* PERSON BLOCKS */
+.person-block{background:var(--card);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.person-header{display:flex;align-items:center;gap:14px;padding:16px 18px}
+.person-header .ph-emoji{font-size:32px;flex-shrink:0}
+.person-header .ph-info{flex:1}
+.person-header .ph-tag{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.person-header .ph-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px}
+.person-header .ph-question{font-size:15px;font-weight:700;margin-top:2px}
+.person-block.p1 .person-header{background:var(--p1bg);border-left:5px solid var(--p1)}
+.person-block.p1 .ph-tag{color:var(--p1)}
+.person-block.p1 .ph-name{color:var(--p1)}
+.person-block.p1 .ph-question{color:var(--p1dark)}
+.person-block.p2 .person-header{background:var(--p2bg);border-left:5px solid var(--p2)}
+.person-block.p2 .ph-tag{color:var(--p2)}
+.person-block.p2 .ph-name{color:var(--p2)}
+.person-block.p2 .ph-question{color:#b35000}
+.person-block.p3 .person-header{background:var(--p3gbg);border-left:5px solid #40c057}
+.person-block.p3 .ph-tag{color:var(--p3g)}
+.person-block.p3 .ph-name{color:var(--p3g)}
+.person-block.p3 .ph-question{color:var(--p3g)}
+
+.person-body{padding:14px 18px}
+.pronoun-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.pchip{border-radius:10px;padding:8px 16px;font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;display:flex;flex-direction:column;align-items:center;min-width:70px;border:2px solid transparent}
+.pchip small{font-size:10px;font-weight:700;margin-top:2px;opacity:.75}
+.pchip.c1{background:var(--p1bg);border-color:var(--p1);color:var(--p1)}
+.pchip.c2{background:var(--p2bg);border-color:var(--p2);color:var(--p2)}
+.pchip.c2f{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.pchip.cm{background:#d0ebff;border-color:#228be6;color:#1864ab}
+.pchip.cf{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.pchip.cn{background:var(--goldbg);border-color:#f59f00;color:var(--gold)}
+.pchip.cpl{background:var(--p3gbg);border-color:#40c057;color:var(--p3g)}
+.regel-box{background:#f8f9ff;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;border-left:3px solid var(--border)}
+.regel-box.p1r{border-color:var(--p1)}
+.regel-box.p2r{border-color:var(--p2)}
+.regel-box.p3r{border-color:#40c057}
+.regel-box em{color:var(--muted);font-style:italic;display:block;margin-top:6px;font-size:12.5px}
+.warn-box{background:#fff9db;border:1px solid #ffe066;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.75;margin-top:10px}
+.warn-box strong{color:var(--gold);font-family:'Nunito',sans-serif;display:block;margin-bottom:4px}
+
+/* SACHEN SECTION */
+.sachen-block{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:14px}
+.sachen-row{display:flex;align-items:center;padding:14px 18px;gap:12px;border-bottom:1px solid var(--border)}
+.sachen-row:last-child{border-bottom:none}
+.sachen-emoji{font-size:36px;flex-shrink:0;width:48px;text-align:center}
+.sachen-info{flex:1}
+.sachen-info .sachen-art{display:inline-block;font-size:11px;font-weight:900;padding:2px 8px;border-radius:5px;margin-bottom:4px;font-family:'Nunito',sans-serif}
+.sachen-info .sachen-name{font-size:15px;font-weight:700}
+.sachen-info .sachen-ex{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic}
+.sachen-arrow{font-size:22px;color:var(--border);flex-shrink:0}
+.sachen-result{font-family:'Nunito',sans-serif;font-weight:900;font-size:30px;flex-shrink:0;width:60px;text-align:center}
+.sachen-rule{font-size:11px;font-weight:800;text-align:center;margin-top:2px}
+.sr-der .sachen-art{background:#d0ebff;color:#1864ab}
+.sr-der .sachen-result{color:#1864ab}
+.sr-der .sachen-rule{color:#1864ab}
+.sr-die .sachen-art{background:var(--redbg);color:var(--red)}
+.sr-die .sachen-result{color:var(--red)}
+.sr-die .sachen-rule{color:var(--red)}
+.sr-das .sachen-art{background:var(--goldbg);color:var(--gold)}
+.sr-das .sachen-result{color:var(--gold)}
+.sr-das .sachen-rule{color:var(--gold)}
+.sr-pl .sachen-art{background:var(--p3gbg);color:var(--p3g)}
+.sr-pl .sachen-result{color:var(--p3g)}
+.sr-pl .sachen-rule{color:var(--p3g)}
+
+/* VISUAL TAB */
+.scene-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.scene-tab{flex:1;min-width:120px;padding:10px 10px;border-radius:12px;border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;color:var(--muted)}
+.scene-tab:hover{border-color:var(--p1);color:var(--p1)}
+.scene-tab.active{background:var(--p1);color:white;border-color:var(--p1)}
+.scene-tab .sc-emoji{font-size:18px;display:block;margin-bottom:2px}
+.chat-stage{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 2px 12px rgba(59,91,219,.08);margin-bottom:14px}
+.speakers{display:flex;gap:6px;margin-bottom:14px;align-items:stretch}
+.sp-card{flex:1;border-radius:12px;padding:10px 8px;text-align:center;border:2px solid transparent}
+.sp-card .sp-em{font-size:26px}
+.sp-card .sp-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;margin:3px 0}
+.sp-card .sp-role{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7}
+.sp-card .sp-pr{font-family:'Nunito',sans-serif;font-weight:900;font-size:16px;margin-top:5px;display:block}
+.sp-card.sp1{background:var(--p1bg);border-color:var(--p1)}
+.sp-card.sp1 .sp-name,.sp-card.sp1 .sp-pr{color:var(--p1)}
+.sp-card.sp1 .sp-role{color:var(--p1)}
+.sp-card.sp2{background:var(--p2bg);border-color:var(--p2)}
+.sp-card.sp2 .sp-name,.sp-card.sp2 .sp-pr{color:var(--p2)}
+.sp-card.sp2 .sp-role{color:var(--p2)}
+.sp-card.sp3{background:#f8f9fa;border-color:#adb5bd}
+.sp-card.sp3 .sp-name{color:var(--muted)}
+.sp-card.sp3 .sp-pr{color:var(--muted)}
+.sp-div{display:flex;align-items:center;color:var(--muted);font-size:16px;padding:0 2px;flex-shrink:0}
+.chat-log{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.brow{display:flex;gap:8px;align-items:flex-end}
+.brow.right{flex-direction:row-reverse}
+.bav{font-size:22px;flex-shrink:0}
+.bubble{border-radius:16px;padding:10px 13px;max-width:83%;font-size:14px;line-height:1.55}
+.brow:not(.right) .bubble{border-bottom-left-radius:4px}
+.brow.right .bubble{border-bottom-right-radius:4px}
+.bubble.b1{background:var(--p1);color:white}
+.bubble.b2{background:#f1f3f5;color:var(--text)}
+.bubble .bnote{display:block;font-size:10.5px;margin-top:5px;opacity:.75;line-height:1.4}
+.ptag{display:inline-block;border-radius:5px;padding:0 5px;font-family:'Nunito',sans-serif;font-weight:900;font-size:15px}
+.ptag.er{background:#d0ebff;color:#1864ab}
+.ptag.sief{background:var(--redbg);color:var(--red)}
+.ptag.siepl{background:var(--p3gbg);color:var(--p3g)}
+.ptag.es{background:var(--goldbg);color:var(--gold)}
+.ptag.ich{background:rgba(255,255,255,.28);color:white}
+.ptag.du{background:rgba(255,255,255,.25);color:white}
+.ptag.wir{background:rgba(255,255,255,.25);color:white}
+.ptag.ihr{background:rgba(255,255,255,.25);color:white}
+.ptag.SIE{background:rgba(255,255,255,.25);color:white}
+
+/* QUIZ */
+.quiz-wrap{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 2px 14px rgba(59,91,219,.09);margin-bottom:14px}
+.qprog-bar{height:5px;background:var(--border);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.qprog-fill{height:100%;background:var(--p1);border-radius:3px;transition:width .4s ease}
+.qcard{text-align:center;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;margin-bottom:16px}
+.qemoji{font-size:50px}.qname{font-size:22px;font-weight:900;font-family:'Nunito',sans-serif}.qsub{font-size:12px;color:var(--muted)}
+.qopts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:12px}
+.qbtn{font-family:'Nunito',sans-serif;font-weight:900;font-size:18px;padding:12px 22px;border-radius:12px;border:2.5px solid var(--border);background:#f8f9ff;color:var(--text);cursor:pointer;min-width:88px;transition:all .15s}
+.qbtn:hover:not(:disabled){border-color:var(--p1);color:var(--p1);transform:translateY(-1px)}
+.qbtn:disabled{cursor:default}
+.qbtn.qcorrect{background:#d3f9d8;border-color:var(--correct);color:var(--correct)}
+.qbtn.qwrong{background:var(--redbg);border-color:var(--wrong);color:var(--wrong)}
+.qfb{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;text-align:center;min-height:20px}
+.qscore{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px}
+.finish{text-align:center;padding:20px 10px}
+.finish .fbig{font-size:52px;font-weight:900;font-family:'Nunito',sans-serif;color:var(--p1)}
+.finish .fsub{font-size:15px;color:var(--muted);font-weight:700;margin-bottom:18px}
+.rbtn{background:var(--p1);color:white;border:none;border-radius:12px;padding:12px 28px;font-family:'Nunito',sans-serif;font-weight:900;font-size:15px;cursor:pointer}
+.rbtn:hover{opacity:.88}
+
+/* ÜBUNGEN */
+.ex-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.ex-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.exnum{background:var(--p1);color:white;font-family:'Nunito',sans-serif;font-weight:900;font-size:12px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.extitle{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px}
+.exsub{font-size:12px;color:var(--muted);margin-bottom:12px}
+.srow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-bottom:9px;font-size:14px;line-height:1.9}
+.srow .n{font-weight:700;color:var(--muted);font-size:12px;min-width:22px}
+.srow b{min-width:80px;font-size:14px}
+.fi{border:none;border-bottom:2.5px solid var(--p1);background:transparent;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;color:var(--p1);text-align:center;outline:none;transition:border-color .2s;padding:0 4px}
+.fi.w60{width:60px}.fi.w80{width:80px}.fi.w100{width:100px}
+.fi:focus{border-color:var(--p3g)}
+.fi.ok{border-color:var(--correct);color:var(--correct)}
+.fi.no{border-color:var(--wrong);color:var(--wrong)}
+.chk{background:var(--p1);color:white;border:none;border-radius:10px;padding:9px 22px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;margin-top:12px;transition:all .2s}
+.chk:hover{background:var(--p1dark)}
+.rst{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:9px 16px;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer;margin-top:12px;margin-left:8px;transition:all .2s}
+.rst:hover{color:var(--p1);border-color:var(--p1)}
+.rmsg{margin-top:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;padding:9px 14px;border-radius:10px;display:none}
+.rmsg.show{display:block}
+.rmsg.good{background:#d3f9d8;color:var(--correct)}
+.rmsg.ok2{background:#fff3bf;color:var(--gold)}
+
+/* SELECT */
+.fsel{border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;outline:none;background:white;cursor:pointer;transition:border-color .2s}
+.fsel:focus{border-color:var(--p1)}
+.fsel.ok{border-color:var(--correct);background:#d3f9d8}
+.fsel.no{border-color:var(--wrong);background:var(--redbg)}
+
+/* SIE-LIST */
+.sie-li{padding:10px 14px;border-radius:10px;margin-bottom:8px;background:#f8f9ff;border:1px solid var(--border);font-size:14px;line-height:1.7}
+.sie-li .ul{text-decoration:underline;text-decoration-style:wavy;text-underline-offset:3px;font-weight:800}
+.sie-in{border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;width:150px;outline:none;margin-left:6px;transition:border-color .2s}
+.sie-in:focus{border-color:var(--p1)}
+.sie-in.ok{border-color:var(--correct);background:#d3f9d8}
+.sie-in.no{border-color:var(--wrong);background:var(--redbg)}
+
+/* GRID 2-COL */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dia-box{background:#f8f9ff;border-radius:10px;padding:14px;margin-bottom:12px}
+
+footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-pill">A1 · Grammatik 1</div>
+  <h1>Personalpronomen</h1>
+  <p>Ich, du, er, sie, es, wir, ihr, sie und Sie · Interaktive Lerneinheit</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('theorie',this)">📋 Theorie</div>
+  <div class="tab" onclick="switchTab('visual',this)">💬 Visualisierung</div>
+  <div class="tab" onclick="switchTab('uebung',this)">✏️ Übungen</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 1: THEORIE -->
+<div class="tab-content active" id="theorie">
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="stitle"><span>❓</span> Was sind Personalpronomen?</div>
+  <div class="intro-card">
+    <h3>Wozu braucht man Personalpronomen?</h3>
+    <p>Personalpronomen sind <strong>kurze Wörter</strong>, die eine Person oder Sache ersetzen, damit man nicht immer denselben Namen wiederholen muss.</p>
+    <p style="margin-top:8px"><em>Ohne Pronomen:</em> „<strong>Herr Müller</strong> arbeitet bei der Post. <strong>Herr Müller</strong> wohnt in Berlin. <strong>Herr Müller</strong> hat zwei Kinder."</p>
+    <p style="margin-top:6px"><em>Mit Pronomen:</em> „Herr Müller arbeitet bei der Post. <span class="hl">Er</span> wohnt in Berlin. <span class="hl">Er</span> hat zwei Kinder." ✓</p>
+    <div class="vn-compare">
+      <strong>🇩🇪 vs 🇻🇳 — Was ist anders?</strong>
+      <div class="vn-row"><span class="vn-flag">🇩🇪</span><div>Im Deutschen gibt es <strong>feste Pronomen</strong>: immer <span class="hl">ich</span>, <span class="hl">du</span>, <span class="hl">er</span> — egal wer spricht oder wie alt man ist.</div></div>
+      <div class="vn-row"><span class="vn-flag">🇻🇳</span><div>Im Vietnamesischen wechselt das Pronomen je nach Alter und Beziehung: <em>tôi / mình / em / anh / chị …</em> Das gibt es im Deutschen <strong>nicht</strong>!</div></div>
+      <div class="vn-row"><span class="vn-flag">⚠️</span><div>Außerdem: Im Deutschen hat jedes Substantiv ein <strong>grammatisches Geschlecht</strong> (der/die/das) — das bestimmt das Pronomen!</div></div>
+    </div>
+  </div>
+
+  <!-- ERSTE PERSON -->
+  <div class="stitle"><span>🗣️</span> Erste Person — Wer spricht?</div>
+  <div class="person-block p1">
+    <div class="person-header">
+      <div class="ph-emoji">🗣️</div>
+      <div class="ph-info">
+        <div class="ph-tag">Erste Person</div>
+        <div class="ph-name">ich · wir</div>
+        <div class="ph-question">Ich selbst rede gerade.</div>
+      </div>
+    </div>
+    <div class="person-body">
+      <div class="pronoun-chips">
+        <div class="pchip c1">ich<small>Singular</small></div>
+        <div class="pchip c1">wir<small>Plural</small></div>
+      </div>
+      <div class="regel-box p1r">
+        <span class="hl">ich</span> = nur ich allein &nbsp;|&nbsp; <span class="hl">wir</span> = ich + andere zusammen
+        <em>Ich komme aus Berlin. — Wir lernen Deutsch.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZWEITE PERSON -->
+  <div class="stitle"><span>👂</span> Zweite Person — Mit wem spricht man?</div>
+  <div class="person-block p2">
+    <div class="person-header">
+      <div class="ph-emoji">👂</div>
+      <div class="ph-info">
+        <div class="ph-tag">Zweite Person</div>
+        <div class="ph-name">du · ihr · Sie</div>
+        <div class="ph-question">Ich rede direkt mit jemandem.</div>
+      </div>
+    </div>
+    <div class="person-body">
+      <div class="pronoun-chips">
+        <div class="pchip c2">du<small>1 Person, informell</small></div>
+        <div class="pchip c2">ihr<small>Gruppe, informell</small></div>
+        <div class="pchip c2f">Sie<small>formell (immer groß!)</small></div>
+      </div>
+      <div class="regel-box p2r">
+        <span class="hl org">du</span> = mit einer Person (Freund, Familie, Kind)<br>
+        <span class="hl org">ihr</span> = mit mehreren Personen (informell)<br>
+        <span class="hl red">Sie</span> = formell — Fremde, Chef, Arzt — <strong>immer Großschreibung!</strong>
+        <em>Woher kommst du? — Kommt ihr aus Berlin? — Kommen Sie aus Japan, Herr Sato?</em>
+      </div>
+      <div class="warn-box">
+        <strong>🇻🇳 Vergleich</strong>
+        Im Vietnamesischen: <em>bạn / anh / chị / ông / bà …</em> je nach Alter. Im Deutschen ist es einfacher: nur <span class="hl org">du/ihr</span> (informal) oder <span class="hl red">Sie</span> (formal)!
+      </div>
+    </div>
+  </div>
+
+  <!-- DRITTE PERSON -->
+  <div class="stitle"><span>👤</span> Dritte Person — Über wen / was spricht man?</div>
+  <div class="person-block p3">
+    <div class="person-header">
+      <div class="ph-emoji">👤</div>
+      <div class="ph-info">
+        <div class="ph-tag">Dritte Person</div>
+        <div class="ph-name">er · sie · es · sie (Pl.)</div>
+        <div class="ph-question">Ich rede über jemanden / etwas — nicht über mich oder meinen Gesprächspartner.</div>
+      </div>
+    </div>
+    <div class="person-body">
+      <div class="pronoun-chips">
+        <div class="pchip cm">er<small>Sg. maskulin</small></div>
+        <div class="pchip cf">sie<small>Sg. feminin</small></div>
+        <div class="pchip cn">es<small>Sg. Neutrum</small></div>
+        <div class="pchip cpl">sie<small>Plural</small></div>
+      </div>
+      <div class="regel-box p3r">
+        <span class="hl">er</span> = männliche Person / <span class="hl">der</span>-Wort &nbsp;&nbsp;<span class="hl red">sie</span> = weibliche Person / <span class="hl red">die</span>-Wort<br>
+        <span class="hl gld">es</span> = <span class="hl gld">das</span>-Wort &nbsp;&nbsp;<span class="hl grn">sie (Pl.)</span> = mehrere Personen / Sachen
+        <em>Herr Kim? Er kommt aus Korea. — Anna? Sie wohnt in Wien. — Das Kind? Es spielt.</em>
+      </div>
+      <div class="warn-box">
+        <strong>⚠️ Sie (groß) vs. sie (klein) — Achtung!</strong>
+        <span class="hl red" style="font-size:15px">Sie</span> (groß, 2. Person) = formelles „Sie": <em>Kommen <strong>Sie</strong> aus Japan?</em><br>
+        <span class="hl red" style="font-size:15px">sie</span> (klein, 3. Person) = eine Frau oder Plural: <em><strong>Sie</strong> kommt aus Hamburg.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRONOMEN FÜR SACHEN -->
+  <div class="stitle"><span>🔄</span> Pronomen für Sachen</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Bei Sachen folgt das Pronomen dem <strong>Artikel</strong> des Substantivs:</p>
+
+  <div class="sachen-block">
+    <div class="sachen-row sr-der">
+      <div class="sachen-emoji">🪑</div>
+      <div class="sachen-info">
+        <span class="sachen-art">der Stuhl</span>
+        <div class="sachen-name">Stuhl</div>
+        <div class="sachen-ex">Der Stuhl ist bequem. → <strong style="color:#1864ab">Er</strong> ist bequem.</div>
+      </div>
+      <div class="sachen-arrow">→</div>
+      <div>
+        <div class="sachen-result">er</div>
+        <div class="sachen-rule">der → er</div>
+      </div>
+    </div>
+    <div class="sachen-row sr-die">
+      <div class="sachen-emoji">💡</div>
+      <div class="sachen-info">
+        <span class="sachen-art">die Lampe</span>
+        <div class="sachen-name">Lampe</div>
+        <div class="sachen-ex">Die Lampe ist modern. → <strong style="color:var(--red)">Sie</strong> ist modern.</div>
+      </div>
+      <div class="sachen-arrow">→</div>
+      <div>
+        <div class="sachen-result">sie</div>
+        <div class="sachen-rule">die → sie</div>
+      </div>
+    </div>
+    <div class="sachen-row sr-das">
+      <div class="sachen-emoji">📖</div>
+      <div class="sachen-info">
+        <span class="sachen-art">das Buch</span>
+        <div class="sachen-name">Buch</div>
+        <div class="sachen-ex">Das Buch kostet 12 Euro. → <strong style="color:var(--gold)">Es</strong> kostet 12 Euro.</div>
+      </div>
+      <div class="sachen-arrow">→</div>
+      <div>
+        <div class="sachen-result">es</div>
+        <div class="sachen-rule">das → es</div>
+      </div>
+    </div>
+    <div class="sachen-row sr-pl">
+      <div class="sachen-emoji">📚</div>
+      <div class="sachen-info">
+        <span class="sachen-art">die Bücher (Pl.)</span>
+        <div class="sachen-name">Bücher</div>
+        <div class="sachen-ex">Die Bücher sind günstig. → <strong style="color:var(--p3g)">Sie</strong> sind günstig.</div>
+      </div>
+      <div class="sachen-arrow">→</div>
+      <div>
+        <div class="sachen-result">sie</div>
+        <div class="sachen-rule">Plural → sie</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 2: VISUAL -->
+<div class="tab-content" id="visual">
+<div class="container">
+
+  <div class="stitle"><span>🎭</span> Wer spricht? Szenen wählen</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Beobachten Sie: Welche Person verwendet welches Pronomen und warum?</p>
+
+  <div class="scene-tabs">
+    <div class="scene-tab active" onclick="setScene(0,this)"><span class="sc-emoji">☕</span>Im Café</div>
+    <div class="scene-tab" onclick="setScene(1,this)"><span class="sc-emoji">🏫</span>Im Kurs</div>
+    <div class="scene-tab" onclick="setScene(2,this)"><span class="sc-emoji">🏢</span>Im Büro</div>
+  </div>
+
+  <div class="chat-stage" id="chat-stage"></div>
+
+  <div class="stitle"><span>🎮</span> Quiz — Dritte Person erkennen</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Welches Pronomen? Klicken Sie die richtige Antwort.</p>
+  <div class="quiz-wrap">
+    <div class="qscore"><span id="qctr">Frage 1 / 12</span><span id="qscdsp">✓ 0 richtig</span></div>
+    <div class="qprog-bar"><div class="qprog-fill" id="qprog" style="width:0%"></div></div>
+    <div id="qbody"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 3: ÜBUNGEN -->
+<div class="tab-content" id="uebung">
+<div class="container">
+
+  <!-- ÜBUNG A: Personalpronomen einsetzen (einfach) -->
+  <div class="stitle"><span>✏️</span> Übung A — Einfache Sätze</div>
+  <div class="ex-card">
+    <div class="ex-header"><div class="exnum">A</div><div class="extitle">Ergänzen Sie das Pronomen.</div></div>
+    <div class="exsub">Wählen Sie: ich · du · er · sie · es · wir · ihr · Sie</div>
+
+    <div class="srow"><span class="n">1.</span><input class="fi w60" data-ans="Sie" id="a1"> sprechen sehr gut Deutsch!</div>
+    <div class="srow"><span class="n">2.</span> Haben <input class="fi w60" data-ans="Sie" id="a2"> Zeit, Frau Meier?</div>
+    <div class="srow"><span class="n">3.</span> Hilfst <input class="fi w60" data-ans="du" id="a3"> mir bitte?</div>
+    <div class="srow"><span class="n">4.</span><input class="fi w60" data-ans="Er" id="a4"> ist Programmierer bei einer Bank.</div>
+    <div class="srow"><span class="n">5.</span> Frau Meier geht einkaufen. <input class="fi w60" data-ans="Sie" id="a5"> kauft Gemüse und Obst.</div>
+    <div class="srow"><span class="n">6.</span> Peter und Paul haben heute Ferien. <input class="fi w60" data-ans="Sie" id="a6"> gehen nicht zur Schule.</div>
+    <div class="srow"><span class="n">7.</span> Marc und Dominic, wo wohnt <input class="fi w60" data-ans="ihr" id="a7">?</div>
+    <div class="srow"><span class="n">8.</span><input class="fi w60" data-ans="Wir" id="a8"> wohnen in Frankfurt.</div>
+    <div class="srow"><span class="n">9.</span> Das Kind spielt im Garten. <input class="fi w60" data-ans="Es" id="a9"> ist glücklich.</div>
+    <div class="srow"><span class="n">10.</span> Der Schrank ist teuer. <input class="fi w60" data-ans="Er" id="a10"> kommt aus Italien.</div>
+    <div class="srow"><span class="n">11.</span> Die Lampe ist neu. <input class="fi w60" data-ans="Sie" id="a11"> ist sehr modern.</div>
+    <div class="srow"><span class="n">12.</span> Das Regal kostet nur 49 Euro. <input class="fi w60" data-ans="Es" id="a12"> ist sehr praktisch.</div>
+    <div class="srow"><span class="n">13.</span> Die Stühle sind bequem. <input class="fi w60" data-ans="Sie" id="a13"> kosten nur 100 Euro.</div>
+
+    <button class="chk" onclick="chk('exA',['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11','a12','a13'])">✓ Prüfen</button>
+    <button class="rst" onclick="rst('exA',['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11','a12','a13'])">↺ Reset</button>
+    <div class="rmsg" id="exA-r"></div>
+  </div>
+
+  <!-- ÜBUNG B: Dialog -->
+  <div class="stitle"><span>💬</span> Übung B — Dialog</div>
+  <div class="ex-card">
+    <div class="ex-header"><div class="exnum">B</div><div class="extitle">Dialog im Café — Ergänzen Sie.</div></div>
+    <div class="dia-box">
+      <div class="srow"><b>Anna:</b> Hallo, Mario, wo ist Marie?</div>
+      <div class="srow"><b>Mario:</b><input class="fi w60" data-ans="Sie" id="b1"> kommt später. Wann kommt Peter?</div>
+      <div class="srow"><b>Anna:</b><input class="fi w60" data-ans="Er" id="b2"> kommt heute nicht. <input class="fi w60" data-ans="Er" id="b3"> hat keine Lust.</div>
+      <div class="srow"><b>Mario:</b> Dann gehen <input class="fi w60" data-ans="wir" id="b4"> alleine ins Café.</div>
+      <div class="srow"><b>Kellner:</b> Guten Tag, was möchten <input class="fi w60" data-ans="Sie" id="b5">?</div>
+      <div class="srow"><b>Elena und Mario:</b><input class="fi w60" data-ans="Wir" id="b6"> nehmen einen Kaffee.</div>
+      <div class="srow"><b>Kellner:</b> Möchten Sie Kuchen? <input class="fi w60" data-ans="Er" id="b7"> ist sehr gut.</div>
+      <div class="srow"><b>Elena:</b> Nein, <input class="fi w60" data-ans="ich" id="b8"> möchte keinen Kuchen. Möchtest <input class="fi w60" data-ans="du" id="b9">, Mario?</div>
+      <div class="srow"><b>Mario:</b> Nein, <input class="fi w60" data-ans="ich" id="b10"> nehme auch nur einen Kaffee.</div>
+      <div class="srow"><b>Kellner:</b> Gut. <input class="fi w60" data-ans="Ich" id="b11"> bringe das sofort.</div>
+      <div class="srow"><b>Anna:</b> Danke! <input class="fi w60" data-ans="Sie" id="b12"> sind sehr freundlich.</div>
+      <div class="srow"><b>Mario:</b><input class="fi w60" data-ans="Er" id="b13"> hat Recht — der Kuchen sieht lecker aus!</div>
+    </div>
+    <button class="chk" onclick="chk('exB',['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10','b11','b12','b13'])">✓ Prüfen</button>
+    <button class="rst" onclick="rst('exB',['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10','b11','b12','b13'])">↺ Reset</button>
+    <div class="rmsg" id="exB-r"></div>
+  </div>
+
+  <!-- ÜBUNG C: In der Wohnung / formell-informell -->
+  <div class="stitle"><span>🏠</span> Übung C — Formell oder informell?</div>
+  <div class="ex-card">
+    <div class="ex-header"><div class="exnum">C</div><div class="extitle">du, ihr oder Sie? Wählen Sie.</div></div>
+    <div class="exsub">Achten Sie auf die Situation: Freund / Kollege / Fremder</div>
+
+    <div class="srow"><span class="n">1.</span> Anna, was machst
+      <select class="fsel" data-ans="du" id="c1"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> ? Ich surfe im Internet.
+    </div>
+    <div class="srow"><span class="n">2.</span> Frau Meier, was machen
+      <select class="fsel" data-ans="Sie" id="c2"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> gerade?
+    </div>
+    <div class="srow"><span class="n">3.</span> Daniel und Anna, was macht
+      <select class="fsel" data-ans="ihr" id="c3"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> heute Abend?
+    </div>
+    <div class="srow"><span class="n">4.</span> Herr Graf und Frau Park, kommen
+      <select class="fsel" data-ans="Sie" id="c4"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> morgen?
+    </div>
+    <div class="srow"><span class="n">5.</span> Tim, kommst
+      <select class="fsel" data-ans="du" id="c5"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> bitte kurz?
+    </div>
+    <div class="srow"><span class="n">6.</span> Kinder, esst
+      <select class="fsel" data-ans="ihr" id="c6"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> genug?
+    </div>
+    <div class="srow"><span class="n">7.</span> Entschuldigung, sprechen
+      <select class="fsel" data-ans="Sie" id="c7"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> Englisch?
+    </div>
+    <div class="srow"><span class="n">8.</span> Mama, hilfst
+      <select class="fsel" data-ans="du" id="c8"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> mir?
+    </div>
+    <div class="srow"><span class="n">9.</span> Herr Doktor, können
+      <select class="fsel" data-ans="Sie" id="c9"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> das erklären?
+    </div>
+    <div class="srow"><span class="n">10.</span> Felix und Mia, wohnt
+      <select class="fsel" data-ans="ihr" id="c10"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> noch in Berlin?
+    </div>
+    <div class="srow"><span class="n">11.</span> Lehrerin zu Schüler: Hast
+      <select class="fsel" data-ans="du" id="c11"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> die Hausaufgaben?
+    </div>
+    <div class="srow"><span class="n">12.</span> Chef zum Mitarbeiter: Haben
+      <select class="fsel" data-ans="Sie" id="c12"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> den Bericht fertig?
+    </div>
+    <div class="srow"><span class="n">13.</span> Studenten untereinander: Habt
+      <select class="fsel" data-ans="ihr" id="c13"><option value="">---</option><option>du</option><option>Sie</option><option>ihr</option></select> die Klausur bestanden?
+    </div>
+
+    <button class="chk" onclick="chkSel('exC',['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13'])">✓ Prüfen</button>
+    <button class="rst" onclick="rstSel('exC',['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13'])">↺ Reset</button>
+    <div class="rmsg" id="exC-r"></div>
+  </div>
+
+  <!-- ÜBUNG D: Pronomen für Sachen -->
+  <div class="stitle"><span>🔄</span> Übung D — Pronomen für Sachen</div>
+  <div class="ex-card">
+    <div class="ex-header"><div class="exnum">D</div><div class="extitle">der → er / die → sie / das → es. Ergänzen Sie.</div></div>
+    <div class="exsub">Tipp: Schauen Sie den Artikel an!</div>
+
+    <div class="srow"><span class="n">1.</span> Der Schrank ist teuer. <input class="fi w60" data-ans="Er" id="d1"> kommt aus Italien.</div>
+    <div class="srow"><span class="n">2.</span> Das Regal ist praktisch. <input class="fi w60" data-ans="Es" id="d2"> kostet nur 49 Euro.</div>
+    <div class="srow"><span class="n">3.</span> Die Lampe ist neu. <input class="fi w60" data-ans="Sie" id="d3"> ist sehr modern.</div>
+    <div class="srow"><span class="n">4.</span> Das sind vier Stühle. <input class="fi w60" data-ans="Sie" id="d4"> kosten nur 100 Euro.</div>
+    <div class="srow"><span class="n">5.</span> Der Tisch ist schön, aber <input class="fi w60" data-ans="er" id="d5"> ist zu klein.</div>
+    <div class="srow"><span class="n">6.</span> Die Sessel sind bequem und <input class="fi w60" data-ans="sie" id="d6"> sind günstig.</div>
+    <div class="srow"><span class="n">7.</span> Das Auto fährt gut. <input class="fi w60" data-ans="Es" id="d7"> verbraucht wenig Benzin.</div>
+    <div class="srow"><span class="n">8.</span> Der Computer ist neu. <input class="fi w60" data-ans="Er" id="d8"> läuft sehr schnell.</div>
+    <div class="srow"><span class="n">9.</span> Die Tasche ist sehr schön! Wie viel kostet <input class="fi w60" data-ans="sie" id="d9">?</div>
+    <div class="srow"><span class="n">10.</span> Das Handy klingelt. Wer ruft an? <input class="fi w60" data-ans="Es" id="d10"> ist meine Mutter.</div>
+    <div class="srow"><span class="n">11.</span> Der Kaffee ist kalt. <input class="fi w60" data-ans="Er" id="d11"> schmeckt nicht gut.</div>
+    <div class="srow"><span class="n">12.</span> Die Bücher sind interessant. <input class="fi w60" data-ans="Sie" id="d12"> kosten zusammen 30 Euro.</div>
+    <div class="srow"><span class="n">13.</span> Das Wetter ist heute schön! <input class="fi w60" data-ans="Es" id="d13"> ist sehr warm.</div>
+
+    <button class="chk" onclick="chk('exD',['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13'])">✓ Prüfen</button>
+    <button class="rst" onclick="rst('exD',['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13'])">↺ Reset</button>
+    <div class="rmsg" id="exD-r"></div>
+  </div>
+
+  <!-- ÜBUNG E: Sie vs sie -->
+  <div class="stitle"><span>🔍</span> Übung E — Sie oder sie? Was bedeutet es?</div>
+  <div class="ex-card">
+    <div class="ex-header"><div class="exnum">E</div><div class="extitle">Was bedeutet <em>sie / Sie</em>? Schreiben Sie die Person oder Sache.</div></div>
+    <div class="exsub">Mögliche Antworten: Frau Peneva · Frau Lindner · Kinder · Karina · Olga Peneva · Blumen · die Gäste · Herr und Frau Graf · Anna · die Kolleginnen</div>
+
+    <ul style="list-style:none">
+      <li class="sie-li">Kommen <span class="ul">Sie</span> bitte herein. Das ist meine Frau, Karina. <input class="sie-in" data-ans="Frau Peneva" id="e1"></li>
+      <li class="sie-li">Das sind unsere Kinder. <span class="ul">Sie</span> spielen im Garten. <input class="sie-in" data-ans="Kinder" id="e2"></li>
+      <li class="sie-li">Das ist Anna. <span class="ul">Sie</span> ist zwei Jahre alt. <input class="sie-in" data-ans="Anna" id="e3"></li>
+      <li class="sie-li">Setzen <span class="ul">Sie</span> sich doch bitte, möchten <span class="ul">Sie</span> etwas trinken? <input class="sie-in" data-ans="Frau Peneva" id="e4"></li>
+      <li class="sie-li">Ich mag Blumen sehr. <span class="ul">Sie</span> sind so schön! <input class="sie-in" data-ans="Blumen" id="e5"></li>
+      <li class="sie-li">Das ist Olga Peneva. <span class="ul">Sie</span> ist eine Kollegin von mir. <input class="sie-in" data-ans="Olga Peneva" id="e6"></li>
+      <li class="sie-li"><span class="ul">Sie</span> kommt aus Bulgarien. <input class="sie-in" data-ans="Olga Peneva" id="e7"></li>
+      <li class="sie-li">Guten Tag, Herr und Frau Graf! Wie geht es <span class="ul">Ihnen</span>? <input class="sie-in" data-ans="Herr und Frau Graf" id="e8"></li>
+      <li class="sie-li">Die Kolleginnen kommen aus Spanien. <span class="ul">Sie</span> sprechen sehr gut Deutsch. <input class="sie-in" data-ans="die Kolleginnen" id="e9"></li>
+      <li class="sie-li">Wo sind die Gäste? <span class="ul">Sie</span> warten schon draußen. <input class="sie-in" data-ans="die Gäste" id="e10"></li>
+      <li class="sie-li">Frau Lindner, wann kommen <span class="ul">Sie</span>? <input class="sie-in" data-ans="Frau Lindner" id="e11"></li>
+      <li class="sie-li">Karina lacht viel. <span class="ul">Sie</span> ist immer fröhlich. <input class="sie-in" data-ans="Karina" id="e12"></li>
+      <li class="sie-li">Entschuldigung, sprechen <span class="ul">Sie</span> Englisch? <input class="sie-in" data-ans="Frau Peneva" id="e13"></li>
+    </ul>
+
+    <button class="chk" onclick="chkSie()">✓ Prüfen</button>
+    <button class="rst" onclick="rstSie()">↺ Reset</button>
+    <div class="rmsg" id="exE-r"></div>
+  </div>
+
+</div>
+</div>
+
+<footer>Made with ♥ by Bảo Quang · A1 Grammatik – Personalpronomen</footer>
+
+<script>
+// ─── TABS ───
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── SCENES ───
+const scenes = [
+  {
+    title:'Im Café — Anna spricht mit Ben über Herrn Müller (3. Person)',
+    sps:[
+      {cls:'sp1',em:'👩',name:'Anna',role:'Erste Person',pr:'ich'},
+      {cls:'sp2',em:'👦',name:'Ben',role:'Zweite Person',pr:'du'},
+      {cls:'sp3',em:'👨‍💼',name:'Herr Müller',role:'Dritte Person — nicht da!',pr:'er'},
+    ],
+    bubbles:[
+      {r:false,av:'👩',cls:'b1',txt:'Kennst <span class="ptag du">du</span> Herrn Müller?',note:'Erste Person (ich=Anna) fragt Zweite Person (du=Ben)'},
+      {r:true,av:'👦',cls:'b2',txt:'Ja! <span class="ptag er">er</span> arbeitet bei der Post.',note:'Dritte Person: Herr Müller ist NICHT im Gespräch → er'},
+      {r:false,av:'👩',cls:'b1',txt:'<span class="ptag ich">Ich</span> kenne ihn auch. <span class="ptag er">Er</span> wohnt in Berlin.',note:'ich = Anna (1. Person) · er = Herr Müller (3. Person)'},
+      {r:true,av:'👦',cls:'b2',txt:'Kommt <span class="ptag er">er</span> heute in den Kurs?',note:'er = Herr Müller — immer Dritte Person, weil er nicht dabei ist'},
+    ]
+  },
+  {
+    title:'Im Kurs — Frau Weber fragt die Klasse über Maria (3. Person)',
+    sps:[
+      {cls:'sp1',em:'👩‍🏫',name:'Frau Weber',role:'Erste Person',pr:'ich'},
+      {cls:'sp2',em:'👨‍👩‍👧',name:'Kurs (Gruppe)',role:'Zweite Person',pr:'ihr'},
+      {cls:'sp3',em:'👧',name:'Maria',role:'Dritte Person — nicht da!',pr:'sie'},
+    ],
+    bubbles:[
+      {r:false,av:'👩‍🏫',cls:'b1',txt:'Wo wohnt <span class="ptag ihr">ihr</span>?',note:'Zweite Person Plural: ihr = die ganze Gruppe'},
+      {r:true,av:'👨‍👩‍👧',cls:'b2',txt:'<span class="ptag wir">Wir</span> wohnen in Berlin.',note:'Erste Person Plural: wir = die Gruppe spricht jetzt'},
+      {r:false,av:'👩‍🏫',cls:'b1',txt:'Und wo ist Maria? Kommt <span class="ptag sief">sie</span> heute?',note:'Dritte Person: Maria ist NICHT da → sie (weiblich)'},
+      {r:true,av:'👨‍👩‍👧',cls:'b2',txt:'<span class="ptag sief">Sie</span> kommt später. <span class="ptag sief">Sie</span> hat den Bus verpasst.',note:'Dritte Person: sie = Maria — nicht im Gespräch'},
+    ]
+  },
+  {
+    title:'Im Büro — Formell: Herr Graf und Frau Park (Sie = 2. Person formell)',
+    sps:[
+      {cls:'sp1',em:'👔',name:'Herr Graf',role:'Erste Person',pr:'ich'},
+      {cls:'sp2',em:'👩‍💼',name:'Frau Park',role:'Zweite Person (formell)',pr:'Sie (groß!)'},
+      {cls:'sp3',em:'📋',name:'das Projekt',role:'Dritte Person (Sache)',pr:'es (das→es)'},
+    ],
+    bubbles:[
+      {r:false,av:'👔',cls:'b1',txt:'Kennen <span class="ptag SIE">Sie</span> das neue Projekt?',note:'Zweite Person formell: Sie (Großschreibung!) = Frau Park'},
+      {r:true,av:'👩‍💼',cls:'b2',txt:'Ja, <span class="ptag es">es</span> ist sehr interessant!',note:'Dritte Person: das Projekt (das) → es'},
+      {r:false,av:'👔',cls:'b1',txt:'<span class="ptag ich">Ich</span> finde <span class="ptag es">es</span> auch gut. Können <span class="ptag SIE">Sie</span> morgen kommen?',note:'ich=Herr Graf · es=das Projekt · Sie=Frau Park (formell, groß!)'},
+      {r:true,av:'👩‍💼',cls:'b2',txt:'Ja, <span class="ptag ich">ich</span> komme gerne.',note:'Erste Person: Frau Park spricht jetzt → ich'},
+    ]
+  }
+];
+
+function setScene(idx, el) {
+  document.querySelectorAll('.scene-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const s = scenes[idx];
+  const spH = s.sps.map(sp=>`<div class="sp-card ${sp.cls}"><div class="sp-em">${sp.em}</div><div class="sp-name">${sp.name}</div><div class="sp-role">${sp.role}</div><span class="sp-pr">${sp.pr}</span></div>`).join('<div class="sp-div">→</div>');
+  const bH = s.bubbles.map(b=>`<div class="brow ${b.r?'right':''}"><div class="bav">${b.av}</div><div class="bubble ${b.cls}">${b.txt}<span class="bnote">${b.note}</span></div></div>`).join('');
+  document.getElementById('chat-stage').innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:12px;font-style:italic">${s.title}</p><div class="speakers">${spH}</div><div class="chat-log">${bH}</div>`;
+}
+
+// ─── QUIZ ───
+const qdata=[
+  {em:'👨‍💼',lb:'Herr Müller',ans:'er',hint:'Mann → er',opts:['er','sie','es','sie (Pl.)']},
+  {em:'👩‍🏫',lb:'Frau Weber',ans:'sie',hint:'Frau → sie',opts:['er','sie','es','sie (Pl.)']},
+  {em:'👶',lb:'das Kind',ans:'es',hint:'das → es',opts:['er','sie','es','sie (Pl.)']},
+  {em:'🪑',lb:'der Stuhl',ans:'er',hint:'der → er',opts:['er','sie','es','sie (Pl.)']},
+  {em:'💡',lb:'die Lampe',ans:'sie',hint:'die → sie',opts:['er','sie','es','sie (Pl.)']},
+  {em:'🚗',lb:'das Auto',ans:'es',hint:'das → es',opts:['er','sie','es','sie (Pl.)']},
+  {em:'📚',lb:'die Bücher (Pl.)',ans:'sie',hint:'Plural → sie',opts:['er','sie','es','sie (Pl.)']},
+  {em:'👫',lb:'Anna und Tom',ans:'sie',hint:'Plural → sie',opts:['er','sie','es','sie (Pl.)']},
+  {em:'💻',lb:'der Computer',ans:'er',hint:'der → er',opts:['er','sie','es','sie (Pl.)']},
+  {em:'🌸',lb:'die Blume',ans:'sie',hint:'die → sie',opts:['er','sie','es','sie (Pl.)']},
+  {em:'📖',lb:'das Buch',ans:'es',hint:'das → es',opts:['er','sie','es','sie (Pl.)']},
+  {em:'👨‍👩',lb:'Herr & Frau Meier',ans:'sie',hint:'Plural → sie',opts:['er','sie','es','sie (Pl.)']},
+];
+let sq=[...qdata].sort(()=>Math.random()-.5), qi=0, qs=0, qan=false;
+function rQ(){
+  const b=document.getElementById('qbody');
+  if(!b)return;
+  if(qi>=sq.length){
+    b.innerHTML=`<div class="finish"><div class="fbig">${qs}/${sq.length}</div><div class="fsub">${qs===sq.length?'🎉 Perfekt!':qs>=8?'👍 Sehr gut!':'💪 Üben Sie weiter!'}</div><button class="rbtn" onclick="reQ()">↺ Nochmal</button></div>`;
+    upQ();return;
+  }
+  const q=sq[qi]; upQ();
+  b.innerHTML=`<div class="qcard"><div class="qemoji">${q.em}</div><div class="qname">${q.lb}</div><div class="qsub">→ Welches Pronomen? (Dritte Person)</div></div><div class="qopts">${q.opts.map(o=>`<button class="qbtn" id="qb_${o.replace(' ','_')}" onclick="aQ('${o}')">${o}</button>`).join('')}</div><div class="qfb" id="qfb"></div>`;
+  qan=false;
+}
+function upQ(){
+  const tot=sq.length;
+  document.getElementById('qprog').style.width=Math.round(qi/tot*100)+'%';
+  document.getElementById('qctr').textContent=qi<tot?`Frage ${qi+1} / ${tot}`:'Fertig!';
+  document.getElementById('qscdsp').textContent=`✓ ${qs} richtig`;
+}
+function aQ(chosen){
+  if(qan)return; qan=true;
+  const q=sq[qi], right=chosen===q.ans;
+  if(right)qs++;
+  document.querySelectorAll('.qbtn').forEach(b=>b.disabled=true);
+  const cid='qb_'+chosen.replace(' ','_'), rid='qb_'+q.ans.replace(' ','_');
+  document.getElementById(cid)?.classList.add(right?'qcorrect':'qwrong');
+  if(!right&&document.getElementById(rid))document.getElementById(rid).classList.add('qcorrect');
+  const fb=document.getElementById('qfb');
+  fb.style.color=right?'var(--correct)':'var(--wrong)';
+  fb.textContent=right?`✓ Richtig! — ${q.hint}`:`✗ Falsch. Richtig: ${q.ans} — ${q.hint}`;
+  setTimeout(()=>{qi++;rQ();},1500);
+}
+function reQ(){qi=0;qs=0;sq.sort(()=>Math.random()-.5);rQ();}
+
+// ─── EXERCISES ───
+function norm(s){return s.trim().toLowerCase();}
+
+function chk(id, ids){
+  let ok=0,filled=0;
+  ids.forEach(i=>{
+    const el=document.getElementById(i); if(!el)return;
+    const v=el.value.trim(); el.classList.remove('ok','no');
+    if(!v)return; filled++;
+    if(norm(v)===norm(el.dataset.ans)){el.classList.add('ok');ok++;}
+    else el.classList.add('no');
+  });
+  const m=document.getElementById(id+'-r');
+  if(!filled){m.textContent='⚠️ Bitte zuerst ausfüllen!';m.className='rmsg show ok2';return;}
+  m.textContent=ok===ids.length?`🎉 Alle ${ids.length} richtig!`:`${ok} von ${filled} richtig. Versuchen Sie weiter!`;
+  m.className='rmsg show '+(ok===ids.length?'good':'ok2');
+}
+function rst(id, ids){
+  ids.forEach(i=>{const el=document.getElementById(i);if(el){el.value='';el.classList.remove('ok','no');}});
+  const m=document.getElementById(id+'-r'); if(m)m.className='rmsg';
+}
+function chkSel(id, ids){
+  let ok=0,filled=0;
+  ids.forEach(i=>{
+    const el=document.getElementById(i); if(!el)return;
+    const v=el.value; el.classList.remove('ok','no');
+    if(!v)return; filled++;
+    if(v===el.dataset.ans){el.classList.add('ok');ok++;}
+    else el.classList.add('no');
+  });
+  const m=document.getElementById(id+'-r');
+  if(!filled){m.textContent='⚠️ Bitte zuerst auswählen!';m.className='rmsg show ok2';return;}
+  m.textContent=ok===ids.length?`🎉 Alle ${ids.length} richtig!`:`${ok} von ${filled} richtig.`;
+  m.className='rmsg show '+(ok===ids.length?'good':'ok2');
+}
+function rstSel(id, ids){
+  ids.forEach(i=>{const el=document.getElementById(i);if(el){el.value='';el.classList.remove('ok','no');}});
+  const m=document.getElementById(id+'-r'); if(m)m.className='rmsg';
+}
+
+const siePairs=[
+  ['e1','Frau Peneva'],['e2','Kinder'],['e3','Anna'],['e4','Frau Peneva'],
+  ['e5','Blumen'],['e6','Olga Peneva'],['e7','Olga Peneva'],
+  ['e8','Herr und Frau Graf'],['e9','die Kolleginnen'],['e10','die Gäste'],
+  ['e11','Frau Lindner'],['e12','Karina'],['e13','Frau Peneva']
+];
+function chkSie(){
+  let ok=0,filled=0;
+  siePairs.forEach(([id,ans])=>{
+    const el=document.getElementById(id); if(!el)return;
+    const v=el.value.trim(); el.classList.remove('ok','no');
+    if(!v)return; filled++;
+    if(norm(v)===norm(ans)||norm(v).includes(norm(ans.split(' ').pop()))){el.classList.add('ok');ok++;}
+    else el.classList.add('no');
+  });
+  const m=document.getElementById('exE-r');
+  m.textContent=ok===siePairs.length?'🎉 Perfekt!':ok===filled?'✓ Alle ausgefüllten richtig!':ok+' von '+filled+' richtig.';
+  m.className='rmsg show '+(ok===siePairs.length?'good':'ok2');
+}
+function rstSie(){
+  siePairs.forEach(([id])=>{const el=document.getElementById(id);if(el){el.value='';el.classList.remove('ok','no');}});
+  document.getElementById('exE-r').className='rmsg';
+}
+
+// init
+document.addEventListener('DOMContentLoaded',()=>{setScene(0,document.querySelector('.scene-tab'));rQ();});
+</script>
+</body>
+</html>
