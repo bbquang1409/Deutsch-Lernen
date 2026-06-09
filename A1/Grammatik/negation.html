@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lektion 15 – Negation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap');
+:root{
+  --bg:#f0f4ff;--card:#fff;--neg:#dc2626;--neg-l:#fee2e2;
+  --ok:#16a34a;--ok-l:#dcfce7;--blue:#2563eb;--blue-l:#dbeafe;
+  --ora:#ea580c;--ora-l:#ffedd5;--pur:#7c3aed;--pur-l:#ede9fe;
+  --yel:#f59e0b;--yel-l:#fef3c7;--text:#1e293b;--sub:#64748b;
+  --shadow:0 4px 20px rgba(0,0,0,.08);--r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padding-bottom:70px;}
+.hdr{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff;padding:26px 18px 20px;text-align:center;}
+.hdr .tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:9px;text-transform:uppercase;}
+.hdr h1{font-family:'Baloo 2',cursive;font-size:24px;font-weight:800;}
+.hdr p{margin-top:5px;font-size:13px;opacity:.8;font-weight:600;}
+.nav{display:flex;background:#7f1d1d;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex:1;min-width:66px;padding:10px 5px;background:transparent;color:rgba(255,255,255,.5);border:none;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;text-align:center;}
+.nav-btn.active{color:#fff;border-bottom:3px solid #fca5a5;background:rgba(255,255,255,.08);}
+.sec{display:none;padding:16px 14px;}
+.sec.active{display:block;}
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:13px;box-shadow:var(--shadow);}
+.ct{font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:7px;}
+/* HBOX */
+.hb{border-radius:10px;padding:13px;margin-bottom:11px;}
+.hb p{font-size:13px;line-height:1.9;}
+.hb .hl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.hb-r{background:var(--neg-l);border-left:4px solid var(--neg);}
+.hb-g{background:var(--ok-l);border-left:4px solid var(--ok);}
+.hb-b{background:var(--blue-l);border-left:4px solid var(--blue);}
+.hb-o{background:var(--ora-l);border-left:4px solid var(--ora);}
+.hb-y{background:var(--yel-l);border-left:4px solid var(--yel);}
+.hb-p{background:var(--pur-l);border-left:4px solid var(--pur);}
+.hl-r{color:#991b1b;} .hl-g{color:#166534;} .hl-b{color:#1e40af;}
+.hl-o{color:#9a3412;} .hl-y{color:#92400e;} .hl-p{color:#5b21b6;}
+/* TABLE */
+.at{width:100%;border-collapse:collapse;font-size:12px;border-radius:10px;overflow:hidden;margin-top:8px;}
+.at th{padding:9px 6px;text-align:center;font-weight:800;font-size:11px;}
+.at td{padding:8px 6px;text-align:center;border-top:1px solid #f1f5f9;font-weight:600;font-size:12px;}
+.at tr:nth-child(even) td{background:#fafbff;}
+.th-r{background:var(--neg-l);color:#991b1b;} .th-g{background:var(--ok-l);color:#166534;}
+.th-b{background:var(--blue-l);color:#1e40af;} .th-c{background:#f1f5f9;color:var(--sub);}
+.th-y{background:var(--yel-l);color:#92400e;}
+/* COMPARE CARDS */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.cmp-box{border-radius:12px;padding:13px;text-align:center;}
+.cmp-neg{background:var(--neg-l);border:2px solid #fca5a5;}
+.cmp-ok{background:var(--ok-l);border:2px solid #86efac;}
+.cmp-box .cl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.cmp-box .cw{font-size:22px;font-weight:900;margin-bottom:5px;}
+.cmp-box .cs{font-size:12px;font-weight:600;color:var(--sub);line-height:1.6;}
+/* DECISION TREE */
+.dtree{background:#f8faff;border-radius:12px;padding:15px;margin-bottom:12px;}
+.dq{background:#1e3a8a;color:#fff;border-radius:9px;padding:10px 14px;font-size:14px;font-weight:800;text-align:center;margin-bottom:12px;}
+.drow{display:flex;gap:10px;}
+.dopt{flex:1;border-radius:9px;padding:11px;text-align:center;}
+.dopt-y{background:var(--ok-l);border:2px solid #86efac;}
+.dopt-n{background:var(--blue-l);border:2px solid #93c5fd;}
+.dopt .da{font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:5px;}
+.dopt .db{font-size:20px;font-weight:900;margin-bottom:4px;}
+.dopt .dc{font-size:11px;color:var(--sub);font-weight:600;line-height:1.5;}
+/* SENTENCE DEMO */
+.sdemo{background:#f8faff;border-radius:10px;padding:12px;margin-bottom:10px;}
+.sdemo .sl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--sub);margin-bottom:7px;}
+.sdemo .se{font-size:15px;font-weight:700;line-height:2;color:var(--text);}
+.sdemo .ss{font-size:12px;color:var(--sub);font-weight:600;margin-top:3px;}
+.neg-w{color:var(--neg);font-weight:900;}
+.ok-w{color:var(--ok);font-weight:900;}
+/* POSITION DIAGRAM */
+.pos-box{background:#1e293b;color:#fff;border-radius:12px;padding:14px;margin-bottom:12px;font-size:13px;}
+.pos-box .pt{font-family:'Baloo 2',cursive;font-size:14px;margin-bottom:10px;color:#94a3b8;}
+.pos-row{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+.pw{border-radius:6px;padding:4px 10px;font-size:12px;font-weight:800;}
+.pw-sub{background:#334155;color:#94a3b8;}
+.pw-verb{background:#1d4ed8;color:#fff;}
+.pw-obj{background:#166534;color:#fff;}
+.pw-neg{background:#dc2626;color:#fff;animation:pulse 2s infinite;}
+.pw-adj{background:#7c3aed;color:#fff;}
+.pw-prep{background:#ea580c;color:#fff;}
+.pw-arrow{color:#64748b;font-size:16px;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
+/* WORT CARDS */
+.wort-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px;}
+.wort-card{background:#f8faff;border-radius:10px;padding:12px;}
+.wort-card .ww{font-size:18px;font-weight:900;color:var(--neg);margin-bottom:4px;}
+.wort-card .wg{font-size:11px;color:var(--ok);font-weight:800;margin-bottom:5px;}
+.wort-card .we{font-size:12px;color:var(--sub);font-weight:600;line-height:1.6;}
+.wort-card .wx{font-size:12px;font-weight:700;color:var(--text);margin-top:5px;line-height:1.7;font-style:italic;}
+/* FALLEN (TRAPS) */
+.trap{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:2px solid #fca5a5;position:relative;}
+.trap-badge{display:inline-block;background:var(--neg);color:#fff;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.trap-title{font-size:14px;font-weight:800;color:var(--neg);margin-bottom:8px;}
+.trap p{font-size:13px;line-height:1.8;color:var(--text);}
+.trap .tex{background:#f8faff;border-radius:8px;padding:10px;margin-top:8px;font-size:13px;font-weight:600;line-height:1.8;}
+.trap .tw{color:var(--neg);font-weight:900;}
+.trap .tip{background:var(--ok-l);border-radius:7px;padding:8px 10px;margin-top:8px;font-size:12px;font-weight:700;color:#166534;line-height:1.6;}
+/* FLASHCARD */
+.fc-wrap{background:#f8faff;border-radius:var(--r);padding:14px;}
+.fc-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.fc-prog{font-size:12px;font-weight:800;color:var(--sub);}
+.fc-dots{display:flex;gap:5px;}
+.fc-dot{width:9px;height:9px;border-radius:50%;background:#e2e8f0;transition:background .3s;}
+.fc-dot.done{background:var(--ok);} .fc-dot.cur{background:var(--neg);}
+.fc-card{background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.1);min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:18px 15px;text-align:center;margin-bottom:11px;}
+.fc-q{font-size:16px;font-weight:800;line-height:1.6;margin-bottom:5px;}
+.fc-hint{font-size:11px;color:var(--sub);font-weight:600;}
+.fc-opts{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:10px;}
+.fc-btn{background:#fff;border:2px solid #e2e8f0;border-radius:9px;padding:7px 15px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;color:var(--text);transition:all .15s;}
+.fc-btn:hover{border-color:var(--neg);color:var(--neg);}
+.fc-btn.fc-ok{background:var(--ok-l);border-color:var(--ok);color:#166534;}
+.fc-btn.fc-bad{background:var(--neg-l);border-color:var(--neg);color:#991b1b;}
+.fc-exp{font-size:12px;font-weight:700;padding:9px 12px;border-radius:9px;margin-bottom:9px;display:none;line-height:1.6;}
+.fc-exp.show{display:block;}
+.fc-exp.ok{background:var(--ok-l);color:#166534;}
+.fc-exp.bad{background:var(--neg-l);color:#991b1b;}
+.fc-next{background:var(--neg);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:none;width:100%;}
+.fc-next.show{display:block;}
+.fc-result{text-align:center;padding:14px;display:none;}
+.fc-result.show{display:block;}
+.fc-result .big{font-size:36px;margin-bottom:6px;}
+.fc-result .msg{font-size:15px;font-weight:800;}
+.fc-restart{background:var(--neg);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:10px;}
+/* UEBUNG */
+.ub-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;}
+.ub-tabs::-webkit-scrollbar{display:none;}
+.ub-tab{flex-shrink:0;padding:7px 14px;border-radius:20px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;background:#e2e8f0;color:var(--sub);border:none;transition:all .2s;}
+.ub-tab.active{background:var(--neg);color:#fff;}
+.ub-tab.done{background:var(--ok-l);color:#166534;}
+.ub-pane{display:none;} .ub-pane.active{display:block;}
+.ub-title{font-family:'Baloo 2',cursive;font-size:16px;font-weight:800;margin-bottom:4px;}
+.ub-sub{font-size:12px;color:var(--sub);font-weight:600;margin-bottom:14px;}
+.ub-item{background:#f8faff;border-radius:10px;padding:12px;margin-bottom:10px;border:2px solid transparent;transition:border .2s;}
+.ub-item.ok{border-color:var(--ok);background:var(--ok-l);}
+.ub-item.bad{border-color:var(--neg);background:var(--neg-l);}
+.ub-sent{font-size:14px;font-weight:600;line-height:2;margin-bottom:6px;}
+.bl{display:inline-block;min-width:58px;border-bottom:2px solid #94a3b8;text-align:center;margin:0 3px;font-weight:800;}
+.br{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px;}
+.xbtn{background:#fff;border:2px solid #e2e8f0;border-radius:7px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;color:var(--text);transition:all .15s;}
+.xbtn:hover{border-color:var(--neg);color:var(--neg);}
+.xbtn.xok{background:var(--ok-l);border-color:var(--ok);color:#166534;}
+.xbtn.xbad{background:var(--neg-l);border-color:var(--neg);color:#991b1b;}
+.xfb{margin-top:7px;font-size:12px;font-weight:700;display:none;line-height:1.6;}
+.xfb.show{display:block;} .xfb.ok{color:#166534;} .xfb.bad{color:#991b1b;}
+.sc-bar{background:#e2e8f0;border-radius:20px;height:7px;margin:12px 0 3px;overflow:hidden;}
+.sc-fill{height:100%;background:linear-gradient(90deg,var(--ok),#4ade80);border-radius:20px;transition:width .4s ease;}
+.sc-txt{font-size:12px;color:var(--sub);font-weight:700;}
+.rst-btn{background:var(--neg);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;display:block;width:100%;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">📚 Lektion 15 · A1–A2</div>
+  <h1>Kein · Nicht · Nie</h1>
+  <p>Negation – Sätze verneinen</p>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('t1')">📖 Überblick</button>
+  <button class="nav-btn" onclick="showTab('t2')">❌ kein/nicht</button>
+  <button class="nav-btn" onclick="showTab('t3')">📍 Position</button>
+  <button class="nav-btn" onclick="showTab('t4')">🔤 Andere</button>
+  <button class="nav-btn" onclick="showTab('t5')">⚠️ Fallen</button>
+  <button class="nav-btn" onclick="showTab('t6')">✏️ Übung</button>
+</nav>
+
+<!-- ══ TAB 1: ÜBERBLICK ══ -->
+<div id="t1" class="sec active">
+
+  <div class="card">
+    <div class="ct">❓ Wie sagt man „Nein" auf Deutsch?</div>
+    <div class="hb hb-y">
+      <div class="hl hl-y">Wichtig!</div>
+      <p>Im Deutschen gibt es <strong>viele Wörter</strong> für „Nein".<br>
+      Im Englischen sagt man fast immer: <em>„not"</em>.<br>
+      Im Deutschen muss man wählen: <em>kein? nicht? nie? niemand? nichts?</em></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🗺️ Die Negationswörter – Überblick</div>
+    <table class="at">
+      <thead><tr><th class="th-c">Wort</th><th class="th-c">Was verneint es?</th><th class="th-c">Beispiel</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--neg);">kein/keine</strong></td><td>ein Nomen (Substantiv)</td><td>Ich habe <strong style="color:var(--neg);">kein</strong> Auto.</td></tr>
+        <tr><td><strong style="color:var(--neg);">nicht</strong></td><td>ein Verb, Adjektiv, Adverb, Satz</td><td>Ich komme <strong style="color:var(--neg);">nicht</strong>.</td></tr>
+        <tr><td><strong style="color:var(--neg);">nein</strong></td><td>eine ganze Frage (allein)</td><td>Kommst du? – <strong style="color:var(--neg);">Nein</strong>.</td></tr>
+        <tr><td><strong style="color:var(--neg);">nie</strong></td><td>Zeit – niemals</td><td>Ich komme <strong style="color:var(--neg);">nie</strong> zu spät.</td></tr>
+        <tr><td><strong style="color:var(--neg);">niemand</strong></td><td>eine Person</td><td><strong style="color:var(--neg);">Niemand</strong> ist hier.</td></tr>
+        <tr><td><strong style="color:var(--neg);">nichts</strong></td><td>eine Sache</td><td>Ich sehe <strong style="color:var(--neg);">nichts</strong>.</td></tr>
+        <tr><td><strong style="color:var(--neg);">kaum</strong></td><td>fast nicht (sehr wenig)</td><td>Ich schlafe <strong style="color:var(--neg);">kaum</strong>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="ct">💬 Drei wichtige Negationen – Unterschied</div>
+    <div class="sdemo">
+      <div class="sl">Frage – Antwort allein</div>
+      <div class="se">Kommst du heute? – <span class="neg-w">Nein.</span></div>
+      <div class="ss">→ „nein" steht allein. Nicht im Satz!</div>
+    </div>
+    <div class="sdemo">
+      <div class="sl">Ein Nomen (Substantiv) verneinen</div>
+      <div class="se">Ich habe <span class="neg-w">kein</span> Auto. / Sie hat <span class="neg-w">keine</span> Zeit.</div>
+      <div class="ss">→ kein/keine steht vor dem Nomen</div>
+    </div>
+    <div class="sdemo">
+      <div class="sl">Ein Verb / Adjektiv / Satz verneinen</div>
+      <div class="se">Ich arbeite <span class="neg-w">nicht</span>. / Er ist <span class="neg-w">nicht</span> müde.</div>
+      <div class="ss">→ nicht – Position variiert (→ Tab „Position")</div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD T1 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – welches Wort?</div>
+    <div id="fc1"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 2: KEIN / NICHT ══ -->
+<div id="t2" class="sec">
+
+  <div class="card">
+    <div class="ct">🤔 kein oder nicht? – Die Frage</div>
+    <div class="dtree">
+      <div class="dq">❓ Was verneint du gerade?</div>
+      <div class="drow">
+        <div class="dopt dopt-y">
+          <div class="da" style="color:#166534;">Ein Nomen (Substantiv)</div>
+          <div class="db" style="color:var(--neg);">kein</div>
+          <div class="dc">Ich habe <strong>kein</strong> Geld.<br>Sie hat <strong>keine</strong> Zeit.<br>Er hat <strong>keinen</strong> Hunger.</div>
+        </div>
+        <div class="dopt dopt-n">
+          <div class="da" style="color:#1e40af;">Verb / Adjektiv / Adverb</div>
+          <div class="db" style="color:var(--neg);">nicht</div>
+          <div class="dc">Ich arbeite <strong>nicht</strong>.<br>Er ist <strong>nicht</strong> müde.<br>Sie wohnt <strong>nicht</strong> hier.</div>
+        </div>
+      </div>
+    </div>
+    <div class="hb hb-y">
+      <div class="hl hl-y">Kurze Regel – leicht zu merken!</div>
+      <p>→ Nomen ohne Artikel oder mit „ein/eine"? → <strong style="color:var(--neg);">kein</strong><br>
+      → Verb, Adjektiv, Adverb, Satz? → <strong style="color:var(--neg);">nicht</strong><br>
+      → Nomen mit „der/das/die"? → auch <strong style="color:var(--neg);">nicht</strong></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📊 kein – Endungen wie „ein"</div>
+    <p style="font-size:12px;color:var(--sub);margin-bottom:9px;">kein folgt den gleichen Endungen wie <em>ein/eine</em>:</p>
+    <table class="at">
+      <thead><tr><th class="th-c">Fall</th><th class="th-r">maskulin</th><th class="th-r">neutral</th><th class="th-r">feminin</th><th class="th-r">Plural</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nom.</strong></td><td>kein Mann</td><td>kein Haus</td><td>keine Frau</td><td>keine Autos</td></tr>
+        <tr><td><strong>Akk.</strong></td><td><strong style="color:var(--ora);">keinen</strong> Mann</td><td>kein Haus</td><td>keine Frau</td><td>keine Autos</td></tr>
+        <tr><td><strong>Dat.</strong></td><td>keinem Mann</td><td>keinem Haus</td><td>keiner Frau</td><td>keinen Autos</td></tr>
+      </tbody>
+    </table>
+    <div class="hb hb-o" style="margin-top:10px;">
+      <div class="hl hl-o">⚠️ Achtung – Plural!</div>
+      <p>Plural hat <strong>keinen</strong> Artikel: „Ich kaufe – Äpfel."<br>
+      Aber mit Negation: „Ich kaufe <strong style="color:var(--neg);">keine</strong> Äpfel." (nicht: <span style="text-decoration:line-through">nicht Äpfel</span>)</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🔄 Positiv → Negativ</div>
+    <table class="at">
+      <thead><tr><th class="th-g">✅ Positiv</th><th class="th-r">❌ Negativ</th></tr></thead>
+      <tbody>
+        <tr><td>Ich habe <span style="color:var(--ok);font-weight:800;">einen</span> Hund.</td><td>Ich habe <span class="neg-w">keinen</span> Hund.</td></tr>
+        <tr><td>Sie hat <span style="color:var(--ok);font-weight:800;">eine</span> Idee.</td><td>Sie hat <span class="neg-w">keine</span> Idee.</td></tr>
+        <tr><td>Er trinkt <span style="color:var(--ok);font-weight:800;">–</span> Wasser.</td><td>Er trinkt <span class="neg-w">kein</span> Wasser.</td></tr>
+        <tr><td>Sie hat <span style="color:var(--ok);font-weight:800;">–</span> Zeit.</td><td>Sie hat <span class="neg-w">keine</span> Zeit.</td></tr>
+        <tr><td>Ich arbeite.</td><td>Ich arbeite <span class="neg-w">nicht</span>.</td></tr>
+        <tr><td>Er ist müde.</td><td>Er ist <span class="neg-w">nicht</span> müde.</td></tr>
+        <tr><td>Sie wohnt in Berlin.</td><td>Sie wohnt <span class="neg-w">nicht</span> in Berlin.</td></tr>
+        <tr><td>Das ist <span style="color:var(--ok);font-weight:800;">der</span> Hund.</td><td>Das ist <span class="neg-w">nicht</span> der Hund.</td></tr>
+      </tbody>
+    </table>
+    <div class="hb hb-b" style="margin-top:10px;">
+      <div class="hl hl-b">💡 Bestimmter Artikel → nicht!</div>
+      <p>„Das ist <strong style="color:var(--neg);">nicht</strong> der Hund." (nicht: ~~kein der Hund~~)<br>
+      Wenn ein bestimmter Artikel (der/das/die) oder ein Possessiv (mein/dein…) steht → <strong>nicht</strong>.</p>
+    </div>
+  </div>
+
+  <!-- FLASHCARD T2 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – kein oder nicht?</div>
+    <div id="fc2"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: POSITION ══ -->
+<div id="t3" class="sec">
+
+  <div class="card">
+    <div class="ct">📍 Wo steht „nicht" im Satz?</div>
+    <div class="hb hb-r">
+      <div class="hl hl-r">Das ist das Schwierigste!</div>
+      <p>Im Englischen: „I do <strong>not</strong> work." → „not" direkt nach dem Hilfsverb.<br>
+      Im Deutschen: „nicht" steht <strong>NICHT</strong> direkt nach dem Verb.<br>
+      Die Position von „nicht" hängt davon ab, <em>was</em> man verneint.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📌 Regel 1 – Das ganze Verb verneinen</div>
+    <div class="hb hb-y">
+      <div class="hl hl-y">„nicht" steht am Satzende</div>
+      <p>Man verneint die ganze Handlung → „nicht" geht ans Ende.</p>
+    </div>
+    <div class="pos-box">
+      <div class="pt">Beispiele:</div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Ich</span>
+        <span class="pw pw-verb">arbeite</span>
+        <span class="pw pw-neg">nicht.</span>
+      </div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Er</span>
+        <span class="pw pw-verb">kommt</span>
+        <span class="pw pw-obj">heute</span>
+        <span class="pw pw-neg">nicht.</span>
+      </div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Sie</span>
+        <span class="pw pw-verb">kann</span>
+        <span class="pw pw-obj">Deutsch</span>
+        <span class="pw pw-verb">sprechen</span>
+        <span class="pw pw-neg">nicht.</span>
+        <span style="color:#ef4444;font-size:11px;">❌</span>
+      </div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Sie</span>
+        <span class="pw pw-verb">kann</span>
+        <span class="pw pw-neg">nicht</span>
+        <span class="pw pw-verb">Deutsch sprechen.</span>
+        <span style="color:#4ade80;font-size:11px;">✅</span>
+      </div>
+    </div>
+    <div class="hb hb-b" style="margin-top:2px;">
+      <div class="hl hl-b">Mit Modalverb / Hilfsverb:</div>
+      <p>„nicht" steht <strong>vor dem Infinitiv / Partizip</strong> am Ende.<br>
+      Ich kann <strong style="color:var(--neg);">nicht</strong> kommen. ✅<br>
+      Er hat <strong style="color:var(--neg);">nicht</strong> geschlafen. ✅</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📌 Regel 2 – Ein Teil des Satzes verneinen</div>
+    <div class="hb hb-y">
+      <div class="hl hl-y">„nicht" steht direkt VOR dem negierten Teil</div>
+      <p>Man verneint nur ein Wort oder eine Phrase → „nicht" steht direkt davor.</p>
+    </div>
+    <div class="pos-box">
+      <div class="pt">Vor Adjektiv:</div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Er</span>
+        <span class="pw pw-verb">ist</span>
+        <span class="pw pw-neg">nicht</span>
+        <span class="pw pw-adj">müde.</span>
+      </div>
+      <div class="pt" style="margin-top:10px;">Vor Präposition:</div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Sie</span>
+        <span class="pw pw-verb">wohnt</span>
+        <span class="pw pw-neg">nicht</span>
+        <span class="pw pw-prep">in Berlin.</span>
+      </div>
+      <div class="pt" style="margin-top:10px;">Vor Adverb:</div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Er</span>
+        <span class="pw pw-verb">singt</span>
+        <span class="pw pw-neg">nicht</span>
+        <span class="pw pw-adj">gut.</span>
+      </div>
+      <div class="pt" style="margin-top:10px;">Vor bestimmtem Artikel + Nomen:</div>
+      <div class="pos-row">
+        <span class="pw pw-sub">Ich</span>
+        <span class="pw pw-verb">nehme</span>
+        <span class="pw pw-neg">nicht</span>
+        <span class="pw pw-obj">den Laptop,</span>
+        <span style="color:#94a3b8;font-size:12px;">sondern das Tablet.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📋 Schnellübersicht – Position</div>
+    <table class="at">
+      <thead><tr><th class="th-c">Was wird verneint?</th><th class="th-r">Position von „nicht"</th></tr></thead>
+      <tbody>
+        <tr><td>Das ganze Verb (Satz)</td><td>am <strong>Satzende</strong></td></tr>
+        <tr><td>Verb + Modalverb/Hilfsverb</td><td>vor dem <strong>Infinitiv/Partizip</strong></td></tr>
+        <tr><td>Adjektiv</td><td>direkt <strong>vor</strong> dem Adjektiv</td></tr>
+        <tr><td>Adverb / Ort / Zeit</td><td>direkt <strong>vor</strong> dem Adverb</td></tr>
+        <tr><td>Präposition + Nomen</td><td>direkt <strong>vor</strong> der Präposition</td></tr>
+        <tr><td>Nomen mit der/das/die</td><td>direkt <strong>vor</strong> dem Artikel</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FLASHCARD T3 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Position von „nicht"</div>
+    <div id="fc3"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 4: ANDERE NEGATIONSWÖRTER ══ -->
+<div id="t4" class="sec">
+
+  <div class="card">
+    <div class="ct">🔤 Mehr Negationswörter</div>
+    <div class="wort-grid">
+      <div class="wort-card">
+        <div class="ww">nie</div>
+        <div class="wg">↔ immer</div>
+        <div class="we">= zu keiner Zeit, niemals</div>
+        <div class="wx">Ich trinke <em>nie</em> Alkohol.<br>Er kommt <em>nie</em> zu spät.</div>
+      </div>
+      <div class="wort-card">
+        <div class="ww">niemand</div>
+        <div class="wg">↔ alle / jemand</div>
+        <div class="we">= keine Person</div>
+        <div class="wx"><em>Niemand</em> ist hier.<br>Ich kenne <em>niemanden</em>.</div>
+      </div>
+      <div class="wort-card">
+        <div class="ww">nichts</div>
+        <div class="wg">↔ alles / etwas</div>
+        <div class="we">= keine Sache</div>
+        <div class="wx">Ich esse <em>nichts</em>.<br>Er sagt <em>nichts</em>.</div>
+      </div>
+      <div class="wort-card">
+        <div class="ww">kaum</div>
+        <div class="wg">= fast nicht</div>
+        <div class="we">sehr wenig, fast null</div>
+        <div class="wx">Ich schlafe <em>kaum</em>.<br>Er trinkt <em>kaum</em> Wasser.</div>
+      </div>
+      <div class="wort-card">
+        <div class="ww">selten</div>
+        <div class="wg">↔ oft / immer</div>
+        <div class="we">= nicht oft</div>
+        <div class="wx">Sie geht <em>selten</em> ins Kino.<br>Ich esse <em>selten</em> Fleisch.</div>
+      </div>
+      <div class="wort-card">
+        <div class="ww">ohne</div>
+        <div class="wg">= not with</div>
+        <div class="we">= nicht mit</div>
+        <div class="wx">Ich trinke Kaffee <em>ohne</em> Zucker.<br>Er geht <em>ohne</em> Jacke raus.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🔗 noch nicht · nicht mehr · noch nie</div>
+    <div class="sdemo">
+      <div class="sl">noch nicht = bis jetzt nicht, aber vielleicht später</div>
+      <div class="se">Ich habe <span class="neg-w">noch nicht</span> gegessen.</div>
+      <div class="ss">→ Ich esse später. (Die Handlung kommt noch.)</div>
+    </div>
+    <div class="sdemo">
+      <div class="sl">nicht mehr = früher ja, jetzt nein</div>
+      <div class="se">Ich wohne <span class="neg-w">nicht mehr</span> in Berlin.</div>
+      <div class="ss">→ Früher: ja. Jetzt: nein.</div>
+    </div>
+    <div class="sdemo">
+      <div class="sl">noch nie = bis jetzt niemals</div>
+      <div class="se">Ich war <span class="neg-w">noch nie</span> in Japan.</div>
+      <div class="ss">→ In meinem ganzen Leben: nie!</div>
+    </div>
+    <div class="sdemo">
+      <div class="sl">kein … mehr = nicht mehr vorhanden</div>
+      <div class="se">Ich habe <span class="neg-w">kein</span> Geld <span class="neg-w">mehr</span>.</div>
+      <div class="ss">→ Früher: Geld. Jetzt: kein Geld.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">⚡ „doch" – die positive Antwort auf Negation</div>
+    <div class="hb hb-p">
+      <div class="hl hl-p">Besondere Regel!</div>
+      <p>Wenn jemand eine <strong>negative Frage</strong> stellt und du <strong>positiv</strong> antwortest:<br>
+      → Nicht „Ja" sagen! → <strong style="color:var(--pur);">Doch!</strong> sagen!</p>
+    </div>
+    <div class="sdemo">
+      <div class="sl">Negative Frage → positive Antwort = DOCH!</div>
+      <div class="se">Bist du <span class="neg-w">nicht</span> müde? – <span style="color:var(--pur);font-weight:900;">Doch!</span> Ich bin sehr müde.</div>
+      <div class="ss">→ „Ja" wäre falsch hier! „Doch" bedeutet: Deine Annahme ist falsch, ich BIN müde.</div>
+    </div>
+    <div class="sdemo">
+      <div class="sl">Noch ein Beispiel:</div>
+      <div class="se">Hast du <span class="neg-w">kein</span> Auto? – <span style="color:var(--pur);font-weight:900;">Doch!</span> Ich habe ein Auto.</div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD T4 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – welches Wort passt?</div>
+    <div id="fc4"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 5: PRÜFUNGS-FALLEN ══ -->
+<div id="t5" class="sec">
+
+  <div class="card">
+    <div class="ct">⚠️ Achtung – Fallen in Prüfungen!</div>
+    <div class="hb hb-r">
+      <div class="hl hl-r">Warum ist das wichtig?</div>
+      <p>In Goethe-Prüfungen (A1–B1) – Lesen und Hören – gibt es oft <strong>Fallen mit Negation</strong>.<br>
+      Die Prüfer bauen Negationswörter ein, um Lernende zu verwirren.<br>
+      Wer die Fallen kennt, macht <strong>weniger Fehler</strong>!</p>
+    </div>
+  </div>
+
+  <div class="trap">
+    <div class="trap-badge">🪤 Falle 1</div>
+    <div class="trap-title">nie / niemand / nichts in Antwortoptionen</div>
+    <p>In Prüfungsfragen sind Antworten mit <strong>immer, nie, alle, niemand</strong> fast <strong>immer falsch</strong>.<br>
+    Diese Wörter sind zu absolut. Die Realität ist meistens in der Mitte.</p>
+    <div class="tex">
+      Text: <em>„Frau Müller geht <strong>manchmal</strong> ins Kino."</em><br><br>
+      A) Frau Müller geht <span class="tw">nie</span> ins Kino. ❌<br>
+      B) Frau Müller geht <span class="tw">immer</span> ins Kino. ❌<br>
+      C) Frau Müller geht manchmal ins Kino. ✅
+    </div>
+    <div class="tip">💡 Tipp: Siehst du „nie / immer / alle / niemand" in einer Antwortoption? → Sei sehr vorsichtig! Prüfe den Text sehr genau.</div>
+  </div>
+
+  <div class="trap">
+    <div class="trap-badge">🪤 Falle 2</div>
+    <div class="trap-title">kaum = fast nicht (nicht = positiv!)</div>
+    <p><strong>kaum</strong> klingt manchmal wie eine positive Aussage, ist aber fast eine Negation!</p>
+    <div class="tex">
+      Text: <em>„Er schläft <strong>kaum</strong>."</em><br><br>
+      Was bedeutet das?<br>
+      A) Er schläft viel. ❌<br>
+      B) Er schläft fast nicht / sehr wenig. ✅<br>
+      C) Er schläft nie. ❌ (zu extrem!)<br><br>
+      <em>„Sie verdient <strong>kaum</strong> Geld."</em> = Sie ist fast arm.
+    </div>
+    <div class="tip">💡 kaum ≈ sehr wenig ≈ fast nicht. Es ist KEINE positive Aussage!</div>
+  </div>
+
+  <div class="trap">
+    <div class="trap-badge">🪤 Falle 3</div>
+    <div class="trap-title">Doppelte Negation = positiv!</div>
+    <p>Im Deutschen: zwei Negationen zusammen = <strong>positiver Sinn</strong>.<br>
+    Das ist anders als in manchen Sprachen!</p>
+    <div class="tex">
+      <em>„Das ist <strong>nicht</strong> schlecht."</em><br>
+      → Bedeutung: Das ist <strong>gut!</strong> (nicht negativ)<br><br>
+      <em>„Das macht mir <strong>keine</strong> Probleme."</em><br>
+      → Bedeutung: Das ist <strong>einfach / kein Problem</strong> für mich.<br><br>
+      <em>„Ich habe das <strong>nicht</strong> vergessen."</em><br>
+      → Bedeutung: Ich erinnere mich. ✅
+    </div>
+    <div class="tip">💡 „nicht schlecht" = gut. „nicht wenig" = viel. Immer auf den ganzen Satz achten!</div>
+  </div>
+
+  <div class="trap">
+    <div class="trap-badge">🪤 Falle 4</div>
+    <div class="trap-title">noch nicht vs. nicht mehr – Zeit-Falle!</div>
+    <p>Diese zwei Ausdrücke bedeuten sehr verschiedene Dinge – aber sie sehen ähnlich aus!</p>
+    <div class="tex">
+      <em>„Ich bin <strong>noch nicht</strong> fertig."</em><br>
+      → Ich mache weiter. Die Arbeit <strong>kommt noch</strong>.<br><br>
+      <em>„Ich bin <strong>nicht mehr</strong> hier."</em><br>
+      → Früher war ich hier. Jetzt <strong>bin ich weg</strong>.<br><br>
+      In Höraufgaben: Hörst du „noch nicht" oder „nicht mehr"? Das macht einen großen Unterschied!
+    </div>
+    <div class="tip">💡 noch nicht = Zukunft kommt. &nbsp;&nbsp; nicht mehr = Vergangenheit ist vorbei.</div>
+  </div>
+
+  <div class="trap">
+    <div class="trap-badge">🪤 Falle 5</div>
+    <div class="trap-title">„aber" und „doch" nach einer Negation</div>
+    <p>Manchmal beginnt ein Satz negativ – dann kommt <strong>aber / doch / sondern</strong> und alles dreht sich um!</p>
+    <div class="tex">
+      <em>„Er hat <strong>kein</strong> Auto, <strong>aber</strong> er fährt Fahrrad."</em><br>
+      → Das Fahrrad ist wichtig! (nicht das Auto)<br><br>
+      <em>„Ich gehe <strong>nicht</strong> ins Kino, <strong>sondern</strong> ins Theater."</em><br>
+      → Theater ist die richtige Information!<br><br>
+      <em>„Das Essen war <strong>nicht</strong> gut, <strong>aber</strong> günstig."</em><br>
+      → Beide Informationen sind wichtig!
+    </div>
+    <div class="tip">💡 In Lesen/Hören: Hörst du „nicht … aber/sondern"? → Achte auf das, was NACH „aber/sondern" kommt. Das ist die echte Information!</div>
+  </div>
+
+  <div class="trap">
+    <div class="trap-badge">🪤 Falle 6</div>
+    <div class="trap-title">selten / kaum / wenig – schwache Negation</div>
+    <p>Diese Wörter sind <strong>keine vollständige Negation</strong>, aber sie bedeuten fast dasselbe!</p>
+    <div class="tex">
+      immer (100%) → oft (70%) → manchmal (50%) → selten (20%) → kaum (5%) → nie (0%)<br><br>
+      <em>„Sie isst <strong>selten</strong> Fleisch."</em> ≈ Sie isst fast kein Fleisch.<br>
+      <em>„Er hat <strong>wenig</strong> Zeit."</em> ≈ Er hat fast keine Zeit.<br>
+      <em>„Ich schlafe <strong>kaum</strong>."</em> ≈ Ich schlafe fast nicht.
+    </div>
+    <div class="tip">💡 selten / kaum / wenig sind FAST Negationen. In der Prüfung: Diese Wörter machen eine Aussage fast negativ!</div>
+  </div>
+
+  <!-- FLASHCARD T5 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Falle erkennen!</div>
+    <div id="fc5"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 6: ÜBUNG ══ -->
+<div id="t6" class="sec">
+  <div class="ub-tabs">
+    <button class="ub-tab active" id="ut1" onclick="showUbung(1)">Übung 1</button>
+    <button class="ub-tab" id="ut2" onclick="showUbung(2)">Übung 2</button>
+    <button class="ub-tab" id="ut3" onclick="showUbung(3)">Übung 3</button>
+    <button class="ub-tab" id="ut4" onclick="showUbung(4)">Übung 4</button>
+    <button class="ub-tab" id="ut5" onclick="showUbung(5)">Übung 5</button>
+  </div>
+
+  <div class="ub-pane active" id="up1">
+    <div class="card">
+      <div class="ub-title">Übung 1 – kein oder nicht?</div>
+      <div class="ub-sub">Grundregel: Nomen → kein · Verb/Adjektiv → nicht · Niveau: ⭐</div>
+      <div id="u1items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb1" style="width:0%"></div></div>
+      <div class="sc-txt" id="st1">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(1)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <div class="ub-pane" id="up2">
+    <div class="card">
+      <div class="ub-title">Übung 2 – kein mit Endungen</div>
+      <div class="ub-sub">kein / keine / keinen / keinem · Niveau: ⭐⭐</div>
+      <div id="u2items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb2" style="width:0%"></div></div>
+      <div class="sc-txt" id="st2">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(2)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <div class="ub-pane" id="up3">
+    <div class="card">
+      <div class="ub-title">Übung 3 – Position von „nicht"</div>
+      <div class="ub-sub">Wo steht „nicht" im Satz? · Niveau: ⭐⭐⭐</div>
+      <div id="u3items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb3" style="width:0%"></div></div>
+      <div class="sc-txt" id="st3">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(3)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <div class="ub-pane" id="up4">
+    <div class="card">
+      <div class="ub-title">Übung 4 – Alle Negationswörter</div>
+      <div class="ub-sub">nicht · kein · nie · niemand · nichts · kaum · noch nicht · nicht mehr · Niveau: ⭐⭐⭐⭐</div>
+      <div id="u4items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb4" style="width:0%"></div></div>
+      <div class="sc-txt" id="st4">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(4)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <div class="ub-pane" id="up5">
+    <div class="card">
+      <div class="ub-title">Übung 5 – Prüfungstraining</div>
+      <div class="ub-sub">Richtig oder falsch? Fallen erkennen! · Niveau: ⭐⭐⭐⭐⭐</div>
+      <div id="u5items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb5" style="width:0%"></div></div>
+      <div class="sc-txt" id="st5">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(5)">🔄 Neu starten</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ DATA ═══
+var FC = {
+  fc1:[
+    {q:'„Kommst du heute?" – Antwort: Nein!',hint:'allein stehen',opts:['Nein.','Nicht.','Kein.','Nie.'],correct:'Nein.',exp:'Allein auf eine Frage antworten → <b>Nein.</b> (nicht im Satz)'},
+    {q:'„Ich habe ___ Auto."',hint:'das Auto = Nomen',opts:['nicht','kein','nie','nein'],correct:'kein',exp:'Auto ist ein Nomen ohne Artikel → <b>kein</b> Auto.'},
+    {q:'„Er arbeitet ___."',hint:'arbeiten = Verb',opts:['kein','keine','nicht','nie'],correct:'nicht',exp:'arbeiten ist ein Verb → <b>nicht</b>. „Er arbeitet nicht."'},
+    {q:'„Sie hat ___ Zeit."',hint:'Zeit = Nomen, nicht zählbar',opts:['nicht','keine','kein','nie'],correct:'keine',exp:'Zeit ist ein Nomen (feminin) → <b>keine</b> Zeit.'},
+    {q:'„___ ist hier." – Es ist leer, keine Person.',hint:'keine Person',opts:['Nichts','Niemand','Nie','Kein'],correct:'Niemand',exp:'Keine Person → <b>Niemand</b> ist hier.'}
+  ],
+  fc2:[
+    {q:'„Ich habe ___ Hunger." (kein oder nicht?)',hint:'Hunger = Nomen',opts:['nicht','keinen','keine','kein'],correct:'keinen',exp:'Hunger ist maskulin + Akkusativ → <b>keinen</b> Hunger.'},
+    {q:'„Er ist ___ glücklich." (kein oder nicht?)',hint:'glücklich = Adjektiv',opts:['kein','keine','nicht','nie'],correct:'nicht',exp:'glücklich ist ein Adjektiv → <b>nicht</b> glücklich.'},
+    {q:'„Sie kauft ___ Äpfel." (Plural!)',hint:'Plural: kein Artikel → ?',opts:['nicht','kein','keine','keinen'],correct:'keine',exp:'Plural ohne Artikel → Negation mit <b>keine</b> Äpfel.'},
+    {q:'„Das ist ___ mein Buch." (Possessiv!)',hint:'mein = Possessiv → nicht!',opts:['kein','keine','nicht','keinen'],correct:'nicht',exp:'Mit Possessiv (mein/dein…) → immer <b>nicht</b>. Das ist nicht mein Buch.'},
+    {q:'„Ich wohne ___ in Berlin." (Ort!)',hint:'in Berlin = Präposition + Ort',opts:['kein','keine','keinen','nicht'],correct:'nicht',exp:'Ort (Präposition) wird mit <b>nicht</b> verneint. Ich wohne nicht in Berlin.'}
+  ],
+  fc3:[
+    {q:'„Ich arbeite ___." – Wo steht nicht?',hint:'ganzes Verb verneinen',opts:['Ich nicht arbeite.','Ich arbeite nicht.','Nicht ich arbeite.','Ich nicht arbeite.'],correct:'Ich arbeite nicht.',exp:'Das ganze Verb verneinen → <b>nicht am Satzende</b>: Ich arbeite nicht.'},
+    {q:'„Er ist ___ müde." – nicht vor…?',hint:'müde = Adjektiv',opts:['Er nicht ist müde.','Er ist müde nicht.','Er ist nicht müde.','Nicht er ist müde.'],correct:'Er ist nicht müde.',exp:'Adjektiv verneinen → <b>nicht direkt vor dem Adjektiv</b>: Er ist nicht müde.'},
+    {q:'„Ich kann ___ kommen." – nicht vor…?',hint:'kommen = Infinitiv am Ende',opts:['Ich kann kommen nicht.','Ich nicht kann kommen.','Ich kann nicht kommen.','Nicht ich kann kommen.'],correct:'Ich kann nicht kommen.',exp:'Mit Modalverb → <b>nicht vor dem Infinitiv</b>: Ich kann nicht kommen.'},
+    {q:'„Sie wohnt ___ in Berlin." – nicht vor…?',hint:'in Berlin = Präposition + Ort',opts:['Sie nicht wohnt in Berlin.','Sie wohnt in Berlin nicht.','Nicht sie wohnt in Berlin.','Sie wohnt nicht in Berlin.'],correct:'Sie wohnt nicht in Berlin.',exp:'Präposition + Ort → <b>nicht direkt vor der Präposition</b>: wohnt nicht in Berlin.'},
+    {q:'„Er hat ___ geschlafen." – nicht vor…?',hint:'geschlafen = Partizip II am Ende',opts:['Er hat geschlafen nicht.','Er nicht hat geschlafen.','Er hat nicht geschlafen.','Nicht er hat geschlafen.'],correct:'Er hat nicht geschlafen.',exp:'Hilfsverb + Partizip II → <b>nicht vor dem Partizip</b>: hat nicht geschlafen.'}
+  ],
+  fc4:[
+    {q:'Ich war noch ___ in Japan. (bis jetzt: nie)',hint:'noch + nie = ?',opts:['nicht','kein','noch nicht','noch nie'],correct:'noch nie',exp:'„noch nie" = in meinem ganzen Leben bis jetzt nie! Ich war noch nie in Japan.'},
+    {q:'Früher hatte er ein Auto. Jetzt hat er ___.',hint:'früher ja, jetzt nein',opts:['kein Auto mehr','noch kein Auto','nie ein Auto','nicht ein Auto'],correct:'kein Auto mehr',exp:'Früher ja, jetzt nein → <b>kein … mehr</b>: Er hat kein Auto mehr.'},
+    {q:'„Bist du nicht müde?" – Antwort: Ich bin sehr müde!',hint:'negative Frage, positive Antwort',opts:['Ja!','Nein!','Doch!','Nicht!'],correct:'Doch!',exp:'Negative Frage + positive Antwort → <b>Doch!</b> (nicht „Ja!")'},
+    {q:'„Er schläft ___." (fast nicht, sehr wenig)',hint:'fast nicht = ?',opts:['nie','selten','kaum','nicht'],correct:'kaum',exp:'Fast nicht / sehr wenig → <b>kaum</b>. Er schläft kaum.'},
+    {q:'Die Arbeit ist noch nicht fertig. Was bedeutet das?',hint:'noch nicht = ?',opts:['Die Arbeit kommt nie.','Die Arbeit war fertig.','Die Arbeit kommt noch.','Die Arbeit ist fertig.'],correct:'Die Arbeit kommt noch.',exp:'<b>noch nicht</b> = bis jetzt nicht, aber die Handlung kommt später noch.'}
+  ],
+  fc5:[
+    {q:'Text: „Er geht selten ins Restaurant." Was ist richtig?',hint:'selten ≈ fast nicht',opts:['Er geht nie ins Restaurant.','Er geht fast nie ins Restaurant.','Er geht immer ins Restaurant.','Er geht oft ins Restaurant.'],correct:'Er geht fast nie ins Restaurant.',exp:'selten ≈ fast nie. Nicht „nie" (zu extrem) und nicht „oft" (falsch).'},
+    {q:'Text: „Das Essen war nicht schlecht." Was bedeutet das?',hint:'nicht + schlecht = ?',opts:['Das Essen war sehr schlecht.','Das Essen war gut.','Das Essen war nie gut.','Das Essen schmeckt kaum.'],correct:'Das Essen war gut.',exp:'Doppelte Negation: <b>nicht schlecht = gut</b>! Das ist eine positive Aussage.'},
+    {q:'Text: „Ich gehe nicht ins Kino, sondern ins Theater." Was ist richtig?',hint:'nicht … sondern = ?',opts:['Er geht ins Kino.','Er geht nirgendwo hin.','Er geht ins Theater.','Er geht ins Kino und ins Theater.'],correct:'Er geht ins Theater.',exp:'„nicht … sondern" → Das nach <b>sondern</b> ist die echte Information: Theater!'},
+    {q:'Text: „Sie verdient kaum Geld." Antwortoption: Sie ist sehr arm. Richtig oder falsch?',hint:'kaum = fast nicht',opts:['Richtig – kaum = fast nichts','Falsch – kaum = viel','Falsch – kaum = manchmal','Richtig – kaum = nie'],correct:'Richtig – kaum = fast nichts',exp:'kaum Geld = fast kein Geld = sie ist sehr arm. Das ist <b>richtig</b>!'},
+    {q:'Prüfungsfrage: Antwort A sagt „Sie geht NIE ins Kino." Was denkst du?',hint:'nie in Antwortoptionen = ?',opts:['Fast immer richtig','Fast immer falsch','Immer richtig','Manchmal richtig'],correct:'Fast immer falsch',exp:'In Prüfungen: Antworten mit <b>nie / immer / alle / niemand</b> sind fast immer falsch – zu absolut!'}
+  ]
+};
+
+var UB = {
+  1:[
+    {s:'Ich habe ___ Auto.',opts:['nicht','kein','keine','keinen'],correct:'kein',exp:'Auto = Nomen (neutral, kein Artikel) → <b>kein</b> Auto.'},
+    {s:'Er kommt heute ___.',opts:['kein','keine','nicht','nie'],correct:'nicht',exp:'kommen = Verb, ganzer Satz → <b>nicht</b> am Ende.'},
+    {s:'Sie ist ___ verheiratet.',opts:['kein','keine','nicht','keinen'],correct:'nicht',exp:'verheiratet = Adjektiv (Partizip) → <b>nicht</b> verheiratet.'},
+    {s:'Ich habe ___ Hunger.',opts:['nicht','keine','keinen','kein'],correct:'keinen',exp:'Hunger = maskulin, Akkusativ → <b>keinen</b> Hunger.'},
+    {s:'Er arbeitet ___ bei Lufthansa.',opts:['kein','keine','keinen','nicht'],correct:'nicht',exp:'bei Lufthansa = Präpositionalphrase → <b>nicht</b> (direkt vor der Präposition).'},
+    {s:'Ich brauche ___ Auto.',opts:['nicht','keine','keinen','kein'],correct:'kein',exp:'Auto = Nomen (neutral, Akkusativ) → <b>kein</b> Auto.'},
+    {s:'Das ist ___ mein Buch.',opts:['kein','keine','keinen','nicht'],correct:'nicht',exp:'mein = Possessiv → immer <b>nicht</b>. Das ist nicht mein Buch.'},
+    {s:'Sie liest ___ Zeitungen.',opts:['nicht','kein','keinen','keine'],correct:'keine',exp:'Zeitungen = Plural, kein Artikel → Negation: <b>keine</b> Zeitungen.'},
+    {s:'Ich wohne ___ in Berlin.',opts:['kein','keine','keinen','nicht'],correct:'nicht',exp:'in Berlin = Ort (Präposition) → <b>nicht</b>. Ich wohne nicht in Berlin.'},
+    {s:'Er kann ___ kochen.',opts:['kein','keine','keinen','nicht'],correct:'nicht',exp:'kochen = Infinitiv (Verb) → <b>nicht</b> vor dem Infinitiv.'},
+    {s:'Sie hat ___ Zeit.',opts:['nicht','kein','keinen','keine'],correct:'keine',exp:'Zeit = feminin, nicht zählbar → <b>keine</b> Zeit.'},
+    {s:'Das Essen schmeckt ___.',opts:['kein','keine','keinen','nicht'],correct:'nicht',exp:'schmecken = Verb, ganzer Satz → <b>nicht</b> am Ende.'},
+    {s:'Ich kaufe ___ Brot.',opts:['nicht','keine','keinen','kein'],correct:'kein',exp:'Brot = neutral, kein Artikel → <b>kein</b> Brot.'}
+  ],
+  2:[
+    {s:'Er hat ___ Freunde. (Plural)',opts:['kein','nicht','keinen','keine'],correct:'keine',exp:'Plural → <b>keine</b> Freunde.'},
+    {s:'Ich habe ___ Hunger. (m, Akk.)',opts:['kein','keine','keinen','nicht'],correct:'keinen',exp:'Hunger = maskulin, Akkusativ → <b>keinen</b> Hunger.'},
+    {s:'Sie hat ___ Idee. (f, Akk.)',opts:['kein','keinen','keinem','keine'],correct:'keine',exp:'Idee = feminin, Akkusativ → <b>keine</b> Idee.'},
+    {s:'Das ist ___ Problem. (n, Nom.)',opts:['keinen','keine','keinem','kein'],correct:'kein',exp:'Problem = neutral, Nominativ → <b>kein</b> Problem.'},
+    {s:'Ich fahre mit ___ Auto. (n, Dat.)',opts:['kein','keinen','keine','keinem'],correct:'keinem',exp:'Auto = neutral, Dativ (nach „mit") → <b>keinem</b> Auto.'},
+    {s:'Er antwortet ___ Freundin. (f, Dat.)',opts:['kein','keinem','keinen','keiner'],correct:'keiner',exp:'Freundin = feminin, Dativ → <b>keiner</b> Freundin.'},
+    {s:'Wir haben ___ Kinder. (Plural)',opts:['kein','keinen','keinem','keine'],correct:'keine',exp:'Kinder = Plural → <b>keine</b> Kinder.'},
+    {s:'Sie hat ___ Mann. (m, Akk.)',opts:['kein','keine','keiner','keinen'],correct:'keinen',exp:'Mann = maskulin, Akkusativ → <b>keinen</b> Mann.'},
+    {s:'Ich habe ___ Geld. (n, Akk.)',opts:['keinen','keine','keiner','kein'],correct:'kein',exp:'Geld = neutral, Akkusativ → <b>kein</b> Geld.'},
+    {s:'Er hilft ___ Freund. (m, Dat.)',opts:['kein','keine','keinen','keinem'],correct:'keinem',exp:'Freund = maskulin, Dativ → <b>keinem</b> Freund.'},
+    {s:'Ich esse ___ Fleisch. (n, Akk.)',opts:['keinen','keine','keiner','kein'],correct:'kein',exp:'Fleisch = neutral, Akkusativ → <b>kein</b> Fleisch.'},
+    {s:'Sie trinkt ___ Alkohol. (m, Akk.)',opts:['kein','keine','keiner','keinen'],correct:'keinen',exp:'Alkohol = maskulin, Akkusativ → <b>keinen</b> Alkohol.'},
+    {s:'Ich brauche ___ Hilfe. (f, Akk.)',opts:['kein','keinen','keinem','keine'],correct:'keine',exp:'Hilfe = feminin, Akkusativ → <b>keine</b> Hilfe.'}
+  ],
+  3:[
+    {s:'Ich arbeite. → Ich arbeite ___.',opts:['Ich nicht arbeite.','Ich arbeite nicht.','Nicht arbeite ich.','Ich arbeite kein.'],correct:'Ich arbeite nicht.',exp:'Ganzes Verb verneinen → <b>nicht am Satzende</b>.'},
+    {s:'Er ist müde. → Er ist ___ müde.',opts:['Er nicht ist müde.','Er ist müde nicht.','Er ist nicht müde.','Nicht er ist müde.'],correct:'Er ist nicht müde.',exp:'Adjektiv → <b>nicht direkt vor dem Adjektiv</b>.'},
+    {s:'Sie wohnt in Berlin. → Sie wohnt ___ in Berlin.',opts:['Sie nicht wohnt in Berlin.','Sie wohnt in Berlin nicht.','Sie wohnt nicht in Berlin.','Nicht wohnt sie in Berlin.'],correct:'Sie wohnt nicht in Berlin.',exp:'Präposition + Ort → <b>nicht vor der Präposition</b>.'},
+    {s:'Ich kann kommen. → Ich kann ___ kommen.',opts:['Ich nicht kann kommen.','Ich kann kommen nicht.','Ich kann nicht kommen.','Nicht kann ich kommen.'],correct:'Ich kann nicht kommen.',exp:'Modalverb + Infinitiv → <b>nicht vor dem Infinitiv</b>.'},
+    {s:'Er hat geschlafen. → Er hat ___ geschlafen.',opts:['Er nicht hat geschlafen.','Er hat geschlafen nicht.','Nicht er hat geschlafen.','Er hat nicht geschlafen.'],correct:'Er hat nicht geschlafen.',exp:'Hilfsverb + Partizip II → <b>nicht vor dem Partizip II</b>.'},
+    {s:'Sie singt gut. → Sie singt ___ gut.',opts:['Sie nicht singt gut.','Sie singt gut nicht.','Nicht singt sie gut.','Sie singt nicht gut.'],correct:'Sie singt nicht gut.',exp:'Adverb → <b>nicht direkt vor dem Adverb</b>.'},
+    {s:'Ich komme heute. → Ich komme ___ heute.',opts:['Nicht ich komme heute.','Ich heute komme nicht.','Ich komme nicht heute.','Ich nicht komme heute.'],correct:'Ich komme nicht heute.',exp:'Zeitadverb → <b>nicht direkt vor dem Adverb</b>.'},
+    {s:'Das ist der Hund. → Das ist ___ der Hund.',opts:['Das kein ist der Hund.','Das ist der Hund nicht.','Das ist nicht der Hund.','Nicht das ist der Hund.'],correct:'Das ist nicht der Hund.',exp:'Nomen mit bestimmtem Artikel → <b>nicht direkt vor dem Artikel</b>.'},
+    {s:'Er arbeitet bei Lufthansa. → Er arbeitet ___ bei Lufthansa.',opts:['Er nicht arbeitet bei Lufthansa.','Er arbeitet bei Lufthansa nicht.','Er arbeitet nicht bei Lufthansa.','Nicht er arbeitet bei Lufthansa.'],correct:'Er arbeitet nicht bei Lufthansa.',exp:'Präposition → <b>nicht vor der Präposition</b>: nicht bei Lufthansa.'},
+    {s:'Sie liest. → Sie liest ___.',opts:['Sie nicht liest.','Nicht liest sie.','Sie liest kein.','Sie liest nicht.'],correct:'Sie liest nicht.',exp:'Ganzes Verb → <b>nicht am Satzende</b>.'},
+    {s:'Ich will das machen. → Ich will das ___ machen.',opts:['Ich will nicht das machen.','Ich will das machen nicht.','Ich nicht will das machen.','Ich will das nicht machen.'],correct:'Ich will das nicht machen.',exp:'Modalverb + Infinitiv → <b>nicht vor dem Infinitiv</b>.'},
+    {s:'Er fährt nach Berlin. → Er fährt ___ nach Berlin.',opts:['Er nicht fährt nach Berlin.','Er fährt nach Berlin nicht.','Er fährt nicht nach Berlin.','Nicht er fährt nach Berlin.'],correct:'Er fährt nicht nach Berlin.',exp:'Richtungsangabe (nach + Ort) → <b>nicht direkt vor „nach"</b>.'},
+    {s:'Sie ist glücklich. → Sie ist ___ glücklich.',opts:['Sie glücklich nicht ist.','Sie ist glücklich nicht.','Nicht sie ist glücklich.','Sie ist nicht glücklich.'],correct:'Sie ist nicht glücklich.',exp:'Adjektiv → <b>nicht direkt vor dem Adjektiv</b>.'}
+  ],
+  4:[
+    {s:'Bis jetzt habe ich das nie gemacht. Ich habe das ___ gemacht.',opts:['nicht mehr','noch nie','kaum','selten'],correct:'noch nie',exp:'bis jetzt nie = <b>noch nie</b>. In meinem ganzen Leben bis jetzt kein einziges Mal.'},
+    {s:'Früher hatte er Arbeit. Jetzt hat er ___ Arbeit.',opts:['keine Arbeit mehr','noch keine Arbeit','nie Arbeit','nicht Arbeit'],correct:'keine Arbeit mehr',exp:'Früher ja, jetzt nein → <b>keine … mehr</b>: Er hat keine Arbeit mehr.'},
+    {s:'Er schläft sehr wenig – fast gar nicht. Er schläft ___.',opts:['nie','selten','nicht','kaum'],correct:'kaum',exp:'Fast gar nicht / sehr wenig → <b>kaum</b>.'},
+    {s:'„Bist du nicht hungrig?" – Ich bin sehr hungrig! Antwort:',opts:['Ja!','Nein!','Nicht!','Doch!'],correct:'Doch!',exp:'Negative Frage + positive Antwort → <b>Doch!</b>'},
+    {s:'Die Arbeit ist noch nicht fertig. Was bedeutet das?',opts:['Die Arbeit kommt nie.','Die Arbeit ist fertig.','Die Arbeit kommt noch.','Die Arbeit war fertig.'],correct:'Die Arbeit kommt noch.',exp:'<b>noch nicht</b> = bis jetzt nicht, aber später kommt es noch.'},
+    {s:'Er geht fast nie ins Restaurant. Er geht ___ ins Restaurant.',opts:['nicht','nie','selten','kaum'],correct:'selten',exp:'Fast nie / sehr wenig → <b>selten</b>. (kaum wäre auch möglich, aber selten passt besser hier)'},
+    {s:'Ich sehe hier keine Person. ___ ist hier.',opts:['Nichts','Nie','Nicht','Niemand'],correct:'Niemand',exp:'Keine Person → <b>Niemand</b> ist hier.'},
+    {s:'Ich sehe hier keine Sache. Ich sehe ___.',opts:['niemand','nie','kaum','nichts'],correct:'nichts',exp:'Keine Sache → Ich sehe <b>nichts</b>.'},
+    {s:'Er isst ___ Fleisch. (zu keiner Zeit, niemals)',opts:['nicht','kein','kaum','nie'],correct:'nie',exp:'Zu keiner Zeit = <b>nie</b>. Er isst nie Fleisch.'},
+    {s:'Die Arbeit war fertig. Jetzt ist sie ___ fertig.',opts:['noch nicht','nicht mehr','kaum','selten'],correct:'nicht mehr',exp:'Früher ja (fertig), jetzt nein → <b>nicht mehr</b> fertig.'},
+    {s:'___ kommt zur Party. Alle sind krank.',opts:['Nichts','Nie','Kaum','Niemand'],correct:'Niemand',exp:'Keine Person kommt → <b>Niemand</b> kommt zur Party.'},
+    {s:'Ich habe ___ geschlafen. (fast keine Stunden)',opts:['nie','nicht','niemand','kaum'],correct:'kaum',exp:'Fast keine Stunden = fast nicht → <b>kaum</b> geschlafen.'},
+    {s:'Er trinkt ___ Alkohol. (zu keiner Zeit)',opts:['kein','kaum','selten','nie'],correct:'nie',exp:'Zu keiner Zeit = <b>nie</b>. Er trinkt nie Alkohol.'}
+  ],
+  5:[
+    {s:'Text: „Sie geht selten ins Kino." Antwortoption: Sie geht nie ins Kino. Richtig oder falsch?',opts:['Richtig','Falsch'],correct:'Falsch',exp:'selten ≠ nie. Selten = manchmal, aber sehr wenig. Nie = zu keiner Zeit. <b>Falsch!</b>'},
+    {s:'Text: „Das Essen war nicht schlecht." Was stimmt?',opts:['Das Essen war sehr schlecht.','Das Essen war gut.','Das Essen war nie gut.','Das Essen schmeckt kaum.'],correct:'Das Essen war gut.',exp:'nicht schlecht = <b>gut</b>. Doppelte Negation = positive Bedeutung.'},
+    {s:'Text: „Ich gehe nicht ins Kino, sondern ins Theater." Was ist richtig?',opts:['Er geht ins Kino.','Er geht nirgendwo.','Er geht ins Theater.','Er geht ins Kino und Theater.'],correct:'Er geht ins Theater.',exp:'nicht … sondern: Die Information nach <b>sondern</b> ist richtig → Theater!'},
+    {s:'Text: „Er verdient kaum Geld." Antwortoption: Er ist arm. Richtig oder falsch?',opts:['Richtig – kaum = fast nichts','Falsch – kaum = viel','Falsch – kaum = manchmal','Richtig – kaum = nie'],correct:'Richtig – kaum = fast nichts',exp:'kaum Geld = fast kein Geld. Er ist (fast) arm. <b>Richtig!</b>'},
+    {s:'Prüfung: Antwort A: „Sie geht IMMER ins Museum." Wie findest du diese Antwortoption?',opts:['Fast immer richtig','Fast immer falsch','Immer korrekt','Manchmal richtig'],correct:'Fast immer falsch',exp:'immer / nie / alle / niemand in Antworten = fast immer <b>Falle</b>! Zu absolut.'},
+    {s:'Text: „Er hat das Buch noch nicht gelesen." Was bedeutet das?',opts:['Er liest das Buch nie.','Er hat das Buch gelesen.','Er liest das Buch später.','Er mag das Buch nicht.'],correct:'Er liest das Buch später.',exp:'<b>noch nicht</b> = bis jetzt nicht, aber später kommt es noch.'},
+    {s:'Text: „Sie wohnt nicht mehr in München." Was stimmt?',opts:['Sie wohnt jetzt in München.','Sie wohnt nie in München.','Sie wohnte früher in München.','Sie mag München nicht.'],correct:'Sie wohnte früher in München.',exp:'<b>nicht mehr</b> = früher ja, jetzt nein. Sie wohnte früher dort.'},
+    {s:'Text: „Er hat keine Zeit, aber er hilft trotzdem." Was ist wichtig?',opts:['Er hilft nicht.','Er hat Zeit.','Er hilft trotzdem.','Er hat viel Zeit.'],correct:'Er hilft trotzdem.',exp:'„kein … aber" → das nach <b>aber</b> ist die wichtige Information: Er hilft!'},
+    {s:'Text: „Niemand hat geholfen." Antwortoption: Alle haben geholfen. Richtig oder falsch?',opts:['Richtig','Falsch'],correct:'Falsch',exp:'Niemand = keine Person. <b>Falsch!</b> Das ist das Gegenteil.'},
+    {s:'Text: „Sie isst kaum Zucker." Antwortoption: Sie isst sehr viel Zucker. Richtig?',opts:['Richtig','Falsch'],correct:'Falsch',exp:'kaum = fast nicht / sehr wenig. Nicht viel! <b>Falsch!</b>'},
+    {s:'Text: „Er kommt nicht, weil er krank ist." Was stimmt?',opts:['Er kommt und ist krank.','Er kommt nicht.','Er ist nicht krank.','Er kommt vielleicht.'],correct:'Er kommt nicht.',exp:'nicht kommen = er kommt nicht. Der Grund: er ist krank. <b>Richtig.</b>'},
+    {s:'Prüfung Hören: Du hörst „Er hat fast nie Zeit." Antwortoption: Er hat manchmal Zeit. Richtig?',opts:['Richtig','Falsch – fast nie = selten, nicht manchmal','Falsch – fast nie = immer','Falsch – fast nie = oft'],correct:'Falsch – fast nie = selten, nicht manchmal',exp:'fast nie ≈ selten ≈ kaum. Nicht „manchmal" (das ist 50%). <b>Falsch!</b>'},
+    {s:'Text: „Das Buch ist nicht schlecht." Antwortoption: Das Buch ist sehr schlecht. Richtig?',opts:['Richtig','Falsch – nicht schlecht = gut'],correct:'Falsch – nicht schlecht = gut',exp:'<b>nicht schlecht = gut</b>. Das ist eine positive Aussage. Falsch!'}
+  ]
+};
+
+// ═══ FLASHCARD ENGINE ═══
+var fcState={};
+function buildFC(id){fcState[id]={cur:0,score:0,done:false};renderFC(id);}
+function renderFC(id){
+  var s=fcState[id],cards=FC[id],el=document.getElementById(id);
+  if(!el)return;
+  if(s.done){
+    var pct=Math.round(s.score/cards.length*100);
+    var em=pct===100?'🏆':pct>=80?'🎉':pct>=60?'😊':'💪';
+    el.innerHTML='<div class="fc-result show"><div class="big">'+em+'</div><div class="msg">'+s.score+' / '+cards.length+' richtig ('+pct+'%)</div><button class="fc-restart" onclick="restartFC(\''+id+'\')">🔄 Nochmal</button></div>';
+    return;
+  }
+  var c=cards[s.cur];
+  var dots='';
+  for(var i=0;i<cards.length;i++){var cls=i<s.cur?'done':i===s.cur?'cur':'';dots+='<div class="fc-dot '+cls+'"></div>';}
+  var opts=c.opts.slice();
+  if(opts.indexOf(c.correct)<0)opts.push(c.correct);
+  opts.sort(function(){return Math.random()-.5;});
+  var btns=opts.map(function(o){return '<button class="fc-btn" onclick="answerFC(\''+id+'\',\''+o.replace(/'/g,"\\'")+'\')">' +o+'</button>';}).join('');
+  el.innerHTML='<div class="fc-wrap"><div class="fc-prog-row"><span class="fc-prog">'+(s.cur+1)+' / '+cards.length+'</span><div class="fc-dots">'+dots+'</div></div><div class="fc-card"><div class="fc-q">'+c.q+'</div>'+(c.hint?'<div class="fc-hint">('+c.hint+')</div>':'')+'</div><div class="fc-opts">'+btns+'</div><div class="fc-exp" id="fce_'+id+'"></div><button class="fc-next" id="fcn_'+id+'" onclick="nextFC(\''+id+'\')">'+(s.cur<cards.length-1?'Weiter →':'Ergebnis →')+'</button></div>';
+}
+function answerFC(id,chosen){
+  var s=fcState[id],c=FC[id][s.cur];
+  if(s.answered)return;s.answered=true;
+  var exp=document.getElementById('fce_'+id),nxt=document.getElementById('fcn_'+id);
+  document.querySelectorAll('#'+id+' .fc-opts .fc-btn').forEach(function(b){b.disabled=true;});
+  if(chosen===c.correct){s.score++;exp.className='fc-exp show ok';exp.innerHTML='✅ '+c.exp;}
+  else{exp.className='fc-exp show bad';exp.innerHTML='❌ '+c.exp;}
+  document.querySelectorAll('#'+id+' .fc-opts .fc-btn').forEach(function(b){
+    if(b.textContent.trim()===c.correct)b.classList.add('fc-ok');
+    else if(b.textContent.trim()===chosen)b.classList.add('fc-bad');
+  });
+  nxt.classList.add('show');
+}
+function nextFC(id){var s=fcState[id];s.cur++;s.answered=false;if(s.cur>=FC[id].length)s.done=true;renderFC(id);}
+function restartFC(id){fcState[id]={cur:0,score:0,done:false};renderFC(id);}
+
+// ═══ ÜBUNG ENGINE ═══
+var ubAnswered={};
+function buildUbung(n){
+  ubAnswered[n]={};
+  var items=UB[n],html='';
+  items.forEach(function(it,i){
+    var id='u'+n+'_'+i;
+    var opts=it.opts.slice();
+    if(opts.indexOf(it.correct)<0)opts.push(it.correct);
+    opts.sort(function(){return Math.random()-.5;});
+    var btns=opts.map(function(o){return '<button class="xbtn" onclick="answerUb('+n+','+i+',this,\''+o.replace(/'/g,"\\'")+'\')">' +o+'</button>';}).join('');
+    var sent=it.s.replace('___','<span class="bl" id="bl_'+id+'">____</span>');
+    html+='<div class="ub-item" id="ui_'+id+'"><div class="ub-sent">'+(i+1)+'. '+sent+'</div><div class="br">'+btns+'</div><div class="xfb" id="xf_'+id+'"></div></div>';
+  });
+  document.getElementById('u'+n+'items').innerHTML=html;
+}
+function answerUb(n,i,btn,chosen){
+  var key=n+'_'+i;
+  if(ubAnswered[n][key])return;
+  ubAnswered[n][key]=true;
+  var it=UB[n][i],id='u'+n+'_'+i;
+  var bl=document.getElementById('bl_'+id),fb=document.getElementById('xf_'+id),item=document.getElementById('ui_'+id);
+  bl.textContent=chosen;
+  btn.closest('.br').querySelectorAll('.xbtn').forEach(function(b){b.disabled=true;});
+  if(chosen===it.correct){item.classList.add('ok');btn.classList.add('xok');fb.className='xfb show ok';fb.innerHTML='✅ '+it.exp;}
+  else{item.classList.add('bad');btn.classList.add('xbad');fb.className='xfb show bad';fb.innerHTML='❌ '+it.exp;
+    btn.closest('.br').querySelectorAll('.xbtn').forEach(function(b){if(b.textContent.trim()===it.correct)b.classList.add('xok');});}
+  updateUbScore(n);
+}
+function updateUbScore(n){
+  var c=document.querySelectorAll('#up'+n+' .ub-item.ok').length,total=UB[n].length;
+  document.getElementById('sb'+n).style.width=(c/total*100)+'%';
+  document.getElementById('st'+n).textContent=c+' / '+total+' richtig';
+  if(c===total)document.getElementById('ut'+n).classList.add('done');
+}
+function resetUb(n){ubAnswered[n]={};document.getElementById('ut'+n).classList.remove('done');buildUbung(n);document.getElementById('sb'+n).style.width='0%';document.getElementById('st'+n).textContent='0 / '+UB[n].length+' richtig';}
+function showUbung(n){document.querySelectorAll('.ub-pane').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.ub-tab').forEach(function(t){t.classList.remove('active');});document.getElementById('up'+n).classList.add('active');document.getElementById('ut'+n).classList.add('active');}
+
+// ═══ NAV ═══
+function showTab(id){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  var idx=['t1','t2','t3','t4','t5','t6'].indexOf(id);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+}
+
+// ═══ INIT ═══
+window.addEventListener('DOMContentLoaded',function(){
+  ['fc1','fc2','fc3','fc4','fc5'].forEach(function(id){buildFC(id);});
+  [1,2,3,4,5].forEach(function(n){buildUbung(n);});
+});
+</script>
+</body>
+</html>
