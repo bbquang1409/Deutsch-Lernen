@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lektion 14 – Artikel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap');
+:root {
+  --bg:#f0f4ff; --card:#fff; --def:#2563eb; --def-l:#dbeafe;
+  --indef:#16a34a; --indef-l:#dcfce7; --kein:#dc2626; --kein-l:#fee2e2;
+  --acc:#ea580c; --acc-l:#ffedd5; --dat:#7c3aed; --dat-l:#ede9fe;
+  --text:#1e293b; --sub:#64748b; --shadow:0 4px 20px rgba(0,0,0,.08); --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padding-bottom:70px;}
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:26px 18px 20px;text-align:center;}
+.hdr .tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:9px;text-transform:uppercase;}
+.hdr h1{font-family:'Baloo 2',cursive;font-size:24px;font-weight:800;}
+.hdr p{margin-top:5px;font-size:13px;opacity:.8;font-weight:600;}
+/* NAV */
+.nav{display:flex;background:#1e3a8a;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex:1;min-width:66px;padding:10px 5px;background:transparent;color:rgba(255,255,255,.5);border:none;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;text-align:center;}
+.nav-btn.active{color:#fff;border-bottom:3px solid #60a5fa;background:rgba(255,255,255,.08);}
+/* SECTIONS */
+.sec{display:none;padding:16px 14px;}
+.sec.active{display:block;}
+/* CARD */
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:13px;box-shadow:var(--shadow);}
+.ct{font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:7px;}
+/* TABLES */
+.at{width:100%;border-collapse:collapse;font-size:12px;border-radius:10px;overflow:hidden;margin-top:8px;}
+.at th{padding:8px 5px;text-align:center;font-weight:800;font-size:11px;}
+.at td{padding:8px 5px;text-align:center;border-top:1px solid #f1f5f9;font-weight:600;}
+.at tr:nth-child(even) td{background:#fafbff;}
+.thi{background:var(--indef-l);color:#166534;} .thd{background:var(--def-l);color:#1e40af;}
+.thk{background:var(--kein-l);color:#991b1b;} .thc{background:#f1f5f9;color:var(--sub);}
+.m{color:#2563eb;font-weight:800;} .n{color:#7c3aed;font-weight:800;}
+.f{color:#db2777;font-weight:800;} .p{color:#0891b2;font-weight:800;}
+/* HBOX */
+.hb{border-radius:10px;padding:12px;margin-bottom:10px;}
+.hb p{font-size:13px;line-height:1.8;}
+.hb .hl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.hb-b{background:var(--def-l);border-left:4px solid var(--def);}
+.hb-g{background:var(--indef-l);border-left:4px solid var(--indef);}
+.hb-r{background:var(--kein-l);border-left:4px solid var(--kein);}
+.hb-o{background:var(--acc-l);border-left:4px solid var(--acc);}
+.hb-y{background:#fef3c7;border-left:4px solid #f59e0b;}
+.hl-b{color:#1e40af;} .hl-g{color:#166534;} .hl-r{color:#991b1b;} .hl-o{color:#9a3412;} .hl-y{color:#92400e;}
+/* STORY */
+.story{background:#f8faff;border:2px dashed #bfdbfe;border-radius:10px;padding:13px;margin-bottom:11px;}
+.story p{font-size:14px;line-height:2.1;}
+.iw{color:var(--indef);font-weight:900;} .dw{color:var(--def);font-weight:900;} .kw{color:var(--kein);font-weight:900;}
+/* BUBBLE */
+.brow{display:flex;gap:9px;align-items:flex-start;margin-bottom:12px;}
+.bav{font-size:28px;flex-shrink:0;}
+.bub{border-radius:12px;padding:10px 13px;font-size:13px;font-weight:600;line-height:1.7;flex:1;}
+.bub-i{background:var(--indef-l);color:#166534;} .bub-d{background:var(--def-l);color:#1e40af;}
+.bub-n{background:#f1f5f9;color:var(--sub);font-size:11px;font-style:italic;margin-top:5px;}
+/* CASE */
+.cb{border-radius:10px;padding:11px 13px;margin-bottom:10px;}
+.cn{background:#f0fdf4;border-left:4px solid #16a34a;} .ca{background:var(--acc-l);border-left:4px solid var(--acc);} .cd{background:var(--dat-l);border-left:4px solid var(--dat);}
+.cl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:.65;margin-bottom:6px;}
+.ce{font-size:14px;font-weight:700;line-height:1.9;}
+.cs{font-size:11px;color:var(--sub);font-weight:600;margin-top:3px;}
+/* CHEAT */
+.cheat{background:linear-gradient(135deg,#1e3a8a,#1d4ed8);color:#fff;border-radius:var(--r);padding:16px;margin-bottom:13px;}
+.cheat h3{font-family:'Baloo 2',cursive;font-size:15px;margin-bottom:10px;}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:12px;}
+.cr:last-child{border-bottom:none;}
+.cr .sit{opacity:.75;flex:1;} .cr .ans{font-weight:900;font-size:14px;background:rgba(255,255,255,.15);border-radius:5px;padding:2px 9px;margin-left:8px;white-space:nowrap;}
+/* DISCOVER */
+.disc{background:#fffbeb;border:2px solid #fde68a;border-radius:10px;padding:13px;margin-bottom:12px;}
+.disc .dq{font-size:13px;font-weight:800;color:#92400e;margin-bottom:9px;}
+.disc .dopts{display:flex;flex-wrap:wrap;gap:7px;}
+.dbtn{background:#fff;border:2px solid #fcd34d;border-radius:7px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:#78350f;transition:all .15s;}
+.dbtn:hover{border-color:#f59e0b;}
+.dbtn.dok{background:var(--indef-l);border-color:#16a34a;color:#166534;}
+.dbtn.dbad{background:var(--kein-l);border-color:#dc2626;color:#991b1b;}
+.dr{margin-top:9px;font-size:12px;font-weight:700;display:none;line-height:1.7;}
+.dr.show{display:block;}
+.dr.ok{color:#16a34a;} .dr.bad{color:#dc2626;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px;}
+.gb{background:#f8faff;border-radius:9px;padding:11px;text-align:center;}
+.gb .gl{font-size:19px;font-weight:900;}
+.gb .gs{font-size:11px;color:var(--sub);margin-top:3px;font-weight:600;}
+/* PILL */
+.pill{display:inline-block;border-radius:20px;padding:4px 11px;font-size:11px;font-weight:800;margin:3px;}
+.pm{background:#dbeafe;color:#1e40af;} .pn{background:#ede9fe;color:#5b21b6;}
+.pf{background:#fce7f3;color:#9d174d;} .pp{background:#e0f2fe;color:#0369a1;}
+
+/* ═══ FLASHCARD ═══ */
+.fc-wrap{background:#f8faff;border-radius:var(--r);padding:15px;margin-top:5px;}
+.fc-progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.fc-prog{font-size:12px;font-weight:800;color:var(--sub);}
+.fc-dots{display:flex;gap:5px;}
+.fc-dot{width:9px;height:9px;border-radius:50%;background:#e2e8f0;transition:background .3s;}
+.fc-dot.done{background:#16a34a;} .fc-dot.cur{background:#2563eb;}
+.fc-card{
+  background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.1);
+  min-height:130px;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;padding:20px 16px;text-align:center;margin-bottom:12px;
+  position:relative;transition:all .25s;
+}
+.fc-q{font-size:17px;font-weight:800;color:var(--text);line-height:1.6;margin-bottom:6px;}
+.fc-hint{font-size:12px;color:var(--sub);font-weight:600;}
+.fc-opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;}
+.fc-btn{
+  background:#fff;border:2px solid #e2e8f0;border-radius:9px;
+  padding:8px 16px;font-family:'Nunito',sans-serif;font-size:14px;
+  font-weight:800;cursor:pointer;color:var(--text);transition:all .15s;min-width:60px;
+}
+.fc-btn:hover{border-color:#2563eb;color:#2563eb;}
+.fc-btn.fc-ok{background:var(--indef-l);border-color:#16a34a;color:#166534;}
+.fc-btn.fc-bad{background:var(--kein-l);border-color:#dc2626;color:#991b1b;}
+.fc-explain{font-size:12px;font-weight:700;padding:9px 12px;border-radius:9px;margin-bottom:10px;display:none;line-height:1.6;}
+.fc-explain.show{display:block;}
+.fc-explain.ok{background:var(--indef-l);color:#166534;}
+.fc-explain.bad{background:var(--kein-l);color:#991b1b;}
+.fc-next{
+  background:#2563eb;color:#fff;border:none;border-radius:9px;
+  padding:9px 20px;font-family:'Nunito',sans-serif;font-size:13px;
+  font-weight:800;cursor:pointer;display:none;width:100%;
+}
+.fc-next.show{display:block;}
+.fc-result{text-align:center;padding:12px;display:none;}
+.fc-result.show{display:block;}
+.fc-result .big{font-size:36px;margin-bottom:6px;}
+.fc-result .msg{font-size:15px;font-weight:800;color:var(--text);}
+.fc-result .sub{font-size:12px;color:var(--sub);margin-top:4px;}
+.fc-restart{background:#2563eb;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:10px;}
+
+/* ═══ UEBUNG ═══ */
+.ub-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;}
+.ub-tabs::-webkit-scrollbar{display:none;}
+.ub-tab{flex-shrink:0;padding:7px 14px;border-radius:20px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;background:#e2e8f0;color:var(--sub);border:none;transition:all .2s;}
+.ub-tab.active{background:#2563eb;color:#fff;}
+.ub-tab.done{background:var(--indef-l);color:#166534;}
+.ub-pane{display:none;} .ub-pane.active{display:block;}
+.ub-title{font-family:'Baloo 2',cursive;font-size:16px;font-weight:800;margin-bottom:4px;}
+.ub-sub{font-size:12px;color:var(--sub);font-weight:600;margin-bottom:14px;}
+.ub-item{background:#f8faff;border-radius:10px;padding:12px;margin-bottom:10px;border:2px solid transparent;transition:border .2s;}
+.ub-item.ok{border-color:#16a34a;background:#f0fdf4;}
+.ub-item.bad{border-color:#dc2626;background:#fff5f5;}
+.ub-sent{font-size:14px;font-weight:600;line-height:2;margin-bottom:6px;}
+.bl{display:inline-block;min-width:58px;border-bottom:2px solid #94a3b8;text-align:center;margin:0 3px;font-weight:800;}
+.br{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px;}
+.xbtn{background:#fff;border:2px solid #e2e8f0;border-radius:7px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;color:var(--text);transition:all .15s;}
+.xbtn:hover{border-color:#2563eb;color:#2563eb;}
+.xbtn.xok{background:var(--indef-l);border-color:#16a34a;color:#166534;}
+.xbtn.xbad{background:var(--kein-l);border-color:#dc2626;color:#991b1b;}
+.xfb{margin-top:7px;font-size:12px;font-weight:700;display:none;line-height:1.6;}
+.xfb.show{display:block;} .xfb.ok{color:#16a34a;} .xfb.bad{color:#dc2626;}
+.sc-bar{background:#e2e8f0;border-radius:20px;height:7px;margin:12px 0 3px;overflow:hidden;}
+.sc-fill{height:100%;background:linear-gradient(90deg,#16a34a,#4ade80);border-radius:20px;transition:width .4s ease;}
+.sc-txt{font-size:12px;color:var(--sub);font-weight:700;}
+.rst-btn{background:#2563eb;color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;display:block;width:100%;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="tag">📚 Lektion 14 · A1</div>
+  <h1>Der, das, die – ein, eine</h1>
+  <p>Artikel: definit · indefinit · kein Artikel</p>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('t1')">📖 Einstieg</button>
+  <button class="nav-btn" onclick="showTab('t2')">🔵 Indefinit</button>
+  <button class="nav-btn" onclick="showTab('t3')">🔴 Definit</button>
+  <button class="nav-btn" onclick="showTab('t4')">❌ Kein</button>
+  <button class="nav-btn" onclick="showTab('t5')">🧩 Fälle</button>
+  <button class="nav-btn" onclick="showTab('t6')">✏️ Übung</button>
+</nav>
+
+<!-- ══════════════ TAB 1 ══════════════ -->
+<div id="t1" class="sec active">
+  <div class="card">
+    <div class="ct">❓ Was ist ein Artikel?</div>
+    <div class="hb hb-b"><div class="hl hl-b">Merke</div>
+      <p>Im Deutschen steht vor fast jedem Nomen ein <strong>Artikel</strong>.<br>
+      Der Artikel zeigt: Welches Genus? Welcher Fall? Bestimmt oder unbestimmt?</p>
+    </div>
+    <div>
+      <span class="pill pm">🔵 maskulin → der / ein</span>
+      <span class="pill pn">🟣 neutral → das / ein</span>
+      <span class="pill pf">🩷 feminin → die / eine</span>
+      <span class="pill pp">🔷 Plural → die / –</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">👀 Entdecken Sie den Unterschied!</div>
+    <div class="brow"><div class="bav">🛒</div><div>
+      <div class="bub bub-i">Ich kaufe <strong>einen Apfel</strong>.</div>
+      <div class="bub bub-n">→ irgendein Apfel – nicht spezifisch</div>
+    </div></div>
+    <div class="brow"><div class="bav">👆</div><div>
+      <div class="bub bub-d"><strong>Der Apfel</strong> ist sehr lecker!</div>
+      <div class="bub bub-n">→ genau dieser Apfel – beide wissen, welcher</div>
+    </div></div>
+    <div class="hb hb-y"><div class="hl hl-y">Regel</div>
+      <p>Sie sagen das <strong>zum ersten Mal</strong>? → <span style="color:var(--indef);font-weight:900;">ein / eine</span><br>
+Sie haben schon darüber gesprochen? → <span style="color:var(--def);font-weight:900;">der / das / die</span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📖 Geschichte</div>
+    <div class="story"><p>
+      Emma geht durch die Stadt.<br>
+      Sie sieht <span class="iw">einen Hund</span>.<br>
+      <span class="dw">Der Hund</span> ist sehr groß und freundlich.<br>
+      Emma kauft <span class="iw">eine Wurst</span> für ihn.<br>
+      <span class="dw">Die Wurst</span> schmeckt dem Hund sehr gut!<br>
+      Dann sieht sie <span class="iw">ein Café</span>.<br>
+      <span class="dw">Das Café</span> hat noch geöffnet.
+    </p></div>
+    <p style="font-size:12px;color:var(--sub);">💡 <span style="color:var(--indef);font-weight:800;">Grün</span> = zum ersten Mal &nbsp;·&nbsp; <span style="color:var(--def);font-weight:800;">Blau</span> = schon bekannt</p>
+  </div>
+
+  <!-- FLASHCARD T1 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Definit oder Indefinit?</div>
+    <div id="fc1"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 2 ══════════════ -->
+<div id="t2" class="sec">
+  <div class="card">
+    <div class="ct">🔵 Wann indefiniter Artikel?</div>
+    <div class="hb hb-g"><div class="hl hl-g">Situationen</div>
+      <p>✅ <strong>Sie sagen etwas zum ersten Mal</strong><br>
+      &nbsp;&nbsp;„Ich habe <em>einen Hund</em>." (der Hörer weiß nicht, welcher)<br>
+      ✅ <strong>Nicht spezifisch – egal welches</strong><br>
+      &nbsp;&nbsp;„Ich möchte <em>einen Kaffee</em>, bitte." (irgendein Kaffee)<br>
+      ✅ <strong>Fragen: Hast du ...?</strong><br>
+      &nbsp;&nbsp;„Hast du <em>einen Stift</em>?" (irgendeinen)</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📊 Tabelle: Indefiniter Artikel</div>
+    <table class="at">
+      <thead><tr><th class="thc">Fall</th><th class="thi">maskulin</th><th class="thi">neutral</th><th class="thi">feminin</th><th class="thi">Plural</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nom.</strong></td><td><span class="m">ein</span> Mann</td><td><span class="n">ein</span> Haus</td><td><span class="f">eine</span> Frau</td><td><span class="p">–</span></td></tr>
+        <tr><td><strong>Akk.</strong></td><td><span class="m" style="color:var(--acc);">einen</span> Mann</td><td><span class="n">ein</span> Haus</td><td><span class="f">eine</span> Frau</td><td><span class="p">–</span></td></tr>
+        <tr><td><strong>Dat.</strong></td><td><span class="m">einem</span> Mann</td><td><span class="n">einem</span> Haus</td><td><span class="f">einer</span> Frau</td><td><span class="p">–</span></td></tr>
+      </tbody>
+    </table>
+    <div class="hb hb-o" style="margin-top:10px;"><div class="hl hl-o">⚠️ Maskulin Akkusativ</div>
+      <p>ein → <strong style="color:var(--acc);">einen</strong> &nbsp;&nbsp; Ich kaufe <strong style="color:var(--acc);">einen</strong> Kaffee.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">💬 Beispiele</div>
+    <div class="cb cn"><div class="cl">Nominativ</div><div class="ce">Das ist <span class="iw">ein</span> Freund. / Das ist <span class="iw">eine</span> Katze.</div></div>
+    <div class="cb ca"><div class="cl">Akkusativ</div><div class="ce">Ich habe <span style="color:var(--acc);font-weight:900;">einen</span> Bruder. / Ich kaufe <span class="iw">eine</span> Banane.</div><div class="cs">Nur maskulin ändert sich!</div></div>
+    <div class="cb cd"><div class="cl">Dativ</div><div class="ce">mit <span style="color:var(--dat);font-weight:900;">einem</span> Freund / bei <span style="color:var(--dat);font-weight:900;">einer</span> Freundin</div></div>
+  </div>
+
+  <!-- FLASHCARD T2 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Indefiniter Artikel</div>
+    <div id="fc2"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 3 ══════════════ -->
+<div id="t3" class="sec">
+  <div class="card">
+    <div class="ct">🔴 Wann definiter Artikel?</div>
+    <div class="hb hb-b"><div class="hl hl-b">Situationen</div>
+      <p>✅ <strong>Schon gesagt – beide wissen es</strong><br>
+      &nbsp;&nbsp;„Ich sehe einen Hund. <em>Der Hund</em> ist groß."<br>
+      ✅ <strong>Nur einmal auf der Welt</strong> – <em>die</em> Sonne, <em>der</em> Mond<br>
+      ✅ <strong>Der Hörer weiß genau, was gemeint ist</strong><br>
+      &nbsp;&nbsp;„Mach <em>das</em> Fenster zu!" (dieses hier)<br>
+      ✅ <strong>Etwas im Allgemeinen</strong> – „<em>Das</em> Leben ist schön."</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📊 Tabelle: Definiter Artikel</div>
+    <table class="at">
+      <thead><tr><th class="thc">Fall</th><th class="thd">maskulin</th><th class="thd">neutral</th><th class="thd">feminin</th><th class="thd">Plural</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nom.</strong></td><td><span class="m">der</span> Mann</td><td><span class="n">das</span> Haus</td><td><span class="f">die</span> Frau</td><td><span class="p">die</span></td></tr>
+        <tr><td><strong>Akk.</strong></td><td><span class="m" style="color:var(--acc);">den</span> Mann</td><td><span class="n">das</span> Haus</td><td><span class="f">die</span> Frau</td><td><span class="p">die</span></td></tr>
+        <tr><td><strong>Dat.</strong></td><td><span class="m">dem</span> Mann</td><td><span class="n">dem</span> Haus</td><td><span class="f" style="color:var(--dat);">der</span> Frau</td><td><span class="p">den</span></td></tr>
+      </tbody>
+    </table>
+    <div class="hb hb-o" style="margin-top:10px;"><div class="hl hl-o">⚠️ Maskulin Akkusativ</div>
+      <p>der → <strong style="color:var(--acc);">den</strong> &nbsp;&nbsp; Ich trinke <strong style="color:var(--acc);">den</strong> Kaffee.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">💬 Beispiele</div>
+    <div class="cb cn"><div class="cl">Nominativ</div><div class="ce"><span class="dw">Der</span> Hund ist groß. / <span class="dw">Das</span> Haus ist alt.</div></div>
+    <div class="cb ca"><div class="cl">Akkusativ</div><div class="ce">Ich sehe <span style="color:var(--acc);font-weight:900;">den</span> Hund. / Er kauft <span class="dw">die</span> Blumen.</div><div class="cs">Nur maskulin: der → den</div></div>
+    <div class="cb cd"><div class="cl">Dativ</div><div class="ce">mit <span style="color:var(--dat);font-weight:900;">dem</span> Freund / bei <span style="color:var(--dat);font-weight:900;">der</span> Ärztin</div></div>
+  </div>
+
+  <!-- FLASHCARD T3 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Definiter Artikel</div>
+    <div id="fc3"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 4 ══════════════ -->
+<div id="t4" class="sec">
+  <div class="card">
+    <div class="ct">❌ Kein Artikel – wann?</div>
+    <div class="hb hb-r"><div class="hl hl-r">Regel 1 – Nicht zählbare Nomen</div>
+      <p>Zeit · Geld · Glück · Hunger · Liebe · Musik</p>
+    </div>
+    <div class="story"><p>
+      Er hat <span class="kw">keine</span> Zeit. → Sie hat <strong>Zeit</strong>. ✅<br>
+      Er hat <span class="kw">kein</span> Geld. → Sie hat <strong>Geld</strong>. ✅<br>
+      Er hat <span class="kw">kein</span> Glück. → Sie hat <strong>Glück</strong>. ✅
+    </p></div>
+    <div class="hb hb-r"><div class="hl hl-r">Regel 2 – Berufe nach „sein"</div>
+      <p>Ich bin <strong>Lehrer</strong>. / Er wird <strong>Arzt</strong>. / Sie ist <strong>Pilotin</strong>.<br>
+      <span style="font-size:12px;">⚠️ Mit Adjektiv: Er ist <em>ein guter</em> Arzt. ✅</span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🚫 kein = Negation von ein</div>
+    <table class="at">
+      <thead><tr><th class="thi">Positiv</th><th class="thk">Negativ</th></tr></thead>
+      <tbody>
+        <tr><td>Ich habe <span class="m">einen</span> Hund.</td><td><strong style="color:var(--kein);">keinen</strong> Hund</td></tr>
+        <tr><td>Das ist <span class="n">ein</span> Problem.</td><td><strong style="color:var(--kein);">kein</strong> Problem</td></tr>
+        <tr><td>Sie hat <span class="f">eine</span> Idee.</td><td><strong style="color:var(--kein);">keine</strong> Idee</td></tr>
+        <tr><td>Er hat <strong>Zeit</strong>.</td><td><strong style="color:var(--kein);">keine</strong> Zeit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FLASHCARD T4 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Artikel oder nicht?</div>
+    <div id="fc4"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 5 ══════════════ -->
+<div id="t5" class="sec">
+  <div class="cheat">
+    <h3>📋 Schnellübersicht</h3>
+    <div class="cr"><span class="sit">Zum ersten Mal / neu / unbekannt</span><span class="ans">ein / eine</span></div>
+    <div class="cr"><span class="sit">Schon bekannt / spezifisch</span><span class="ans">der / das / die</span></div>
+    <div class="cr"><span class="sit">Einmalig auf der Welt</span><span class="ans">der / das / die</span></div>
+    <div class="cr"><span class="sit">Nicht zählbar (Zeit, Geld …)</span><span class="ans">kein Artikel</span></div>
+    <div class="cr"><span class="sit">Beruf nach „ich bin"</span><span class="ans">kein Artikel</span></div>
+    <div class="cr"><span class="sit">Negation</span><span class="ans">kein / keine</span></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🔄 Wichtigste Veränderungen</div>
+    <div class="g2">
+      <div class="gb"><div class="gl" style="color:var(--acc);">den/einen</div><div class="gs">⚠️ mask. Akk.<br>der/ein → den/einen</div></div>
+      <div class="gb"><div class="gl" style="color:#16a34a;">das/ein</div><div class="gs">✅ neut. Akk.<br>Keine Änderung!</div></div>
+      <div class="gb"><div class="gl" style="color:#2563eb;">die/eine</div><div class="gs">✅ fem. Akk.<br>Keine Änderung!</div></div>
+      <div class="gb"><div class="gl" style="color:var(--dat);">dem/der</div><div class="gs">⚠️ Dativ<br>m/n:dem · f:der · Pl:den</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📊 Alles zusammen</div>
+    <table class="at">
+      <thead><tr><th class="thc"></th><th class="thd">m def.</th><th class="thi">m indef.</th><th class="thd">n def.</th><th class="thi">n indef.</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nom.</strong></td><td class="m">der</td><td class="m">ein</td><td class="n">das</td><td class="n">ein</td></tr>
+        <tr><td><strong>Akk.</strong></td><td style="color:var(--acc);font-weight:800;">den</td><td style="color:var(--acc);font-weight:800;">einen</td><td class="n">das</td><td class="n">ein</td></tr>
+        <tr><td><strong>Dat.</strong></td><td class="m">dem</td><td class="m">einem</td><td class="n">dem</td><td class="n">einem</td></tr>
+      </tbody>
+    </table>
+    <table class="at" style="margin-top:7px;">
+      <thead><tr><th class="thc"></th><th class="thd">f def.</th><th class="thi">f indef.</th><th class="thd">Pl. def.</th><th class="thi">Pl. indef.</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nom.</strong></td><td class="f">die</td><td class="f">eine</td><td class="p">die</td><td class="p">–</td></tr>
+        <tr><td><strong>Akk.</strong></td><td class="f">die</td><td class="f">eine</td><td class="p">die</td><td class="p">–</td></tr>
+        <tr><td><strong>Dat.</strong></td><td style="color:var(--dat);font-weight:800;">der</td><td style="color:var(--dat);font-weight:800;">einer</td><td class="p">den</td><td class="p">–</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FLASHCARD T5 -->
+  <div class="card">
+    <div class="ct">⚡ Schnellübung – Alles zusammen</div>
+    <div id="fc5"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 6: ÜBUNG ══════════════ -->
+<div id="t6" class="sec">
+  <div class="ub-tabs">
+    <button class="ub-tab active" id="ut1" onclick="showUbung(1)">Übung 1</button>
+    <button class="ub-tab" id="ut2" onclick="showUbung(2)">Übung 2</button>
+    <button class="ub-tab" id="ut3" onclick="showUbung(3)">Übung 3</button>
+    <button class="ub-tab" id="ut4" onclick="showUbung(4)">Übung 4</button>
+    <button class="ub-tab" id="ut5" onclick="showUbung(5)">Übung 5</button>
+  </div>
+
+  <!-- ÜBUNG 1 -->
+  <div class="ub-pane active" id="up1">
+    <div class="card">
+      <div class="ub-title">Übung 1 – Nominativ</div>
+      <div class="ub-sub">Nur Nominativ · definit und indefinit · Niveau: ⭐</div>
+      <div id="u1items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb1" style="width:0%"></div></div>
+      <div class="sc-txt" id="st1">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(1)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 2 -->
+  <div class="ub-pane" id="up2">
+    <div class="card">
+      <div class="ub-title">Übung 2 – Nominativ + Akkusativ</div>
+      <div class="ub-sub">Achtung: maskulin Akkusativ! · Niveau: ⭐⭐</div>
+      <div id="u2items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb2" style="width:0%"></div></div>
+      <div class="sc-txt" id="st2">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(2)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 3 -->
+  <div class="ub-pane" id="up3">
+    <div class="card">
+      <div class="ub-title">Übung 3 – Nom. + Akk. + kein Artikel</div>
+      <div class="ub-sub">Zählbar oder nicht? Beruf? · Niveau: ⭐⭐⭐</div>
+      <div id="u3items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb3" style="width:0%"></div></div>
+      <div class="sc-txt" id="st3">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(3)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 4 -->
+  <div class="ub-pane" id="up4">
+    <div class="card">
+      <div class="ub-title">Übung 4 – Nom. + Akk. + Dativ</div>
+      <div class="ub-sub">Alle drei Fälle · mit Präpositionen · Niveau: ⭐⭐⭐⭐</div>
+      <div id="u4items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb4" style="width:0%"></div></div>
+      <div class="sc-txt" id="st4">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(4)">🔄 Neu starten</button>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 5 -->
+  <div class="ub-pane" id="up5">
+    <div class="card">
+      <div class="ub-title">Übung 5 – Märchen</div>
+      <div class="ub-sub">Alle Fälle · Kontext · Niveau: ⭐⭐⭐⭐⭐</div>
+      <div id="u5items"></div>
+      <div class="sc-bar"><div class="sc-fill" id="sb5" style="width:0%"></div></div>
+      <div class="sc-txt" id="st5">0 / 13 richtig</div>
+      <button class="rst-btn" onclick="resetUb(5)">🔄 Neu starten</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════
+function showTab(id) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  var idx = ['t1','t2','t3','t4','t5','t6'].indexOf(id);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+}
+
+// ═══════════════════════════════════════
+//  FLASHCARD DATA
+// ═══════════════════════════════════════
+var FC = {
+  fc1: [
+    { q:'„Ich sehe ___ Mann auf der Straße." (zum ersten Mal gesagt)', hint:'der Mann · Nominativ', opts:['ein','einen','der','einen'], correct:'einen', exp:'Zum ersten Mal gesagt + maskulin + Nominativ + indefinit = <b>ein</b> Mann.' },
+    { q:'„___ Mann ist sehr groß." (schon erwähnt)', hint:'der Mann · Nominativ', opts:['Ein','Der','Einen','Den'], correct:'Der', exp:'Bereits erwähnt = definit. maskulin Nominativ = <b>Der</b> Mann.' },
+    { q:'„Dort steht ___ Haus." (zum ersten Mal gesagt)', hint:'das Haus · Nominativ', opts:['ein','das','eine','der'], correct:'ein', exp:'Zum ersten Mal gesagt + neutral + Nominativ + indefinit = <b>ein</b> Haus.' },
+    { q:'„___ Haus ist sehr alt." (schon bekannt)', hint:'das Haus · Nominativ', opts:['Ein','Eine','Das','Der'], correct:'Das', exp:'Bereits erwähnt + neutral + Nominativ = <b>Das</b> Haus.' },
+    { q:'„Ich sehe ___ Frau und ___ Kind." (zum ersten Mal gesagt)', hint:'die Frau · das Kind', opts:['eine / ein','eine / eine','die / das','ein / ein'], correct:'eine / ein', exp:'Zum ersten Mal gesagt: feminin Nom. indef. = <b>eine</b>, neutral Nom. indef. = <b>ein</b>.' }
+  ],
+  fc2: [
+    { q:'„Hast du ___ Stift?" ', hint:'der Stift · Akkusativ · indefinit', opts:['ein','einen','der','den'], correct:'einen', exp:'maskulin + Akkusativ + indefinit = <b>einen</b> Stift.' },
+    { q:'„Ich kaufe ___ Buch."', hint:'das Buch · Akkusativ · indefinit', opts:['ein','einen','eine','das'], correct:'ein', exp:'neutral + Akkusativ + indefinit = <b>ein</b> Buch. (neutral ändert sich nicht!)' },
+    { q:'„Möchten Sie ___ Banane?"', hint:'die Banane · Akkusativ · indefinit', opts:['ein','einen','eine','die'], correct:'eine', exp:'feminin + Akkusativ + indefinit = <b>eine</b> Banane.' },
+    { q:'„Er trinkt ___ Tee."', hint:'der Tee · Akkusativ · indefinit', opts:['ein','einen','der','den'], correct:'einen', exp:'maskulin + Akkusativ + indefinit = <b>einen</b> Tee.' },
+    { q:'„Ich brauche ___ Wörterbuch."', hint:'das Wörterbuch · Akkusativ · indefinit', opts:['ein','einen','eine','das'], correct:'ein', exp:'neutral + Akkusativ + indefinit = <b>ein</b> Wörterbuch.' }
+  ],
+  fc3: [
+    { q:'„Wie findest du ___ Rock?" ', hint:'der Rock · Akkusativ · definit', opts:['der','den','dem','ein'], correct:'den', exp:'maskulin + Akkusativ + definit = <b>den</b> Rock.' },
+    { q:'„___ Bluse ist schön."', hint:'die Bluse · Nominativ · definit', opts:['Der','Das','Die','Den'], correct:'Die', exp:'feminin + Nominativ + definit = <b>Die</b> Bluse.' },
+    { q:'„Ich nehme ___ Laptop."', hint:'der Laptop · Akkusativ · definit', opts:['der','den','das','dem'], correct:'den', exp:'maskulin + Akkusativ + definit = <b>den</b> Laptop.' },
+    { q:'„___ Kind spielt draußen."', hint:'das Kind · Nominativ · definit', opts:['Der','Die','Das','Den'], correct:'Das', exp:'neutral + Nominativ + definit = <b>Das</b> Kind.' },
+    { q:'„Ich mag ___ Musik."', hint:'die Musik · Akkusativ · definit (allgemeines Konzept)', opts:['der','die','das','den'], correct:'die', exp:'feminin + Akkusativ + definit (allgemeines Konzept) = <b>die</b> Musik.' }
+  ],
+  fc4: [
+    { q:'„Er hat _____ Hunger." – Artikel nötig?', hint:'Hunger = nicht zählbar', opts:['einen','∅ kein Artikel','keinen','Hunger hat einen'], correct:'∅ kein Artikel', exp:'Hunger ist nicht zählbar → kein Artikel. Er hat <b>Hunger</b>.' },
+    { q:'„Sie ist _____ Ärztin."', hint:'Beruf nach sein', opts:['eine','∅ kein Artikel','die','keine'], correct:'∅ kein Artikel', exp:'Beruf nach „sein" → kein Artikel. Sie ist <b>Ärztin</b>.' },
+    { q:'„Ich habe _____ Idee!"', hint:'die Idee · zum ersten Mal', opts:['∅ kein Artikel','eine','die','keine'], correct:'eine', exp:'Idee ist zählbar + zum ersten Mal → indefinit: <b>eine</b> Idee.' },
+    { q:'„Er mag _____ Reis."', hint:'Reis = nicht zählbar', opts:['einen','∅ kein Artikel','den','ein'], correct:'∅ kein Artikel', exp:'Reis ist nicht zählbar → kein Artikel. Er mag <b>Reis</b>.' },
+    { q:'„Sie hat _____ Fahrrad."', hint:'das Fahrrad · zählbar · zum ersten Mal', opts:['∅ kein Artikel','ein','eine','das'], correct:'ein', exp:'Fahrrad ist zählbar + zum ersten Mal → indefinit: <b>ein</b> Fahrrad.' }
+  ],
+  fc5: [
+    { q:'„Ich fahre mit ___ Bus."', hint:'der Bus · Dativ · definit', opts:['der','den','dem','des'], correct:'dem', exp:'nach „mit" = Dativ. maskulin + Dativ + definit = <b>dem</b> Bus.' },
+    { q:'„Sie wohnt bei ___ Freundin."', hint:'die Freundin · Dativ · indefinit', opts:['eine','einer','die','der'], correct:'einer', exp:'nach „bei" = Dativ. feminin + Dativ + indefinit = <b>einer</b> Freundin.' },
+    { q:'„Er kommt aus ___ Stadt."', hint:'die Stadt · Dativ · indefinit', opts:['eine','einer','die','der'], correct:'einer', exp:'nach „aus" = Dativ. feminin + Dativ + indefinit = <b>einer</b> Stadt.' },
+    { q:'„Ich schenke ___ Freund ein Buch."', hint:'der Freund · Dativ · definit', opts:['der','den','dem','des'], correct:'dem', exp:'indirektes Objekt (wem?) = Dativ. maskulin + Dativ + definit = <b>dem</b> Freund.' },
+    { q:'„Hast du ___ Auto? – Nein, ich habe ___ Auto."', hint:'das Auto · mask. Akk. · Negation', opts:['ein / kein','einen / keinen','ein / keine','das / kein'], correct:'ein / kein', exp:'Auto = neutral. Frage: <b>ein</b> Auto. Negation: <b>kein</b> Auto.' }
+  ]
+};
+
+// ═══════════════════════════════════════
+//  FLASHCARD ENGINE
+// ═══════════════════════════════════════
+var fcState = {};
+
+function buildFC(id) {
+  var cards = FC[id];
+  fcState[id] = { cur: 0, score: 0, done: false };
+  renderFC(id);
+}
+
+function renderFC(id) {
+  var s = fcState[id];
+  var cards = FC[id];
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (s.done) {
+    var pct = Math.round(s.score / cards.length * 100);
+    var emoji = pct === 100 ? '🏆' : pct >= 80 ? '🎉' : pct >= 60 ? '😊' : '💪';
+    el.innerHTML = '<div class="fc-result show"><div class="big">' + emoji + '</div>' +
+      '<div class="msg">' + s.score + ' / ' + cards.length + ' richtig (' + pct + '%)</div>' +
+      '<div class="sub">Weiter so!</div>' +
+      '<button class="fc-restart" onclick="restartFC(\'' + id + '\')">🔄 Nochmal</button></div>';
+    return;
+  }
+  var c = cards[s.cur];
+  // dots
+  var dots = '';
+  for (var i = 0; i < cards.length; i++) {
+    var cls = i < s.cur ? 'done' : i === s.cur ? 'cur' : '';
+    dots += '<div class="fc-dot ' + cls + '"></div>';
+  }
+  // opts
+  var allOpts = Array.from(new Set(c.opts.concat([c.correct])));
+  // shuffle
+  allOpts.sort(function() { return Math.random() - 0.5; });
+  var btns = allOpts.map(function(o) {
+    return '<button class="fc-btn" id="fcb_' + id + '_' + o.replace(/[^a-z0-9]/gi,'_') + '" onclick="answerFC(\'' + id + '\',\'' + o.replace(/'/g,"\\'") + '\')">' + o + '</button>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="fc-wrap">' +
+      '<div class="fc-progress-row">' +
+        '<span class="fc-prog">' + (s.cur+1) + ' / ' + cards.length + '</span>' +
+        '<div class="fc-dots">' + dots + '</div>' +
+      '</div>' +
+      '<div class="fc-card"><div class="fc-q">' + c.q + '</div>' +
+        (c.hint ? '<div class="fc-hint">(' + c.hint + ')</div>' : '') +
+      '</div>' +
+      '<div class="fc-opts">' + btns + '</div>' +
+      '<div class="fc-explain" id="fce_' + id + '"></div>' +
+      '<button class="fc-next" id="fcn_' + id + '" onclick="nextFC(\'' + id + '\')">' +
+        (s.cur < cards.length - 1 ? 'Weiter →' : 'Ergebnis →') + '</button>' +
+    '</div>';
+}
+
+function answerFC(id, chosen) {
+  var s = fcState[id];
+  var c = FC[id][s.cur];
+  if (s.answered) return;
+  s.answered = true;
+  var correct = c.correct;
+  var expEl = document.getElementById('fce_' + id);
+  var nxtEl = document.getElementById('fcn_' + id);
+  // disable all btns
+  document.querySelectorAll('.fc-opts .fc-btn').forEach(function(b) { b.disabled = true; });
+  if (chosen === correct) {
+    s.score++;
+    expEl.className = 'fc-explain show ok';
+    expEl.innerHTML = '✅ ' + c.exp;
+  } else {
+    expEl.className = 'fc-explain show bad';
+    expEl.innerHTML = '❌ ' + c.exp;
+  }
+  // highlight
+  document.querySelectorAll('.fc-opts .fc-btn').forEach(function(b) {
+    if (b.textContent.trim() === correct) b.classList.add('fc-ok');
+    else if (b.textContent.trim() === chosen) b.classList.add('fc-bad');
+  });
+  nxtEl.classList.add('show');
+}
+
+function nextFC(id) {
+  var s = fcState[id];
+  s.cur++;
+  s.answered = false;
+  if (s.cur >= FC[id].length) s.done = true;
+  renderFC(id);
+}
+
+function restartFC(id) {
+  fcState[id] = { cur: 0, score: 0, done: false };
+  renderFC(id);
+}
+
+// ═══════════════════════════════════════
+//  ÜBUNG DATA
+// ═══════════════════════════════════════
+var UB = {
+  1: [
+    { s:'Das ist ___ Stuhl.', blank:'b', opts:['ein','eine','der','das'], correct:'ein', exp:'der Stuhl · maskulin · Nominativ · indefinit → <b>ein</b>' },
+    { s:'Das ist ___ Vase.', blank:'b', opts:['ein','eine','der','die'], correct:'eine', exp:'die Vase · feminin · Nominativ · indefinit → <b>eine</b>' },
+    { s:'Das ist ___ Wörterbuch.', blank:'b', opts:['ein','eine','das','der'], correct:'ein', exp:'das Wörterbuch · neutral · Nominativ · indefinit → <b>ein</b>' },
+    { s:'___ Stuhl ist modern.', blank:'b', opts:['Ein','Eine','Der','Das'], correct:'Der', exp:'der Stuhl · maskulin · Nominativ · definit → <b>Der</b>' },
+    { s:'___ Vase ist schön.', blank:'b', opts:['Ein','Eine','Die','Das'], correct:'Die', exp:'die Vase · feminin · Nominativ · definit → <b>Die</b>' },
+    { s:'___ Wörterbuch ist praktisch.', blank:'b', opts:['Ein','Eine','Das','Der'], correct:'Das', exp:'das Wörterbuch · neutral · Nominativ · definit → <b>Das</b>' },
+    { s:'Das ist ___ Laptop.', blank:'b', opts:['ein','eine','der','das'], correct:'ein', exp:'der Laptop · maskulin · Nominativ · indefinit → <b>ein</b>' },
+    { s:'___ Laptop ist gut.', blank:'b', opts:['Ein','Eine','Der','Das'], correct:'Der', exp:'der Laptop · maskulin · Nominativ · definit → <b>Der</b>' },
+    { s:'Das sind ___ Blumen (Plural).', blank:'b', opts:['ein','eine','die','–'], correct:'–', exp:'Plural · indefinit → kein Artikel: Das sind <b>–</b> Blumen.' },
+    { s:'___ Blumen sind wunderbar.', blank:'b', opts:['Ein','Die','Das','Eine'], correct:'Die', exp:'Plural · Nominativ · definit → <b>Die</b> Blumen.' },
+    { s:'Das ist ___ Tür.', blank:'b', opts:['ein','eine','die','das'], correct:'eine', exp:'die Tür · feminin · Nominativ · indefinit → <b>eine</b>' },
+    { s:'___ Tür ist offen.', blank:'b', opts:['Ein','Eine','Die','Das'], correct:'Die', exp:'die Tür · feminin · Nominativ · definit → <b>Die</b>' },
+    { s:'Das ist ___ Bild.', blank:'b', opts:['ein','eine','der','das'], correct:'ein', exp:'das Bild · neutral · Nominativ · indefinit → <b>ein</b>' }
+  ],
+  2: [
+    { s:'Hast du ___ Kuli?', blank:'b', opts:['ein','einen','der','den'], correct:'einen', exp:'der Kuli · maskulin · Akkusativ · indefinit → <b>einen</b>' },
+    { s:'Hast du ___ Uhr?', blank:'b', opts:['ein','eine','der','die'], correct:'eine', exp:'die Uhr · feminin · Akkusativ · indefinit → <b>eine</b>' },
+    { s:'Hast du ___ Handy?', blank:'b', opts:['ein','einen','eine','das'], correct:'ein', exp:'das Handy · neutral · Akkusativ · indefinit → <b>ein</b>' },
+    { s:'Ich kaufe ___ Computer.', blank:'b', opts:['ein','einen','der','den'], correct:'einen', exp:'der Computer · maskulin · Akkusativ · indefinit → <b>einen</b>' },
+    { s:'Ich nehme ___ Schirm.', blank:'b', opts:['ein','einen','der','den'], correct:'einen', exp:'der Schirm · maskulin · Akkusativ · indefinit → <b>einen</b>' },
+    { s:'Wie findest du ___ Rock?', blank:'b', opts:['der','den','dem','ein'], correct:'den', exp:'der Rock · maskulin · Akkusativ · definit → <b>den</b>' },
+    { s:'Wie findest du ___ Kleid?', blank:'b', opts:['das','dem','die','den'], correct:'das', exp:'das Kleid · neutral · Akkusativ · definit → <b>das</b>' },
+    { s:'Wie findest du ___ Brille?', blank:'b', opts:['die','den','der','das'], correct:'die', exp:'die Brille · feminin · Akkusativ · definit → <b>die</b>' },
+    { s:'Er kauft ___ Blumen (Plural).', blank:'b', opts:['die','den','das','–'], correct:'die', exp:'Plural · Akkusativ · definit → <b>die</b> Blumen.' },
+    { s:'Ich sehe ___ Hund.', blank:'b', opts:['ein','einen','der','den'], correct:'einen', exp:'der Hund · maskulin · Akkusativ · indefinit → <b>einen</b>' },
+    { s:'Ich mag ___ Katze.', blank:'b', opts:['ein','eine','die','den'], correct:'eine', exp:'die Katze · feminin · Akkusativ · indefinit → <b>eine</b>' },
+    { s:'Bitte mach ___ Fenster zu!', blank:'b', opts:['ein','das','dem','die'], correct:'das', exp:'das Fenster · neutral · Akkusativ · definit (kontext eindeutig) → <b>das</b>' },
+    { s:'Ich höre ___ Musik gern.', blank:'b', opts:['eine','die','ein','–'], correct:'die', exp:'Musik = allgemeines Konzept → definit: <b>die</b> Musik.' }
+  ],
+  3: [
+    { s:'Er hat ___ Zeit. (positiv)', blank:'b', opts:['eine','die','∅','kein'], correct:'∅', exp:'Zeit = nicht zählbar → kein Artikel: Er hat <b>Zeit</b>.' },
+    { s:'Sie ist ___ Lehrerin.', blank:'b', opts:['eine','die','∅','keine'], correct:'∅', exp:'Beruf nach „sein" → kein Artikel: Sie ist <b>Lehrerin</b>.' },
+    { s:'Er trinkt ___ Wasser. (allgemein)', blank:'b', opts:['ein','das','∅','einen'], correct:'∅', exp:'Wasser allgemein (nicht zählbar) → kein Artikel.' },
+    { s:'Ich habe ___ Idee!', blank:'b', opts:['∅','eine','die','ein'], correct:'eine', exp:'Idee ist zählbar + zum ersten Mal → <b>eine</b> Idee.' },
+    { s:'Er mag ___ Reis nicht.', blank:'b', opts:['einen','den','∅','ein'], correct:'∅', exp:'Reis = nicht zählbar → kein Artikel: Er mag <b>Reis</b> nicht.' },
+    { s:'Sie hat ___ Glück!', blank:'b', opts:['ein','das','∅','eine'], correct:'∅', exp:'Glück = nicht zählbar, abstrakt → kein Artikel.' },
+    { s:'Er wird ___ Arzt.', blank:'b', opts:['ein','der','∅','einen'], correct:'∅', exp:'Beruf nach „werden" → kein Artikel.' },
+    { s:'Ich habe ___ Hunger.', blank:'b', opts:['einen','den','∅','ein'], correct:'∅', exp:'Hunger = nicht zählbar (Gefühl) → kein Artikel.' },
+    { s:'Das ist ___ gute Idee.', blank:'b', opts:['∅','eine','die','ein'], correct:'eine', exp:'Mit Adjektiv „gute" → Artikel nötig: <b>eine</b> gute Idee.' },
+    { s:'Er ist ___ guter Arzt.', blank:'b', opts:['∅','ein','der','einen'], correct:'ein', exp:'Mit Adjektiv → Artikel nötig: Er ist <b>ein</b> guter Arzt.' },
+    { s:'Ich brauche ___ Computer.', blank:'b', opts:['∅','einen','der','ein'], correct:'einen', exp:'Computer ist zählbar, Akkusativ, maskulin, indefinit → <b>einen</b>.' },
+    { s:'Hast du ___ Auto?', blank:'b', opts:['∅','ein','das','einen'], correct:'ein', exp:'Auto ist zählbar, Akkusativ, neutral, indefinit → <b>ein</b>.' },
+    { s:'Sie hört ___ Musik.', blank:'b', opts:['eine','∅','die','ein'], correct:'∅', exp:'Musik ohne Kontext (allgemein, nicht zählbar) → kein Artikel.' }
+  ],
+  4: [
+    { s:'Ich fahre mit ___ Bus.', blank:'b', opts:['der','den','dem','des'], correct:'dem', exp:'nach „mit" = Dativ. maskulin · Dativ · definit → <b>dem</b> Bus.' },
+    { s:'Sie wohnt bei ___ Freundin.', blank:'b', opts:['eine','einer','die','der'], correct:'einer', exp:'nach „bei" = Dativ. feminin · Dativ · indefinit → <b>einer</b> Freundin.' },
+    { s:'Er kommt aus ___ Stadt.', blank:'b', opts:['eine','einer','die','der'], correct:'einer', exp:'nach „aus" = Dativ. feminin · Dativ · indefinit → <b>einer</b> Stadt.' },
+    { s:'Ich schenke ___ Freund ein Buch.', blank:'b', opts:['der','den','dem','einen'], correct:'dem', exp:'indirektes Objekt = Dativ. maskulin · Dativ · definit → <b>dem</b> Freund.' },
+    { s:'Sie hilft ___ Kind.', blank:'b', opts:['das','dem','den','ein'], correct:'dem', exp:'nach „helfen" = Dativ. neutral · Dativ · definit → <b>dem</b> Kind.' },
+    { s:'Er antwortet ___ Lehrerin.', blank:'b', opts:['die','der','den','einer'], correct:'der', exp:'nach „antworten" = Dativ. feminin · Dativ · definit → <b>der</b> Lehrerin.' },
+    { s:'Ich schreibe ___ Freund einen Brief.', blank:'b', opts:['der','einem','dem','einen'], correct:'einem', exp:'indirektes Objekt = Dativ. maskulin · Dativ · indefinit → <b>einem</b> Freund.' },
+    { s:'Das Buch gehört ___ Studentin.', blank:'b', opts:['die','der','den','einer'], correct:'einer', exp:'nach „gehören" = Dativ. feminin · Dativ · indefinit → <b>einer</b> Studentin.' },
+    { s:'Ich wohne in ___ Haus.', blank:'b', opts:['ein','das','dem','des'], correct:'dem', exp:'nach „in" (Ort) = Dativ. neutral · Dativ · definit → <b>dem</b> Haus.' },
+    { s:'Wir treffen uns vor ___ Bibliothek.', blank:'b', opts:['die','der','den','eine'], correct:'der', exp:'nach „vor" (Ort) = Dativ. feminin · Dativ · definit → <b>der</b> Bibliothek.' },
+    { s:'Er gibt ___ Kindern Süßigkeiten.', blank:'b', opts:['die','der','den','dem'], correct:'den', exp:'Plural · Dativ · definit → <b>den</b> Kindern (+n am Nomen).' },
+    { s:'Sie fährt mit ___ Fahrrad.', blank:'b', opts:['das','dem','ein','einem'], correct:'dem', exp:'nach „mit" = Dativ. neutral · Dativ · definit → <b>dem</b> Fahrrad.' },
+    { s:'Er zeigt ___ Freundin den Weg.', blank:'b', opts:['die','der','den','eine'], correct:'der', exp:'indirektes Objekt = Dativ. feminin · Dativ · definit → <b>der</b> Freundin.' }
+  ],
+  5: [
+    { s:'Es war einmal ___ König.', blank:'b', opts:['ein','eine','der','einen'], correct:'ein', exp:'Neue Figur – zum ersten Mal! maskulin · Nominativ · indefinit → <b>ein</b> König.' },
+    { s:'___ König war sehr reich.', blank:'b', opts:['Ein','Der','Einen','Den'], correct:'Der', exp:'Bereits eingeführt → definit. maskulin · Nominativ · definit → <b>Der</b> König.' },
+    { s:'Er hatte ___ Tochter.', blank:'b', opts:['ein','eine','die','der'], correct:'eine', exp:'Neue Figur – zum ersten Mal! feminin · Akkusativ · indefinit → <b>eine</b> Tochter.' },
+    { s:'___ Tochter war wunderschön.', blank:'b', opts:['Eine','Die','Der','Das'], correct:'Die', exp:'Bereits erwähnt → definit. feminin · Nominativ · definit → <b>Die</b> Tochter.' },
+    { s:'Eines Tages kam ___ Prinz.', blank:'b', opts:['ein','eine','der','den'], correct:'ein', exp:'Neue Figur! maskulin · Nominativ · indefinit → <b>ein</b> Prinz.' },
+    { s:'___ Prinz wollte ___ Prinzessin heiraten.', blank:'b', opts:['Der / die','Ein / eine','Den / die','Der / eine'], correct:'Der / die', exp:'Beide bekannt → definit. <b>Der</b> Prinz (Nom.) / <b>die</b> Prinzessin (Akk.).' },
+    { s:'Aber ___ Prinzessin wollte ihn nicht heiraten.', blank:'b', opts:['eine','die','der','ein'], correct:'die', exp:'Bereits eingeführt → definit. feminin · Nominativ · definit → <b>die</b> Prinzessin.' },
+    { s:'Da musste ___ Prinz seine Liebe zeigen.', blank:'b', opts:['ein','einen','der','den'], correct:'der', exp:'Bekannter Prinz → definit. maskulin · Nominativ · definit → <b>der</b> Prinz.' },
+    { s:'Er tötete ___ Drachen.', blank:'b', opts:['ein','einen','der','den'], correct:'einen', exp:'Neuer Drache! maskulin · Akkusativ · indefinit → <b>einen</b> Drachen.' },
+    { s:'Zum Schluss heiratete ___ Prinz ___ Prinzessin.', blank:'b', opts:['der / die','ein / eine','den / die','der / eine'], correct:'der / die', exp:'Beide bereits bekannt → definit. <b>der</b> Prinz (Nom.) · <b>die</b> Prinzessin (Akk.).' },
+    { s:'Ein Jahr später bekamen sie ___ Tochter.', blank:'b', opts:['eine','die','∅','ein'], correct:'eine', exp:'Neue Figur. feminin · Akkusativ · indefinit → <b>eine</b> Tochter.' },
+    { s:'___ Tochter hatte ___ Glück.', blank:'b', opts:['Die / ein','Die / ∅','Eine / ein','Die / eine'], correct:'Die / ∅', exp:'<b>Die</b> Tochter (bereits erwähnt, def.) / <b>∅</b> Glück (nicht zählbar).' },
+    { s:'Sie lebten glücklich und hatten ___ Hunger und ___ Sorgen mehr.', blank:'b', opts:['keinen / keine','einen / eine','∅ / ∅','kein / keine'], correct:'keinen / keine', exp:'Negation: Hunger (mask. Akk.) → <b>keinen</b>, Sorgen (Plural Akk.) → <b>keine</b>.' }
+  ]
+};
+
+// ═══════════════════════════════════════
+//  ÜBUNG ENGINE
+// ═══════════════════════════════════════
+var ubAnswered = {};
+
+function buildUbung(n) {
+  ubAnswered[n] = {};
+  var items = UB[n];
+  var html = '';
+  items.forEach(function(it, i) {
+    var id = 'u' + n + '_' + i;
+    var opts = it.opts.slice();
+    if (opts.indexOf(it.correct) < 0) opts.push(it.correct);
+    opts.sort(function() { return Math.random() - 0.5; });
+    var btns = opts.map(function(o) {
+      return '<button class="xbtn" onclick="answerUb(' + n + ',' + i + ',this,\'' + o.replace(/'/g,"\\'") + '\')">' + o + '</button>';
+    }).join('');
+    var sent = it.s.replace('___', '<span class="bl" id="bl_' + id + '">____</span>');
+    html += '<div class="ub-item" id="ui_' + id + '">' +
+      '<div class="ub-sent">' + (i+1) + '. ' + sent + '</div>' +
+      '<div class="br">' + btns + '</div>' +
+      '<div class="xfb" id="xf_' + id + '"></div>' +
+    '</div>';
+  });
+  document.getElementById('u' + n + 'items').innerHTML = html;
+}
+
+function answerUb(n, i, btn, chosen) {
+  var key = n + '_' + i;
+  if (ubAnswered[n][key]) return;
+  ubAnswered[n][key] = true;
+  var it = UB[n][i];
+  var id = 'u' + n + '_' + i;
+  var bl = document.getElementById('bl_' + id);
+  var fb = document.getElementById('xf_' + id);
+  var item = document.getElementById('ui_' + id);
+  bl.textContent = chosen === '∅' ? '–' : chosen;
+  btn.closest('.br').querySelectorAll('.xbtn').forEach(function(b) { b.disabled = true; });
+  if (chosen === it.correct) {
+    item.classList.add('ok');
+    btn.classList.add('xok');
+    fb.className = 'xfb show ok';
+    fb.innerHTML = '✅ ' + it.exp;
+  } else {
+    item.classList.add('bad');
+    btn.classList.add('xbad');
+    fb.className = 'xfb show bad';
+    fb.innerHTML = '❌ ' + it.exp;
+    btn.closest('.br').querySelectorAll('.xbtn').forEach(function(b) {
+      if (b.textContent.trim() === it.correct) b.classList.add('xok');
+    });
+  }
+  updateUbScore(n);
+}
+
+function updateUbScore(n) {
+  var total = UB[n].length;
+  var correct = document.querySelectorAll('#up' + n + ' .ub-item.ok').length;
+  var pct = correct / total * 100;
+  document.getElementById('sb' + n).style.width = pct + '%';
+  document.getElementById('st' + n).textContent = correct + ' / ' + total + ' richtig';
+  if (correct === total) document.getElementById('ut' + n).classList.add('done');
+}
+
+function resetUb(n) {
+  ubAnswered[n] = {};
+  document.getElementById('ut' + n).classList.remove('done');
+  buildUbung(n);
+  document.getElementById('sb' + n).style.width = '0%';
+  document.getElementById('st' + n).textContent = '0 / ' + UB[n].length + ' richtig';
+}
+
+function showUbung(n) {
+  document.querySelectorAll('.ub-pane').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.ub-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('up' + n).classList.add('active');
+  document.getElementById('ut' + n).classList.add('active');
+}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', function() {
+  ['fc1','fc2','fc3','fc4','fc5'].forEach(function(id) { buildFC(id); });
+  [1,2,3,4,5].forEach(function(n) { buildUbung(n); });
+});
+</script>
+</body>
+</html>
