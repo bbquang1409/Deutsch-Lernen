@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinitiv mit/ohne zu</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Arial, sans-serif; }
+body { background:#f4f7fb; color:#2c3e50; padding:16px; line-height:1.65; }
+.container { max-width:760px; margin:0 auto; background:#fff; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow:hidden; }
+header { background:linear-gradient(135deg,#e67e22,#f39c12); color:#fff; padding:22px 20px; text-align:center; }
+header h1 { font-size:1.6em; margin-bottom:4px; }
+header p { font-size:0.95em; opacity:0.95; }
+.tabs { display:flex; background:#fef5e7; border-bottom:2px solid #f39c12; flex-wrap:wrap; }
+.tab-btn { flex:1; min-width:80px; padding:11px 6px; background:none; border:none; cursor:pointer; font-size:0.88em; font-weight:600; color:#a04000; transition:0.2s; line-height:1.35; }
+.tab-btn.active { background:#f39c12; color:#fff; }
+.tab-content { display:none; padding:20px; animation:fade 0.3s; }
+.tab-content.active { display:block; }
+@keyframes fade { from{opacity:0;} to{opacity:1;} }
+
+/* Erklärung */
+.section-title { font-size:1.2em; color:#e67e22; margin:20px 0 8px; border-bottom:2px solid #f8c471; padding-bottom:4px; }
+.box { background:#fef9e7; border-left:5px solid #f39c12; border-radius:8px; padding:14px; margin:12px 0; }
+.box.green { background:#eafaf1; border-left-color:#27ae60; }
+.box.red { background:#fdedec; border-left-color:#e74c3c; }
+.box.blue { background:#eaf2f8; border-left-color:#3498db; }
+.box.purple { background:#f5eef8; border-left-color:#8e44ad; }
+.formula { font-size:1.12em; font-weight:700; text-align:center; background:#fff; border:2px dashed #f39c12; border-radius:8px; padding:12px; margin:10px 0; color:#d35400; }
+.beispiel { background:#fff; border-radius:6px; padding:7px 12px; margin:6px 0; border:1px solid #f8c471; font-size:0.97em; }
+.beispiel b { color:#e67e22; }
+.beispiel .label { font-size:0.8em; color:#7f8c8d; margin-left:6px; }
+table.gram { width:100%; border-collapse:collapse; margin:10px 0; font-size:0.95em; }
+table.gram th, table.gram td { border:1px solid #f8c471; padding:8px; text-align:left; }
+table.gram th { background:#f39c12; color:#fff; }
+table.gram tr:nth-child(even) { background:#fef9e7; }
+ul.list li { margin:7px 0 7px 20px; }
+
+/* Vergleich-Grid */
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+.compare-col { border-radius:8px; padding:12px; }
+.compare-col.mit { background:#eafaf1; border:2px solid #27ae60; }
+.compare-col.ohne { background:#eaf2f8; border:2px solid #3498db; }
+.compare-col h4 { margin-bottom:8px; font-size:1em; }
+.compare-col h4.mit { color:#196f3d; }
+.compare-col h4.ohne { color:#1a5276; }
+.compare-col .b { background:#fff; border-radius:5px; padding:6px 10px; margin:5px 0; font-size:0.92em; }
+
+/* Interactive */
+.interactive-card { background:#fff; border:2px solid #f8c471; border-radius:10px; padding:16px; margin:14px 0; }
+.interactive-card h3 { color:#e67e22; margin-bottom:10px; font-size:1em; }
+.choice-row { display:flex; gap:8px; flex-wrap:wrap; }
+.choice-btn { padding:8px 16px; border:2px solid #f39c12; border-radius:20px; background:#fff; color:#e67e22; cursor:pointer; font-weight:600; font-size:0.95em; transition:0.2s; }
+.choice-btn:hover { background:#fef5e7; }
+.choice-btn.correct { background:#27ae60; color:#fff; border-color:#27ae60; }
+.choice-btn.wrong { background:#e74c3c; color:#fff; border-color:#e74c3c; }
+.feedback { margin-top:8px; padding:8px 10px; border-radius:6px; font-size:0.92em; display:none; }
+.feedback.show { display:block; }
+.feedback.ok { background:#eafaf1; color:#196f3d; }
+.feedback.no { background:#fdedec; color:#943126; }
+
+/* Übungen */
+.ex-set { display:none; }
+.ex-set.active { display:block; }
+.ex-setbtns { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.ex-setbtns button { flex:1; min-width:50px; padding:8px; border:2px solid #f39c12; background:#fff; color:#e67e22; border-radius:8px; cursor:pointer; font-weight:700; }
+.ex-setbtns button.active { background:#f39c12; color:#fff; }
+.question { background:#fff; border:1px solid #f8c471; border-radius:8px; padding:12px; margin:10px 0; }
+.question .num { font-weight:700; color:#e67e22; margin-right:4px; }
+.question input[type=text] { padding:6px 10px; border:2px solid #d5dbdb; border-radius:6px; font-size:1em; width:150px; margin:0 3px; }
+.question input.correct-input { border-color:#27ae60; background:#eafaf1; }
+.question input.wrong-input { border-color:#e74c3c; background:#fdedec; }
+.q-hint { font-size:0.83em; color:#7f8c8d; margin-top:4px; }
+.q-explain { font-size:0.88em; color:#196f3d; margin-top:6px; display:none; background:#eafaf1; padding:6px 10px; border-radius:6px; }
+.q-explain.show { display:block; }
+.check-btn, .reset-btn { background:#f39c12; color:#fff; border:none; padding:10px 22px; border-radius:8px; font-size:1em; font-weight:700; cursor:pointer; margin:10px 4px 0 0; }
+.reset-btn { background:#7f8c8d; }
+.score-box { text-align:center; font-size:1.1em; font-weight:700; color:#e67e22; margin-top:12px; padding:10px; background:#fef5e7; border-radius:8px; }
+
+/* Schnelltest */
+.test-q { background:#fff; border:1px solid #f8c471; border-radius:8px; padding:12px; margin:10px 0; }
+.test-q .num { font-weight:700; color:#e67e22; }
+.test-options { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.test-options label { background:#fef9e7; border:1px solid #f8c471; border-radius:6px; padding:8px 10px; cursor:pointer; }
+.test-options label:hover { background:#fdebd0; }
+.test-options input { margin-right:8px; }
+.test-q.correct-q { border-color:#27ae60; background:#eafaf1; }
+.test-q.wrong-q { border-color:#e74c3c; background:#fdedec; }
+
+footer { text-align:center; padding:14px; font-size:0.85em; color:#aaa; }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>📌 Infinitiv mit "zu"</h1>
+<h1 style="font-size:1.4em; margin-top:2px;">Infinitiv ohne "zu"</h1>
+<p style="margin-top:6px;">B1 – Grammatik Lernmodul</p>
+</header>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="showTab('erklarung')">📖 Erklärung<br><span style="font-weight:400;font-size:0.88em">Infinitiv mit zu</span></button>
+<button class="tab-btn" onclick="showTab('ohnezु')">🚫 Erklärung<br><span style="font-weight:400;font-size:0.88em">Infinitiv ohne zu</span></button>
+<button class="tab-btn" onclick="showTab('uebungen')">✏️ Übungen</button>
+<button class="tab-btn" onclick="showTab('test')">⚡ Schnelltest</button>
+</div>
+
+<!-- ===================== TAB 1: ERKLÄRUNG (mit zu) ===================== -->
+<div class="tab-content active" id="erklarung">
+
+<div class="box blue">
+<b>💡 Wozu benutzt man den Infinitiv mit "zu"?</b><br><br>
+Im Deutschen kann man zwei Verben in einem Satz verbinden – das zweite Verb steht als Infinitiv am Satzende.
+Der Infinitiv mit "zu" beschreibt eine <b>Handlung, ein Ziel, einen Wunsch oder eine Notwendigkeit</b>,
+die sich auf das Subjekt des Hauptsatzes bezieht.<br><br>
+<i>Ich versuche, pünktlich <b>zu kommen</b>.</i><br>
+<i>Es ist wichtig, jeden Tag <b>zu üben</b>.</i>
+</div>
+
+<div class="section-title">1. Grundstruktur</div>
+<div class="formula">Hauptsatz + , + ... + zu + Infinitiv</div>
+<div class="beispiel">Es ist wichtig, Deutsch <b>zu lernen</b>.</div>
+<div class="beispiel">Ich habe vergessen, das Fenster <b>zu schließen</b>.</div>
+<div class="beispiel">Er hat keine Zeit, heute <b>mitzukommen</b>. <span class="label">→ trennbar: mit+zu+kommen</span></div>
+
+<div class="section-title">2. Position von "zu" bei trennbaren Verben</div>
+<table class="gram">
+<tr><th>Verbtyp</th><th>Infinitiv</th><th>mit "zu"</th></tr>
+<tr><td>nicht trennbar</td><td>lernen</td><td>zu lernen</td></tr>
+<tr><td>nicht trennbar</td><td>verstehen</td><td>zu verstehen</td></tr>
+<tr><td>trennbar · <i>an-</i></td><td>an·rufen</td><td><b>an</b>zu<b>rufen</b></td></tr>
+<tr><td>trennbar · <i>zurück-</i></td><td>zurück·kommen</td><td><b>zurück</b>zu<b>kommen</b></td></tr>
+<tr><td>trennbar · <i>los-</i></td><td>los·fahren</td><td><b>los</b>zu<b>fahren</b></td></tr>
+</table>
+<div class="box red">
+⚠️ Bei trennbaren Verben steht "zu" IN DER MITTE, zwischen Präfix und Verb – und alles wird <b>zusammengeschrieben</b>: <b>anzurufen</b>, <b>aufzustehen</b> (ein einziges Wort!)
+</div>
+
+<div class="section-title">3. Wann benutzt man "Infinitiv mit zu"?</div>
+
+<div class="box">
+<b>a) Nach Adjektiven mit "Es ist..."</b><br>
+Es ist + Adjektiv, + zu + Infinitiv<br>
+<div class="beispiel">Es ist gesund, <b>viel Wasser zu trinken</b>.</div>
+<div class="beispiel">Es ist schwer, <b>früh aufzustehen</b>.</div>
+<div class="beispiel">Es ist verboten, hier <b>zu rauchen</b>.</div>
+</div>
+
+<div class="box">
+<b>b) Nach bestimmten Verben</b> – das Subjekt beider Sätze ist identisch<br>
+<i>vergessen, versuchen, hoffen, beginnen, vorhaben, planen, sich freuen, versprechen, empfehlen, erlauben...</i>
+<div class="beispiel">Ich <b>versuche</b>, pünktlich <b>zu kommen</b>.</div>
+<div class="beispiel">Wir <b>hoffen</b>, dich bald <b>zu sehen</b>.</div>
+<div class="beispiel">Sie <b>hat vor</b>, nach Berlin <b>umzuziehen</b>.</div>
+<div class="beispiel">Er <b>vergisst</b> oft, die Tür <b>abzuschließen</b>.</div>
+</div>
+
+<div class="box">
+<b>c) "haben...zu" / "sein...zu"</b> – drückt eine Notwendigkeit oder Möglichkeit aus<br>
+<div class="beispiel">Ich <b>habe</b> noch viel <b>zu tun</b>. <span class="label">= ich muss noch viel tun</span></div>
+<div class="beispiel">Das Problem ist nicht <b>zu lösen</b>. <span class="label">= man kann es nicht lösen</span></div>
+</div>
+
+<div class="box green">
+<b>d) um...zu / ohne...zu / (an)statt...zu</b><br>
+<div class="beispiel"><b>Um</b> fit <b>zu bleiben</b>, macht sie jeden Tag Sport. <span class="label">= Zweck/Ziel</span></div>
+<div class="beispiel">Er geht, <b>ohne</b> sich <b>zu verabschieden</b>. <span class="label">= und verabschiedet sich nicht</span></div>
+<div class="beispiel"><b>Anstatt zu</b> arbeiten, schläft er. <span class="label">= er tut etwas anderes</span></div>
+</div>
+
+<div class="section-title">4. Komma</div>
+<div class="box">
+Vor "zu + Infinitiv" steht meistens ein <b>Komma</b>, wenn der Ausdruck lang ist oder mit "um / ohne / statt" beginnt.
+<div class="beispiel">Ich habe keine Lust<b>,</b> heute ins Kino <b>zu gehen</b>.</div>
+</div>
+
+<!-- Interaktive Beispiele -->
+<div class="section-title">🎯 Interaktive Beispiele</div>
+
+<div class="interactive-card">
+<h3>1. Es macht Spaß, neue Sprachen ___ .</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'zu lernen','✅ Richtig! \"zu\" steht direkt vor dem Infinitiv am Satzende.','fb1')">zu lernen</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. \"zu\" muss VOR dem Infinitiv stehen: \"zu lernen\".','fb1')">lernen zu</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Der Infinitiv hat keine Endung. Richtig: \"zu lernen\".','fb1')">zu lernend</button>
+</div>
+<div class="feedback" id="fb1"></div>
+</div>
+
+<div class="interactive-card">
+<h3>2. Sie hat keine Zeit, heute ___ (mitkommen).</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Bei trennbaren Verben steht \"zu\" IN DER MITTE, nicht davor.','fb2')">zu mitkommen</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Alles wird zusammengeschrieben: mitzukommen (ein Wort!).','fb2')">mit zu kommen</button>
+<button class="choice-btn" onclick="checkChoice(this,'mitzukommen','✅ Richtig! Trennbares Verb: Präfix + zu + Verb, zusammen: mit·zu·kommen → mitzukommen.','fb2')">mitzukommen</button>
+</div>
+<div class="feedback" id="fb2"></div>
+</div>
+
+<div class="interactive-card">
+<h3>3. ___ fit zu bleiben, macht sie jeden Tag Sport.</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'Um','✅ Richtig! \"Um...zu\" drückt einen Zweck/ein Ziel aus: warum macht sie Sport?','fb3')">Um</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. \"Ohne...zu\" bedeutet \"und tut es nicht\" – das ergibt hier keinen Sinn.','fb3')">Ohne</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. \"Statt...zu\" bedeutet, dass man etwas anderes tut – das passt hier nicht.','fb3')">Statt</button>
+</div>
+<div class="feedback" id="fb3"></div>
+</div>
+
+<div class="interactive-card">
+<h3>4. Vergiss nicht, die Tür ___ (abschließen).</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'abzuschließen','✅ Richtig! \"abschließen\" ist trennbar: ab·zu·schließen → abzuschließen.','fb4')">abzuschließen</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Bei trennbaren Verben geht \"zu\" in die Mitte: abzuschließen.','fb4')">zu abschließen</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Das Infinitiv-Präfix bleibt am Anfang, nicht hinten.','fb4')">schließen abzu</button>
+</div>
+<div class="feedback" id="fb4"></div>
+</div>
+
+</div>
+
+<!-- ===================== TAB 2: INFINITIV OHNE ZU ===================== -->
+<div class="tab-content" id="ohnezु">
+
+<div class="box purple">
+<b>💡 Wann steht der Infinitiv OHNE "zu"?</b><br><br>
+Bei bestimmten Verben steht der zweite Infinitiv <b>ohne "zu"</b> – direkt am Satzende, ohne Komma und ohne "zu".
+</div>
+
+<div class="section-title">1. Nach Modalverben</div>
+<div class="formula">müssen · können · dürfen · wollen · sollen · möchten</div>
+<div class="beispiel">Ich <b>möchte</b> Sport treiben. <span class="label">NICHT: zu treiben</span></div>
+<div class="beispiel">Du <b>musst</b> nicht aufstehen.</div>
+<div class="beispiel">Sie <b>darf</b> hier nicht rauchen.</div>
+
+<div class="section-title">2. Nach: lassen · sehen · hören · gehen · bleiben</div>
+
+<div class="box">
+<b>lassen</b> – jemanden etwas tun lassen (= zulassen / veranlassen)<br>
+<div class="beispiel">Ich <b>lasse</b> das Auto stehen. <span class="label">(= ich fahre es nicht)</span></div>
+<div class="beispiel">Sie <b>lässt</b> ihre Tochter den Film sehen. <span class="label">(= erlaubt es)</span></div>
+<div class="beispiel">Ich <b>lasse</b> das Fahrrad reparieren. <span class="label">(= ich gebe es in Reparatur)</span></div>
+</div>
+
+<div class="box">
+<b>sehen / hören</b> – Wahrnehmungsverben<br>
+<div class="beispiel">Ich <b>sehe</b> die Kinder spielen. <span class="label">(ich beobachte sie beim Spielen)</span></div>
+<div class="beispiel">Ich <b>höre</b> die Nachbarin singen.</div>
+<div class="beispiel">Er <b>sieht</b> den Zug kommen.</div>
+</div>
+
+<div class="box">
+<b>gehen</b> – Aktivität beschreiben<br>
+<div class="beispiel">Ich <b>gehe</b> schwimmen.</div>
+<div class="beispiel">Wir <b>gehen</b> heute Abend essen.</div>
+<div class="beispiel">Der Mann <b>geht</b> Ski laufen.</div>
+</div>
+
+<div class="box">
+<b>bleiben</b> – Zustand beschreiben<br>
+<div class="beispiel">Er <b>bleibt</b> vor dem Fernseher sitzen.</div>
+<div class="beispiel">Sie <b>bleibt</b> im Bett liegen.</div>
+<div class="beispiel">Bleib <b>stehen</b>! <span class="label">(Imperativ)</span></div>
+</div>
+
+<div class="section-title">3. Vergleich: mit "zu" vs. ohne "zu"</div>
+
+<div class="compare-grid">
+<div class="compare-col mit">
+<h4 class="mit">✅ MIT "zu"</h4>
+<div class="b">Es ist verboten, hier <b>zu essen</b>.</div>
+<div class="b">Ich habe Lust, heute Abend <b>zu kochen</b>.</div>
+<div class="b">Er erlaubt seiner Tochter, den Film <b>zu sehen</b>.</div>
+<div class="b">Wir haben vor, am Sonntag <b>tanzen zu gehen</b>.</div>
+</div>
+<div class="compare-col ohne">
+<h4 class="ohne">🚫 OHNE "zu"</h4>
+<div class="b">Man darf hier nicht <b>essen</b>.</div>
+<div class="b">Ich will heute Abend <b>kochen</b>.</div>
+<div class="b">Er lässt seine Tochter den Film <b>sehen</b>.</div>
+<div class="b">Wir gehen am Sonntag <b>tanzen</b>.</div>
+</div>
+</div>
+
+<div class="section-title">4. Besonderer Fall: lernen</div>
+<div class="box">
+Nach <b>lernen</b> ist beides möglich:<br>
+<div class="beispiel">Das Kind <b>lernt</b> laufen. <span class="label">(ohne zu)</span></div>
+<div class="beispiel">Das Kind <b>lernt</b>, <b>zu</b> laufen. <span class="label">(mit zu – auch korrekt)</span></div>
+<div class="beispiel">Ich <b>lerne</b>, Auto <b>zu fahren</b>. <span class="label">(meist mit zu, bei längerem Ausdruck)</span></div>
+</div>
+
+<div class="box red">
+⚠️ Merkreihe: <b>Modalverben + lassen + gehen + sehen + hören + bleiben → kein "zu"!</b><br>
+Der Infinitiv steht direkt ohne Komma und ohne "zu".
+</div>
+
+<!-- Interaktive Beispiele ohne zu -->
+<div class="section-title">🎯 Interaktive Beispiele</div>
+
+<div class="interactive-card">
+<h3>1. Ich möchte heute Abend ___.</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'kochen','✅ Richtig! Nach Modalverben steht kein \"zu\": möchten + Infinitiv direkt.','fbo1')">kochen</button>
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Nach Modalverben steht der Infinitiv OHNE \"zu\".','fbo1')">zu kochen</button>
+</div>
+<div class="feedback" id="fbo1"></div>
+</div>
+
+<div class="interactive-card">
+<h3>2. Er lässt seine Tochter den Film ___.</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Nach \"lassen\" steht kein \"zu\": Er lässt sie sehen.','fbo2')">zu sehen</button>
+<button class="choice-btn" onclick="checkChoice(this,'sehen','✅ Richtig! \"lassen\" gehört zur Gruppe ohne \"zu\".','fbo2')">sehen</button>
+</div>
+<div class="feedback" id="fbo2"></div>
+</div>
+
+<div class="interactive-card">
+<h3>3. Wähle den richtigen Satz:</h3>
+<div class="choice-row" style="flex-direction:column; align-items:flex-start;">
+<button class="choice-btn" style="width:100%; text-align:left" onclick="checkChoice(this,'X','❌ Falsch. Nach \"gehen\" steht kein \"zu\": Wir gehen heute schwimmen.','fbo3')">Wir gehen heute zu schwimmen.</button>
+<button class="choice-btn" style="width:100%; text-align:left" onclick="checkChoice(this,'ok','✅ Richtig! Nach \"gehen\" (Aktivität) steht der Infinitiv ohne \"zu\".','fbo3')">Wir gehen heute schwimmen.</button>
+</div>
+<div class="feedback" id="fbo3"></div>
+</div>
+
+<div class="interactive-card">
+<h3>4. Ich höre die Kinder im Garten ___.</h3>
+<div class="choice-row">
+<button class="choice-btn" onclick="checkChoice(this,'X','❌ Falsch. Wahrnehmungsverben (hören, sehen) stehen ohne \"zu\".','fbo4')">zu spielen</button>
+<button class="choice-btn" onclick="checkChoice(this,'spielen','✅ Richtig! Nach \"hören\" (Wahrnehmungsverb) kein \"zu\".','fbo4')">spielen</button>
+</div>
+<div class="feedback" id="fbo4"></div>
+</div>
+
+</div>
+
+<!-- ===================== TAB 3: ÜBUNGEN ===================== -->
+<div class="tab-content" id="uebungen">
+<div class="ex-setbtns">
+<button class="active" onclick="showSet(1)">Übung 1</button>
+<button onclick="showSet(2)">Übung 2</button>
+<button onclick="showSet(3)">Übung 3</button>
+<button onclick="showSet(4)">Übung 4</button>
+<button onclick="showSet(5)">Übung 5</button>
+</div>
+
+<div class="ex-set active" data-set="1">
+<p style="margin-bottom:10px;color:#7f8c8d">📝 Mit "zu" oder ohne "zu"? Ergänze das fehlende Wort – oder lass das Feld leer, wenn kein "zu" nötig ist.</p>
+</div>
+<div class="ex-set" data-set="2">
+<p style="margin-bottom:10px;color:#7f8c8d">📝 Schreibe den Infinitiv mit "zu" in der richtigen Form (Vorsicht: trennbare Verben!).</p>
+</div>
+<div class="ex-set" data-set="3">
+<p style="margin-bottom:10px;color:#7f8c8d">📝 Ergänze: "um...zu", "ohne...zu" oder "statt...zu".</p>
+</div>
+<div class="ex-set" data-set="4">
+<p style="margin-bottom:10px;color:#7f8c8d">📝 "lassen / sehen / hören / gehen / bleiben" – ergänze den Infinitiv ohne "zu".</p>
+</div>
+<div class="ex-set" data-set="5">
+<p style="margin-bottom:10px;color:#7f8c8d">📝 Gemischte Übung: mit "zu" oder ohne "zu"? Ergänze den ganzen Infinitiv-Ausdruck.</p>
+</div>
+
+<button class="check-btn" onclick="checkCurrentSet()">✓ Prüfen</button>
+<button class="reset-btn" onclick="resetCurrentSet()">↺ Zurücksetzen</button>
+<div class="score-box" id="scoreBox" style="display:none"></div>
+</div>
+
+<!-- ===================== TAB 4: SCHNELLTEST ===================== -->
+<div class="tab-content" id="test">
+<p style="margin-bottom:10px;color:#7f8c8d">⚡ 5 Sätze × 13 Fragen – Schwierigkeit steigt von ⭐ bis ⭐⭐⭐⭐⭐</p>
+<div id="testSetBtns" style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:4px;"></div>
+<div id="testContainer"></div>
+<button class="check-btn" onclick="checkTest()">✓ Auswertung</button>
+<button class="reset-btn" onclick="location.reload()">↺ Neu starten</button>
+<div class="score-box" id="testScore" style="display:none"></div>
+</div>
+
+</div>
+<footer>Made with ♥ by Bảo Quang</footer>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+function showSet(n){
+  document.querySelectorAll('.ex-set').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ex-setbtns button').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.ex-set[data-set="${n}"]`).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('scoreBox').style.display='none';
+}
+
+/* Unified interactive check */
+function checkChoice(btn, correct, msg, fbId){
+  const row = btn.parentElement;
+  [...row.children].forEach(b=>{ b.classList.remove('correct','wrong'); });
+  const isOk = btn.textContent.trim() === correct || (correct !== 'X' && correct !== '');
+  if(msg.startsWith('✅')){
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+  }
+  const fb = document.getElementById(fbId);
+  fb.textContent = msg;
+  fb.className = 'feedback show ' + (msg.startsWith('✅') ? 'ok' : 'no');
+}
+
+/* ===================== ÜBUNG DATA ===================== */
+const exData = {
+/* Übung 1: mit zu / ohne zu (kein "zu" bei Modalverb/lassen/gehen/sehen/hören/bleiben) */
+1: [
+ {pre:"Es ist wichtig, viel Wasser ", post:" trinken.", ans:["zu"], hint:"Infinitiv mit zu nach 'es ist wichtig'"},
+ {pre:"Ich möchte heute Abend Sport ", post:" treiben.", ans:[""], hint:"Modalverb → kein 'zu'", explain:"Nach Modalverben steht der Infinitiv OHNE 'zu'"},
+ {pre:"Er lässt das Auto vor dem Haus ", post:" stehen.", ans:[""], hint:"lassen → kein 'zu'", explain:"'lassen' gehört zur Gruppe ohne 'zu'"},
+ {pre:"Ich habe vergessen, das Fenster ", post:" schließen.", ans:["zu"], hint:"vergessen → mit zu"},
+ {pre:"Sie geht jeden Morgen ", post:" laufen.", ans:[""], hint:"gehen (Aktivität) → kein 'zu'", explain:"'gehen' + Infinitiv ohne 'zu'"},
+ {pre:"Wir versuchen, pünktlich ", post:" kommen.", ans:["zu"], hint:"versuchen → mit zu"},
+ {pre:"Man darf hier nicht laut ", post:" sprechen.", ans:[""], hint:"dürfen → kein 'zu'", explain:"Modalverb"},
+ {pre:"Ich höre die Nachbarn Musik ", post:" spielen.", ans:[""], hint:"hören (Wahrnehmung) → kein 'zu'", explain:"Nach 'hören' steht kein 'zu'"},
+ {pre:"Es ist schön, dich wieder ", post:" sehen.", ans:["zu"], hint:"nach 'es ist schön' → mit zu"},
+ {pre:"Meine Tochter bleibt auf dem Sofa ", post:" liegen.", ans:[""], hint:"bleiben → kein 'zu'", explain:"'bleiben' + Infinitiv ohne 'zu'"},
+ {pre:"Er hofft, die Prüfung ", post:" bestehen.", ans:["zu"], hint:"hoffen → mit zu"},
+ {pre:"Ich sehe ihn jeden Tag die Straße entlanggehen – ich sehe ihn ", post:" gehen.", ans:[""], hint:"sehen (Wahrnehmung) → kein 'zu'", explain:"'sehen' ohne 'zu'"},
+ {pre:"Es ist verboten, hier ", post:" parken.", ans:["zu"], hint:"es ist verboten → mit zu"}
+],
+/* Übung 2: trennbare Verben mit zu */
+2: [
+ {pre:"Er hat vor, morgen früh ", post:" (aufstehen).", ans:["aufzustehen"], hint:"trennbar: auf·zu·stehen", explain:"aufzustehen – 'zu' steht zwischen Präfix und Verb"},
+ {pre:"Vergiss nicht, mich morgen ", post:" (anrufen).", ans:["anzurufen"], hint:"trennbar: an·zu·rufen"},
+ {pre:"Ich vergesse oft, die Tür ", post:" (abschließen).", ans:["abzuschliessen","abzuschließen"], hint:"trennbar: ab·zu·schließen"},
+ {pre:"Es ist Zeit, das Zimmer ", post:" (aufräumen).", ans:["aufzuräumen"], hint:"trennbar: auf·zu·räumen"},
+ {pre:"Ich habe keine Lust, heute ", post:" (fernsehen).", ans:["fernzusehen"], hint:"trennbar: fern·zu·sehen"},
+ {pre:"Sie hat versprochen, früher ", post:" (zurückkommen).", ans:["zurückzukommen"], hint:"trennbar: zurück·zu·kommen"},
+ {pre:"Wir planen, am Wochenende ", post:" (einkaufen).", ans:["einzukaufen"], hint:"trennbar: ein·zu·kaufen"},
+ {pre:"Es macht keinen Sinn, jetzt ", post:" (aufgeben).", ans:["aufzugeben"], hint:"trennbar: auf·zu·geben"},
+ {pre:"Er versucht, das Problem ", post:" (verstehen).", ans:["zu verstehen"], hint:"NICHT trennbar – 'zu' vor dem Verb"},
+ {pre:"Sie hat vergessen, das Geschirr ", post:" (abwaschen).", ans:["abzuwaschen"], hint:"trennbar: ab·zu·waschen"},
+ {pre:"Ich habe vor, nach Berlin ", post:" (umziehen).", ans:["umzuziehen"], hint:"trennbar: um·zu·ziehen"},
+ {pre:"Es ist schwer, mit ihm ", post:" (diskutieren).", ans:["zu diskutieren"], hint:"NICHT trennbar"},
+ {pre:"Wir haben beschlossen, früher ", post:" (losfahren).", ans:["loszufahren"], hint:"trennbar: los·zu·fahren"}
+],
+/* Übung 3: um/ohne/statt...zu */
+3: [
+ {pre:"___ Deutsch ", post:" lernen, schaue ich deutsche Filme. (Zweck)", ans:["um","zu"], double:true, hint:"Zweck = um...zu", explain:"um...zu = Ziel/Zweck"},
+ {pre:"Er verlässt das Haus, ___ jemandem ", post:" sagen. (und sagt nichts)", ans:["ohne","zu"], double:true, hint:"ohne...zu"},
+ {pre:"___ Sport ", post:" machen, sitzt er den ganzen Tag. (er macht etwas anderes)", ans:["statt","zu"], double:true, hint:"statt...zu = anstatt"},
+ {pre:"Sie geht ins Ausland, ___ ihr Deutsch ", post:" verbessern. (Zweck)", ans:["um","zu"], double:true, hint:""},
+ {pre:"Er aß sein Frühstück, ___ ", post:" sprechen. (und sprach nicht)", ans:["ohne","zu"], double:true, hint:""},
+ {pre:"___ den Bus ", post:" nehmen, geht er lieber zu Fuß. (er macht etwas anderes)", ans:["statt","zu"], double:true, hint:""},
+ {pre:"Ich rufe dich an, ___ dir Bescheid ", post:" geben. (Zweck)", ans:["um","zu"], double:true, hint:""},
+ {pre:"Sie verließ den Raum, ___ die Tür ", post:" schließen. (und schloss sie nicht)", ans:["ohne","zu"], double:true, hint:""},
+ {pre:"___ gesund ", post:" bleiben, sollte man wenig Zucker essen. (Zweck)", ans:["um","zu"], double:true, hint:""},
+ {pre:"Er hilft mir, ___ etwas dafür ", post:" verlangen. (und verlangt nichts)", ans:["ohne","zu"], double:true, hint:""},
+ {pre:"___ zu Hause ", post:" bleiben, geht sie spazieren. (macht etwas anderes)", ans:["statt","zu"], double:true, hint:""},
+ {pre:"Wir sparen Geld, ___ ein Auto ", post:" kaufen. (Zweck)", ans:["um","zu"], double:true, hint:""},
+ {pre:"Er nickte, ___ etwas ", post:" sagen. (und sagte nichts)", ans:["ohne","zu"], double:true, hint:""}
+],
+/* Übung 4: Infinitiv ohne zu – lassen/sehen/hören/gehen/bleiben */
+4: [
+ {pre:"Ich lasse das Auto ", post:" (stehen).", ans:["stehen"], hint:"lassen → kein zu", explain:"Nach 'lassen' steht der Infinitiv ohne 'zu'"},
+ {pre:"Er sieht den Zug ", post:" (kommen).", ans:["kommen"], hint:"sehen → kein zu"},
+ {pre:"Wir gehen heute Abend ", post:" (essen).", ans:["essen"], hint:"gehen (Aktivität) → kein zu"},
+ {pre:"Mein Mann bleibt vor dem Fernseher ", post:" (sitzen).", ans:["sitzen"], hint:"bleiben → kein zu"},
+ {pre:"Ich höre die Nachbarin ", post:" (singen).", ans:["singen"], hint:"hören → kein zu"},
+ {pre:"Sie lässt ihre Tochter den Film ", post:" (sehen).", ans:["sehen"], hint:"lassen → kein zu"},
+ {pre:"Das Kind geht Ski ", post:" (laufen).", ans:["laufen"], hint:"gehen → kein zu"},
+ {pre:"Das Publikum hört den Pianisten ", post:" (spielen).", ans:["spielen"], hint:"hören → kein zu"},
+ {pre:"Er sieht die Leute das Schiff ", post:" (besteigen).", ans:["besteigen"], hint:"sehen → kein zu"},
+ {pre:"Bleib kurz ", post:" (stehen)!", ans:["stehen"], hint:"bleiben → kein zu"},
+ {pre:"Wir lassen unseren Sohn nicht bis 22 Uhr ", post:" (ausgehen).", ans:["ausgehen"], hint:"lassen → kein zu"},
+ {pre:"Ich sehe ihn jeden Tag auf der Terrasse ", post:" (sitzen).", ans:["sitzen"], hint:"sehen → kein zu"},
+ {pre:"Wir gehen am Wochenende ", post:" (schwimmen).", ans:["schwimmen"], hint:"gehen → kein zu"}
+],
+/* Übung 5: Gemischt */
+5: [
+ {pre:"Ich möchte am Wochenende lange ", post:" (schlafen).", ans:["schlafen"], hint:"Modalverb → kein zu", explain:"Modalverben: kein 'zu'"},
+ {pre:"Es ist schön, ins Kino ", post:" (gehen).", ans:["zu gehen"], hint:"es ist schön → mit zu"},
+ {pre:"Ich versuche, mit dem Rauchen ", post:" (aufhören).", ans:["aufzuhören"], hint:"trennbar: auf·zu·hören"},
+ {pre:"Wir haben keine Zeit, die Hausaufgaben ", post:" (machen).", ans:["zu machen"], hint:"keine Zeit haben → mit zu"},
+ {pre:"Ich sehe ihn ", post:" (kommen).", ans:["kommen"], hint:"sehen → kein zu"},
+ {pre:"Meine Tochter bleibt immer lange am Computer ", post:" (sitzen).", ans:["sitzen"], hint:"bleiben → kein zu"},
+ {pre:"Das Kind darf nicht so viel Eis ", post:" (essen).", ans:["essen"], hint:"dürfen → kein zu"},
+ {pre:"Ich hoffe sehr, drei Kilo ", post:" (abnehmen).", ans:["abzunehmen"], hint:"trennbar: ab·zu·nehmen"},
+ {pre:"Willst du wirklich nicht deinem Nachbarn 300€ ", post:" (leihen)?", ans:["leihen"], hint:"wollen → kein zu"},
+ {pre:"Er hat große Angst, durch die Prüfung ", post:" (fallen).", ans:["zu fallen"], hint:"Angst haben → mit zu"},
+ {pre:"Wir lassen unseren Sohn abends bis 22 Uhr ", post:" (ausgehen).", ans:["ausgehen"], hint:"lassen → kein zu"},
+ {pre:"Es ist immer schön, neue Menschen ", post:" (kennenlernen).", ans:["kennenzulernen"], hint:"trennbar: kennen·zu·lernen"},
+ {pre:"Er versucht jetzt, früher ", post:" (aufstehen).", ans:["aufzustehen"], hint:"trennbar: auf·zu·stehen"}
+]
+};
+
+/* Build exercises */
+function buildExercises(){
+  for(let setNum=1; setNum<=5; setNum++){
+    const container = document.querySelector(`.ex-set[data-set="${setNum}"]`);
+    exData[setNum].forEach((item,i)=>{
+      const div = document.createElement('div');
+      div.className='question';
+      let sentenceHtml='';
+      if(item.double){
+        const parts = item.pre.split('___');
+        sentenceHtml = `${parts[0]}<input type="text" data-set="${setNum}" data-idx="${i}" data-part="0" style="width:70px" placeholder="...">${parts[1]}<input type="text" data-set="${setNum}" data-idx="${i}" data-part="1" style="width:70px" placeholder="...">${item.post}`;
+      } else {
+        const w = item.ans[0]==='' ? '60px' : '150px';
+        sentenceHtml = `${item.pre}<input type="text" data-set="${setNum}" data-idx="${i}" data-part="0" style="width:${w}" placeholder="${item.ans[0]===''?'(leer?)':'...'}">${item.post}`;
+      }
+      div.innerHTML = `<span class="num">${i+1}.</span> ${sentenceHtml}` +
+        (item.hint?`<div class="q-hint">💡 ${item.hint}</div>`:'') +
+        `<div class="q-explain" id="exp-${setNum}-${i}">${item.explain||''}</div>`;
+      container.appendChild(div);
+    });
+  }
+}
+buildExercises();
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/ß/g,'ss').replace(/\s+/g,' ');
+}
+
+function checkCurrentSet(){
+  const active = document.querySelector('.ex-set.active');
+  const setNum = parseInt(active.dataset.set);
+  const data = exData[setNum];
+  let correct=0, total=data.length;
+  data.forEach((item,i)=>{
+    if(item.double){
+      const in0 = active.querySelector(`input[data-idx="${i}"][data-part="0"]`);
+      const in1 = active.querySelector(`input[data-idx="${i}"][data-part="1"]`);
+      const ok0 = normalize(in0.value)===normalize(item.ans[0]);
+      const ok1 = normalize(in1.value)===normalize(item.ans[1]);
+      [in0,in1].forEach((inp,j)=>{
+        inp.classList.remove('correct-input','wrong-input');
+        inp.classList.add((j===0?ok0:ok1)?'correct-input':'wrong-input');
+      });
+      if(ok0&&ok1) correct++;
+    } else {
+      const inp = active.querySelector(`input[data-idx="${i}"][data-part="0"]`);
+      const userVal = normalize(inp.value);
+      const isOk = item.ans.some(a=>normalize(a)===userVal);
+      inp.classList.remove('correct-input','wrong-input');
+      inp.classList.add(isOk?'correct-input':'wrong-input');
+      if(isOk) correct++;
+      const exp = document.getElementById(`exp-${setNum}-${i}`);
+      if(exp && exp.textContent.trim()) exp.classList.add('show');
+    }
+  });
+  const box=document.getElementById('scoreBox');
+  box.style.display='block';
+  box.textContent=`Ergebnis: ${correct} / ${total} richtig ${correct===total?'🎉':''}`;
+}
+
+function resetCurrentSet(){
+  const active=document.querySelector('.ex-set.active');
+  active.querySelectorAll('input').forEach(inp=>{
+    inp.value=''; inp.classList.remove('correct-input','wrong-input');
+  });
+  active.querySelectorAll('.q-explain').forEach(e=>e.classList.remove('show'));
+  document.getElementById('scoreBox').style.display='none';
+}
+
+/* ===================== SCHNELLTEST ===================== */
+/* 5 Sätze × 13 Fragen, Schwierigkeit: ⭐ bis ⭐⭐⭐⭐⭐ */
+const testSets = {
+1: {
+  label:"⭐ Leicht – mit zu oder ohne zu?",
+  data:[
+   {q:"Es ist wichtig, viel Wasser ___ trinken.", opts:["zu","(kein 'zu')"], correct:0},
+   {q:"Ich möchte heute Abend Sport ___.", opts:["zu treiben","treiben"], correct:1},
+   {q:"Sie versucht, gesünder ___.", opts:["zu leben","leben"], correct:0},
+   {q:"Man darf hier nicht ___.", opts:["zu rauchen","rauchen"], correct:1},
+   {q:"Es ist schön, Musik ___.", opts:["zu hören","hören"], correct:0},
+   {q:"Ich gehe jeden Morgen ___.", opts:["zu laufen","laufen"], correct:1},
+   {q:"Er vergisst oft, die Tür ___.", opts:["zu schließen","schließen"], correct:0},
+   {q:"Sie bleibt auf dem Sofa ___.", opts:["zu liegen","liegen"], correct:1},
+   {q:"Ich höre ihn ___.", opts:["zu singen","singen"], correct:1},
+   {q:"Es ist verboten, hier ___.", opts:["zu parken","parken"], correct:0},
+   {q:"Er will eine neue Sprache ___.", opts:["zu lernen","lernen"], correct:1},
+   {q:"Ich habe Lust, heute ins Kino ___.", opts:["zu gehen","gehen"], correct:0},
+   {q:"Wir sollen pünktlich ___.", opts:["zu kommen","kommen"], correct:1}
+]},
+2: {
+  label:"⭐⭐ Einfach – trennbare Verben",
+  data:[
+   {q:"Er hat vor, morgen früh ___ (aufstehen).", opts:["aufzustehen","zu aufstehen","auf zu stehen"], correct:0},
+   {q:"Vergiss nicht, mich morgen ___ (anrufen).", opts:["zu anrufen","anzurufen","anrufen zu"], correct:1},
+   {q:"Ich habe keine Lust, heute ___ (fernsehen).", opts:["fernzusehen","zu fernsehen","fern zu sehen"], correct:0},
+   {q:"Es ist Zeit, das Zimmer ___ (aufräumen).", opts:["zu aufräumen","aufzuräumen","aufräumen zu"], correct:1},
+   {q:"Ich habe vergessen, die Tür ___ (abschließen).", opts:["abzuschließen","zu abschließen","abschließen zu"], correct:0},
+   {q:"Sie hofft, früher ___ (zurückkommen).", opts:["zurückzukommen","zu zurückkommen","zurück zu kommen"], correct:0},
+   {q:"Wir planen, nächste Woche ___ (einkaufen).", opts:["einzukaufen","zu einkaufen","ein zu kaufen"], correct:0},
+   {q:"Ich habe beschlossen, mit dem Rauchen ___ (aufhören).", opts:["aufzuhören","zu aufhören","auf zu hören"], correct:0},
+   {q:"Es macht keinen Sinn, jetzt ___ (aufgeben).", opts:["aufzugeben","zu aufgeben","auf zu geben"], correct:0},
+   {q:"Er versucht, früher ___ (losfahren).", opts:["loszufahren","zu losfahren","los zu fahren"], correct:0},
+   {q:"Es ist wichtig, die Hausaufgaben ___ (mitbringen).", opts:["mitzubringen","zu mitbringen","mit zu bringen"], correct:0},
+   {q:"Vergiss nicht, das Licht ___ (ausmachen).", opts:["zu ausmachen","auszumachen","aus zu machen"], correct:1},
+   {q:"Sie hat vor, nach Berlin ___ (umziehen).", opts:["umzuziehen","zu umziehen","um zu ziehen"], correct:0}
+]},
+3: {
+  label:"⭐⭐⭐ Mittel – um/ohne/statt...zu",
+  data:[
+   {q:"___ fit zu bleiben, macht sie jeden Tag Sport.", opts:["Um","Ohne","Statt"], correct:0},
+   {q:"Er verlässt das Haus, ___ sich zu verabschieden.", opts:["um","ohne","statt"], correct:1},
+   {q:"___ zu lernen, spielt er den ganzen Tag.", opts:["Um","Ohne","Statt"], correct:2},
+   {q:"Sie spart Geld, ___ im Urlaub zu verreisen.", opts:["um","ohne","statt"], correct:0},
+   {q:"Er isst, ___ den Fernseher auszuschalten.", opts:["um","ohne","statt"], correct:1},
+   {q:"___ zu arbeiten, macht er eine Pause.", opts:["Um","Ohne","Statt"], correct:2},
+   {q:"Ich rufe dich an, ___ dir Bescheid zu geben.", opts:["um","ohne","statt"], correct:0},
+   {q:"Sie nickt, ___ etwas zu sagen.", opts:["um","ohne","statt"], correct:1},
+   {q:"___ pünktlich zu sein, kommt er immer zu spät.", opts:["Um","Ohne","Statt"], correct:2},
+   {q:"Wir lernen, ___ die Prüfung zu bestehen.", opts:["um","ohne","statt"], correct:0},
+   {q:"Er schläft ein, ___ zu lesen.", opts:["um","ohne","statt"], correct:1},
+   {q:"___ Bus zu fahren, geht er lieber zu Fuß.", opts:["Um","Ohne","Statt"], correct:2},
+   {q:"Sie geht raus, ___ frische Luft zu bekommen.", opts:["um","ohne","statt"], correct:0}
+]},
+4: {
+  label:"⭐⭐⭐⭐ Schwer – gemischt & lassen/sehen/hören",
+  data:[
+   {q:"Ich lasse mein Auto ___ (reparieren).", opts:["zu reparieren","reparieren","repariert"], correct:1},
+   {q:"Ich habe Angst, den Zug ___ (verpassen).", opts:["zu verpassen","verpassen","verpassen zu"], correct:0},
+   {q:"Wir sehen die Kinder auf dem Spielplatz ___ (spielen).", opts:["zu spielen","spielen","gespielt"], correct:1},
+   {q:"Er hat vergessen, seine Eltern ___ (anrufen).", opts:["anzurufen","zu anrufen","anrufen"], correct:0},
+   {q:"Sie lässt ihren Sohn nicht so lange ___ (aufbleiben).", opts:["aufzubleiben","aufbleiben","zu aufbleiben"], correct:1},
+   {q:"Es ist gefährlich, bei Rot über die Ampel ___.", opts:["zu gehen","gehen","gegangen"], correct:0},
+   {q:"Ich höre jemanden im Treppenhaus ___.", opts:["zu laufen","laufen","gelaufen"], correct:1},
+   {q:"Ich habe keine Zeit, heute noch einkaufen ___.", opts:["zugehen","zu gehen","gehen"], correct:1},
+   {q:"Sie hat begonnen, Klavier ___.", opts:["zu spielen","spielen","spielend"], correct:0},
+   {q:"Der Arzt empfiehlt, mehr Sport ___.", opts:["zu treiben","treiben","treibend"], correct:0},
+   {q:"Ich sehe ihn jeden Tag die Zeitung ___.", opts:["zu lesen","lesen","gelesen"], correct:1},
+   {q:"Es macht Spaß, neue Länder ___.", opts:["zu entdecken","entdecken","entdeckend"], correct:0},
+   {q:"Sie lässt die Kinder lange ___ (schlafen).", opts:["zu schlafen","schlafen","geschlafen"], correct:1}
+]},
+5: {
+  label:"⭐⭐⭐⭐⭐ Sehr schwer – Kontext & Satzbau",
+  data:[
+   {q:"Welcher Satz ist grammatisch korrekt?", opts:["Ich versuche zu arbeiten schneller.","Ich versuche, schneller zu arbeiten.","Ich versuche schneller arbeiten zu."], correct:1},
+   {q:"Welcher Satz ist FALSCH?", opts:["Er lässt das Fahrrad reparieren.","Ich höre sie singen.","Sie versucht zu kommen ohne zu spät."], correct:2},
+   {q:"'haben...zu' – was bedeutet: 'Ich habe noch viel zu erledigen.'?", opts:["Ich kann noch viel erledigen.","Ich muss noch viel erledigen.","Ich will noch viel erledigen."], correct:1},
+   {q:"'sein...zu' – was bedeutet: 'Das ist nicht zu verstehen.'?", opts:["Das muss man nicht verstehen.","Das kann man nicht verstehen.","Das will niemand verstehen."], correct:1},
+   {q:"Welche Form ist richtig: 'Er hat angefangen...'?", opts:["...aufzuhören zu rauchen.","...aufzuhören, zu rauchen.","...zu aufhören zu rauchen."], correct:1},
+   {q:"'Anstatt das Problem ___, geht er spazieren.' – Ergänze:", opts:["zu lösen","lösen","gelöst"], correct:0},
+   {q:"Welcher Satz nutzt 'ohne...zu' korrekt?", opts:["Er fährt ab ohne sich zu verabschieden.","Er fährt ab, ohne sich zu verabschieden.","Er fährt ab, ohne zu sich verabschieden."], correct:1},
+   {q:"Welche Form ist bei 'kennenlernen' korrekt?", opts:["zu kennenlernen","kennenzulernen","kennen zu lernen"], correct:1},
+   {q:"Welcher Satz hat einen Fehler?", opts:["Ich gehe schwimmen.","Er lässt das Kind spielen.","Sie möchte zu tanzen."], correct:2},
+   {q:"'___ das Projekt abzuschließen, brauchen wir mehr Zeit.' – Was fehlt?", opts:["Um","Ohne","Statt"], correct:0},
+   {q:"Welche Variante ist NICHT möglich?", opts:["Ich lerne, Gitarre zu spielen.","Ich lerne Gitarre spielen.","Ich lerne zu Gitarre spielen."], correct:2},
+   {q:"'Sie hat vor, nach Hause zu fahren' – welches Verb erlaubt 'zu'?", opts:["vorhaben","fahren","dürfen"], correct:0},
+   {q:"'Er bleibt sitzen' – welche Erklärung stimmt?", opts:["'bleiben' + zu + Infinitiv","'bleiben' + Infinitiv ohne 'zu'","'bleiben' + Partizip II"], correct:1}
+]}
+};
+
+let currentTestSet = 1;
+
+function buildTestSetBtns(){
+  const c = document.getElementById('testSetBtns');
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.className = 'ex-setbtns' + (i===1?' active':'');
+    b.style.cssText='padding:8px 12px;border:2px solid #f39c12;background:'+(i===1?'#f39c12':'#fff')+';color:'+(i===1?'#fff':'#e67e22')+';border-radius:8px;cursor:pointer;font-weight:700;margin:3px;';
+    b.textContent = testSets[i].label;
+    b.onclick = ()=>{ currentTestSet=i; buildTestQuestions(i); [...document.getElementById('testSetBtns').children].forEach(x=>{x.style.background='#fff';x.style.color='#e67e22';}); b.style.background='#f39c12'; b.style.color='#fff'; document.getElementById('testScore').style.display='none'; };
+    c.appendChild(b);
+  }
+}
+
+function buildTestQuestions(setNum){
+  const c = document.getElementById('testContainer');
+  c.innerHTML = '';
+  const items = testSets[setNum].data;
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='test-q'; div.dataset.idx=i;
+    let optsHtml='';
+    item.opts.forEach((o,j)=>{ optsHtml+=`<label><input type="radio" name="t${i}" value="${j}"> ${o}</label>`; });
+    div.innerHTML=`<div class="num">${i+1}. ${item.q}</div><div class="test-options">${optsHtml}</div>`;
+    c.appendChild(div);
+  });
+}
+
+function checkTest(){
+  const items = testSets[currentTestSet].data;
+  let correct=0;
+  items.forEach((item,i)=>{
+    const div=document.querySelector(`.test-q[data-idx="${i}"]`);
+    const sel=div.querySelector(`input[name="t${i}"]:checked`);
+    div.classList.remove('correct-q','wrong-q');
+    if(sel&&parseInt(sel.value)===item.correct){ correct++; div.classList.add('correct-q'); }
+    else { div.classList.add('wrong-q'); }
+  });
+  const box=document.getElementById('testScore');
+  box.style.display='block';
+  box.textContent=`Ergebnis: ${correct} / ${items.length} richtig ${correct===items.length?'🎉':''}`;
+}
+
+buildTestSetBtns();
+buildTestQuestions(1);
+</script>
+</body>
+</html>

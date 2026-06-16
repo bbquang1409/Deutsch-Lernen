@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lektion 18 – Possessivartikel</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --card: #ffffff;
+    --card2: #f8f9ff;
+    --border: #dde1f0;
+    --accent: #3b5bdb;
+    --accent2: #e03131;
+    --accent3: #0ca678;
+    --accent4: #e67700;
+    --text: #1a1d2e;
+    --muted: #6c7293;
+    --correct: #0ca678;
+    --wrong: #e03131;
+    --radius: 12px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #3b5bdb 0%, #4c6ef5 60%, #748ffc 100%);
+    padding: 28px 20px 24px;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .hero h1 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .hero-sub { color: rgba(255,255,255,0.82); font-size: 13px; }
+
+  /* TABS */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    padding: 0 16px;
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-shadow: var(--shadow);
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    padding: 13px 18px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--accent); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-content { display: none; padding: 20px 16px 32px; max-width: 680px; margin: 0 auto; }
+  .tab-content.active { display: block; }
+
+  /* SECTION TITLE */
+  .sec-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* PRONOUN GRID */
+  .pronoun-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .pronoun-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow);
+  }
+  .pronoun-card .pron {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--accent4);
+    min-width: 40px;
+  }
+  .arrow-sym { color: var(--muted); font-size: 14px; }
+  .pronoun-card .poss { font-size: 15px; font-weight: 700; color: var(--accent); }
+  .pronoun-card .label { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  /* TRICK BOX */
+  .trick-box {
+    background: #eef2ff;
+    border: 1px solid #c5d0fa;
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .trick-box .trick-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .trick-line {
+    font-size: 13.5px;
+    color: var(--text);
+    margin-bottom: 5px;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* DECLINE TABLE */
+  .decline-wrap { overflow-x: auto; margin-bottom: 16px; }
+  .decline-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 500px;
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .decline-table th {
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  .decline-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .decline-table tr:last-child td { border-bottom: none; }
+  .decline-table tr:hover td { background: #f5f8ff; }
+  .decline-table .case-col {
+    color: var(--accent4);
+    font-weight: 700;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .end-hi { color: var(--accent2); font-weight: 800; }
+
+  /* COMPARE */
+  .compare-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .compare-col {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .compare-col.a { border-top: 3px solid var(--accent2); }
+  .compare-col.b { border-top: 3px solid var(--accent); }
+  .compare-col h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .compare-col.a h4 { color: var(--accent2); }
+  .compare-col.b h4 { color: var(--accent); }
+  .compare-col p { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .compare-col .ex {
+    font-size: 13px;
+    color: var(--text);
+    background: var(--card2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-top: 6px;
+    border: 1px solid var(--border);
+  }
+  .hl-sie { color: var(--accent2); font-weight: 700; }
+  .hl-ihr { color: var(--accent); font-weight: 700; }
+
+  /* NOTE */
+  .note-box {
+    background: #fff9eb;
+    border-left: 4px solid var(--accent4);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .note-box strong { color: var(--accent4); }
+
+  /* ÜBUNG */
+  .uebung-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .uebung-block h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent3);
+    margin-bottom: 12px;
+  }
+  .ex-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .ex-num { font-size: 12px; font-weight: 700; color: var(--muted); min-width: 20px; padding-top: 3px; }
+  .ex-text { flex: 1; line-height: 1.8; }
+
+  input.blank {
+    background: #f0f4ff;
+    border: 1.5px solid #c5d0fa;
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: var(--font);
+    padding: 2px 8px;
+    width: 90px;
+    text-align: center;
+    transition: all 0.2s;
+    outline: none;
+  }
+  input.blank:focus { border-color: var(--accent); background: #e8edff; }
+  input.blank.correct { border-color: var(--correct); background: #d3f9ee; color: #087f5b; font-weight: 600; }
+  input.blank.wrong { border-color: var(--wrong); background: #ffe0e0; color: var(--wrong); }
+
+  .hint-text { font-size: 11px; color: var(--muted); font-style: italic; margin-bottom: 10px; }
+
+  .check-btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+  }
+  .check-btn:hover { background: #2f4dc4; }
+
+  .score-line {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 8px;
+    color: var(--muted);
+    min-height: 18px;
+  }
+  .score-line span { color: var(--accent4); font-weight: 700; }
+
+  /* QUIZ */
+  .quiz-q {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .quiz-q .q-text { font-size: 15px; font-weight: 600; margin-bottom: 12px; line-height: 1.5; }
+  .quiz-q .q-text em { color: var(--accent4); font-style: normal; font-weight: 700; }
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt-btn {
+    padding: 10px 12px;
+    background: var(--card2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: #eef2ff; color: var(--accent); }
+  .opt-btn.correct { border-color: var(--correct); background: #d3f9ee; color: #087f5b; font-weight: 700; }
+  .opt-btn.wrong { border-color: var(--wrong); background: #ffe0e0; color: var(--wrong); }
+  .opt-btn:disabled { cursor: default; }
+
+  .quiz-result {
+    text-align: center;
+    padding: 28px;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .quiz-result .big-score { font-size: 52px; font-weight: 900; color: var(--accent); }
+  .quiz-result .result-msg { font-size: 16px; color: var(--text); margin-top: 8px; }
+  .retry-btn {
+    margin-top: 16px;
+    padding: 10px 28px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .retry-btn:hover { background: #2f4dc4; }
+
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .pronoun-grid { grid-template-columns: 1fr; }
+    .compare-box { grid-template-columns: 1fr; }
+    .options-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Lektion 18 · A1</div>
+  <h1>Mein, dein, unser</h1>
+  <div class="hero-sub">Possessivartikel — Nominativ · Akkusativ · Dativ</div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('erklaerung')">📖 Erklärung</button>
+  <button class="tab-btn" onclick="showTab('uebung')">✏️ Übungen</button>
+  <button class="tab-btn" onclick="showTab('schnelltest')">⚡ Schnelltest</button>
+</div>
+
+<!-- TAB 1: ERKLÄRUNG -->
+<div id="erklaerung" class="tab-content active">
+
+  <div class="sec-title">Pronomen → Possessivartikel</div>
+
+  <div class="pronoun-grid">
+    <div class="pronoun-card">
+      <div><div class="pron">ich</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">mein-</div><div class="label">mein Vater, meine Mutter</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">du</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">dein-</div><div class="label">dein Vater, deine Mutter</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">er/es</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">sein-</div><div class="label">sein Auto, seine Frau</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">sie</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">ihr-</div><div class="label">ihr Mann, ihre Kinder</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">wir</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">unser-</div><div class="label">unser Haus, unsere Eltern</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">ihr</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">euer-</div><div class="label">euer Kind, eure Kinder</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">sie pl.</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">ihr-</div><div class="label">ihr Haus, ihre Eltern</div></div>
+    </div>
+    <div class="pronoun-card">
+      <div><div class="pron">Sie</div></div>
+      <div class="arrow-sym">→</div>
+      <div><div class="poss">Ihr-</div><div class="label">Ihr Koffer, Ihre Familie</div></div>
+    </div>
+  </div>
+
+  <div class="trick-box">
+    <div class="trick-title">💡 Trick: Endungen = wie kein-</div>
+    <div class="trick-line"><span>📌</span> Der Possessivartikel hat <strong>dieselben Endungen wie kein-</strong></div>
+    <div class="trick-line"><span>✅</span> Ich brauche <strong>kein</strong>e Bücher. = Ich brauche <strong>mein</strong>e Bücher.</div>
+    <div class="trick-line"><span>🔑</span> Stamm lernen + Endung von <em>kein-</em> dranhängen → fertig!</div>
+  </div>
+
+  <div class="sec-title">Deklination: mein- (Beispiel)</div>
+
+  <div class="decline-wrap">
+    <table class="decline-table">
+      <thead>
+        <tr>
+          <th>Kasus</th>
+          <th>maskulin</th>
+          <th>neutral</th>
+          <th>feminin</th>
+          <th>Plural</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="case-col">Nominativ</td>
+          <td>mein Vater</td>
+          <td>mein Auto</td>
+          <td>mein<span class="end-hi">e</span> Mutter</td>
+          <td>mein<span class="end-hi">e</span> Eltern</td>
+        </tr>
+        <tr>
+          <td class="case-col">Akkusativ</td>
+          <td>mein<span class="end-hi">en</span> Vater</td>
+          <td>mein Auto</td>
+          <td>mein<span class="end-hi">e</span> Mutter</td>
+          <td>mein<span class="end-hi">e</span> Eltern</td>
+        </tr>
+        <tr>
+          <td class="case-col">Dativ</td>
+          <td>mein<span class="end-hi">em</span> Vater</td>
+          <td>mein<span class="end-hi">em</span> Auto</td>
+          <td>mein<span class="end-hi">er</span> Mutter</td>
+          <td>mein<span class="end-hi">en</span> Eltern</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note-box">
+    <strong>⚠️ Sonderfall euer-:</strong> Bei Endung fällt das <strong>-e-</strong> weg: euer → eur<strong>e</strong>n, eur<strong>em</strong>, eur<strong>er</strong> (nicht: eueren)
+  </div>
+
+  <div class="sec-title">⚠️ Häufiger Fehler: sie vs. ihr</div>
+
+  <div class="compare-box">
+    <div class="compare-col a">
+      <h4>sie = Personalpronomen</h4>
+      <p>Frage: <strong>Was macht sie?</strong><br>→ Subjekt im Satz</p>
+      <div class="ex">
+        <span class="hl-sie">Sie</span> kauft ein Buch.<br>
+        <span style="color:var(--muted);font-size:12px">= Cô ấy mua một cuốn sách.</span>
+      </div>
+    </div>
+    <div class="compare-col b">
+      <h4>ihr = Possessivartikel</h4>
+      <p>Frage: <strong>Wessen? Von wem?</strong><br>→ zeigt Besitz</p>
+      <div class="ex">
+        Das ist <span class="hl-ihr">ihr</span> Buch.<br>
+        <span style="color:var(--muted);font-size:12px">= Đó là cuốn sách của cô ấy.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="trick-box">
+    <div class="trick-title">🧠 Schnelltest für sich selbst</div>
+    <div class="trick-line"><span>❓</span> Kann ich <em>„của cô ấy"</em> einsetzen? → <strong>ihr-</strong></div>
+    <div class="trick-line"><span>❓</span> Ist es das Subjekt / eine Handlung? → <strong>sie</strong></div>
+    <div class="trick-line"><span>💬</span> <em><span class="hl-sie">Sie</span> liebt <span class="hl-ihr">ihr</span>en Mann.</em> — beide im selben Satz!</div>
+  </div>
+
+</div>
+
+<!-- TAB 2: ÜBUNGEN -->
+<div id="uebung" class="tab-content">
+
+  <div class="uebung-block">
+    <h3>Übung 1 — Nominativ: Ergänzen Sie den Possessivartikel</h3>
+    <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">Hier bin ich und das ist <input class="blank" data-ans="mein" id="u1_1"> Kind.</span></div>
+    <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">Das bist du und <input class="blank" data-ans="dein" id="u1_2"> Vater.</span></div>
+    <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">Da ist Thomas und <input class="blank" data-ans="seine" id="u1_3"> Mutter.</span></div>
+    <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Hier ist Judy und <input class="blank" data-ans="ihre" id="u1_4"> Tochter.</span></div>
+    <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">Das sind wir und <input class="blank" data-ans="unsere" id="u1_5"> Kinder.</span></div>
+    <div class="ex-item"><span class="ex-num">6.</span><span class="ex-text">Und das seid ihr und <input class="blank" data-ans="eure" id="u1_6"> Eltern.</span></div>
+    <div class="ex-item"><span class="ex-num">7.</span><span class="ex-text">Hier stehen Aiping und Mark und <input class="blank" data-ans="ihre" id="u1_7"> zwei Katzen.</span></div>
+    <div class="ex-item"><span class="ex-num">8.</span><span class="ex-text">Guten Tag, Herr Schmidt, kommt <input class="blank" data-ans="Ihre" id="u1_8"> Frau heute auch?</span></div>
+    <div class="ex-item"><span class="ex-num">9.</span><span class="ex-text">Das ist Jörg und das ist <input class="blank" data-ans="sein" id="u1_9"> Fahrrad.</span></div>
+    <div class="ex-item"><span class="ex-num">10.</span><span class="ex-text">Das ist Martina und das ist <input class="blank" data-ans="ihre" id="u1_10"> Tasche.</span></div>
+    <div class="ex-item"><span class="ex-num">11.</span><span class="ex-text">Das sind Jörg und Martina. Das ist <input class="blank" data-ans="ihr" id="u1_11"> Sohn Thomas.</span></div>
+    <div class="ex-item"><span class="ex-num">12.</span><span class="ex-text">Und das ist <input class="blank" data-ans="ihre" id="u1_12"> Tochter Susi.</span></div>
+    <div class="ex-item"><span class="ex-num">13.</span><span class="ex-text">Das ist auch <input class="blank" data-ans="ihr" id="u1_13"> Haus.</span></div>
+    <button class="check-btn" onclick="checkGroup('u1', 13)">Überprüfen ✓</button>
+    <div class="score-line" id="score_u1"></div>
+  </div>
+
+  <div class="uebung-block">
+    <h3>Übung 2 — Nominativ: Possessivartikel (Jörg & Martina)</h3>
+    <div class="hint-text">💡 Jörg → sein-; Martina → ihr-; beide → ihr- (Plural)</div>
+    <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">Das ist Jörg. Das ist <input class="blank" data-ans="sein" id="u2_1"> Computer.</span></div>
+    <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">Das sind <input class="blank" data-ans="seine" id="u2_2"> Bücher.</span></div>
+    <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">Das ist Martina. Das ist <input class="blank" data-ans="ihr" id="u2_3"> Mann, Jörg.</span></div>
+    <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Das sind <input class="blank" data-ans="ihre" id="u2_4"> Kinder.</span></div>
+    <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">Das ist <input class="blank" data-ans="ihr" id="u2_5"> Computer.</span></div>
+    <div class="ex-item"><span class="ex-num">6.</span><span class="ex-text">Das sind <input class="blank" data-ans="ihre" id="u2_6"> Bücher.</span></div>
+    <div class="ex-item"><span class="ex-num">7.</span><span class="ex-text">Das sind Jörg und Martina. Das sind <input class="blank" data-ans="ihre" id="u2_7"> Kinder.</span></div>
+    <div class="ex-item"><span class="ex-num">8.</span><span class="ex-text">Das ist <input class="blank" data-ans="ihre" id="u2_8"> Tochter Susi.</span></div>
+    <div class="ex-item"><span class="ex-num">9.</span><span class="ex-text">Das ist <input class="blank" data-ans="ihr" id="u2_9"> Sohn Thomas.</span></div>
+    <div class="ex-item"><span class="ex-num">10.</span><span class="ex-text">Das ist <input class="blank" data-ans="ihr" id="u2_10"> Haus.</span></div>
+    <div class="ex-item"><span class="ex-num">11.</span><span class="ex-text">Jörg: Das ist <input class="blank" data-ans="meine" id="u2_11"> Frau Martina.</span></div>
+    <div class="ex-item"><span class="ex-num">12.</span><span class="ex-text">Martina: Das ist <input class="blank" data-ans="mein" id="u2_12"> Mann Jörg.</span></div>
+    <div class="ex-item"><span class="ex-num">13.</span><span class="ex-text">Beide: Das sind <input class="blank" data-ans="unsere" id="u2_13"> Kinder.</span></div>
+    <button class="check-btn" onclick="checkGroup('u2', 13)">Überprüfen ✓</button>
+    <div class="score-line" id="score_u2"></div>
+  </div>
+
+  <div class="uebung-block">
+    <h3>Übung 3 — Akkusativ: Ergänzen Sie</h3>
+    <div class="hint-text">💡 Akk. maskulin: -en / neutral + feminin + Plural: wie Nominativ</div>
+    <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">Ich suche <input class="blank" data-ans="meinen" id="u3_1"> Bruder.</span></div>
+    <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">Du liebst <input class="blank" data-ans="deinen" id="u3_2"> Hund.</span></div>
+    <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">Er ruft <input class="blank" data-ans="seinen" id="u3_3"> Chef an.</span></div>
+    <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Sie besucht <input class="blank" data-ans="ihren" id="u3_4"> Vater.</span></div>
+    <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">Wir kaufen <input class="blank" data-ans="unser" id="u3_5"> Auto.</span></div>
+    <div class="ex-item"><span class="ex-num">6.</span><span class="ex-text">Ihr macht <input class="blank" data-ans="eure" id="u3_6"> Hausaufgaben.</span></div>
+    <div class="ex-item"><span class="ex-num">7.</span><span class="ex-text">Sie (pl.) lieben <input class="blank" data-ans="ihre" id="u3_7"> Kinder.</span></div>
+    <div class="ex-item"><span class="ex-num">8.</span><span class="ex-text">Herr Klein, besuchen Sie <input class="blank" data-ans="Ihren" id="u3_8"> Bruder heute?</span></div>
+    <div class="ex-item"><span class="ex-num">9.</span><span class="ex-text">Ich brauche <input class="blank" data-ans="meinen" id="u3_9"> Schlüssel.</span></div>
+    <div class="ex-item"><span class="ex-num">10.</span><span class="ex-text">Siehst du <input class="blank" data-ans="deinen" id="u3_10"> Freund dort?</span></div>
+    <div class="ex-item"><span class="ex-num">11.</span><span class="ex-text">Wir besuchen <input class="blank" data-ans="unseren" id="u3_11"> Onkel.</span></div>
+    <div class="ex-item"><span class="ex-num">12.</span><span class="ex-text">Sie (sie) vergisst <input class="blank" data-ans="ihren" id="u3_12"> Regenschirm.</span></div>
+    <div class="ex-item"><span class="ex-num">13.</span><span class="ex-text">Nehmen Sie <input class="blank" data-ans="Ihren" id="u3_13"> Koffer, bitte.</span></div>
+    <button class="check-btn" onclick="checkGroup('u3', 13)">Überprüfen ✓</button>
+    <div class="score-line" id="score_u3"></div>
+  </div>
+
+  <div class="uebung-block">
+    <h3>Übung 4 — Dativ: Ergänzen Sie</h3>
+    <div class="hint-text">💡 Dat: mask/neut → -em | fem → -er | Plural → -en</div>
+    <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">Ich fahre mit <input class="blank" data-ans="meinem" id="u4_1"> Vater.</span></div>
+    <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text">Er wohnt bei <input class="blank" data-ans="seiner" id="u4_2"> Mutter.</span></div>
+    <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">Sie kommt mit <input class="blank" data-ans="ihrem" id="u4_3"> Mann.</span></div>
+    <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Wir fahren zu <input class="blank" data-ans="unseren" id="u4_4"> Eltern.</span></div>
+    <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">Du gehst mit <input class="blank" data-ans="deiner" id="u4_5"> Schwester ins Kino.</span></div>
+    <div class="ex-item"><span class="ex-num">6.</span><span class="ex-text">Er spielt mit <input class="blank" data-ans="seinem" id="u4_6"> Kind.</span></div>
+    <div class="ex-item"><span class="ex-num">7.</span><span class="ex-text">Ich lerne bei <input class="blank" data-ans="meinem" id="u4_7"> Freund.</span></div>
+    <div class="ex-item"><span class="ex-num">8.</span><span class="ex-text">Ihr wohnt bei <input class="blank" data-ans="eurer" id="u4_8"> Oma.</span></div>
+    <div class="ex-item"><span class="ex-num">9.</span><span class="ex-text">Sie fährt mit <input class="blank" data-ans="ihrem" id="u4_9"> Auto.</span></div>
+    <div class="ex-item"><span class="ex-num">10.</span><span class="ex-text">Wir spielen mit <input class="blank" data-ans="unserem" id="u4_10"> Hund.</span></div>
+    <div class="ex-item"><span class="ex-num">11.</span><span class="ex-text">Er wohnt bei <input class="blank" data-ans="seinem" id="u4_11"> Bruder.</span></div>
+    <div class="ex-item"><span class="ex-num">12.</span><span class="ex-text">Sie geht zu <input class="blank" data-ans="ihrer" id="u4_12"> Lehrerin.</span></div>
+    <div class="ex-item"><span class="ex-num">13.</span><span class="ex-text">Bitte sprechen Sie mit <input class="blank" data-ans="Ihrem" id="u4_13"> Arzt.</span></div>
+    <button class="check-btn" onclick="checkGroup('u4', 13)">Überprüfen ✓</button>
+    <div class="score-line" id="score_u4"></div>
+  </div>
+
+  <div class="uebung-block">
+    <h3>Übung 5 — Gemischt Nom/Akk/Dat: Geburtstag-Text</h3>
+    <div class="hint-text">💡 Achtung: Kasus bestimmen, dann Endung!</div>
+    <div class="ex-item"><span class="ex-num">1.</span><span class="ex-text">An <input class="blank" data-ans="meinem" id="u5_1"> Geburtstag fahre ich zu <input class="blank" data-ans="meiner" id="u5_1b"> Familie.</span></div>
+    <div class="ex-item"><span class="ex-num">2.</span><span class="ex-text"><input class="blank" data-ans="Mein" id="u5_2"> Bruder Heinrich wohnt mit Frau Doris im Haus von <input class="blank" data-ans="ihren" id="u5_2b"> Eltern.</span></div>
+    <div class="ex-item"><span class="ex-num">3.</span><span class="ex-text">Heinrich hat Zwillinge: <input class="blank" data-ans="seine" id="u5_3"> Kinder heißen Ralf und Leonie.</span></div>
+    <div class="ex-item"><span class="ex-num">4.</span><span class="ex-text">Leonie liebt <input class="blank" data-ans="ihren" id="u5_4"> Bruder sehr, aber Ralf mag <input class="blank" data-ans="seine" id="u5_4b"> Schwester nur ein bisschen.</span></div>
+    <div class="ex-item"><span class="ex-num">5.</span><span class="ex-text">Beide Kinder lieben <input class="blank" data-ans="ihre" id="u5_5"> Großeltern.</span></div>
+    <div class="ex-item"><span class="ex-num">6.</span><span class="ex-text"><input class="blank" data-ans="Meine" id="u5_6"> Schwester Monika lebt auch in Hamburg.</span></div>
+    <div class="ex-item"><span class="ex-num">7.</span><span class="ex-text">Wir feiern alle zusammen <input class="blank" data-ans="meinen" id="u5_7"> Geburtstag bei Eltern.</span></div>
+    <div class="ex-item"><span class="ex-num">8.</span><span class="ex-text">Monika kommt immer mit <input class="blank" data-ans="ihrem" id="u5_8"> Freund Joachim und <input class="blank" data-ans="seiner" id="u5_8b"> Tochter Ana.</span></div>
+    <div class="ex-item"><span class="ex-num">9.</span><span class="ex-text"><input class="blank" data-ans="Ihre" id="u5_9"> Eltern finden es wunderbar, wenn <input class="blank" data-ans="ihre" id="u5_9b"> Kinder alle bei ihnen sind.</span></div>
+    <div class="ex-item"><span class="ex-num">10.</span><span class="ex-text">Ich bekomme von <input class="blank" data-ans="meinen" id="u5_10"> Geschwistern immer viele Geschenke.</span></div>
+    <button class="check-btn" onclick="checkGroup5()">Überprüfen ✓</button>
+    <div class="score-line" id="score_u5"></div>
+  </div>
+
+</div>
+
+<!-- TAB 3: SCHNELLTEST -->
+<div id="schnelltest" class="tab-content">
+  <div id="quiz-wrap"></div>
+  <div class="quiz-result" id="quiz-result">
+    <div class="big-score" id="final-score"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <button class="retry-btn" onclick="initQuiz()">Nochmal versuchen 🔄</button>
+  </div>
+</div>
+
+<div class="footer">Made with love by Bảo Quang · Lektion 18 Possessivartikel</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function normalize(s) {
+  return s.trim().toLowerCase()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+}
+
+function checkGroup(prefix, count) {
+  let correct = 0;
+  for (let i = 1; i <= count; i++) {
+    const el = document.getElementById(prefix + '_' + i);
+    if (!el) continue;
+    const val = el.value;
+    if (!val.trim()) { el.classList.remove('correct','wrong'); continue; }
+    if (normalize(val) === normalize(el.dataset.ans)) {
+      el.classList.add('correct'); el.classList.remove('wrong'); correct++;
+    } else {
+      el.classList.add('wrong'); el.classList.remove('correct');
+    }
+  }
+  const total = Array.from({length:count},(_,i)=>document.getElementById(prefix+'_'+(i+1))).filter(e=>e).length;
+  document.getElementById('score_'+prefix).innerHTML = `Ergebnis: <span>${correct} / ${total}</span> richtig`;
+}
+
+function checkGroup5() {
+  const pairs = [
+    ['u5_1','meinem'],['u5_1b','meiner'],['u5_2','Mein'],['u5_2b','ihren'],
+    ['u5_3','seine'],['u5_4','ihren'],['u5_4b','seine'],['u5_5','ihre'],
+    ['u5_6','Meine'],['u5_7','meinen'],['u5_8','ihrem'],['u5_8b','seiner'],
+    ['u5_9','Ihre'],['u5_9b','ihre'],['u5_10','meinen']
+  ];
+  let correct = 0, total = 0;
+  pairs.forEach(([id, ans]) => {
+    const el = document.getElementById(id); if (!el) return; total++;
+    const val = el.value;
+    if (!val.trim()) { el.classList.remove('correct','wrong'); return; }
+    if (normalize(val) === normalize(ans)) { el.classList.add('correct'); el.classList.remove('wrong'); correct++; }
+    else { el.classList.add('wrong'); el.classList.remove('correct'); }
+  });
+  document.getElementById('score_u5').innerHTML = `Ergebnis: <span>${correct} / ${total}</span> richtig`;
+}
+
+const quizData = [
+  { q: 'Ich suche ___ Schlüssel. (maskulin, Akkusativ)', opts: ['meinen','mein','meine','meinem'], ans: 0 },
+  { q: 'Das ist Martina. Das ist ___ Fahrrad. (neutral, Nominativ)', opts: ['ihre','ihrem','ihr','ihren'], ans: 2 },
+  { q: 'Er wohnt bei ___ Mutter. (feminin, Dativ)', opts: ['seinem','seiner','seine','sein'], ans: 1 },
+  { q: 'Wir fahren zu ___ Eltern. (Plural, Dativ)', opts: ['unsere','unser','unseren','unserem'], ans: 2 },
+  { q: 'Guten Tag, Herr Klein. Kommt ___ Frau heute auch?', opts: ['ihre','Ihre','Ihr','ihrem'], ans: 1 }
+];
+
+let quizAnswered = [];
+
+function initQuiz() {
+  quizAnswered = new Array(quizData.length).fill(null);
+  document.getElementById('quiz-result').style.display = 'none';
+  const wrap = document.getElementById('quiz-wrap');
+  wrap.style.display = '';
+  wrap.innerHTML = '';
+  quizData.forEach((item, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.innerHTML = `<div class="q-text"><em>${qi+1}.</em> ${item.q}</div>
+      <div class="options-grid">${item.opts.map((o,oi)=>`<button class="opt-btn" onclick="answerQ(${qi},${oi},${item.ans},this)">${o}</button>`).join('')}</div>`;
+    wrap.appendChild(div);
+  });
+}
+
+function answerQ(qi, chosen, correct, btn) {
+  if (quizAnswered[qi] !== null) return;
+  quizAnswered[qi] = chosen === correct;
+  const btns = btn.closest('.options-grid').querySelectorAll('.opt-btn');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen && chosen !== correct) b.classList.add('wrong');
+  });
+  if (quizAnswered.every(v => v !== null)) setTimeout(showQuizResult, 600);
+}
+
+function showQuizResult() {
+  const score = quizAnswered.filter(Boolean).length;
+  const msgs = ['Weiter üben! 💪','Fast! Noch etwas üben 📚','Gut gemacht! 👍','Super! Fast perfekt ⭐','Ausgezeichnet! 🏆'];
+  document.getElementById('final-score').textContent = score + ' / ' + quizData.length;
+  document.getElementById('result-msg').textContent = msgs[score] || msgs[4];
+  document.getElementById('quiz-result').style.display = 'block';
+  document.getElementById('quiz-wrap').style.display = 'none';
+}
+
+initQuiz();
+</script>
+</body>
+</html>

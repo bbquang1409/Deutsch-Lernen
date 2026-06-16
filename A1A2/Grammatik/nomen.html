@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nomen – der, die, das | Plural | Komposita</title>
+<style>
+  :root {
+    --accent: #6c63ff;
+    --accent-light: #ede9fe;
+    --accent-mid: #c4b5fd;
+    --der: #3b82f6;
+    --der-bg: #eff6ff;
+    --der-border: #bfdbfe;
+    --die: #ec4899;
+    --die-bg: #fdf2f8;
+    --die-border: #fbcfe8;
+    --das: #10b981;
+    --das-bg: #ecfdf5;
+    --das-border: #a7f3d0;
+    --warn: #f59e0b;
+    --warn-bg: #fffbeb;
+    --err: #ef4444;
+    --ok: #10b981;
+    --text: #1e1b4b;
+    --muted: #6b7280;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+  .header {
+    background: linear-gradient(135deg, #6c63ff 0%, #a78bfa 100%);
+    padding: 24px 20px 18px; color: white; overflow: hidden; position: relative;
+  }
+  .header::before {
+    content: ''; position: absolute; right: -30px; top: -30px;
+    width: 160px; height: 160px; background: rgba(255,255,255,0.08); border-radius: 50%;
+  }
+  .header-badge {
+    display: inline-block; background: rgba(255,255,255,0.2);
+    border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .header h1 { font-size: 21px; font-weight: 800; margin-bottom: 3px; }
+  .header p { font-size: 12px; opacity: 0.85; }
+  .header-trio { display: flex; gap: 8px; margin-top: 12px; }
+  .trio-pill {
+    flex: 1; text-align: center; padding: 6px 4px;
+    border-radius: 8px; font-weight: 800; font-size: 15px;
+  }
+  .trio-der { background: rgba(59,130,246,0.3); }
+  .trio-die { background: rgba(236,72,153,0.3); }
+  .trio-das { background: rgba(16,185,129,0.3); }
+
+  .tabs {
+    display: flex; background: white; border-bottom: 2px solid var(--border);
+    overflow-x: auto; scrollbar-width: none; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1; min-width: 72px; padding: 12px 6px 10px; text-align: center;
+    font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer;
+    border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-icon { font-size: 17px; display: block; margin-bottom: 2px; }
+
+  .content { display: none; padding: 18px 15px 50px; max-width: 680px; margin: 0 auto; }
+  .content.active { display: block; }
+
+  .card {
+    background: var(--card); border-radius: var(--radius); padding: 16px;
+    margin-bottom: 14px; border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(108,99,255,0.06);
+  }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+
+  .genus-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .genus-box { border-radius: 10px; padding: 12px 8px; text-align: center; }
+  .genus-box.der { background: var(--der-bg); border: 2px solid var(--der-border); }
+  .genus-box.die { background: var(--die-bg); border: 2px solid var(--die-border); }
+  .genus-box.das { background: var(--das-bg); border: 2px solid var(--das-border); }
+  .genus-label { font-size: 20px; font-weight: 900; display: block; margin-bottom: 3px; }
+  .genus-box.der .genus-label { color: var(--der); }
+  .genus-box.die .genus-label { color: var(--die); }
+  .genus-box.das .genus-label { color: var(--das); }
+  .genus-sub { font-size: 10px; color: var(--muted); font-weight: 500; }
+
+  .rule-row {
+    display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px;
+    border-radius: 8px; margin-bottom: 5px; background: var(--bg); border: 1px solid var(--border);
+  }
+  .rule-ending {
+    font-weight: 700; font-size: 12px; min-width: 68px; font-family: monospace;
+    padding: 3px 7px; border-radius: 5px; text-align: center; flex-shrink: 0;
+  }
+  .re-der { background: var(--der-bg); color: var(--der); }
+  .re-die { background: var(--die-bg); color: var(--die); }
+  .re-das { background: var(--das-bg); color: var(--das); }
+  .rule-info { font-size: 12px; line-height: 1.5; }
+  .rule-tip { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .rs-header {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 6px; margin-bottom: 8px; margin-top: 12px;
+  }
+  .rsh-der { background: var(--der-bg); color: var(--der); }
+  .rsh-die { background: var(--die-bg); color: var(--die); }
+  .rsh-das { background: var(--das-bg); color: var(--das); }
+
+  .notice {
+    display: flex; gap: 9px; padding: 11px 13px; border-radius: 10px; margin-bottom: 11px; font-size: 12px;
+  }
+  .notice.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); }
+  .notice.tip { background: var(--accent-light); border-left: 4px solid var(--accent); }
+  .notice-icon { font-size: 16px; flex-shrink: 0; }
+  .notice-text { line-height: 1.55; }
+  .notice-text b { color: var(--text); }
+
+  .error-box {
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;
+    padding: 9px 12px; margin-bottom: 7px; font-size: 12px; line-height: 1.5;
+  }
+  .wrong { color: var(--err); text-decoration: line-through; }
+  .right { color: var(--ok); font-weight: 700; }
+
+  table.pl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .pl-table th {
+    background: var(--accent-light); color: var(--accent); font-weight: 700;
+    padding: 7px 10px; text-align: left; border-bottom: 2px solid var(--accent-mid);
+  }
+  .pl-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .pl-table tr:last-child td { border-bottom: none; }
+  .pl-table tr:hover td { background: var(--accent-light); }
+  .pl-end { font-weight: 700; font-family: monospace; color: var(--accent); font-size: 13px; }
+  .pl-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  .kompo-formula {
+    display: flex; align-items: center; gap: 7px; background: var(--accent-light);
+    border: 2px solid var(--accent-mid); border-radius: 10px; padding: 12px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .kp { padding: 7px 12px; border-radius: 7px; font-weight: 700; font-size: 13px; text-align: center; }
+  .kp-w1 { background: #dbeafe; color: #1d4ed8; }
+  .kp-w2 { background: #dcfce7; color: #15803d; }
+  .kp-res { background: var(--accent); color: white; }
+  .kp-plus { font-weight: 800; color: var(--accent); font-size: 16px; }
+
+  .kein-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kein-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+  .kein-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--warn); margin-bottom: 7px; }
+  .kein-list { list-style: none; }
+  .kein-list li { font-size: 11px; padding: 3px 0; border-bottom: 1px solid var(--border); color: var(--muted); }
+  .kein-list li:last-child { border: none; }
+  .kein-list b { color: var(--text); }
+
+  /* ── EXERCISES ── */
+  .ex-block { margin-bottom: 26px; }
+  .ex-title {
+    font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--accent-light);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .ex-inst { font-size: 12px; color: var(--muted); margin-bottom: 11px; font-style: italic; }
+
+  .prog-bar { height: 5px; background: var(--border); border-radius: 3px; margin-bottom: 14px; overflow: hidden; }
+  .prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 3px; width: 0%; transition: width 0.35s ease; }
+
+  /* Artikel click */
+  .ak-item { margin-bottom: 12px; }
+  .ak-word {
+    font-size: 17px; font-weight: 700; text-align: center; padding: 14px 12px;
+    background: var(--bg); border: 2px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+  }
+  .ak-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+  .ak-btn {
+    padding: 10px; border: 2px solid var(--border); border-radius: 8px;
+    font-weight: 800; font-size: 15px; cursor: pointer; background: white;
+    transition: all 0.18s; font-family: inherit;
+  }
+  .ak-btn:hover:not([disabled]) { transform: translateY(-2px); }
+  .ak-btn.b-der { border-color: var(--der); color: var(--der); }
+  .ak-btn.b-die { border-color: var(--die); color: var(--die); }
+  .ak-btn.b-das { border-color: var(--das); color: var(--das); }
+  .ak-btn.ok { background: var(--das-bg); border-color: var(--ok); }
+  .ak-btn.fail { background: #fef2f2; border-color: var(--err); animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .ak-fb { font-size: 11px; margin-top: 5px; padding: 5px 9px; border-radius: 6px; display: none; }
+  .ak-fb.show { display: block; }
+  .ak-fb.correct { background: var(--das-bg); color: var(--ok); }
+  .ak-fb.wrong { background: #fef2f2; color: var(--err); }
+
+  /* Fill input */
+  .fi-item { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 9px; }
+  .fi-num { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 20px; }
+  .fi-text { font-size: 13px; }
+  .fi-inp {
+    border: 2px solid var(--border); border-radius: 8px; padding: 6px 9px;
+    font-size: 13px; font-family: inherit; min-width: 90px; outline: none; transition: border-color 0.2s;
+  }
+  .fi-inp:focus { border-color: var(--accent); }
+  .fi-inp.ok { border-color: var(--ok); background: var(--das-bg); }
+  .fi-inp.fail { border-color: var(--err); background: #fef2f2; }
+
+  /* Drag-sort */
+  .sort-container { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px; background: var(--accent-light); border-radius: 10px; margin-bottom: 10px; min-height: 50px; }
+  .sort-chip {
+    padding: 7px 13px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    cursor: pointer; user-select: none; border: 2px solid transparent; transition: all 0.2s;
+  }
+  .sc-der { background: var(--der-bg); color: var(--der); border-color: var(--der-border); }
+  .sc-die { background: var(--die-bg); color: var(--die); border-color: var(--die-border); }
+  .sc-das { background: var(--das-bg); color: var(--das); border-color: var(--das-border); }
+  .sort-chip.selected { box-shadow: 0 0 0 3px var(--accent); }
+  .sort-chip.matched { opacity: 0.5; cursor: default; }
+
+  /* Sentence build */
+  .sb-item { margin-bottom: 14px; }
+  .sb-top { font-size: 13px; margin-bottom: 7px; line-height: 1.6; }
+  .sb-blank {
+    display: inline-block; min-width: 80px; border-bottom: 2px solid var(--accent);
+    padding: 0 4px; text-align: center; font-weight: 700; color: var(--accent);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .sb-blank.filled { color: var(--text); border-bottom-color: var(--border); }
+  .sb-blank.ok-b { color: var(--ok); border-bottom-color: var(--ok); }
+  .sb-blank.fail-b { color: var(--err); border-bottom-color: var(--err); }
+  .sb-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+  .sb-opt {
+    padding: 5px 11px; border-radius: 16px; font-size: 12px; font-weight: 600;
+    cursor: pointer; background: var(--bg); border: 2px solid var(--border);
+    transition: all 0.18s; font-family: inherit;
+  }
+  .sb-opt:hover:not([disabled]):not(.used) { border-color: var(--accent); background: var(--accent-light); }
+  .sb-opt.used { opacity: 0.35; cursor: default; }
+
+  /* Kategorien */
+  .kat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .kat-col { border-radius: 10px; padding: 10px; min-height: 80px; }
+  .kat-der { background: var(--der-bg); border: 2px dashed var(--der-border); }
+  .kat-die { background: var(--die-bg); border: 2px dashed var(--die-border); }
+  .kat-das { background: var(--das-bg); border: 2px dashed var(--das-border); }
+  .kat-label { font-size: 14px; font-weight: 800; margin-bottom: 6px; display: block; }
+  .kat-col.kat-der .kat-label { color: var(--der); }
+  .kat-col.kat-die .kat-label { color: var(--die); }
+  .kat-col.kat-das .kat-label { color: var(--das); }
+  .kat-word { font-size: 11px; padding: 3px 7px; border-radius: 12px; margin-bottom: 4px; font-weight: 600; }
+  .kat-der .kat-word { background: #bfdbfe; color: #1d4ed8; }
+  .kat-die .kat-word { background: #fbcfe8; color: #9d174d; }
+  .kat-das .kat-word { background: #a7f3d0; color: #065f46; }
+  .kat-word-bank { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .kat-chip {
+    padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600;
+    background: white; border: 2px solid var(--border); cursor: pointer;
+    transition: all 0.18s; font-family: inherit;
+  }
+  .kat-chip:hover:not(.placed) { border-color: var(--accent); background: var(--accent-light); }
+  .kat-chip.placed { opacity: 0.35; cursor: default; }
+
+  /* Komposita build */
+  .kb-item { margin-bottom: 11px; }
+  .kb-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .kb-chip { padding: 5px 11px; border-radius: 7px; font-size: 12px; font-weight: 600; }
+  .kb-w1 { background: #dbeafe; color: #1d4ed8; }
+  .kb-w2 { background: #dcfce7; color: #15803d; }
+  .kb-fugen { background: #fef3c7; color: #92400e; font-size: 10px; }
+  .kb-eq { color: var(--muted); font-weight: 700; }
+
+  /* Plural fill */
+  .pf-item { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .pf-sg { font-size: 13px; min-width: 120px; }
+  .pf-arrow { color: var(--muted); }
+  .pf-die { color: var(--die); font-weight: 700; font-size: 13px; }
+
+  /* Test */
+  .tq { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+  .tq-text { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.45; }
+  .tq-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .tq-opt {
+    padding: 9px 11px; border: 2px solid var(--border); border-radius: 8px; font-size: 12px;
+    cursor: pointer; background: white; text-align: left; transition: all 0.18s; font-family: inherit;
+  }
+  .tq-opt:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-light); }
+  .tq-opt.correct { background: var(--das-bg); border-color: var(--ok); color: #065f46; font-weight: 600; }
+  .tq-opt.incorrect { background: #fef2f2; border-color: var(--err); color: var(--err); }
+  .tq-opt.reveal { background: var(--das-bg); border-color: var(--ok); }
+  .tq-explain { font-size: 11px; color: var(--muted); margin-top: 7px; padding: 7px 9px; background: var(--bg); border-radius: 6px; display: none; line-height: 1.5; }
+  .tq-explain.show { display: block; }
+
+  /* Score */
+  .score-box { text-align: center; padding: 18px; background: var(--accent-light); border-radius: 12px; margin-top: 14px; display: none; }
+  .score-box.show { display: block; }
+  .score-num { font-size: 38px; font-weight: 900; color: var(--accent); }
+  .score-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .score-emoji { font-size: 28px; margin-top: 7px; }
+
+  .check-btn {
+    display: block; width: 100%; padding: 13px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+    margin-top: 14px; transition: all 0.18s; font-family: inherit;
+  }
+  .check-btn:hover { background: #5b54d6; transform: translateY(-1px); }
+
+  .reset-btn {
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 13px; font-size: 12px; cursor: pointer; color: var(--muted);
+    margin-top: 8px; font-family: inherit; transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 4px; }
+  .tag-der { background: var(--der-bg); color: var(--der); }
+  .tag-die { background: var(--die-bg); color: var(--die); }
+  .tag-das { background: var(--das-bg); color: var(--das); }
+
+  .footer { text-align: center; padding: 18px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 16px; }
+  @media (max-width: 420px) {
+    .tq-opts { grid-template-columns: 1fr; }
+    .kat-grid { grid-template-columns: 1fr; }
+    .kein-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">A1 GRAMMATIK</div>
+  <h1>🏷️ Nomen im Deutschen</h1>
+  <p>Artikel • Genus • Plural • Komposita</p>
+  <div class="header-trio">
+    <div class="trio-pill trio-der">der</div>
+    <div class="trio-pill trio-die">die</div>
+    <div class="trio-pill trio-das">das</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('erklaerung',this)"><span class="tab-icon">📖</span>Erklärung</div>
+  <div class="tab" onclick="switchTab('artikel',this)"><span class="tab-icon">🎯</span>Artikel</div>
+  <div class="tab" onclick="switchTab('plural',this)"><span class="tab-icon">📝</span>Plural</div>
+  <div class="tab" onclick="switchTab('komposita',this)"><span class="tab-icon">🔗</span>Komposita</div>
+  <div class="tab" onclick="switchTab('schnelltest',this)"><span class="tab-icon">⚡</span>Schnelltest</div>
+</div>
+
+<!-- ═══ TAB 1: ERKLÄRUNG ═══ -->
+<div class="content active" id="tab-erklaerung">
+
+  <div class="notice tip">
+    <span class="notice-icon">💡</span>
+    <div class="notice-text">
+      <b>Wichtig:</b> Im Deutschen hat jedes Nomen einen Artikel: <b style="color:var(--der)">der</b> (maskulin), <b style="color:var(--die)">die</b> (feminin), <b style="color:var(--das)">das</b> (neutrum). Den Artikel immer zusammen mit dem Nomen lernen!
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔵🔴🟢 Die drei Artikel</div>
+    <div class="genus-grid">
+      <div class="genus-box der"><span class="genus-label">der</span><span class="genus-sub">maskulin</span></div>
+      <div class="genus-box die"><span class="genus-label">die</span><span class="genus-sub">feminin</span></div>
+      <div class="genus-box das"><span class="genus-label">das</span><span class="genus-sub">neutrum</span></div>
+    </div>
+    <div class="notice tip">
+      <span class="notice-icon">💡</span>
+      <div class="notice-text">Plural: Alle Nomen bekommen den Artikel <b>die</b>.<br>
+      <em>der Mann → die Männer | die Frau → die Frauen | das Kind → die Kinder</em></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔵 Regeln für <span style="color:var(--der)">der</span></div>
+    <div class="rs-header rsh-der">Typische Endungen</div>
+    <div class="rule-row"><span class="rule-ending re-der">-er</span><div class="rule-info">der Lehrer, der Bäcker, der Computer<div class="rule-tip">Berufe + Maschinen (meist maskulin)</div></div></div>
+    <div class="rule-row"><span class="rule-ending re-der">-ling</span><div class="rule-info">der Frühling, der Lehrling, der Liebling</div></div>
+    <div class="rule-row"><span class="rule-ending re-der">-ig / -ich</span><div class="rule-info">der König, der Teppich, der Bereich</div></div>
+    <div class="rule-row"><span class="rule-ending re-der">-ismus</span><div class="rule-info">der Tourismus, der Kapitalismus</div></div>
+    <div class="notice tip" style="margin-top:10px">
+      <span class="notice-icon">💡</span>
+      <div class="notice-text">Wochentage, Monate, Jahreszeiten: <b>der Montag, der Januar, der Sommer</b><br>
+      Getränke: <b>der Kaffee, der Tee, der Wein, der Saft</b><br>
+      Wetter: <b>der Regen, der Schnee, der Wind</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔴 Regeln für <span style="color:var(--die)">die</span></div>
+    <div class="rs-header rsh-die">Typische Endungen</div>
+    <div class="rule-row"><span class="rule-ending re-die">-ung</span><div class="rule-info">die Zeitung, die Wohnung, die Übung<div class="rule-tip">⚡ Fast immer <em>die</em></div></div></div>
+    <div class="rule-row"><span class="rule-ending re-die">-heit/-keit</span><div class="rule-info">die Gesundheit, die Möglichkeit, die Freiheit</div></div>
+    <div class="rule-row"><span class="rule-ending re-die">-schaft</span><div class="rule-info">die Freundschaft, die Gesellschaft</div></div>
+    <div class="rule-row"><span class="rule-ending re-die">-ion/-tion</span><div class="rule-info">die Information, die Nation, die Situation</div></div>
+    <div class="rule-row"><span class="rule-ending re-die">-ie</span><div class="rule-info">die Familie, die Energie, die Demokratie</div></div>
+    <div class="rule-row"><span class="rule-ending re-die">-in</span><div class="rule-info">die Lehrerin, die Ärztin, die Studentin<div class="rule-tip">Weibliche Berufe: + -in</div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🟢 Regeln für <span style="color:var(--das)">das</span></div>
+    <div class="rs-header rsh-das">Typische Endungen</div>
+    <div class="rule-row"><span class="rule-ending re-das">-chen/-lein</span><div class="rule-info">das Mädchen, das Häuschen, das Brötchen<div class="rule-tip">⚡ <b>IMMER das</b> – auch das Mädchen!</div></div></div>
+    <div class="rule-row"><span class="rule-ending re-das">-ment</span><div class="rule-info">das Dokument, das Instrument, das Element</div></div>
+    <div class="rule-row"><span class="rule-ending re-das">-um</span><div class="rule-info">das Museum, das Datum, das Zentrum</div></div>
+    <div class="rule-row"><span class="rule-ending re-das">ge- + Verb</span><div class="rule-info">das Gebäude, das Gespräch, das Gefühl</div></div>
+    <div style="margin-top:12px">
+      <div style="font-size:12px;font-weight:700;color:var(--err);margin-bottom:7px">⚠️ Häufige Fehler</div>
+      <div class="error-box"><span class="wrong">der Mädchen</span> → <span class="right">✓ das Mädchen</span> — Endung -chen → immer <em>das</em></div>
+      <div class="error-box"><span class="wrong">das Zeitung</span> → <span class="right">✓ die Zeitung</span> — Endung -ung → immer <em>die</em></div>
+      <div class="error-box"><span class="wrong">die Dokument</span> → <span class="right">✓ das Dokument</span> — Endung -ment → immer <em>das</em></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📚 Pluralformen – 6 Gruppen</div>
+    <table class="pl-table">
+      <tr><th>Endung</th><th>Beispiel</th><th>Welche Nomen?</th></tr>
+      <tr><td><span class="pl-end">-(e)n</span><div class="pl-sub">häufigste</div></td><td>die Frau → Fraue<b>n</b><br>die Übung → Übunge<b>n</b></td><td>Meist feminin<br>-ung, -heit, -ion</td></tr>
+      <tr><td><span class="pl-end">-er</span><div class="pl-sub">+ Umlaut oft</div></td><td>das Kind → Kind<b>er</b><br>das Buch → Büch<b>er</b></td><td>Meist kurze Neutra</td></tr>
+      <tr><td><span class="pl-end">-e</span><div class="pl-sub">± Umlaut</div></td><td>der Stuhl → Stühl<b>e</b><br>das Brot → Brot<b>e</b></td><td>Viele kurze Nomen</td></tr>
+      <tr><td><span class="pl-end">—</span><div class="pl-sub">kein Endung</div></td><td>der Vater → Väter<br>das Brötchen → Brötchen</td><td>-er, -en, -el, -chen</td></tr>
+      <tr><td><span class="pl-end">-s</span></td><td>das Taxi → Taxi<b>s</b><br>der Job → Job<b>s</b></td><td>Fremdwörter, -a/-i/-o</td></tr>
+      <tr><td><span class="pl-end">⚠️ unreg.</span></td><td>das Museum → Musee<b>n</b><br>das Datum → Date<b>n</b></td><td>Latein/Griechisch</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ Kein Plural / Kein Singular</div>
+    <div class="kein-grid">
+      <div class="kein-box">
+        <div class="kein-title">🚫 Kein Plural</div>
+        <ul class="kein-list">
+          <li><b>Abstrakt:</b> das Glück, die Liebe, der Hunger</li>
+          <li><b>Material:</b> das Gold, das Wasser, die Milch</li>
+          <li><b>Sammlung:</b> das Obst, die Kleidung</li>
+          <li><b>Inf. als Nomen:</b> das Essen, das Lesen</li>
+        </ul>
+      </div>
+      <div class="kein-box">
+        <div class="kein-title">🚫 Kein Singular</div>
+        <ul class="kein-list">
+          <li><b>Ländernamen:</b> die USA, die Alpen</li>
+          <li><b>Gruppen:</b> die Eltern, die Leute</li>
+          <li><b>Weitere:</b> die Möbel, die Ferien</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔗 Komposita – Wörter kombinieren</div>
+    <div class="kompo-formula">
+      <div class="kp kp-w1">Wort 1<br><small>Info</small></div>
+      <div class="kp-plus">+</div>
+      <div class="kp kp-w2">Wort 2<br><small>Basis</small></div>
+      <div class="kp-plus">→</div>
+      <div class="kp kp-res">Kompositum<br><small>Artikel = Wort 2</small></div>
+    </div>
+    <div style="font-size:12px;line-height:2">
+      ☕ <b>der Kaffee</b> + <b>die Tasse</b> → <b>die Kaffeetasse</b> <span class="tag tag-die">die</span><br>
+      🌧️ <b>der Regen</b> + <b>der Schirm</b> → <b>der Regenschirm</b> <span class="tag tag-der">der</span><br>
+      ☀️ <b>die Sonne</b> + <b>der Schirm</b> → <b>der Sonnen<u>schirm</u></b> <span class="tag tag-der">der</span> <em style="font-size:10px;color:var(--warn)">(Fugen-n)</em><br>
+      📅 <b>der Tag</b> + <b>das Buch</b> → <b>das Tage<u>s</u>buch</b> <span class="tag tag-das">das</span> <em style="font-size:10px;color:var(--warn)">(Fugen-s)</em>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ TAB 2: ARTIKEL ═══ -->
+<div class="content" id="tab-artikel">
+
+  <!-- Übung 1: Artikel klicken -->
+  <div class="ex-block">
+    <div class="ex-title">🎯 Übung 1 – Welcher Artikel?</div>
+    <div class="ex-inst">Wähle den richtigen Artikel.</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog1"></div></div>
+    <div id="ak-container"></div>
+    <div class="score-box" id="sc1"><div class="score-num" id="sc1-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc1-e"></div></div>
+    <button class="reset-btn" onclick="initAk1()">↺ Neu starten</button>
+  </div>
+
+  <!-- Übung 2: Kategorien sortieren -->
+  <div class="ex-block">
+    <div class="ex-title">📂 Übung 2 – Nomen sortieren</div>
+    <div class="ex-inst">Klicke ein Wort, dann klicke die richtige Spalte (der / die / das).</div>
+    <div class="kat-word-bank" id="kat-bank"></div>
+    <div class="kat-grid">
+      <div class="kat-col kat-der" id="kat-der" onclick="placeKat('der')">
+        <span class="kat-label">der</span>
+        <div id="kat-der-words"></div>
+      </div>
+      <div class="kat-col kat-die" id="kat-die" onclick="placeKat('die')">
+        <span class="kat-label">die</span>
+        <div id="kat-die-words"></div>
+      </div>
+      <div class="kat-col kat-das" id="kat-das" onclick="placeKat('das')">
+        <span class="kat-label">das</span>
+        <div id="kat-das-words"></div>
+      </div>
+    </div>
+    <button class="check-btn" onclick="checkKat()">✓ Überprüfen</button>
+    <div class="score-box" id="sc2"><div class="score-num" id="sc2-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc2-e"></div></div>
+    <button class="reset-btn" onclick="initKat()">↺ Neu starten</button>
+  </div>
+
+  <!-- Übung 3: Sätze ergänzen -->
+  <div class="ex-block">
+    <div class="ex-title">✏️ Übung 3 – Artikel in Sätzen</div>
+    <div class="ex-inst">Ergänze den richtigen Artikel.</div>
+    <div id="sb-container"></div>
+    <button class="check-btn" onclick="checkSb()">✓ Überprüfen</button>
+    <div class="score-box" id="sc3"><div class="score-num" id="sc3-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc3-e"></div></div>
+    <button class="reset-btn" onclick="initSb()">↺ Neu starten</button>
+  </div>
+
+</div>
+
+<!-- ═══ TAB 3: PLURAL ═══ -->
+<div class="content" id="tab-plural">
+
+  <!-- Übung 1: Plural bilden -->
+  <div class="ex-block">
+    <div class="ex-title">📚 Übung 1 – Plural bilden</div>
+    <div class="ex-inst">Schreibe die Pluralform (ohne Artikel).</div>
+    <div id="pf-container"></div>
+    <button class="check-btn" onclick="checkPf()">✓ Überprüfen</button>
+    <div class="score-box" id="sc4"><div class="score-num" id="sc4-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc4-e"></div></div>
+    <button class="reset-btn" onclick="initPf()">↺ Neu starten</button>
+  </div>
+
+  <!-- Übung 2: Singular aus Plural -->
+  <div class="ex-block">
+    <div class="ex-title">🔄 Übung 2 – Singular aus Plural</div>
+    <div class="ex-inst">Wie heißt der Singular mit Artikel?</div>
+    <div id="sg-container"></div>
+    <button class="check-btn" onclick="checkSg()">✓ Überprüfen</button>
+    <div class="score-box" id="sc5"><div class="score-num" id="sc5-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc5-e"></div></div>
+    <button class="reset-btn" onclick="initSg()">↺ Neu starten</button>
+  </div>
+
+  <!-- Übung 3: Plural auswählen -->
+  <div class="ex-block">
+    <div class="ex-title">🔢 Übung 3 – Welche Pluralform ist richtig?</div>
+    <div class="ex-inst">Wähle die korrekte Pluralform.</div>
+    <div id="pl-mc-container"></div>
+    <div class="score-box" id="sc6"><div class="score-num" id="sc6-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc6-e"></div></div>
+    <button class="reset-btn" onclick="initPlMc()">↺ Neu starten</button>
+  </div>
+
+</div>
+
+<!-- ═══ TAB 4: KOMPOSITA ═══ -->
+<div class="content" id="tab-komposita">
+
+  <!-- Übung 1: Komposita bilden -->
+  <div class="ex-block">
+    <div class="ex-title">🔗 Übung 1 – Komposita bilden</div>
+    <div class="ex-inst">Kombiniere Wort 1 + Wort 2. Schreibe mit Artikel!</div>
+    <div id="kb-container"></div>
+    <button class="check-btn" onclick="checkKb()">✓ Überprüfen</button>
+    <div class="score-box" id="sc7"><div class="score-num" id="sc7-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc7-e"></div></div>
+    <button class="reset-btn" onclick="initKb()">↺ Neu starten</button>
+  </div>
+
+  <!-- Übung 2: Artikel des Kompositums -->
+  <div class="ex-block">
+    <div class="ex-title">🎯 Übung 2 – Welcher Artikel?</div>
+    <div class="ex-inst">Das Kompositum ist gegeben. Wähle den richtigen Artikel.</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-kb2"></div></div>
+    <div id="kb2-container"></div>
+    <div class="score-box" id="sc8"><div class="score-num" id="sc8-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc8-e"></div></div>
+    <button class="reset-btn" onclick="initKb2()">↺ Neu starten</button>
+  </div>
+
+  <!-- Übung 3: Komposita erkennen -->
+  <div class="ex-block">
+    <div class="ex-title">🔍 Übung 3 – Wort 2 erkennen</div>
+    <div class="ex-inst">Welches Wort ist Wort 2 (die Basis)? Schreibe mit Artikel.</div>
+    <div id="kb3-container"></div>
+    <button class="check-btn" onclick="checkKb3()">✓ Überprüfen</button>
+    <div class="score-box" id="sc9"><div class="score-num" id="sc9-n"></div><div class="score-sub">Punkte</div><div class="score-emoji" id="sc9-e"></div></div>
+    <button class="reset-btn" onclick="initKb3()">↺ Neu starten</button>
+  </div>
+
+</div>
+
+<!-- ═══ TAB 5: SCHNELLTEST ═══ -->
+<div class="content" id="tab-schnelltest">
+  <div class="notice tip">
+    <span class="notice-icon">⚡</span>
+    <div class="notice-text"><b>Schnelltest:</b> 13 Fragen zu Artikel, Plural und Komposita. Nach jeder Antwort siehst du eine Erklärung.</div>
+  </div>
+  <div id="test-container"></div>
+  <div class="score-box" id="sc-test"><div class="score-num" id="sc-test-n"></div><div class="score-sub" id="sc-test-sub">/ 13 Punkte</div><div class="score-emoji" id="sc-test-e"></div></div>
+  <button class="reset-btn" onclick="initTest()">↺ Neu starten</button>
+</div>
+
+<div class="footer">Made with love by Bảo Quang 💜 | A1 Grammatik – Nomen</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+
+const AK1 = [
+  {w:"Zeitung", a:"die", h:"Endung -ung → die"},
+  {w:"Mädchen", a:"das", h:"Endung -chen → immer das!"},
+  {w:"Frühling", a:"der", h:"Endung -ling → der"},
+  {w:"Gesundheit", a:"die", h:"Endung -heit → die"},
+  {w:"Dokument", a:"das", h:"Endung -ment → das"},
+  {w:"Lehrerin", a:"die", h:"Endung -in (weiblich) → die"},
+  {w:"Museum", a:"das", h:"Endung -um → das"},
+  {w:"Freundschaft", a:"die", h:"Endung -schaft → die"},
+  {w:"Bäcker", a:"der", h:"Endung -er (Beruf) → der"},
+  {w:"Information", a:"die", h:"Endung -ion → die"},
+  {w:"Gespräch", a:"das", h:"ge- + Verb → das"},
+  {w:"Tourismus", a:"der", h:"Endung -ismus → der"},
+  {w:"Möglichkeit", a:"die", h:"Endung -keit → die"},
+  {w:"Brötchen", a:"das", h:"Endung -chen → das"},
+  {w:"Regen", a:"der", h:"Wetter → der"},
+  {w:"Wohnung", a:"die", h:"Endung -ung → die"},
+];
+
+const KAT = [
+  {w:"Hunger", a:"der"}, {w:"Familie", a:"die"}, {w:"Zentrum", a:"das"},
+  {w:"Sommer", a:"der"}, {w:"Zeitung", a:"die"}, {w:"Gebäude", a:"das"},
+  {w:"Bäcker", a:"der"}, {w:"Freiheit", a:"die"}, {w:"Instrument", a:"das"},
+  {w:"Teppich", a:"der"}, {w:"Gesellschaft", a:"die"}, {w:"Brötchen", a:"das"},
+];
+
+const SB = [
+  {before:"Das ist", noun:"Hunger", after:"groß.", a:"der", opts:["der","die","das"]},
+  {before:"Ich lese", noun:"Zeitung", after:"jeden Tag.", a:"die", opts:["der","die","das"]},
+  {before:"Er besucht", noun:"Museum", after:"morgen.", a:"das", opts:["der","die","das"]},
+  {before:"Das ist", noun:"Mädchen", after:"aus dem Kurs.", a:"das", opts:["der","die","das"]},
+  {before:"Wir haben", noun:"Freundschaft", after:"seit 10 Jahren.", a:"die", opts:["der","die","das"]},
+  {before:"", noun:"Bäcker", after:"arbeitet früh.", a:"der", opts:["der","die","das"]},
+  {before:"Das ist", noun:"Gebäude", after:"der Schule.", a:"das", opts:["der","die","das"]},
+  {before:"Er trinkt", noun:"Kaffee", after:"gern.", a:"den", opts:["den","die","das"]},
+];
+
+const PF = [
+  {sg:"die Frau", pl:"Frauen", h:"-(e)n"},
+  {sg:"das Kind", pl:"Kinder", h:"-er"},
+  {sg:"der Stuhl", pl:"Stühle", h:"-e + Umlaut"},
+  {sg:"das Buch", pl:"Bücher", h:"-er + Umlaut"},
+  {sg:"die Zeitung", pl:"Zeitungen", h:"-en"},
+  {sg:"das Taxi", pl:"Taxis", h:"-s"},
+  {sg:"der Vater", pl:"Väter", h:"Umlaut, keine neue Endung"},
+  {sg:"die Übung", pl:"Übungen", h:"-en"},
+  {sg:"der Garten", pl:"Gärten", h:"Umlaut, keine neue Endung"},
+  {sg:"das Brötchen", pl:"Brötchen", h:"keine Endung (-chen)"},
+  {sg:"die Hand", pl:"Hände", h:"-e + Umlaut"},
+  {sg:"der Job", pl:"Jobs", h:"-s"},
+];
+
+const SG = [
+  {pl:"die Bilder", sg:"das Bild"},
+  {pl:"die Männer", sg:"der Mann"},
+  {pl:"die Hotels", sg:"das Hotel"},
+  {pl:"die Ärzte", sg:"der Arzt"},
+  {pl:"die Länder", sg:"das Land"},
+  {pl:"die Informationen", sg:"die Information"},
+  {pl:"die Kurse", sg:"der Kurs"},
+  {pl:"die Einladungen", sg:"die Einladung"},
+  {pl:"die Bäume", sg:"der Baum"},
+  {pl:"die Fotos", sg:"das Foto"},
+];
+
+const PL_MC = [
+  {sg:"der Mann", correct:"die Männer", wrong:["die Manns","die Männen","die Mann"]},
+  {sg:"das Kind", correct:"die Kinder", wrong:["die Kindes","die Kinds","die Kinden"]},
+  {sg:"die Hand", correct:"die Hände", wrong:["die Hands","die Handen","die Hande"]},
+  {sg:"der Vater", correct:"die Väter", wrong:["die Vaters","die Vatern","die Vater"]},
+  {sg:"das Buch", correct:"die Bücher", wrong:["die Buchen","die Buchs","die Büche"]},
+  {sg:"das Museum", correct:"die Museen", wrong:["die Museums","die Museen","die Museume"]},
+  {sg:"der Garten", correct:"die Gärten", wrong:["die Gartens","die Garten","die Gärtes"]},
+  {sg:"das Datum", correct:"die Daten", wrong:["die Datums","die Datumen","die Datas"]},
+];
+
+const KB = [
+  {w1:"der Regen", w2:"der Schirm", fugen:"", res:"der Regenschirm"},
+  {w1:"die Kinder", w2:"der Arzt", fugen:"Fugen-er", res:"der Kinderarzt"},
+  {w1:"der Kaffee", w2:"die Tasse", fugen:"", res:"die Kaffeetasse"},
+  {w1:"die Sonne", w2:"der Schirm", fugen:"Fugen-n", res:"der Sonnenschirm"},
+  {w1:"das Haus", w2:"die Nummer", fugen:"", res:"die Hausnummer"},
+  {w1:"der Tag", w2:"das Buch", fugen:"Fugen-e", res:"das Tagebuch"},
+  {w1:"das Haar", w2:"die Farbe", fugen:"", res:"die Haarfarbe"},
+  {w1:"der Geburtstag", w2:"der Kuchen", fugen:"Fugen-s", res:"der Geburtstagskuchen"},
+];
+
+const KB2 = [
+  {w:"Sonnenschirm", a:"der", hint:"Wort 2: der Schirm"},
+  {w:"Kaffeetasse", a:"die", hint:"Wort 2: die Tasse"},
+  {w:"Tagebuch", a:"das", hint:"Wort 2: das Buch"},
+  {w:"Kindergarten", a:"der", hint:"Wort 2: der Garten"},
+  {w:"Jahreszeit", a:"die", hint:"Wort 2: die Zeit"},
+  {w:"Handtuch", a:"das", hint:"Wort 2: das Tuch"},
+  {w:"Regenschirm", a:"der", hint:"Wort 2: der Schirm"},
+  {w:"Haustür", a:"die", hint:"Wort 2: die Tür"},
+  {w:"Haarfarbe", a:"die", hint:"Wort 2: die Farbe"},
+  {w:"Geburtstagskuchen", a:"der", hint:"Wort 2: der Kuchen"},
+];
+
+const KB3 = [
+  {comp:"Regenschirm", w2:"der Schirm"},
+  {comp:"Kaffeetasse", w2:"die Tasse"},
+  {comp:"Tagebuch", w2:"das Buch"},
+  {comp:"Sonnenschirm", w2:"der Schirm"},
+  {comp:"Haarfarbe", w2:"die Farbe"},
+  {comp:"Haustür", w2:"die Tür"},
+  {comp:"Kindergarten", w2:"der Garten"},
+  {comp:"Jahreszeit", w2:"die Zeit"},
+];
+
+const TEST = [
+  {q:"Welcher Artikel? _____ Gesundheit ist wichtig.", opts:["der","die","das","kein Artikel"], c:1, ex:"Endung -heit → immer die"},
+  {q:"Plural von 'das Kind'?", opts:["die Kinde","die Kinden","die Kinder","die Kinds"], c:2, ex:"das Kind → die Kinder (Endung -er)"},
+  {q:"Welcher Artikel? _____ Mädchen ist sehr nett.", opts:["der","die","das","ein"], c:2, ex:"Endung -chen → immer das, auch für Mädchen!"},
+  {q:"Komposita: der Regen + der Schirm = ?", opts:["die Regenschirm","der Regenschirm","das Regenschirm","der Schirmregen"], c:1, ex:"Artikel = Wort 2 (der Schirm) → der Regenschirm"},
+  {q:"Welcher Artikel? _____ Information kommt von der Polizei.", opts:["der","die","das","den"], c:1, ex:"Endung -ion → immer die"},
+  {q:"Plural von 'der Vater'?", opts:["die Vaters","die Vater","die Väter","die Vatern"], c:2, ex:"der Vater → die Väter (Umlaut, keine neue Endung)"},
+  {q:"Welcher Artikel? _____ Museum ist geschlossen.", opts:["der","die","das","dem"], c:2, ex:"Endung -um → immer das"},
+  {q:"Welches Wort hat keinen Plural?", opts:["der Tisch","das Wasser","die Tasse","der Mann"], c:1, ex:"Materialwörter wie Wasser haben keinen Plural"},
+  {q:"Welcher Artikel? _____ Freundschaft ist sehr wichtig.", opts:["der","die","das","den"], c:1, ex:"Endung -schaft → immer die"},
+  {q:"Plural von 'die Hand'?", opts:["die Hands","die Handen","die Hände","die Hand"], c:2, ex:"die Hand → die Hände (-e + Umlaut)"},
+  {q:"Sonnenschirm: Welches ist Wort 2 (die Basis)?", opts:["die Sonne","der Schirm","das Sonnen","das Schirm"], c:1, ex:"Wort 2 = der Schirm → Artikel des Kompositums = der"},
+  {q:"Welcher Artikel? _____ Bäcker arbeitet sehr früh.", opts:["der","die","das","den"], c:0, ex:"Endung -er (Beruf, männlich) → der"},
+  {q:"Kaffeetasse: Welcher Artikel?", opts:["der","die","das","kein"], c:1, ex:"Wort 2 = die Tasse → die Kaffeetasse"},
+];
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+
+function showScore(id, score, total) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  document.getElementById(id+'-n').textContent = score+'/'+total;
+  const e = document.getElementById(id+'-e');
+  if (!e) return;
+  const p = score/total;
+  e.textContent = p>=0.9 ? '🏆 Ausgezeichnet!' : p>=0.7 ? '👍 Gut gemacht!' : p>=0.5 ? '📚 Weiter üben!' : '💪 Noch mal versuchen!';
+}
+
+function clearScore(id) { document.getElementById(id).classList.remove('show'); }
+
+// ═══════════════════════════════════════
+// ÜBUNG 1: ARTIKEL KLICKEN
+// ═══════════════════════════════════════
+
+let ak1Score=0, ak1Done=0;
+
+function initAk1() {
+  ak1Score=0; ak1Done=0;
+  clearScore('sc1');
+  document.getElementById('prog1').style.width='0%';
+  const c = document.getElementById('ak-container');
+  c.innerHTML = '';
+  AK1.forEach((item,i) => {
+    c.innerHTML += `
+      <div class="ak-item">
+        <div class="ak-word">${item.w}</div>
+        <div class="ak-btns">
+          <button class="ak-btn b-der" id="ak${i}der" onclick="ansAk1(${i},'der')">der</button>
+          <button class="ak-btn b-die" id="ak${i}die" onclick="ansAk1(${i},'die')">die</button>
+          <button class="ak-btn b-das" id="ak${i}das" onclick="ansAk1(${i},'das')">das</button>
+        </div>
+        <div class="ak-fb" id="akfb${i}"></div>
+      </div>`;
+  });
+}
+
+function ansAk1(i, chosen) {
+  const item = AK1[i];
+  if (document.getElementById('ak'+i+'der').disabled) return;
+  ['der','die','das'].forEach(a => document.getElementById('ak'+i+a).disabled=true);
+  const ok = chosen===item.a;
+  const btn = document.getElementById('ak'+i+chosen);
+  const fb = document.getElementById('akfb'+i);
+  if (ok) {
+    btn.classList.add('ok'); fb.textContent='✓ Richtig! '+item.h;
+    fb.className='ak-fb show correct'; ak1Score++;
+  } else {
+    btn.classList.add('fail');
+    document.getElementById('ak'+i+item.a).classList.add('ok');
+    fb.textContent='✗ Falsch! Richtig: '+item.a+' → '+item.h;
+    fb.className='ak-fb show wrong';
+  }
+  ak1Done++;
+  document.getElementById('prog1').style.width=(ak1Done/AK1.length*100)+'%';
+  if (ak1Done===AK1.length) showScore('sc1',ak1Score,AK1.length);
+}
+
+// ═══════════════════════════════════════
+// ÜBUNG 2: KATEGORIEN SORTIEREN
+// ═══════════════════════════════════════
+
+let katSelected = null;
+let katPlaced = {};
+
+function initKat() {
+  katSelected = null; katPlaced = {};
+  clearScore('sc2');
+  const bank = document.getElementById('kat-bank');
+  bank.innerHTML = '';
+  ['kat-der-words','kat-die-words','kat-das-words'].forEach(id => document.getElementById(id).innerHTML='');
+  KAT.sort(()=>Math.random()-0.5).forEach((item,i) => {
+    const btn = document.createElement('button');
+    btn.className='kat-chip'; btn.id='kc'+i; btn.dataset.idx=i; btn.dataset.a=item.a;
+    btn.textContent=item.w;
+    btn.onclick = () => selectKat(i, btn);
+    bank.appendChild(btn);
+  });
+}
+
+function selectKat(i, btn) {
+  if (btn.classList.contains('placed')) return;
+  document.querySelectorAll('.kat-chip').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  katSelected = {i, a: btn.dataset.a, w: btn.textContent, btn};
+}
+
+function placeKat(col) {
+  if (!katSelected) return;
+  const {i, a, w, btn} = katSelected;
+  const wordDiv = document.getElementById('kat-'+col+'-words');
+  const chip = document.createElement('div');
+  chip.className='kat-word'; chip.textContent=w;
+  wordDiv.appendChild(chip);
+  btn.classList.remove('selected'); btn.classList.add('placed');
+  katPlaced[i] = {chosen: col, correct: a};
+  katSelected = null;
+}
+
+function checkKat() {
+  let score=0, total=Object.keys(katPlaced).length;
+  // re-render placed items with colors
+  ['der','die','das'].forEach(col => {
+    const div = document.getElementById('kat-'+col+'-words');
+    div.innerHTML='';
+  });
+  Object.entries(katPlaced).forEach(([i,{chosen,correct}]) => {
+    const w = KAT[i].w;
+    const div = document.getElementById('kat-'+chosen+'-words');
+    const chip = document.createElement('div');
+    chip.className='kat-word';
+    if (chosen===correct) {
+      chip.style.background='#a7f3d0'; chip.style.color='#065f46';
+      chip.textContent='✓ '+w; score++;
+    } else {
+      chip.style.background='#fecaca'; chip.style.color='#991b1b';
+      chip.textContent='✗ '+w+' ('+correct+')';
+    }
+    div.appendChild(chip);
+  });
+  showScore('sc2', score, KAT.length);
+}
+
+// ═══════════════════════════════════════
+// ÜBUNG 3: ARTIKEL IN SÄTZEN
+// ═══════════════════════════════════════
+
+let sbFilled = {};
+
+function initSb() {
+  sbFilled = {};
+  clearScore('sc3');
+  const c = document.getElementById('sb-container');
+  c.innerHTML = '';
+  SB.forEach((item,i) => {
+    sbFilled[i] = null;
+    const optHtml = item.opts.map(o =>
+      `<button class="sb-opt" id="sbo${i}_${o}" onclick="pickSb(${i},'${o}')">${o}</button>`
+    ).join('');
+    c.innerHTML += `
+      <div class="sb-item">
+        <div class="sb-top">${i+1}. ${item.before} <span class="sb-blank" id="sbbl${i}" onclick="unpickSb(${i})">___</span> ${item.noun} ${item.after}</div>
+        <div class="sb-options">${optHtml}</div>
+      </div>`;
+  });
+}
+
+function pickSb(i, opt) {
+  // unmark old
+  if (sbFilled[i]) {
+    const old = document.getElementById('sbo'+i+'_'+sbFilled[i]);
+    if(old) old.classList.remove('used');
+  }
+  sbFilled[i] = opt;
+  document.getElementById('sbo'+i+'_'+opt).classList.add('used');
+  const bl = document.getElementById('sbbl'+i);
+  bl.textContent = opt; bl.classList.add('filled');
+}
+
+function unpickSb(i) {
+  if (!sbFilled[i]) return;
+  const old = document.getElementById('sbo'+i+'_'+sbFilled[i]);
+  if(old) old.classList.remove('used');
+  sbFilled[i] = null;
+  const bl = document.getElementById('sbbl'+i);
+  bl.textContent = '___'; bl.classList.remove('filled','ok-b','fail-b');
+}
+
+function checkSb() {
+  let score=0;
+  SB.forEach((item,i) => {
+    const bl = document.getElementById('sbbl'+i);
+    if (sbFilled[i]===item.a) {
+      bl.classList.add('ok-b'); bl.classList.remove('fail-b'); score++;
+    } else {
+      bl.classList.add('fail-b'); bl.classList.remove('ok-b');
+      bl.textContent = item.a;
+    }
+  });
+  showScore('sc3', score, SB.length);
+}
+
+// ═══════════════════════════════════════
+// PLURAL FILL
+// ═══════════════════════════════════════
+
+function initPf() {
+  clearScore('sc4');
+  const c = document.getElementById('pf-container');
+  c.innerHTML = '';
+  PF.forEach((item,i) => {
+    c.innerHTML += `
+      <div class="pf-item">
+        <span class="fi-num">${i+1}.</span>
+        <span class="pf-sg">${item.sg}</span>
+        <span class="pf-arrow">→</span>
+        <span class="pf-die">die</span>
+        <input class="fi-inp" id="pfi${i}" placeholder="Plural..." style="min-width:120px">
+        <span style="font-size:10px;color:var(--muted)">(${item.h})</span>
+      </div>`;
+  });
+}
+
+function checkPf() {
+  let score=0;
+  PF.forEach((item,i) => {
+    const inp = document.getElementById('pfi'+i);
+    if (inp.value.trim().toLowerCase()===item.pl.toLowerCase()) {
+      inp.classList.add('ok'); inp.classList.remove('fail'); score++;
+    } else {
+      inp.classList.add('fail'); inp.classList.remove('ok'); inp.value=item.pl;
+    }
+  });
+  showScore('sc4',score,PF.length);
+}
+
+// SINGULAR
+function initSg() {
+  clearScore('sc5');
+  const c = document.getElementById('sg-container');
+  c.innerHTML = '';
+  SG.forEach((item,i) => {
+    c.innerHTML += `
+      <div class="pf-item">
+        <span class="fi-num">${i+1}.</span>
+        <span class="pf-sg">${item.pl}</span>
+        <span class="pf-arrow">→</span>
+        <input class="fi-inp" id="sgi${i}" placeholder="Singular mit Artikel..." style="min-width:160px">
+      </div>`;
+  });
+}
+
+function checkSg() {
+  let score=0;
+  SG.forEach((item,i) => {
+    const inp = document.getElementById('sgi'+i);
+    if (inp.value.trim().toLowerCase()===item.sg.toLowerCase()) {
+      inp.classList.add('ok'); inp.classList.remove('fail'); score++;
+    } else {
+      inp.classList.add('fail'); inp.classList.remove('ok'); inp.value=item.sg;
+    }
+  });
+  showScore('sc5',score,SG.length);
+}
+
+// PLURAL MC
+let plMcScore=0, plMcDone=0;
+
+function initPlMc() {
+  plMcScore=0; plMcDone=0;
+  clearScore('sc6');
+  const c = document.getElementById('pl-mc-container');
+  c.innerHTML='';
+  PL_MC.forEach((item,i) => {
+    const allOpts = [item.correct, ...item.wrong.slice(0,3)].sort(()=>Math.random()-0.5);
+    const optsHtml = allOpts.map(o =>
+      `<button class="tq-opt" id="plmc${i}_${o.replace(/\s/g,'_')}" onclick="ansPlMc(${i},'${o}','${item.correct}')">${o}</button>`
+    ).join('');
+    c.innerHTML += `
+      <div class="tq">
+        <div class="tq-text">${i+1}. Plural von „${item.sg}"?</div>
+        <div class="tq-opts">${optsHtml}</div>
+      </div>`;
+  });
+}
+
+function ansPlMc(i, chosen, correct) {
+  const allBtns = document.querySelectorAll(`[id^="plmc${i}_"]`);
+  allBtns.forEach(b=>b.disabled=true);
+  const chosenId = `plmc${i}_${chosen.replace(/\s/g,'_')}`;
+  const corrId = `plmc${i}_${correct.replace(/\s/g,'_')}`;
+  if (chosen===correct) {
+    document.getElementById(chosenId).classList.add('correct'); plMcScore++;
+  } else {
+    document.getElementById(chosenId).classList.add('incorrect');
+    document.getElementById(corrId).classList.add('reveal');
+  }
+  plMcDone++;
+  if (plMcDone===PL_MC.length) showScore('sc6',plMcScore,PL_MC.length);
+}
+
+// ═══════════════════════════════════════
+// KOMPOSITA
+// ═══════════════════════════════════════
+
+function initKb() {
+  clearScore('sc7');
+  const c = document.getElementById('kb-container');
+  c.innerHTML='';
+  KB.forEach((item,i) => {
+    c.innerHTML += `
+      <div class="kb-item">
+        <div class="kb-row">
+          <span class="fi-num">${i+1}.</span>
+          <span class="kb-chip kb-w1">${item.w1}</span>
+          <span style="color:var(--muted);font-weight:700">+</span>
+          <span class="kb-chip kb-w2">${item.w2}</span>
+          ${item.fugen?`<span class="kb-chip kb-fugen">${item.fugen}</span>`:''}
+          <span class="kb-eq">=</span>
+          <input class="fi-inp" id="kbi${i}" placeholder="Kompositum mit Artikel..." style="min-width:180px">
+        </div>
+      </div>`;
+  });
+}
+
+function checkKb() {
+  let score=0;
+  KB.forEach((item,i) => {
+    const inp = document.getElementById('kbi'+i);
+    if (inp.value.trim().toLowerCase()===item.res.toLowerCase()) {
+      inp.classList.add('ok'); inp.classList.remove('fail'); score++;
+    } else {
+      inp.classList.add('fail'); inp.classList.remove('ok'); inp.value=item.res;
+    }
+  });
+  showScore('sc7',score,KB.length);
+}
+
+// KB2: Artikel des Kompositums klicken
+let kb2Score=0, kb2Done=0;
+
+function initKb2() {
+  kb2Score=0; kb2Done=0;
+  clearScore('sc8');
+  document.getElementById('prog-kb2').style.width='0%';
+  const c = document.getElementById('kb2-container');
+  c.innerHTML='';
+  KB2.forEach((item,i) => {
+    c.innerHTML += `
+      <div class="ak-item">
+        <div class="ak-word">${item.w}</div>
+        <div class="ak-btns">
+          <button class="ak-btn b-der" id="kb2${i}der" onclick="ansKb2(${i},'der')">der</button>
+          <button class="ak-btn b-die" id="kb2${i}die" onclick="ansKb2(${i},'die')">die</button>
+          <button class="ak-btn b-das" id="kb2${i}das" onclick="ansKb2(${i},'das')">das</button>
+        </div>
+        <div class="ak-fb" id="kb2fb${i}"></div>
+      </div>`;
+  });
+}
+
+function ansKb2(i, chosen) {
+  const item = KB2[i];
+  if (document.getElementById('kb2'+i+'der').disabled) return;
+  ['der','die','das'].forEach(a=>document.getElementById('kb2'+i+a).disabled=true);
+  const ok = chosen===item.a;
+  const btn = document.getElementById('kb2'+i+chosen);
+  const fb = document.getElementById('kb2fb'+i);
+  if (ok) {
+    btn.classList.add('ok'); fb.textContent='✓ Richtig! '+item.hint;
+    fb.className='ak-fb show correct'; kb2Score++;
+  } else {
+    btn.classList.add('fail');
+    document.getElementById('kb2'+i+item.a).classList.add('ok');
+    fb.textContent='✗ Falsch! Richtig: '+item.a+' → '+item.hint;
+    fb.className='ak-fb show wrong';
+  }
+  kb2Done++;
+  document.getElementById('prog-kb2').style.width=(kb2Done/KB2.length*100)+'%';
+  if (kb2Done===KB2.length) showScore('sc8',kb2Score,KB2.length);
+}
+
+// KB3: Wort 2 erkennen
+function initKb3() {
+  clearScore('sc9');
+  const c = document.getElementById('kb3-container');
+  c.innerHTML='';
+  KB3.forEach((item,i) => {
+    c.innerHTML += `
+      <div class="pf-item">
+        <span class="fi-num">${i+1}.</span>
+        <span class="pf-sg" style="font-weight:700">${item.comp}</span>
+        <span class="pf-arrow">→ Wort 2:</span>
+        <input class="fi-inp" id="kb3i${i}" placeholder="Wort 2 mit Artikel..." style="min-width:140px">
+      </div>`;
+  });
+}
+
+function checkKb3() {
+  let score=0;
+  KB3.forEach((item,i) => {
+    const inp = document.getElementById('kb3i'+i);
+    if (inp.value.trim().toLowerCase()===item.w2.toLowerCase()) {
+      inp.classList.add('ok'); inp.classList.remove('fail'); score++;
+    } else {
+      inp.classList.add('fail'); inp.classList.remove('ok'); inp.value=item.w2;
+    }
+  });
+  showScore('sc9',score,KB3.length);
+}
+
+// ═══════════════════════════════════════
+// SCHNELLTEST
+// ═══════════════════════════════════════
+
+let testScore=0, testDone=0;
+
+function initTest() {
+  testScore=0; testDone=0;
+  clearScore('sc-test');
+  const c = document.getElementById('test-container');
+  c.innerHTML='';
+  TEST.forEach((item,i) => {
+    const shuffled = [...item.opts.map((o,j)=>({o,orig:j}))].sort(()=>Math.random()-0.5);
+    const correctOpt = shuffled.find(x=>x.orig===item.c).o;
+    const optsHtml = shuffled.map(({o}) =>
+      `<button class="tq-opt" id="tq${i}_${o.replace(/\s/g,'_')}" onclick="ansTest(${i},'${o}','${correctOpt}')">${o}</button>`
+    ).join('');
+    c.innerHTML += `
+      <div class="tq">
+        <div class="tq-text">${i+1}. ${item.q}</div>
+        <div class="tq-opts">${optsHtml}</div>
+        <div class="tq-explain" id="te${i}">💡 ${item.ex}</div>
+      </div>`;
+  });
+}
+
+function ansTest(i, chosen, correct) {
+  const allBtns = document.querySelectorAll(`[id^="tq${i}_"]`);
+  allBtns.forEach(b=>b.disabled=true);
+  const chosenId = `tq${i}_${chosen.replace(/\s/g,'_')}`;
+  const corrId = `tq${i}_${correct.replace(/\s/g,'_')}`;
+  if (chosen===correct) {
+    document.getElementById(chosenId).classList.add('correct'); testScore++;
+  } else {
+    document.getElementById(chosenId).classList.add('incorrect');
+    document.getElementById(corrId).classList.add('reveal');
+  }
+  document.getElementById('te'+i).classList.add('show');
+  testDone++;
+  if (testDone===TEST.length) {
+    showScore('sc-test',testScore,TEST.length);
+    document.getElementById('sc-test-sub').textContent='/ '+TEST.length+' Punkte';
+  }
+}
+
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
+
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// ═══════════════════════════════════════
+// INIT ALL
+// ═══════════════════════════════════════
+initAk1();
+initKat();
+initSb();
+initPf();
+initSg();
+initPlMc();
+initKb();
+initKb2();
+initKb3();
+initTest();
+</script>
+</body>
+</html>

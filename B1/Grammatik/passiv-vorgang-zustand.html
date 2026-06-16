@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passiv – Vorgangspassiv & Zustandspassiv | Miteinander!</title>
+<style>
+  :root {
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --accent-dark: #1d4ed8;
+    --accent2: #0d7377;
+    --accent2-light: #e0f2f2;
+    --accent2-dark: #0a5457;
+    --b1plus: #7c3aed;
+    --b1plus-light: #ede9fe;
+    --bg: #f8fafb;
+    --white: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --correct: #16a34a;
+    --correct-bg: #dcfce7;
+    --wrong: #dc2626;
+    --wrong-bg: #fee2e2;
+    --neutral-bg: #f1f5f9;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
+    color: white;
+    padding: 22px 20px 16px;
+    text-align: center;
+    transition: background 0.4s;
+  }
+  .header.zustand { background: linear-gradient(135deg, var(--accent2-dark) 0%, var(--accent2) 100%); }
+  .header h1 { font-size: 1.5rem; font-weight: 700; line-height: 1.25; }
+  .header p { font-size: 0.88rem; opacity: 0.85; margin-top: 4px; }
+
+  /* OUTER TABS */
+  .outer-tabs {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .outer-tab-btn {
+    flex: 1;
+    padding: 14px 8px;
+    border: none;
+    background: transparent;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 4px solid transparent;
+    position: relative;
+  }
+  .outer-tab-btn .badge {
+    display: inline-block;
+    background: var(--b1plus);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .outer-tab-btn.v1:hover { color: var(--accent); background: var(--accent-light); }
+  .outer-tab-btn.v1.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-light); }
+  .outer-tab-btn.v2:hover { color: var(--accent2); background: var(--accent2-light); }
+  .outer-tab-btn.v2.active { color: var(--accent2); border-bottom-color: var(--accent2); background: var(--accent2-light); }
+
+  .outer-content { display: none; }
+  .outer-content.active { display: block; }
+
+  /* INNER TABS */
+  .inner-tabs {
+    display: flex;
+    background: var(--neutral-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .inner-tab-btn {
+    flex: 1;
+    padding: 11px 6px;
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+    letter-spacing: 0.3px;
+  }
+  .v1 .inner-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: white; }
+  .v1 .inner-tab-btn:hover { color: var(--accent); }
+  .v2 .inner-tab-btn.active { color: var(--accent2); border-bottom-color: var(--accent2); background: white; }
+  .v2 .inner-tab-btn:hover { color: var(--accent2); }
+
+  .inner-content { display: none; padding: 18px 16px 40px; max-width: 780px; margin: 0 auto; }
+  .inner-content.active { display: block; }
+
+  /* ===== ERKLÄRUNG ===== */
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+  }
+  .v1 .section-title { color: var(--accent-dark); border-bottom-color: var(--accent-light); }
+  .v2 .section-title { color: var(--accent2-dark); border-bottom-color: var(--accent2-light); }
+
+  .intro-box {
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    border-left: 4px solid;
+  }
+  .v1 .intro-box { background: var(--accent-light); border-color: var(--accent); }
+  .v2 .intro-box { background: var(--accent2-light); border-color: var(--accent2); }
+  .intro-box p { font-size: 0.9rem; line-height: 1.6; }
+  .intro-box .vn-note {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    font-style: italic;
+  }
+  .v1 .vn-note { color: var(--accent-dark); }
+  .v2 .vn-note { color: var(--accent2-dark); }
+
+  /* FORM TABLES */
+  .formel-table, .compare-table, .satz-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: white;
+  }
+  .formel-table th, .satz-table th { padding: 10px 12px; text-align: left; font-weight: 700; font-size: 0.8rem; color: white; }
+  .v1 .formel-table th, .v1 .satz-table th { background: var(--accent); }
+  .v2 .formel-table th, .v2 .satz-table th { background: var(--accent2); }
+  .formel-table td, .satz-table td, .compare-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .formel-table tr:last-child td, .satz-table tr:last-child td, .compare-table tr:last-child td { border-bottom: none; }
+  .formel-table tr:nth-child(even) td, .satz-table tr:nth-child(even) td { background: #fafbfc; }
+  .v1 .pos2 { color: var(--accent-dark); font-weight: 700; }
+  .v2 .pos2 { color: var(--accent2-dark); font-weight: 700; }
+  .ende-cell { font-weight: 700; }
+  .v1 .ende-cell .werd { color: var(--accent); }
+  .v2 .ende-cell .sein-form { color: var(--accent2); }
+
+  .compare-table th { padding: 10px 12px; text-align: left; font-weight: 700; font-size: 0.8rem; color: white; }
+  .compare-table th.vorgang { background: #f59e0b; }
+  .compare-table th.zustand { background: var(--accent2); }
+  .compare-table th.empty { background: var(--neutral-bg); }
+  .compare-table tr:nth-child(even) td { background: #fafbfc; }
+  .compare-table td:first-child { font-weight: 600; color: var(--text-muted); font-size: 0.8rem; }
+  .vorgang-cell { color: #92400e; }
+  .zustand-cell { color: var(--accent2-dark); font-weight: 600; }
+
+  /* WERDEN/SEIN KONJUGATION GRID */
+  .konj-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .konj-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
+  .v1 .konj-row:hover { background: var(--accent-light); }
+  .v2 .konj-row:hover { background: var(--accent2-light); }
+  .konj-row .pronomen { color: var(--text-muted); }
+  .konj-row .form { font-weight: 700; }
+  .v1 .konj-row .form { color: var(--accent); }
+  .v2 .konj-row .form { color: var(--accent2); }
+  .konj-header {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+  .v1 .konj-header { color: var(--accent); }
+  .v2 .konj-header { color: var(--accent2); }
+
+  /* REGEL BOX */
+  .regel-box {
+    background: white;
+    border: 2px solid;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .v1 .regel-box { border-color: var(--accent); }
+  .v2 .regel-box { border-color: var(--accent2); }
+  .regel-box h3 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .v1 .regel-box h3 { color: var(--accent); }
+  .v2 .regel-box h3 { color: var(--accent2); }
+  .formel {
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 0.98rem;
+    font-weight: 700;
+  }
+  .v1 .formel { background: var(--accent-light); color: var(--accent-dark); }
+  .v2 .formel { background: var(--accent2-light); color: var(--accent2-dark); }
+  .formel span.plus { color: var(--text-muted); font-weight: 400; margin: 0 8px; }
+  .regel-list { list-style: none; }
+  .regel-list li {
+    padding: 4px 0;
+    font-size: 0.86rem;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.45;
+  }
+  .regel-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+  .v1 .regel-list li::before { color: var(--accent); }
+  .v2 .regel-list li::before { color: var(--accent2); }
+
+  /* HINWEIS BOX */
+  .hinweis-box {
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+    border-left: 4px solid;
+    line-height: 1.6;
+  }
+  .hinweis-box.warn { background: #fff7ed; border-color: #f59e0b; }
+  .hinweis-box.warn strong { color: #92400e; }
+  .hinweis-box.b1plus { background: var(--b1plus-light); border-color: var(--b1plus); }
+  .hinweis-box.b1plus strong { color: var(--b1plus); }
+
+  /* BEISPIELE */
+  .beispiele-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; margin-top: 6px; }
+  .v1 .beispiele-title { color: var(--accent-dark); }
+  .v2 .beispiele-title { color: var(--accent2-dark); }
+
+  .beispiel-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
+  }
+  .beispiel-nr {
+    display: inline-block;
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    margin-bottom: 8px;
+  }
+  .v1 .beispiel-nr { background: var(--accent); }
+  .v2 .beispiel-nr { background: var(--accent2); }
+  .beispiel-situation {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .satz-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 5px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  .satz-row.aktiv { background: #fff7ed; border-left: 3px solid #f59e0b; }
+  .satz-row.passiv1 { background: var(--accent-light); border-left: 3px solid var(--accent); }
+  .satz-row.passiv2 { background: var(--accent2-light); border-left: 3px solid var(--accent2); }
+  .satz-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 2px;
+    min-width: 60px;
+  }
+  .satz-label.aktiv { color: #92400e; }
+  .satz-label.passiv1 { color: var(--accent-dark); }
+  .satz-label.passiv2 { color: var(--accent2-dark); }
+  .satz-text { flex: 1; }
+  .hl1 { font-weight: 700; color: var(--accent); }
+  .hl2 { font-weight: 700; color: var(--accent2); }
+  .hlx { font-weight: 700; color: #f59e0b; }
+
+  .explain-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s;
+    display: block;
+    font-family: inherit;
+  }
+  .v1 .explain-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+  .v2 .explain-btn:hover { background: var(--accent2-light); color: var(--accent2); border-color: var(--accent2); }
+  .explain-panel {
+    display: none;
+    background: var(--neutral-bg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .explain-panel.show { display: block; }
+  .explain-panel .vn { font-style: italic; }
+  .v1 .explain-panel .vn { color: var(--accent-dark); }
+  .v2 .explain-panel .vn { color: var(--accent2-dark); }
+
+  /* ===== ÜBUNGEN ===== */
+  .uebung-block {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .uebung-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .uebung-nr {
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .v1 .uebung-nr { background: var(--accent); }
+  .v2 .uebung-nr { background: var(--accent2); }
+  .uebung-title { font-size: 0.92rem; font-weight: 700; }
+  .uebung-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+
+  .fill-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.87rem;
+    background: var(--neutral-bg);
+    flex-wrap: wrap;
+  }
+  .fill-item .item-nr { font-size: 0.76rem; font-weight: 700; color: var(--text-muted); min-width: 22px; }
+  .fill-input {
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.87rem;
+    font-family: inherit;
+    background: white;
+    min-width: 120px;
+    transition: border-color 0.2s;
+  }
+  .fill-input:focus { outline: none; }
+  .v1 .fill-input:focus { border-color: var(--accent); }
+  .v2 .fill-input:focus { border-color: var(--accent2); }
+  .fill-input.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .fill-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+
+  .mc-item { padding: 8px 10px; background: var(--neutral-bg); border-radius: 8px; margin-bottom: 6px; }
+  .mc-question { font-size: 0.87rem; margin-bottom: 8px; font-weight: 500; line-height: 1.4; }
+  .mc-options { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mc-btn {
+    border: 2px solid var(--border);
+    background: white;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .v1 .mc-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .v2 .mc-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .mc-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 700; }
+  .mc-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .mc-btn:disabled { cursor: default; }
+
+  .transform-item { background: var(--neutral-bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .transform-prompt { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 6px; font-style: italic; line-height: 1.4; }
+  .transform-source {
+    font-size: 0.89rem;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: #fff;
+    border-radius: 6px;
+    border-left: 3px solid;
+  }
+  .v1 .transform-source { border-color: var(--accent); }
+  .v2 .transform-source { border-color: var(--accent2); }
+  .transform-input-wrap { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .transform-input {
+    flex: 1;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.87rem;
+    font-family: inherit;
+    background: white;
+    min-width: 180px;
+    transition: border-color 0.2s;
+  }
+  .transform-input:focus { outline: none; }
+  .v1 .transform-input:focus { border-color: var(--accent); }
+  .v2 .transform-input:focus { border-color: var(--accent2); }
+  .transform-input.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .transform-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  .answer-text { font-size: 0.8rem; color: var(--correct); font-weight: 600; display: none; margin-top: 4px; }
+
+  /* ORDERING (Satzteile ordnen) */
+  .order-item {
+    background: var(--neutral-bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .order-prompt { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 6px; }
+  .chip-pool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; min-height: 32px; }
+  .chip {
+    border: 2px solid;
+    background: white;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .v1 .chip { border-color: var(--accent); color: var(--accent-dark); }
+  .v2 .chip { border-color: var(--accent2); color: var(--accent2-dark); }
+  .chip.used { opacity: 0.35; cursor: default; }
+  .chip-answer-area {
+    min-height: 36px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 6px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    background: white;
+  }
+  .chip-answer-area .chip { opacity: 1; cursor: pointer; }
+  .v1 .chip-answer-area .chip { background: var(--accent-light); }
+  .v2 .chip-answer-area .chip { background: var(--accent2-light); }
+
+  /* BUTTONS */
+  .check-btn {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background 0.2s;
+    font-family: inherit;
+  }
+  .v1 .check-btn { background: var(--accent); }
+  .v1 .check-btn:hover { background: var(--accent-dark); }
+  .v2 .check-btn { background: var(--accent2); }
+  .v2 .check-btn:hover { background: var(--accent2-dark); }
+  .score-badge {
+    display: none;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+
+  /* SCHNELLTEST */
+  .schnelltest-container { max-width: 600px; margin: 0 auto; }
+  .qt-question-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .qt-counter { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px; }
+  .qt-progress { width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 14px; overflow: hidden; }
+  .qt-progress-bar { height: 100%; border-radius: 3px; transition: width 0.3s; }
+  .v1 .qt-progress-bar { background: var(--accent); }
+  .v2 .qt-progress-bar { background: var(--accent2); }
+  .qt-question-text { font-size: 0.98rem; font-weight: 600; line-height: 1.5; margin-bottom: 16px; flex: 1; display: flex; align-items: center; justify-content: center; }
+  .qt-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .qt-opt-btn {
+    border: 2px solid var(--border);
+    background: var(--neutral-bg);
+    border-radius: 8px;
+    padding: 10px 8px;
+    font-size: 0.84rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .v1 .qt-opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+  .v2 .qt-opt-btn:hover:not(:disabled) { border-color: var(--accent2); background: var(--accent2-light); }
+  .qt-opt-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 700; }
+  .qt-opt-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .qt-opt-btn:disabled { cursor: default; }
+  .qt-next-btn {
+    margin-top: 12px;
+    padding: 10px 28px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .v1 .qt-next-btn { background: var(--accent); }
+  .v1 .qt-next-btn:hover { background: var(--accent-dark); }
+  .v2 .qt-next-btn { background: var(--accent2); }
+  .v2 .qt-next-btn:hover { background: var(--accent2-dark); }
+  .qt-result { text-align: center; background: white; border-radius: 14px; padding: 26px 20px; box-shadow: var(--shadow); }
+  .qt-score-circle {
+    width: 76px; height: 76px; border-radius: 50%;
+    color: white; font-size: 1.5rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .v1 .qt-score-circle { background: var(--accent); }
+  .v2 .qt-score-circle { background: var(--accent2); }
+  .qt-restart-btn {
+    margin-top: 12px; padding: 10px 24px; color: white; border: none;
+    border-radius: 8px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.88rem;
+  }
+  .v1 .qt-restart-btn { background: var(--accent); }
+  .v2 .qt-restart-btn { background: var(--accent2); }
+
+  .footer { text-align: center; padding: 16px; font-size: 0.74rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 16px; }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 1.25rem; }
+    .satz-row { flex-direction: column; gap: 2px; }
+    .qt-options { grid-template-columns: 1fr; }
+    .mc-options { flex-direction: column; }
+    .outer-tab-btn { font-size: 0.8rem; padding: 12px 4px; }
+    .inner-tab-btn { font-size: 0.72rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header" id="mainHeader">
+  <h1 id="headerTitle">Das Passiv</h1>
+  <p id="headerSub">Vorgangspassiv: Präsens, Präteritum, Perfekt &amp; Modalverben</p>
+</div>
+
+<div class="outer-tabs">
+  <button class="outer-tab-btn v1 active" onclick="showOuter('v1')">Vorgangspassiv</button>
+  <button class="outer-tab-btn v2" onclick="showOuter('v2')">Zustandspassiv <span class="badge">B1+</span></button>
+</div>
+
+<!-- ============================================================ -->
+<!-- OUTER 1: VORGANGSPASSIV -->
+<!-- ============================================================ -->
+<div id="outer-v1" class="outer-content v1 active">
+
+  <div class="inner-tabs">
+    <button class="inner-tab-btn active" onclick="showInner('v1','erkl')">📖 Erklärung</button>
+    <button class="inner-tab-btn" onclick="showInner('v1','ueb')">✏️ Übungen</button>
+    <button class="inner-tab-btn" onclick="showInner('v1','test')">⚡ Schnelltest</button>
+  </div>
+
+  <!-- V1 ERKLÄRUNG -->
+  <div id="v1-erkl" class="inner-content active">
+
+    <div class="intro-box">
+      <p>Im <strong>Passiv</strong> ist die Handlung wichtig, nicht die Person, die etwas tut.<br>
+      <strong>Aktiv:</strong> Der Mechaniker montiert den Motor. → Person ist wichtig.<br>
+      <strong>Passiv:</strong> Der Motor wird montiert. → Die Handlung ist wichtig.</p>
+      <p class="vn-note">🇻🇳 Câu bị động: nhấn mạnh hành động/đối tượng, không quan trọng ai làm.</p>
+    </div>
+
+    <div class="section-title">1. Passiv Präsens</div>
+
+    <table class="formel-table">
+      <tr><th>Subjekt</th><th>Position 2</th><th>Ende</th></tr>
+      <tr><td>Der Motor</td><td class="pos2">wird</td><td class="ende-cell">montiert. <span style="color:var(--text-muted);font-weight:400">(Partizip Perfekt)</span></td></tr>
+    </table>
+
+    <div class="regel-box">
+      <h3>🔷 Regel – Passiv Präsens</h3>
+      <div class="formel">werden (konjugiert) <span class="plus">+</span> Partizip Perfekt</div>
+      <ul class="regel-list">
+        <li>Das Akkusativ-Objekt aus dem Aktivsatz wird zum <strong>Subjekt</strong> im Passivsatz.</li>
+        <li>Das Subjekt aus dem Aktivsatz (die Person) nennt man meistens nicht.</li>
+        <li>Man kann es mit <strong>von + Dativ</strong> ergänzen, wenn es wichtig ist.</li>
+      </ul>
+    </div>
+
+    <div class="konj-table">
+      <div class="konj-header">werden – Präsens</div>
+      <div class="konj-row"><span class="pronomen">ich</span><span class="form">werde</span></div>
+      <div class="konj-row"><span class="pronomen">du</span><span class="form">wirst</span></div>
+      <div class="konj-row"><span class="pronomen">er/sie/es</span><span class="form">wird</span></div>
+      <div class="konj-row"><span class="pronomen">wir</span><span class="form">werden</span></div>
+      <div class="konj-row"><span class="pronomen">ihr</span><span class="form">werdet</span></div>
+      <div class="konj-row"><span class="pronomen">sie/Sie</span><span class="form">werden</span></div>
+    </div>
+
+    <div class="section-title">2. Passiv mit Modalverben</div>
+
+    <table class="formel-table">
+      <tr><th>Subjekt</th><th>Position 2</th><th>Ende</th></tr>
+      <tr><td>Hier</td><td class="pos2">muss</td><td class="ende-cell">Lärmschutz <span class="werd">getragen werden</span>.</td></tr>
+    </table>
+
+    <div class="regel-box">
+      <h3>🔷 Regel – Passiv mit Modalverben</h3>
+      <div class="formel">Modalverb (konjugiert) <span class="plus">…</span> Partizip Perfekt <span class="plus">+</span> werden (Infinitiv)</div>
+      <ul class="regel-list">
+        <li>Das Modalverb steht auf <strong>Position 2</strong>.</li>
+        <li>Am Ende: <strong>Partizip Perfekt + werden</strong> (im Infinitiv).</li>
+        <li>Häufig bei Regeln, Vorschriften und Anweisungen: <em>Hier darf nicht geraucht werden.</em></li>
+      </ul>
+    </div>
+
+    <div class="section-title">3. Passiv Präteritum &amp; Perfekt</div>
+
+    <table class="satz-table">
+      <tr><th colspan="3">Passiv Präteritum</th></tr>
+      <tr><td style="font-weight:700">Der Kölner Dom</td><td class="pos2">wurde</td><td class="ende-cell">von 1248 bis 1880 <span class="werd">gebaut</span>.</td></tr>
+    </table>
+
+    <table class="satz-table">
+      <tr><th colspan="3">Passiv Perfekt</th></tr>
+      <tr><td style="font-weight:700">Er</td><td class="pos2">ist</td><td class="ende-cell">über 600 Jahre lang <span class="werd">gebaut worden</span>.</td></tr>
+    </table>
+
+    <div class="hinweis-box warn">
+      <strong>⚠️ Achtung!</strong> Das Partizip von <em>werden</em> für das Passiv hat <strong>kein ge-</strong>: nicht <em>geworden</em>, sondern <strong>worden</strong>.
+    </div>
+
+    <div class="konj-table">
+      <div class="konj-header">werden – Präteritum</div>
+      <div class="konj-row"><span class="pronomen">ich</span><span class="form">wurde</span></div>
+      <div class="konj-row"><span class="pronomen">du</span><span class="form">wurdest</span></div>
+      <div class="konj-row"><span class="pronomen">er/sie/es</span><span class="form">wurde</span></div>
+      <div class="konj-row"><span class="pronomen">wir</span><span class="form">wurden</span></div>
+      <div class="konj-row"><span class="pronomen">ihr</span><span class="form">wurdet</span></div>
+      <div class="konj-row"><span class="pronomen">sie/Sie</span><span class="form">wurden</span></div>
+    </div>
+
+    <table class="satz-table">
+      <tr><th colspan="3">Passiv Präteritum mit Modalverb</th></tr>
+      <tr><td style="font-weight:700">Er</td><td class="pos2">musste</td><td class="ende-cell">im 20. Jahrhundert <span class="werd">renoviert werden</span>.</td></tr>
+    </table>
+
+    <div class="beispiele-title">🔍 5 interaktive Beispiele</div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">1</div>
+      <div class="beispiel-situation">Situation: Werkstatt</div>
+      <div class="satz-row aktiv"><span class="satz-label aktiv">Aktiv:</span><span class="satz-text">Der Mechaniker <span class="hlx">montiert</span> den Motor.</span></div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Passiv:</span><span class="satz-text">Der Motor <span class="hl1">wird</span> <span class="hl1">montiert</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Das Akkusativ-Objekt <em>den Motor</em> wird im Passiv zum Subjekt <em>der Motor</em>.<br>
+        Der Mechaniker (das Subjekt im Aktiv) wird im Passiv nicht mehr genannt — er ist nicht wichtig.<br>
+        <span class="vn">🇻🇳 "Động cơ được lắp ráp" — không cần nói ai lắp ráp.</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">2</div>
+      <div class="beispiel-situation">Situation: Im Restaurant</div>
+      <div class="satz-row aktiv"><span class="satz-label aktiv">Aktiv:</span><span class="satz-text">Der Kellner <span class="hlx">bringt</span> die Getränke.</span></div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Passiv:</span><span class="satz-text">Die Getränke <span class="hl1">werden</span> <span class="hl1">gebracht</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        <em>werden</em> wird konjugiert (hier: <strong>werden</strong>, weil das Subjekt Plural ist – die Getränke).<br>
+        Das Partizip Perfekt <em>gebracht</em> steht am Satzende.<br>
+        <span class="vn">🇻🇳 "Đồ uống được mang ra" — chú ý: werden chia theo chủ ngữ mới (Plural → werden).</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">3</div>
+      <div class="beispiel-situation">Situation: Schild – Lärmschutz</div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Passiv:</span><span class="satz-text">Hier <span class="hl1">muss</span> Lärmschutz <span class="hl1">getragen werden</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Das Modalverb <em>muss</em> steht auf Position 2.<br>
+        Am Ende: Partizip Perfekt (<em>getragen</em>) + <em>werden</em> im Infinitiv.<br>
+        <span class="vn">🇻🇳 "Ở đây phải đeo bảo hộ tai" — câu mệnh lệnh/quy định dùng Modalverb + Passiv.</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">4</div>
+      <div class="beispiel-situation">Situation: Geschichte – Kölner Dom</div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Präteritum:</span><span class="satz-text">Der Kölner Dom <span class="hl1">wurde</span> von 1248 bis 1880 <span class="hl1">gebaut</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Perfekt:</span><span class="satz-text">Er <span class="hl2">ist</span> über 600 Jahre lang <span class="hl2">gebaut worden</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Präteritum (<em>wurde</em>) und Perfekt (<em>ist … worden</em>) sind beide möglich — Perfekt ist im Gespräch häufiger, Präteritum oft in Texten/Berichten.<br>
+        Wichtig: <em>worden</em>, nicht <em>geworden</em>!<br>
+        <span class="vn">🇻🇳 "Nhà thờ được xây từ 1248-1880" / "Đã được xây hơn 600 năm" — hai cách diễn đạt quá khứ.</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">5</div>
+      <div class="beispiel-situation">Situation: Renovierung im 20. Jahrhundert</div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Passiv:</span><span class="satz-text">Im 20. Jahrhundert <span class="hl1">musste</span> er <span class="hl1">renoviert werden</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Modalverb im Präteritum (<em>musste</em>) + Partizip Perfekt + werden (Infinitiv) am Ende.<br>
+        Diese Struktur funktioniert genau wie im Präsens, nur das Modalverb ändert sich.<br>
+        <span class="vn">🇻🇳 "Vào thế kỷ 20 nó phải được trùng tu" — Modalverb chia ở thì quá khứ (musste).</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- V1 ÜBUNGEN -->
+  <div id="v1-ueb" class="inner-content">
+
+    <!-- ÜBUNG 1: Passiv Präsens bilden -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">1</div>
+        <div>
+          <div class="uebung-title">Passiv Präsens bilden</div>
+          <div class="uebung-subtitle">Schreiben Sie Sätze im Passiv Präsens. Beispiel: ein Paket • senden → Das Paket wird gesendet.</div>
+        </div>
+      </div>
+      <div id="v1ue1-items"></div>
+      <button class="check-btn" onclick="checkTransform('v1ue1')">Antworten prüfen</button>
+      <div class="score-badge" id="v1ue1-score"></div>
+    </div>
+
+    <!-- ÜBUNG 2: Passiv mit Modalverb -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">2</div>
+        <div>
+          <div class="uebung-title">Passiv mit Modalverb</div>
+          <div class="uebung-subtitle">Schreiben Sie Sätze im Passiv mit Modalverb. Beispiel: ich • müssen • operieren → Ich muss operiert werden.</div>
+        </div>
+      </div>
+      <div id="v1ue2-items"></div>
+      <button class="check-btn" onclick="checkTransform('v1ue2')">Antworten prüfen</button>
+      <div class="score-badge" id="v1ue2-score"></div>
+    </div>
+
+    <!-- ÜBUNG 3: Aktiv → Passiv / Passiv → Aktiv -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">3</div>
+        <div>
+          <div class="uebung-title">Aktiv ↔ Passiv</div>
+          <div class="uebung-subtitle">Schreiben Sie den Satz um (Aktiv → Passiv oder Passiv → Aktiv mit "man").</div>
+        </div>
+      </div>
+      <div id="v1ue3-items"></div>
+      <button class="check-btn" onclick="checkTransform('v1ue3')">Antworten prüfen</button>
+      <div class="score-badge" id="v1ue3-score"></div>
+    </div>
+
+    <!-- ÜBUNG 4: Passiv Präteritum / Perfekt -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">4</div>
+        <div>
+          <div class="uebung-title">Passiv Präteritum &amp; Perfekt</div>
+          <div class="uebung-subtitle">Ergänzen Sie die richtige Form von <em>werden</em> oder <em>sein</em>.</div>
+        </div>
+      </div>
+      <div id="v1ue4-items"></div>
+      <button class="check-btn" onclick="checkFill('v1ue4')">Antworten prüfen</button>
+      <div class="score-badge" id="v1ue4-score"></div>
+    </div>
+
+    <!-- ÜBUNG 5: Schlagzeilen & Verbote (MC) -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">5</div>
+        <div>
+          <div class="uebung-title">Schlagzeilen, Verbote &amp; Verben</div>
+          <div class="uebung-subtitle">Wählen Sie die richtige Passiv-Form.</div>
+        </div>
+      </div>
+      <div id="v1ue5-items"></div>
+      <div class="score-badge" id="v1ue5-score"></div>
+    </div>
+
+  </div>
+
+  <!-- V1 SCHNELLTEST -->
+  <div id="v1-test" class="inner-content">
+    <div class="schnelltest-container"><div id="qt-container-v1"></div></div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- OUTER 2: ZUSTANDSPASSIV (B1+) -->
+<!-- ============================================================ -->
+<div id="outer-v2" class="outer-content v2">
+
+  <div class="inner-tabs">
+    <button class="inner-tab-btn active" onclick="showInner('v2','erkl')">📖 Erklärung</button>
+    <button class="inner-tab-btn" onclick="showInner('v2','ueb')">✏️ Übungen</button>
+    <button class="inner-tab-btn" onclick="showInner('v2','test')">⚡ Schnelltest</button>
+  </div>
+
+  <!-- V2 ERKLÄRUNG -->
+  <div id="v2-erkl" class="inner-content active">
+
+    <div class="intro-box">
+      <p>Sie kennen schon das <strong>Vorgangspassiv</strong> (werden + Partizip Perfekt) — es beschreibt eine <strong>Handlung</strong>.<br>
+      Jetzt lernen Sie das <strong>Zustandspassiv</strong> (sein + Partizip Perfekt) — es beschreibt einen <strong>Zustand</strong>, also das Ergebnis nach der Handlung.</p>
+      <p class="vn-note">🇻🇳 So sánh: "Cửa đang được đóng" (hành động) ↔ "Cửa đã đóng / đang đóng" (trạng thái, kết quả).</p>
+    </div>
+
+    <div class="section-title">Vorgangspassiv vs. Zustandspassiv</div>
+
+    <table class="compare-table">
+      <thead><tr><th class="empty"></th><th class="vorgang">Vorgangspassiv</th><th class="zustand">Zustandspassiv</th></tr></thead>
+      <tbody>
+        <tr><td>Formel</td><td class="vorgang-cell"><strong>werden</strong> + Partizip Perfekt</td><td class="zustand-cell"><strong>sein</strong> + Partizip Perfekt</td></tr>
+        <tr><td>Frage</td><td>Was passiert (gerade)?</td><td>Wie ist der Zustand jetzt?</td></tr>
+        <tr><td>Beispiel</td><td class="vorgang-cell">Die Tür <strong>wird geschlossen</strong>.</td><td class="zustand-cell">Die Tür <strong>ist geschlossen</strong>.</td></tr>
+        <tr><td>Typische Wörter</td><td>jeden Tag, gerade, um 8 Uhr</td><td>schon, bereits, noch, jetzt</td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">Regel – Zustandspassiv</div>
+
+    <table class="formel-table">
+      <tr><th>Subjekt</th><th>Position 2</th><th>Ende</th></tr>
+      <tr><td>Das Geschäft</td><td class="pos2">ist</td><td class="ende-cell"><span class="sein-form">geschlossen</span>. <span style="color:var(--text-muted);font-weight:400">(Partizip Perfekt)</span></td></tr>
+    </table>
+
+    <div class="regel-box">
+      <h3>🔷 Regel – Zustandspassiv</h3>
+      <div class="formel">sein (konjugiert) <span class="plus">+</span> Partizip Perfekt</div>
+      <ul class="regel-list">
+        <li>Das Partizip Perfekt bleibt <strong>immer gleich</strong>.</li>
+        <li>Nur <strong>sein</strong> wird konjugiert.</li>
+        <li>Kein <em>von + Dativ</em> — die Person ist nicht wichtig.</li>
+        <li>Typisch für <strong>Schilder, Beschreibungen, Zustände</strong>: Das Geschäft ist geöffnet.</li>
+      </ul>
+    </div>
+
+    <div class="konj-table">
+      <div class="konj-header">sein – Präsens</div>
+      <div class="konj-row"><span class="pronomen">ich</span><span class="form">bin</span></div>
+      <div class="konj-row"><span class="pronomen">du</span><span class="form">bist</span></div>
+      <div class="konj-row"><span class="pronomen">er/sie/es</span><span class="form">ist</span></div>
+      <div class="konj-row"><span class="pronomen">wir</span><span class="form">sind</span></div>
+      <div class="konj-row"><span class="pronomen">ihr</span><span class="form">seid</span></div>
+      <div class="konj-row"><span class="pronomen">sie/Sie</span><span class="form">sind</span></div>
+    </div>
+
+    <div class="hinweis-box b1plus">
+      <strong>⚠️ Achtung – drei ähnliche Formen!</strong><br>
+      Das Fenster <strong>ist geöffnet</strong>. → Zustandspassiv (Zustand jetzt)<br>
+      Das Fenster <strong>wird geöffnet</strong>. → Vorgangspassiv Präsens (Handlung gerade)<br>
+      Das Fenster <strong>ist geöffnet worden</strong>. → Vorgangspassiv Perfekt (Handlung in der Vergangenheit, aber Fokus auf der Handlung)
+    </div>
+
+    <div class="beispiele-title">🔍 5 interaktive Beispiele</div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">1</div>
+      <div class="beispiel-situation">Situation: Tür im Büro</div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Vorgang:</span><span class="satz-text">Die Tür <span class="hlx">wird</span> um 9 Uhr <span class="hlx">geöffnet</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Zustand:</span><span class="satz-text">Die Tür <span class="hl2">ist</span> jetzt <span class="hl2">geöffnet</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Im ersten Satz passiert die Handlung gerade (Vorgangspassiv).<br>
+        Im zweiten Satz beschreiben wir nur das Ergebnis: Die Tür ist offen (Zustandspassiv).<br>
+        <span class="vn">🇻🇳 "Cửa đang được mở" (hành động) → "Cửa đang mở" (trạng thái, đã mở rồi).</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">2</div>
+      <div class="beispiel-situation">Situation: E-Mails im Büro</div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Vorgang:</span><span class="satz-text">Die E-Mails <span class="hlx">werden</span> heute <span class="hlx">beantwortet</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Zustand:</span><span class="satz-text">Die E-Mails <span class="hl2">sind</span> schon <span class="hl2">beantwortet</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Das Zustandspassiv zeigt ein <em>abgeschlossenes Ergebnis</em> — es gibt nichts mehr zu tun.<br>
+        Typische Wörter dafür: <strong>schon, bereits, noch, nicht mehr</strong>.<br>
+        <span class="vn">🇻🇳 "Email đã được trả lời" — chỉ trạng thái hoàn thành, không cần biết ai trả lời.</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">3</div>
+      <div class="beispiel-situation">Situation: Schilder</div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Schild:</span><span class="satz-text">Das Geschäft <span class="hl2">ist geschlossen</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Schild:</span><span class="satz-text">Der Tisch <span class="hl2">ist reserviert</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Schild:</span><span class="satz-text">Alle Plätze <span class="hl2">sind besetzt</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Zustandspassiv ist sehr typisch für Schilder und Status-Angaben.<br>
+        Niemand fragt hier "Von wem?" — der Zustand selbst ist die wichtige Information.<br>
+        <span class="vn">🇻🇳 Như biển hiệu: "Đóng cửa", "Đã đặt trước", "Hết bàn" — chỉ cần biết trạng thái.</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">4</div>
+      <div class="beispiel-situation">Situation: Umzug</div>
+      <div class="satz-row aktiv"><span class="satz-label aktiv">Aktiv:</span><span class="satz-text">Wir haben alle Möbel <span class="hlx">aufgestellt</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Zustand:</span><span class="satz-text">Alle Möbel <span class="hl2">sind</span> <span class="hl2">aufgestellt</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Nach einer Aktivität (hier: Perfekt Aktiv) beschreibt das Zustandspassiv das <strong>sichtbare Ergebnis</strong>.<br>
+        Wer die Möbel aufgestellt hat, ist im Zustandspassiv nicht mehr wichtig.<br>
+        <span class="vn">🇻🇳 "Tất cả đồ đạc đã được sắp xếp xong" — không cần nhắc lại ai làm.</span>
+      </div>
+    </div>
+
+    <div class="beispiel-card">
+      <div class="beispiel-nr">5</div>
+      <div class="beispiel-situation">Situation: Brücke / Bauprojekt</div>
+      <div class="satz-row passiv1"><span class="satz-label passiv1">Vorgang:</span><span class="satz-text">Die Brücke <span class="hlx">wird</span> seit 2020 <span class="hlx">gebaut</span>.</span></div>
+      <div class="satz-row passiv2"><span class="satz-label passiv2">Zustand:</span><span class="satz-text">Die Brücke <span class="hl2">ist</span> jetzt fertig <span class="hl2">gebaut</span>.</span></div>
+      <button class="explain-btn" onclick="toggleExplain(this)">💡 Erklärung anzeigen</button>
+      <div class="explain-panel">
+        Vorgangspassiv Präsens = der Prozess läuft gerade.<br>
+        Zustandspassiv = der Prozess ist abgeschlossen, das Ergebnis existiert jetzt.<br>
+        <span class="vn">🇻🇳 "Cây cầu đang được xây" (đang xây) → "Cây cầu đã xây xong" (kết quả).</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- V2 ÜBUNGEN -->
+  <div id="v2-ueb" class="inner-content">
+
+    <!-- ÜBUNG 1: sein bilden -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">1</div>
+        <div>
+          <div class="uebung-title">Zustandspassiv bilden</div>
+          <div class="uebung-subtitle">Ergänzen Sie die richtige Form von <em>sein</em>.</div>
+        </div>
+      </div>
+      <div id="v2ue1-items"></div>
+      <button class="check-btn" onclick="checkFill('v2ue1')">Antworten prüfen</button>
+      <div class="score-badge" id="v2ue1-score"></div>
+    </div>
+
+    <!-- ÜBUNG 2: Vorgang oder Zustand? -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">2</div>
+        <div>
+          <div class="uebung-title">Vorgangspassiv oder Zustandspassiv?</div>
+          <div class="uebung-subtitle">Wählen Sie die richtige Kategorie.</div>
+        </div>
+      </div>
+      <div id="v2ue2-items"></div>
+      <div class="score-badge" id="v2ue2-score"></div>
+    </div>
+
+    <!-- ÜBUNG 3: Vorgang → Zustand umformen -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">3</div>
+        <div>
+          <div class="uebung-title">Vorgangspassiv → Zustandspassiv</div>
+          <div class="uebung-subtitle">Schreiben Sie den Satz im Zustandspassiv.</div>
+        </div>
+      </div>
+      <div id="v2ue3-items"></div>
+      <button class="check-btn" onclick="checkTransform('v2ue3')">Antworten prüfen</button>
+      <div class="score-badge" id="v2ue3-score"></div>
+    </div>
+
+    <!-- ÜBUNG 4: Beschreibungen ergänzen -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">4</div>
+        <div>
+          <div class="uebung-title">Beschreibungen ergänzen</div>
+          <div class="uebung-subtitle">Ergänzen Sie <em>sein</em> in der richtigen Form.</div>
+        </div>
+      </div>
+      <div id="v2ue4-items"></div>
+      <button class="check-btn" onclick="checkFill('v2ue4')">Antworten prüfen</button>
+      <div class="score-badge" id="v2ue4-score"></div>
+    </div>
+
+    <!-- ÜBUNG 5: passenden Satz wählen -->
+    <div class="uebung-block">
+      <div class="uebung-header">
+        <div class="uebung-nr">5</div>
+        <div>
+          <div class="uebung-title">Passenden Satz wählen</div>
+          <div class="uebung-subtitle">Welcher Satz passt zur Situation?</div>
+        </div>
+      </div>
+      <div id="v2ue5-items"></div>
+      <div class="score-badge" id="v2ue5-score"></div>
+    </div>
+
+  </div>
+
+  <!-- V2 SCHNELLTEST -->
+  <div id="v2-test" class="inner-content">
+    <div class="schnelltest-container"><div id="qt-container-v2"></div></div>
+  </div>
+
+</div>
+
+<div class="footer">Made with love by Bảo Quang · Miteinander! B1 Passiv – Vorgangspassiv &amp; Zustandspassiv (B1+)</div>
+
+<script>
+// ===== OUTER TAB NAVIGATION =====
+function showOuter(which) {
+  document.querySelectorAll('.outer-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.outer-tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('outer-' + which).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  const header = document.getElementById('mainHeader');
+  const title = document.getElementById('headerTitle');
+  const sub = document.getElementById('headerSub');
+  if (which === 'v1') {
+    header.classList.remove('zustand');
+    title.textContent = 'Das Passiv';
+    sub.textContent = 'Vorgangspassiv: Präsens, Präteritum, Perfekt & Modalverben';
+  } else {
+    header.classList.add('zustand');
+    title.textContent = 'Das Passiv';
+    sub.textContent = 'Zustandspassiv: sein + Partizip Perfekt (B1+)';
+  }
+
+  if (which === 'v1' && !qtInit.v1 && document.getElementById('v1-test').classList.contains('active')) initSchnelltest('v1');
+  if (which === 'v2' && !qtInit.v2 && document.getElementById('v2-test').classList.contains('active')) initSchnelltest('v2');
+}
+
+// ===== INNER TAB NAVIGATION =====
+function showInner(outer, which) {
+  const container = document.getElementById('outer-' + outer);
+  container.querySelectorAll('.inner-content').forEach(el => el.classList.remove('active'));
+  container.querySelectorAll('.inner-tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(outer + '-' + which).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (which === 'test' && !qtInit[outer]) initSchnelltest(outer);
+}
+
+function toggleExplain(btn) {
+  const panel = btn.nextElementSibling;
+  panel.classList.toggle('show');
+  btn.textContent = panel.classList.contains('show') ? '💡 Erklärung ausblenden' : '💡 Erklärung anzeigen';
+}
+
+// ============================================================
+// V1 — VORGANGSPASSIV DATA
+// ============================================================
+
+// V1 Übung 1: Passiv Präsens bilden (transform, free-text input with prompt)
+const v1ue1Data = [
+  { prompt: '1. ein Paket • senden', answer: 'Das Paket wird gesendet.' },
+  { prompt: '2. ich • operieren', answer: 'Ich werde operiert.' },
+  { prompt: '3. die Getränke • verkaufen', answer: 'Die Getränke werden verkauft.' },
+  { prompt: '4. ihr • informieren', answer: 'Ihr werdet informiert.' },
+  { prompt: '5. Sie • abholen', answer: 'Sie werden abgeholt.' },
+  { prompt: '6. du • nach Hause bringen', answer: 'Du wirst nach Hause gebracht.' },
+  { prompt: '7. der Olympiasieg • feiern', answer: 'Der Olympiasieg wird gefeiert.' },
+  { prompt: '8. die Pizza • bestellen', answer: 'Die Pizza wird bestellt.' },
+  { prompt: '9. wir • vom Arzt behandeln', answer: 'Wir werden vom Arzt behandelt.' },
+  { prompt: '10. das Fenster • öffnen', answer: 'Das Fenster wird geöffnet.' },
+  { prompt: '11. die Hausaufgaben • korrigieren', answer: 'Die Hausaufgaben werden korrigiert.' },
+  { prompt: '12. der Brief • schreiben', answer: 'Der Brief wird geschrieben.' },
+  { prompt: '13. die Kinder • abholen', answer: 'Die Kinder werden abgeholt.' },
+];
+
+// V1 Übung 2: Passiv mit Modalverb
+const v1ue2Data = [
+  { prompt: '1. ich • müssen • operieren', answer: 'Ich muss operiert werden.' },
+  { prompt: '2. die Bremsen vom Auto • müssen • kontrollieren', answer: 'Die Bremsen vom Auto müssen kontrolliert werden.' },
+  { prompt: '3. du • wollen • vom Arzt behandeln', answer: 'Du willst vom Arzt behandelt werden.' },
+  { prompt: '4. wir • müssen • untersuchen', answer: 'Wir müssen untersucht werden.' },
+  { prompt: '5. Eis • dürfen • hier nicht essen', answer: 'Eis darf hier nicht gegessen werden.' },
+  { prompt: '6. der Verletzte • müssen • operieren', answer: 'Der Verletzte muss operiert werden.' },
+  { prompt: '7. die Bremsen • müssen • reparieren', answer: 'Die Bremsen müssen repariert werden.' },
+  { prompt: '8. du • müssen • fragen', answer: 'Du musst gefragt werden.' },
+  { prompt: '9. ich • wollen • schnell bedienen', answer: 'Ich will schnell bedient werden.' },
+  { prompt: '10. der Anruf • nicht können • weiterleiten', answer: 'Der Anruf kann nicht weitergeleitet werden.' },
+  { prompt: '11. das Auto • müssen • abholen', answer: 'Das Auto muss abgeholt werden.' },
+  { prompt: '12. die Fenster • müssen • schließen', answer: 'Die Fenster müssen geschlossen werden.' },
+  { prompt: '13. hier • dürfen • nicht parken', answer: 'Hier darf nicht geparkt werden.' },
+];
+
+// V1 Übung 3: Aktiv ↔ Passiv (mix)
+const v1ue3Data = [
+  { prompt: '1. Aktiv → Passiv: In Deutschland isst man viele Kartoffeln.', answer: 'In Deutschland werden viele Kartoffeln gegessen.' },
+  { prompt: '2. Aktiv → Passiv: In Baden isst man auch häufig Spätzle und Knödel.', answer: 'In Baden werden auch häufig Spätzle und Knödel gegessen.' },
+  { prompt: '3. Aktiv → Passiv: In Wien kann man Sachertorte probieren.', answer: 'In Wien kann Sachertorte probiert werden.' },
+  { prompt: '4. Aktiv → Passiv: In Argentinien isst man viel Rindfleisch.', answer: 'In Argentinien wird viel Rindfleisch gegessen.' },
+  { prompt: '5. Passiv → Aktiv mit "man": In Norddeutschland und in Bayern wird viel Bier getrunken.', answer: 'In Norddeutschland und in Bayern trinkt man viel Bier.' },
+  { prompt: '6. Passiv → Aktiv mit "man": In der Pfalz und in Baden-Württemberg wird Wein getrunken.', answer: 'In der Pfalz und in Baden-Württemberg trinkt man Wein.' },
+  { prompt: '7. Passiv → Aktiv mit "man": In Hessen werden Apfelsaft und Apfelwein getrunken.', answer: 'In Hessen trinkt man Apfelsaft und Apfelwein.' },
+  { prompt: '8. Passiv → Aktiv mit "man": Zum Frühstück wird in Deutschland meistens Kaffee getrunken.', answer: 'Zum Frühstück trinkt man in Deutschland meistens Kaffee.' },
+  { prompt: '9. Aktiv → Passiv: Der Lehrer korrigiert die Tests.', answer: 'Die Tests werden vom Lehrer korrigiert.' },
+  { prompt: '10. Aktiv → Passiv: Man liest die Zeitung jeden Morgen.', answer: 'Die Zeitung wird jeden Morgen gelesen.' },
+  { prompt: '11. Passiv → Aktiv mit "man": Die Fenster werden jeden Tag geputzt.', answer: 'Man putzt die Fenster jeden Tag.' },
+  { prompt: '12. Aktiv → Passiv: Die Firma stellt fünf neue Mitarbeiter ein.', answer: 'Fünf neue Mitarbeiter werden von der Firma eingestellt.' },
+  { prompt: '13. Passiv → Aktiv mit "man": In diesem Restaurant wird gutes Essen gekocht.', answer: 'In diesem Restaurant kocht man gutes Essen.' },
+];
+
+// V1 Übung 4: Präteritum/Perfekt fill-in (werden/sein in correct form)
+const v1ue4Data = [
+  { sentence: '1945 ___ der Krieg beendet. (Präteritum)', answer: 'wurde' },
+  { sentence: 'Nach dem Krieg ___ Deutschland in zwei Staaten geteilt. (Präteritum)', answer: 'wurde' },
+  { sentence: '1949 ___ der 1. Bundestag gewählt. (Präteritum)', answer: 'wurde' },
+  { sentence: '1961 ___ die Mauer gebaut. (Präteritum)', answer: 'wurde' },
+  { sentence: 'Am 9. November 1989 ___ die Mauer in Berlin geöffnet. (Präteritum)', answer: 'wurde' },
+  { sentence: 'Am 3. Oktober 1990 ___ die beiden deutschen Staaten wiedervereinigt. (Präteritum)', answer: 'wurden' },
+  { sentence: 'Wann ___ Aspirin entdeckt worden? (Passiv Perfekt, Frage)', answer: 'ist' },
+  { sentence: 'Von wem ___ Amerika entdeckt worden?', answer: 'ist' },
+  { sentence: 'Die E-Mails ___ schon beantwortet worden.', answer: 'sind' },
+  { sentence: 'Die Rechnungen ___ schon bezahlt worden.', answer: 'sind' },
+  { sentence: 'Wie lange ___ der Kölner Dom gebaut worden?', answer: 'ist' },
+  { sentence: 'Wann ___ das erste Handy verkauft worden?', answer: 'ist' },
+  { sentence: 'Wo ___ schon vor 3500 Jahren Glas produziert worden?', answer: 'ist' },
+];
+
+// V1 Übung 5: Multiple Choice
+const v1ue5Data = [
+  { sentence: 'Neuer Saturnmond ___ !', answer: 'entdeckt', options: ['entdeckt', 'entdecken', 'entdeckte'] },
+  { sentence: 'Ein neuer Saturnmond ist entdeckt ___.', answer: 'worden', options: ['geworden', 'worden', 'gewesen'] },
+  { sentence: 'Bank im Zentrum ___ !', answer: 'überfallen', options: ['überfallen', 'überfallt', 'überfällt'] },
+  { sentence: 'Neues Schwimmbad ___ !', answer: 'eröffnet', options: ['eröffnet', 'eröffnen', 'eröffnete'] },
+  { sentence: 'Baby von Schwan ___ !', answer: 'gebissen', options: ['gebissen', 'beißt', 'biss'] },
+  { sentence: 'Präsident mit großer Mehrheit ___ !', answer: 'gewählt', options: ['gewählt', 'wählen', 'wählte'] },
+  { sentence: 'Ein erfolgreicher Existenzgründer: Ein Geschäftspartner ___ gefunden werden.', answer: 'musste', options: ['musste', 'muss', 'müssen'] },
+  { sentence: 'Vor einer längeren Reise: Die Kleidung wird ___ und eingepackt.', answer: 'gewaschen', options: ['gewaschen', 'waschen', 'wäscht'] },
+  { sentence: 'Vor einer Reise: Die Blumen werden zu den Nachbarn ___ .', answer: 'gebracht', options: ['gebracht', 'bringen', 'bringt'] },
+  { sentence: 'Vor einer Reise: Der Kühlschrank wird leer ___ und abgestellt.', answer: 'geräumt', options: ['geräumt', 'räumen', 'räumte'] },
+  { sentence: 'Vor einer Reise: Die elektrischen Geräte werden ___ .', answer: 'ausgestellt', options: ['ausgestellt', 'ausstellen', 'stellten aus'] },
+  { sentence: 'Vor einer Reise: Die Taschen und Koffer werden ins Auto ___ .', answer: 'gepackt', options: ['gepackt', 'packen', 'packte'] },
+  { sentence: 'Verbot: Hier darf das Handy nicht ___ werden.', answer: 'angeschaltet', options: ['angeschaltet', 'anschalten', 'schaltet an'] },
+];
+
+// ============================================================
+// V2 — ZUSTANDSPASSIV DATA
+// ============================================================
+
+const v2ue1Data = [
+  { sentence: 'Das Fenster ___ geschlossen.', answer: 'ist' },
+  { sentence: 'Die Aufgaben ___ schon erledigt.', answer: 'sind' },
+  { sentence: 'Das Formular ___ ausgefüllt.', answer: 'ist' },
+  { sentence: 'Die Rechnung ___ noch nicht bezahlt.', answer: 'ist' },
+  { sentence: 'Die Pakete ___ bereits verschickt.', answer: 'sind' },
+  { sentence: 'Das Auto ___ repariert.', answer: 'ist' },
+  { sentence: 'Die Verträge ___ unterschrieben.', answer: 'sind' },
+  { sentence: 'Das Museum ___ geöffnet.', answer: 'ist' },
+  { sentence: 'Die Kinder ___ gut informiert.', answer: 'sind' },
+  { sentence: 'Das Buch ___ reserviert.', answer: 'ist' },
+  { sentence: 'Die Wohnung ___ gut renoviert.', answer: 'ist' },
+  { sentence: 'Alle Plätze ___ besetzt.', answer: 'sind' },
+  { sentence: 'Das Problem ___ gelöst.', answer: 'ist' },
+];
+
+const v2ue2Data = [
+  { sentence: 'Die Tür wird gerade geöffnet.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Die Tür ist geöffnet.', answer: 'Zustandspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Das Paket wird morgen verschickt.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Das Paket ist schon verschickt.', answer: 'Zustandspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Die Küche wird jeden Tag gereinigt.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Das Geschäft ist geschlossen.', answer: 'Zustandspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Die Rechnung wird bezahlt.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Die Rechnung ist bezahlt.', answer: 'Zustandspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Das Essen wird zubereitet.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Der Tisch ist gedeckt.', answer: 'Zustandspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Die E-Mails werden beantwortet.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Alle Aufgaben sind erledigt.', answer: 'Zustandspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+  { sentence: 'Das Formular wird ausgefüllt.', answer: 'Vorgangspassiv', options: ['Vorgangspassiv', 'Zustandspassiv'] },
+];
+
+const v2ue3Data = [
+  { prompt: '1. Die Tür wird geschlossen. → Zustand:', answer: 'Die Tür ist geschlossen.' },
+  { prompt: '2. Das Formular wird ausgefüllt. → Zustand:', answer: 'Das Formular ist ausgefüllt.' },
+  { prompt: '3. Die Aufgaben werden erledigt. → Zustand:', answer: 'Die Aufgaben sind erledigt.' },
+  { prompt: '4. Das Auto wird repariert. → Zustand:', answer: 'Das Auto ist repariert.' },
+  { prompt: '5. Die Rechnung wird bezahlt. → Zustand:', answer: 'Die Rechnung ist bezahlt.' },
+  { prompt: '6. Das Museum wird geöffnet. → Zustand:', answer: 'Das Museum ist geöffnet.' },
+  { prompt: '7. Die Pakete werden verschickt. → Zustand:', answer: 'Die Pakete sind verschickt.' },
+  { prompt: '8. Die Verträge werden unterschrieben. → Zustand:', answer: 'Die Verträge sind unterschrieben.' },
+  { prompt: '9. Das Buch wird reserviert. → Zustand:', answer: 'Das Buch ist reserviert.' },
+  { prompt: '10. Die Wohnung wird renoviert. → Zustand:', answer: 'Die Wohnung ist renoviert.' },
+  { prompt: '11. Das Problem wird gelöst. → Zustand:', answer: 'Das Problem ist gelöst.' },
+  { prompt: '12. Der Kaffee wird zubereitet. → Zustand:', answer: 'Der Kaffee ist zubereitet.' },
+  { prompt: '13. Die Plätze werden besetzt. → Zustand:', answer: 'Die Plätze sind besetzt.' },
+];
+
+const v2ue4Data = [
+  { sentence: 'Das Café ___ leider geschlossen. Wir kommen morgen wieder.', answer: 'ist' },
+  { sentence: 'Ich komme gleich — die Besprechung ___ noch nicht beendet.', answer: 'ist' },
+  { sentence: 'Keine Sorge! Alle Formulare ___ schon eingereicht.', answer: 'sind' },
+  { sentence: 'Der Vertrag ___ unterschrieben. Wir können beginnen.', answer: 'ist' },
+  { sentence: 'Die Fenster ___ geöffnet. Bitte schließen Sie sie.', answer: 'sind' },
+  { sentence: 'Das Gepäck ___ bereits eingeladen.', answer: 'ist' },
+  { sentence: 'Die neuen Mitarbeiter ___ informiert.', answer: 'sind' },
+  { sentence: 'Der Parkplatz ___ leider reserviert.', answer: 'ist' },
+  { sentence: 'Wir können essen — der Tisch ___ gedeckt.', answer: 'ist' },
+  { sentence: 'Die E-Mails ___ bereits beantwortet.', answer: 'sind' },
+  { sentence: 'Das Zimmer ___ gebucht.', answer: 'ist' },
+  { sentence: 'Die Prüfungsunterlagen ___ vorbereitet.', answer: 'sind' },
+  { sentence: 'Keine Panik! Das Problem ___ gelöst.', answer: 'ist' },
+];
+
+const v2ue5Data = [
+  { situation: 'Sie kommen zur Bäckerei um 20 Uhr. Was sehen Sie?', answer: 'Die Bäckerei ist geschlossen.', options: ['Die Bäckerei wird geschlossen.', 'Die Bäckerei ist geschlossen.', 'Die Bäckerei schließt.'] },
+  { situation: 'Ihr Kollege fragt: "Haben Sie die E-Mails schon bearbeitet?" Sie antworten:', answer: 'Ja, die E-Mails sind schon beantwortet.', options: ['Ja, die E-Mails werden beantwortet.', 'Ja, die E-Mails sind schon beantwortet.', 'Ja, die E-Mails wurden beantwortet worden.'] },
+  { situation: 'Sie beschreiben Ihr Zimmer nach dem Aufräumen:', answer: 'Das Zimmer ist aufgeräumt.', options: ['Das Zimmer wird aufgeräumt.', 'Das Zimmer wurde aufgeräumt worden.', 'Das Zimmer ist aufgeräumt.'] },
+  { situation: 'Ein Schild am Parkplatz zeigt:', answer: 'Dieser Platz ist reserviert.', options: ['Dieser Platz wird reserviert.', 'Dieser Platz ist reserviert.', 'Dieser Platz reserviert sich.'] },
+  { situation: 'Sie fragen beim Hotel: "Ist unser Zimmer fertig?" Antwort:', answer: 'Ja, Ihr Zimmer ist vorbereitet.', options: ['Ja, Ihr Zimmer wird vorbereitet.', 'Ja, Ihr Zimmer ist vorbereitet.', 'Ja, Ihr Zimmer hat vorbereitet.'] },
+  { situation: 'Der Mechaniker sagt: "Fertig!" Was sagen Sie Ihrer Frau?', answer: 'Das Auto ist repariert!', options: ['Das Auto wird repariert!', 'Das Auto ist repariert!', 'Das Auto hat sich repariert!'] },
+  { situation: 'Sie machen eine To-do-Liste. Ein Punkt ist fertig. Sie schreiben:', answer: 'Die Aufgabe ist erledigt. ✓', options: ['Die Aufgabe wird erledigt. ✓', 'Die Aufgabe ist erledigt. ✓', 'Die Aufgabe erledigt sich. ✓'] },
+  { situation: 'Sie beschreiben ein Haus nach der Renovierung:', answer: 'Das Haus ist komplett renoviert.', options: ['Das Haus wird komplett renoviert.', 'Das Haus ist komplett renoviert.', 'Das Haus renoviert komplett.'] },
+  { situation: 'Was bedeutet das Schild "Ausverkauft"?', answer: 'Die Ware ist ausverkauft.', options: ['Die Ware wird ausverkauft.', 'Die Ware ist ausverkauft.', 'Die Ware hat ausverkauft.'] },
+  { situation: 'Beim Einzug sagt die Nachbarin: "Herzlich willkommen!" Sie antworten:', answer: 'Danke! Alles ist schon eingerichtet.', options: ['Danke! Alles wird eingerichtet.', 'Danke! Alles ist schon eingerichtet.', 'Danke! Alles hat eingerichtet.'] },
+  { situation: 'Der Arzt sagt: "Die Operation läuft gerade."', answer: 'Der Patient wird operiert.', options: ['Der Patient wird operiert.', 'Der Patient ist operiert.', 'Der Patient hat operiert.'] },
+  { situation: 'Nach der Operation: "Alles gut. Fertig."', answer: 'Der Patient ist operiert.', options: ['Der Patient wird operiert.', 'Der Patient ist operiert.', 'Der Patient operiert sich.'] },
+  { situation: 'Sie sehen ein Schild an der Bibliothek: "Wegen Umbau …"', answer: 'Die Bibliothek ist geschlossen.', options: ['Die Bibliothek wird geschlossen.', 'Die Bibliothek ist geschlossen.', 'Die Bibliothek schließt sich.'] },
+];
+
+// ============================================================
+// SCHNELLTEST DATA
+// ============================================================
+
+const qtDataV1 = [
+  { q: 'Wie bildet man das Passiv Präsens?', correct: 'werden + Partizip Perfekt', options: ['werden + Infinitiv', 'werden + Partizip Perfekt', 'sein + Partizip Perfekt', 'haben + Partizip Perfekt'] },
+  { q: '"Der Motor ___ montiert."', correct: 'wird', options: ['wird', 'ist', 'wurde', 'hat'] },
+  { q: '"Hier muss Lärmschutz ___ ___."', correct: 'getragen werden', options: ['getragen werden', 'tragen werden', 'getragen worden', 'tragen worden'] },
+  { q: 'Was wird im Passiv aus dem Akkusativ-Objekt?', correct: 'das Subjekt', options: ['das Subjekt', 'das Objekt', 'das Modalverb', 'das Partizip'] },
+  { q: '"Der Kölner Dom ___ von 1248 bis 1880 gebaut." (Präteritum)', correct: 'wurde', options: ['wurde', 'wird', 'ist', 'war'] },
+  { q: '"Er ist über 600 Jahre lang gebaut ___."', correct: 'worden', options: ['geworden', 'worden', 'gewesen', 'geworden worden'] },
+  { q: 'Welches Partizip von werden hat KEIN ge-?', correct: 'worden', options: ['geworden', 'worden', 'gewerdet', 'wird'] },
+  { q: '"Im 20. Jahrhundert ___ er renoviert werden."', correct: 'musste', options: ['musste', 'muss', 'mussten', 'müssen'] },
+  { q: '"In Norddeutschland ___ viel Bier getrunken."', correct: 'wird', options: ['wird', 'werden', 'ist', 'sind'] },
+  { q: 'Aktiv: "Der Lehrer korrigiert die Tests." → Passiv:', correct: 'Die Tests werden korrigiert.', options: ['Die Tests werden korrigiert.', 'Die Tests sind korrigiert.', 'Der Lehrer wird korrigiert.', 'Die Tests korrigieren.'] },
+  { q: '"Wann ___ Aspirin entdeckt worden?"', correct: 'ist', options: ['ist', 'hat', 'wird', 'war'] },
+  { q: '"Hier darf kein Eis ___ ___."', correct: 'gegessen werden', options: ['gegessen werden', 'essen werden', 'gegessen worden', 'essen worden'] },
+  { q: '"Die Bremsen ___ kontrolliert werden müssen."', correct: 'müssen', options: ['müssen', 'wollen', 'können', 'sollen'] },
+  { q: 'Wo steht das Modalverb im Passivsatz?', correct: 'Position 2', options: ['Position 2', 'am Satzende', 'vor dem Subjekt', 'nach werden'] },
+  { q: '"Die Mauer ___ 1961 gebaut."', correct: 'wurde', options: ['wurde', 'wird', 'ist', 'war'] },
+];
+
+const qtDataV2 = [
+  { q: 'Wie bildet man das Zustandspassiv?', correct: 'sein + Partizip Perfekt', options: ['werden + Partizip Perfekt', 'sein + Partizip Perfekt', 'haben + Partizip Perfekt', 'werden + Infinitiv'] },
+  { q: 'Was beschreibt das Zustandspassiv?', correct: 'einen Zustand / ein Ergebnis', options: ['eine laufende Handlung', 'einen Zustand / ein Ergebnis', 'eine Zukunftsplanung', 'eine Vermutung'] },
+  { q: '"Das Fenster ___ geöffnet." (Zustand)', correct: 'ist', options: ['wird', 'ist', 'hat', 'wurde'] },
+  { q: '"Die Aufgaben ___ schon erledigt." (Plural)', correct: 'sind', options: ['ist', 'werden', 'sind', 'haben'] },
+  { q: 'Welcher Satz ist Zustandspassiv?', correct: 'Die Tür ist geschlossen.', options: ['Die Tür wird geschlossen.', 'Die Tür ist geschlossen.', 'Die Tür wurde geschlossen.', 'Die Tür ist geschlossen worden.'] },
+  { q: 'Welcher Satz ist Vorgangspassiv (Präsens)?', correct: 'Das Auto wird repariert.', options: ['Das Auto ist repariert.', 'Das Auto wird repariert.', 'Das Auto wurde repariert.', 'Das Auto ist repariert worden.'] },
+  { q: '"Das Geschäft ___ leider geschlossen." (Schild)', correct: 'ist', options: ['wird', 'war', 'ist', 'hat'] },
+  { q: 'Welche Wörter passen typisch zum Zustandspassiv?', correct: 'schon, bereits, noch', options: ['immer, täglich, regelmäßig', 'schon, bereits, noch', 'gerade, jetzt gerade', 'bald, morgen'] },
+  { q: 'Vorgangspassiv → Zustandspassiv: "Die Rechnung wird bezahlt." →', correct: 'Die Rechnung ist bezahlt.', options: ['Die Rechnung ist bezahlt worden.', 'Die Rechnung ist bezahlt.', 'Die Rechnung wurde bezahlt.', 'Die Rechnung hat bezahlt.'] },
+  { q: '"Alle Plätze ___ besetzt."', correct: 'sind', options: ['werden', 'sind', 'haben', 'werden sein'] },
+  { q: '"Der Vertrag ___ unterschrieben. Wir können anfangen."', correct: 'ist', options: ['wird', 'hat', 'ist', 'werden'] },
+  { q: 'Was ist KEIN Zustandspassiv?', correct: 'Das Fenster ist geöffnet worden.', options: ['Das Geschäft ist geschlossen.', 'Die Tür ist geöffnet.', 'Das Fenster ist geöffnet worden.', 'Das Paket ist verschickt.'] },
+  { q: '"Die Wohnung ___ schon renoviert. Wir können einziehen!"', correct: 'ist', options: ['wird', 'werden', 'hat', 'ist'] },
+  { q: '"Die Pakete ___ bereits verschickt." (Plural)', correct: 'sind', options: ['ist', 'hat', 'werden', 'sind'] },
+  { q: 'Im Zustandspassiv verändert sich …', correct: 'nur sein', options: ['nur das Partizip', 'nur sein', 'sein und das Partizip', 'nichts'] },
+];
+
+// ============================================================
+// RENDER / CHECK FUNCTIONS
+// ============================================================
+
+const allFillData = { v1ue4: v1ue4Data, v2ue1: v2ue1Data, v2ue4: v2ue4Data };
+const allTransformData = { v1ue1: v1ue1Data, v1ue2: v1ue2Data, v1ue3: v1ue3Data, v2ue3: v2ue3Data };
+const allMCData = { v1ue5: v1ue5Data, v2ue2: v2ue2Data, v2ue5: v2ue5Data };
+
+function renderFill(blockId) {
+  const data = allFillData[blockId];
+  const container = document.getElementById(blockId + '-items');
+  container.innerHTML = data.map((item, i) => {
+    const parts = item.sentence.split('___');
+    return `<div class="fill-item">
+      <span class="item-nr">${i+1}.</span>
+      <span>${parts[0]}</span>
+      <input type="text" class="fill-input" id="${blockId}-input-${i}" placeholder="…" autocomplete="off">
+      <span>${parts[1] || ''}</span>
+    </div>`;
+  }).join('');
+}
+
+function checkFill(blockId) {
+  const data = allFillData[blockId];
+  let correct = 0;
+  data.forEach((item, i) => {
+    const input = document.getElementById(`${blockId}-input-${i}`);
+    const val = input.value.trim().toLowerCase();
+    if (val === item.answer.toLowerCase()) {
+      input.className = 'fill-input correct';
+      correct++;
+    } else {
+      input.className = 'fill-input wrong';
+      input.placeholder = item.answer;
+    }
+  });
+  showScore(blockId, correct, data.length);
+}
+
+function renderTransform(blockId) {
+  const data = allTransformData[blockId];
+  const container = document.getElementById(blockId + '-items');
+  container.innerHTML = data.map((item, i) => `
+    <div class="transform-item">
+      <div class="transform-prompt">${item.prompt}</div>
+      <div class="transform-input-wrap">
+        <input type="text" class="transform-input" id="${blockId}-t-${i}" placeholder="Schreiben Sie den Satz …" autocomplete="off">
+      </div>
+      <div class="answer-text" id="${blockId}-ans-${i}">✓ ${item.answer}</div>
+    </div>
+  `).join('');
+}
+
+function checkTransform(blockId) {
+  const data = allTransformData[blockId];
+  let correct = 0;
+  const norm = s => s.toLowerCase().replace(/[.,!?]/g, '').replace(/\s+/g,' ').trim();
+  data.forEach((item, i) => {
+    const input = document.getElementById(`${blockId}-t-${i}`);
+    const val = input.value.trim();
+    if (norm(val) === norm(item.answer)) {
+      input.classList.add('correct');
+      correct++;
+    } else {
+      input.classList.add('wrong');
+      document.getElementById(`${blockId}-ans-${i}`).style.display = 'block';
+    }
+  });
+  showScore(blockId, correct, data.length);
+}
+
+function renderMC(blockId) {
+  const data = allMCData[blockId];
+  const container = document.getElementById(blockId + '-items');
+  container.innerHTML = data.map((item, i) => {
+    const text = item.sentence || item.situation;
+    return `<div class="mc-item" id="${blockId}-mc-${i}">
+      <div class="mc-question">${i+1}. ${text}</div>
+      <div class="mc-options">
+        ${item.options.map(opt => `<button class="mc-btn" onclick="handleMC(this,'${blockId}','${opt.replace(/'/g,"\\'")}','${item.answer.replace(/'/g,"\\'")}')">${opt}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  window[blockId + '_score'] = { correct: 0, total: data.length, answered: 0 };
+}
+
+function handleMC(btn, blockId, chosen, answer) {
+  const btns = btn.parentElement.querySelectorAll('.mc-btn');
+  btns.forEach(b => b.disabled = true);
+  if (chosen === answer) {
+    btn.classList.add('correct');
+    window[blockId + '_score'].correct++;
+  } else {
+    btn.classList.add('wrong');
+    btns.forEach(b => { if (b.textContent.trim() === answer) b.classList.add('correct'); });
+  }
+  window[blockId + '_score'].answered++;
+  const s = window[blockId + '_score'];
+  if (s.answered === s.total) showScore(blockId, s.correct, s.total);
+}
+
+function showScore(blockId, correct, total) {
+  const scoreEl = document.getElementById(`${blockId}-score`);
+  scoreEl.style.display = 'block';
+  const pct = Math.round(correct / total * 100);
+  scoreEl.style.background = pct >= 70 ? 'var(--correct-bg)' : 'var(--wrong-bg)';
+  scoreEl.style.color = pct >= 70 ? 'var(--correct)' : 'var(--wrong)';
+  scoreEl.textContent = `Ergebnis: ${correct} / ${total} (${pct}%)`;
+}
+
+// ============================================================
+// SCHNELLTEST LOGIC
+// ============================================================
+
+let qtInit = { v1: false, v2: false };
+let qtState = {};
+
+function initSchnelltest(which) {
+  qtInit[which] = true;
+  const data = which === 'v1' ? qtDataV1 : qtDataV2;
+  qtState[which] = { current: 0, score: 0, answered: false, items: [...data].sort(() => Math.random() - 0.5) };
+  renderQTQuestion(which);
+}
+
+function renderQTQuestion(which) {
+  const state = qtState[which];
+  const container = document.getElementById('qt-container-' + which);
+  if (state.current >= state.items.length) {
+    const pct = Math.round(state.score / state.items.length * 100);
+    container.innerHTML = `<div class="qt-result">
+      <div class="qt-score-circle">${state.score}</div>
+      <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px">${pct >= 80 ? '🎉 Ausgezeichnet!' : pct >= 60 ? '👍 Gut gemacht!' : '💪 Weiter üben!'}</div>
+      <div style="color:var(--text-muted);font-size:0.88rem">Ergebnis: ${state.score} / ${state.items.length} (${pct}%)</div>
+      <button class="qt-restart-btn" onclick="restartQT('${which}')">Nochmal</button>
+    </div>`;
+    return;
+  }
+  const q = state.items[state.current];
+  state.answered = false;
+  const shuffledOpts = [...q.options].sort(() => Math.random() - 0.5);
+  container.innerHTML = `
+    <div class="qt-question-card">
+      <div>
+        <div class="qt-counter">Frage ${state.current + 1} / ${state.items.length}</div>
+        <div class="qt-progress"><div class="qt-progress-bar" style="width:${(state.current/state.items.length)*100}%"></div></div>
+        <div class="qt-question-text">${q.q}</div>
+      </div>
+      <div>
+        <div class="qt-options">
+          ${shuffledOpts.map(opt => `<button class="qt-opt-btn" onclick="handleQT(this,'${which}','${opt.replace(/'/g,"\\'")}','${q.correct.replace(/'/g,"\\'")}')">${opt}</button>`).join('')}
+        </div>
+        <button class="qt-next-btn" id="qt-next-${which}" style="display:none" onclick="nextQT('${which}')">
+          ${state.current < state.items.length - 1 ? 'Weiter →' : 'Ergebnis anzeigen'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function handleQT(btn, which, chosen, correct) {
+  const state = qtState[which];
+  if (state.answered) return;
+  state.answered = true;
+  const card = btn.closest('.qt-question-card');
+  const btns = card.querySelectorAll('.qt-opt-btn');
+  btns.forEach(b => b.disabled = true);
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    state.score++;
+  } else {
+    btn.classList.add('wrong');
+    btns.forEach(b => { if (b.textContent.trim() === correct) b.classList.add('correct'); });
+  }
+  document.getElementById('qt-next-' + which).style.display = 'inline-block';
+}
+
+function nextQT(which) {
+  qtState[which].current++;
+  renderQTQuestion(which);
+}
+
+function restartQT(which) {
+  const data = which === 'v1' ? qtDataV1 : qtDataV2;
+  qtState[which] = { current: 0, score: 0, answered: false, items: [...data].sort(() => Math.random() - 0.5) };
+  renderQTQuestion(which);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderTransform('v1ue1');
+renderTransform('v1ue2');
+renderTransform('v1ue3');
+renderFill('v1ue4');
+renderMC('v1ue5');
+
+renderFill('v2ue1');
+renderMC('v2ue2');
+renderTransform('v2ue3');
+renderFill('v2ue4');
+renderMC('v2ue5');
+</script>
+</body>
+</html>

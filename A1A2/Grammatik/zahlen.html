@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zahlen – A1/A2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+  :root {
+    --bg: #fffbf0;
+    --card: #ffffff;
+    --accent: #f59e0b;
+    --accent-dark: #b45309;
+    --accent-light: #fef3c7;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --orange-mid: #fed7aa;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --purple: #7c3aed;
+    --purple-bg: #ede9fe;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #fde68a;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    padding: 24px 16px 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(245,158,11,0.3);
+  }
+  .hdr-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 12px; border-radius: 99px;
+    margin-bottom: 8px; letter-spacing: 0.1em;
+  }
+  header h1 { font-size: 1.5rem; font-weight: 900; color: #fff; }
+  header p { font-size: 0.82rem; color: rgba(255,255,255,0.8); margin-top: 4px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    position: sticky; top: 0;
+    background: var(--card);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    z-index: 100;
+  }
+  .tab-btn {
+    flex: 1; padding: 12px 4px;
+    border: none; background: var(--card);
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--muted); cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-family: 'Nunito', sans-serif;
+  }
+  .tab-btn.active {
+    color: var(--accent-dark);
+    border-bottom-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  /* ── SUBTABS ── */
+  .subtabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 10px 12px;
+    background: #fef9e7;
+    position: sticky; top: 45px; z-index: 99;
+    border-bottom: 1px solid var(--border);
+  }
+  .subtab-btn {
+    padding: 5px 12px;
+    border: 2px solid var(--border);
+    background: white; color: var(--muted);
+    border-radius: 16px; font-size: 0.76rem;
+    font-weight: 700; cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+  }
+  .subtab-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 14px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .subtab-content { display: none; animation: fadeIn 0.25s; }
+  .subtab-content.active { display: block; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* ── SECTION BADGE ── */
+  .lek-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white; font-weight: 800;
+    font-size: 0.78rem; padding: 3px 12px;
+    border-radius: 12px; margin-bottom: 10px;
+  }
+
+  /* ── CARDS ── */
+  .group-card {
+    background: var(--card);
+    border-radius: 14px; padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid #fde68a;
+  }
+  .group-card h3 {
+    font-size: 1rem; font-weight: 800;
+    color: var(--accent-dark); margin-bottom: 10px;
+  }
+
+  /* ── VERGLEICH BOX (Key visual) ── */
+  .vergleich {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin: 10px 0;
+  }
+  .vgl-box {
+    border-radius: 12px; padding: 14px 12px; text-align: center;
+  }
+  .vgl-kardinal { background: #fff7ed; border: 2px solid #fed7aa; }
+  .vgl-ordinal  { background: #ede9fe; border: 2px solid #ddd6fe; }
+  .vgl-label {
+    font-size: 0.68rem; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .vgl-kardinal .vgl-label { color: var(--orange); }
+  .vgl-ordinal  .vgl-label { color: var(--purple); }
+  .vgl-num {
+    font-size: 2rem; font-weight: 900; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .vgl-kardinal .vgl-num { color: var(--orange); }
+  .vgl-ordinal  .vgl-num { color: var(--purple); }
+  .vgl-word { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .vgl-example { font-size: 0.75rem; color: var(--muted); font-style: italic; }
+  .vgl-frage {
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 8px; border-radius: 99px;
+    display: inline-block; margin-top: 6px;
+  }
+  .vgl-kardinal .vgl-frage { background: #fed7aa; color: var(--orange); }
+  .vgl-ordinal  .vgl-frage { background: #ddd6fe; color: var(--purple); }
+
+  /* ── ZAHLEN TABELLE ── */
+  .zahl-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 0.85rem; }
+  .zahl-table th { background: var(--accent); color: white; padding: 7px 8px; text-align: left; font-weight: 800; }
+  .zahl-table td { padding: 7px 8px; border-bottom: 1px solid #fde68a; vertical-align: top; }
+  .zahl-table tr:nth-child(even) { background: #fffbf0; }
+  .kard { color: var(--orange); font-weight: 800; }
+  .ord  { color: var(--purple); font-weight: 800; }
+  .regel { color: var(--green); font-size: 0.75rem; font-style: italic; }
+  .ausnahme { color: var(--red); font-size: 0.75rem; font-weight: 700; }
+
+  /* ── MERKSATZ ── */
+  .merksatz {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 10px 12px; border-radius: 8px;
+    margin: 10px 0; font-size: 0.88rem;
+  }
+  .merksatz b { color: var(--accent-dark); }
+
+  .warning-box {
+    background: #fee2e2; border: 2px solid var(--red);
+    border-radius: 10px; padding: 10px 12px; margin: 10px 0;
+  }
+  .warning-box h4 { color: var(--red); margin-bottom: 4px; font-size: 0.92rem; }
+
+  /* ── BEISPIEL INTERAKTIV ── */
+  .bsp-box {
+    background: var(--orange-light);
+    border: 2px solid var(--orange-mid);
+    border-radius: 12px; padding: 12px;
+    margin: 10px 0;
+  }
+  .bsp-box h4 { color: var(--orange); font-size: 0.9rem; margin-bottom: 8px; }
+  .bsp-item {
+    background: white; border-radius: 8px;
+    padding: 8px 10px; margin-bottom: 6px;
+    font-size: 0.88rem;
+    border: 1px solid var(--orange-mid);
+  }
+  .bsp-num { font-weight: 900; color: var(--orange); margin-right: 6px; font-size: 1.1rem; }
+  .bsp-kard { color: var(--orange); font-weight: 700; }
+  .bsp-ord  { color: var(--purple); font-weight: 700; }
+
+  /* ── NUMBER GRID (interactive) ── */
+  .num-grid {
+    display: grid; grid-template-columns: repeat(5,1fr);
+    gap: 6px; margin: 10px 0;
+  }
+  .num-btn {
+    background: white; border: 2px solid var(--border);
+    border-radius: 10px; padding: 8px 4px;
+    text-align: center; cursor: pointer;
+    transition: all 0.15s; font-family: 'Nunito', sans-serif;
+  }
+  .num-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .num-btn .n { font-size: 1.1rem; font-weight: 900; color: var(--orange); }
+  .num-btn .w { font-size: 0.6rem; font-weight: 700; color: var(--muted); margin-top: 2px; }
+  .num-display {
+    background: linear-gradient(135deg, #fef3c7, #fff7ed);
+    border: 2px solid var(--accent);
+    border-radius: 14px; padding: 16px;
+    text-align: center; margin: 10px 0;
+    min-height: 90px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  }
+  .num-display .nd-num { font-size: 2.5rem; font-weight: 900; color: var(--orange); }
+  .num-display .nd-kard { font-size: 1.2rem; font-weight: 800; color: var(--orange-dark, #c2410c); }
+  .num-display .nd-ord  { font-size: 1rem; font-weight: 700; color: var(--purple); }
+  .num-display .nd-hint { font-size: 0.75rem; color: var(--muted); }
+
+  /* ── MINI QUIZ ── */
+  .mini-quiz {
+    background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+    border: 2px dashed var(--green);
+    border-radius: 12px; padding: 12px; margin: 14px 0;
+  }
+  .mini-quiz h4 { color: var(--green); font-size: 0.92rem; margin-bottom: 8px; }
+  .mq-item {
+    background: white; border-radius: 8px;
+    padding: 10px; margin-bottom: 8px;
+    border: 1px solid #d1fae5;
+  }
+  .mq-num { color: var(--green); font-weight: 800; margin-right: 4px; }
+  .mq-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .mq-opt {
+    padding: 5px 11px; border: 2px solid #d1fae5;
+    border-radius: 8px; background: #f0fdfa;
+    cursor: pointer; font-size: 0.85rem;
+    font-family: 'Nunito', sans-serif; font-weight: 600;
+  }
+  .mq-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 800; }
+  .mq-opt.wrong   { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .mq-opt.disabled { pointer-events: none; opacity: 0.6; }
+  .mq-fb { margin-top: 6px; padding: 6px 8px; border-radius: 6px; font-size: 0.8rem; display: none; }
+  .mq-fb.show { display: block; }
+  .mq-fb.correct-fb { background: var(--green-bg); color: var(--green); }
+  .mq-fb.wrong-fb   { background: var(--red-bg); color: var(--red); }
+  .mq-result { text-align: center; font-weight: 800; color: var(--green); margin-top: 6px; font-size: 0.85rem; }
+
+  /* ── ÜBUNGEN ── */
+  .ex-block-desc {
+    font-size: 0.83rem; color: var(--muted);
+    margin-bottom: 12px; padding: 8px 12px;
+    background: var(--accent-light); border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .ex-item {
+    background: var(--card); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 10px;
+    border: 1px solid #fde68a;
+  }
+  .ex-num { color: var(--accent-dark); font-weight: 800; margin-right: 6px; }
+  .ex-question { margin-bottom: 8px; font-size: 0.92rem; }
+  .ex-options { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ex-opt {
+    padding: 6px 12px; border: 2px solid #fde68a;
+    border-radius: 8px; background: white;
+    cursor: pointer; font-size: 0.85rem;
+    font-family: 'Nunito', sans-serif; font-weight: 600;
+  }
+  .ex-opt:hover { border-color: var(--accent); }
+  .ex-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 800; }
+  .ex-opt.wrong   { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .ex-opt.disabled { pointer-events: none; opacity: 0.6; }
+  .ex-feedback {
+    margin-top: 8px; padding: 8px 10px;
+    border-radius: 6px; font-size: 0.82rem; display: none;
+  }
+  .ex-feedback.show { display: block; }
+  .ex-feedback.correct-fb { background: var(--green-bg); color: var(--green); }
+  .ex-feedback.wrong-fb   { background: var(--red-bg); color: var(--red); }
+
+  .score-bar {
+    position: sticky; bottom: 0; background: var(--card);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    padding: 10px 16px; text-align: center;
+    font-weight: 800; color: var(--accent-dark);
+    border-radius: 12px 12px 0 0; margin-top: 16px;
+    font-size: 0.95rem;
+  }
+  .reset-btn {
+    display: block; margin: 14px auto;
+    background: white; border: 2px solid var(--accent);
+    color: var(--accent-dark); padding: 8px 20px;
+    border-radius: 20px; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+  }
+  .footer-sig {
+    text-align: center; color: var(--muted);
+    font-size: 0.78rem; margin-top: 30px; padding: 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-badge">A1 · A2 · ZAHLEN</div>
+  <h1>🔢 Zahlen auf Deutsch</h1>
+  <p>Kardinalzahlen · Ordinalzahlen · Brüche &amp; Dezimalzahlen</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchMainTab('erklarung',event)">📘 Erklärung</button>
+  <button class="tab-btn" onclick="switchMainTab('uebungen',event)">✏️ Übungen</button>
+</div>
+
+<div class="subtabs" id="subtabs-erklarung">
+  <button class="subtab-btn active" onclick="switchSubTab('erklarung','e1',this)">Vergleich</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e2',this)">Kardinalzahlen</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e3',this)">Ordinalzahlen</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e4',this)">Grosse Zahlen</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e5',this)">Brüche &amp; Dez.</button>
+</div>
+
+<div class="subtabs" id="subtabs-uebungen" style="display:none;">
+  <button class="subtab-btn active" onclick="switchSubTab('uebungen','u1',this)">Übung 1</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u2',this)">Übung 2</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u3',this)">Übung 3</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u4',this)">Übung 4</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u5',this)">Übung 5</button>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════ ERKLÄRUNG ═══════════════ -->
+<div id="erklarung" class="tab-content active">
+
+  <!-- E1: VERGLEICH -->
+  <div id="e1" class="subtab-content active">
+    <div class="lek-badge">🔑 Der wichtigste Unterschied</div>
+
+    <div class="vergleich">
+      <div class="vgl-box vgl-kardinal">
+        <div class="vgl-label">Kardinalzahl</div>
+        <div class="vgl-num">3</div>
+        <div class="vgl-word">drei</div>
+        <div class="vgl-example">Ich habe <b>drei</b> Äpfel.</div>
+        <div class="vgl-frage">❓ Wie viele?</div>
+      </div>
+      <div class="vgl-box vgl-ordinal">
+        <div class="vgl-label">Ordinalzahl</div>
+        <div class="vgl-num">3.</div>
+        <div class="vgl-word">der dritte</div>
+        <div class="vgl-example">Er ist <b>Dritter</b> geworden.</div>
+        <div class="vgl-frage">❓ Der wievielte?</div>
+      </div>
+    </div>
+
+    <div class="merksatz">
+      <b>Eselsbrücke (Mẹo nhớ):</b><br>
+      🟠 <b>Kardinal</b> = <b>zählen</b> — Wie <b>viele</b>? → <i>eins, zwei, drei…</i><br>
+      🟣 <b>Ordinal</b> = <b>ordnen</b> — Der <b>wievielte</b>? → <i>der erste, zweite, dritte…</i><br><br>
+      Ordinalzahlen haben immer eine <b>Adjektivendung</b>: der erst<b>e</b>, am erst<b>en</b>…
+    </div>
+
+    <div class="group-card">
+      <h3>📌 Typische Verwendung im Vergleich</h3>
+      <div class="bsp-box">
+        <h4>🟠 Kardinalzahl — Menge angeben</h4>
+        <div class="bsp-item">Ich wohne in <span class="bsp-kard">Zimmer 205</span>. <span style="color:var(--muted);font-size:0.78rem">(= zwohundertfünf — Nummer, keine Reihenfolge)</span></div>
+        <div class="bsp-item">Das kostet <span class="bsp-kard">drei Euro</span>.</div>
+        <div class="bsp-item">Sie hat <span class="bsp-kard">zwei Kinder</span>.</div>
+      </div>
+      <div class="bsp-box" style="background:var(--purple-bg);border-color:#ddd6fe;">
+        <h4 style="color:var(--purple);">🟣 Ordinalzahl — Reihenfolge angeben</h4>
+        <div class="bsp-item" style="border-color:#ddd6fe;">Heute ist der <span class="bsp-ord">erste</span> Januar.</div>
+        <div class="bsp-item" style="border-color:#ddd6fe;">Er wohnt im <span class="bsp-ord">dritten</span> Stock.</div>
+        <div class="bsp-item" style="border-color:#ddd6fe;">Sie ist <span class="bsp-ord">Zweite</span> im Wettbewerb.</div>
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Kardinal oder Ordinal?</h4>
+      <div id="mq1"></div>
+      <div class="mq-result" id="mqr1"></div>
+    </div>
+  </div>
+
+  <!-- E2: KARDINALZAHLEN -->
+  <div id="e2" class="subtab-content">
+    <div class="lek-badge">🟠 Kardinalzahlen — Wie viele?</div>
+
+    <div class="group-card">
+      <h3>1 – 20 (auswendig lernen!)</h3>
+      <table class="zahl-table">
+        <tr><th>#</th><th>Zahl</th><th>#</th><th>Zahl</th></tr>
+        <tr><td>1</td><td class="kard">ein(s)</td><td>11</td><td class="kard">elf</td></tr>
+        <tr><td>2</td><td class="kard">zwei</td><td>12</td><td class="kard">zwölf</td></tr>
+        <tr><td>3</td><td class="kard">drei</td><td>13</td><td class="kard">dreizehn</td></tr>
+        <tr><td>4</td><td class="kard">vier</td><td>14</td><td class="kard">vierzehn</td></tr>
+        <tr><td>5</td><td class="kard">fünf</td><td>15</td><td class="kard">fünfzehn</td></tr>
+        <tr><td>6</td><td class="kard">sechs</td><td>16</td><td class="kard">sechzehn <span class="ausnahme">(-s fällt weg!)</span></td></tr>
+        <tr><td>7</td><td class="kard">sieben</td><td>17</td><td class="kard">siebzehn <span class="ausnahme">(-en fällt weg!)</span></td></tr>
+        <tr><td>8</td><td class="kard">acht</td><td>18</td><td class="kard">achtzehn</td></tr>
+        <tr><td>9</td><td class="kard">neun</td><td>19</td><td class="kard">neunzehn</td></tr>
+        <tr><td>10</td><td class="kard">zehn</td><td>20</td><td class="kard">zwanzig</td></tr>
+      </table>
+    </div>
+
+    <div class="group-card">
+      <h3>Zehner: 20 – 100</h3>
+      <table class="zahl-table">
+        <tr><th>Zahl</th><th>Wort</th><th>Regel</th></tr>
+        <tr><td>20</td><td class="kard">zwanzig</td><td class="regel">Ausnahme</td></tr>
+        <tr><td>30</td><td class="kard">dreißig</td><td class="ausnahme">dreißig (nicht dreizehn!)</td></tr>
+        <tr><td>40</td><td class="kard">vierzig</td><td class="regel">vier + zig</td></tr>
+        <tr><td>50</td><td class="kard">fünfzig</td><td class="regel">fünf + zig</td></tr>
+        <tr><td>60</td><td class="kard">sechzig</td><td class="ausnahme">sechzig (kein -s!)</td></tr>
+        <tr><td>70</td><td class="kard">siebzig</td><td class="ausnahme">siebzig (kein -en!)</td></tr>
+        <tr><td>80</td><td class="kard">achtzig</td><td class="regel">acht + zig</td></tr>
+        <tr><td>90</td><td class="kard">neunzig</td><td class="regel">neun + zig</td></tr>
+        <tr><td>100</td><td class="kard">hundert</td><td class="regel">Ausnahme</td></tr>
+      </table>
+    </div>
+
+    <div class="group-card">
+      <h3>Zusammengesetzte Zahlen: 21–99</h3>
+      <div class="merksatz">
+        <b>Formel:</b> Einer <b>und</b> Zehner<br>
+        21 = ein<b>und</b>zwanzig &nbsp;·&nbsp; 35 = fünf<b>und</b>dreißig &nbsp;·&nbsp; 99 = neun<b>und</b>neunzig<br>
+        <b>⚠️ Anders als Vietnamesisch:</b> Erst die Einer, dann die Zehner!
+      </div>
+      <table class="zahl-table">
+        <tr><th>Zahl</th><th>Wort</th></tr>
+        <tr><td>21</td><td class="kard">einundzwanzig</td></tr>
+        <tr><td>32</td><td class="kard">zweiunddreißig</td></tr>
+        <tr><td>45</td><td class="kard">fünfundvierzig</td></tr>
+        <tr><td>67</td><td class="kard">siebenundsechzig</td></tr>
+        <tr><td>99</td><td class="kard">neunundneunzig</td></tr>
+      </table>
+    </div>
+
+    <!-- INTERAKTIV: Zahlengenerator -->
+    <div class="group-card">
+      <h3>🎮 Interaktiv: Zahl anklicken → hören &amp; lesen</h3>
+      <div class="num-display" id="numDisplay">
+        <div class="nd-hint">👆 Klicke auf eine Zahl!</div>
+      </div>
+      <div class="num-grid" id="numGrid1"></div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Wie schreibt man diese Zahl?</h4>
+      <div id="mq2"></div>
+      <div class="mq-result" id="mqr2"></div>
+    </div>
+  </div>
+
+  <!-- E3: ORDINALZAHLEN -->
+  <div id="e3" class="subtab-content">
+    <div class="lek-badge">🟣 Ordinalzahlen — Der wievielte?</div>
+
+    <div class="group-card">
+      <h3>Bildung der Ordinalzahlen</h3>
+      <div class="merksatz">
+        <b>Regel:</b><br>
+        🟢 1–19: Kardinalzahl + <b>-t-</b> + Endung &nbsp;→&nbsp; vier<b>t</b>e, fünf<b>t</b>e…<br>
+        🟢 ab 20: Kardinalzahl + <b>-st-</b> + Endung &nbsp;→&nbsp; zwanzig<b>st</b>e…<br>
+        🔴 Ausnahmen: 1. → <b>erst</b>e &nbsp;·&nbsp; 2. → <b>zweit</b>e &nbsp;·&nbsp; 3. → <b>dritt</b>e &nbsp;·&nbsp; 7. → <b>siebt</b>e &nbsp;·&nbsp; 8. → <b>acht</b>e
+      </div>
+
+      <table class="zahl-table">
+        <tr><th>#</th><th>Ordinalzahl</th><th>Bemerkung</th></tr>
+        <tr><td>1.</td><td class="ord">erst-</td><td class="ausnahme">⚠️ Ausnahme!</td></tr>
+        <tr><td>2.</td><td class="ord">zweit-</td><td class="ausnahme">⚠️ Ausnahme!</td></tr>
+        <tr><td>3.</td><td class="ord">dritt-</td><td class="ausnahme">⚠️ Ausnahme!</td></tr>
+        <tr><td>4.</td><td class="ord">viert-</td><td class="regel">+ -t-</td></tr>
+        <tr><td>5.</td><td class="ord">fünft-</td><td class="regel">+ -t-</td></tr>
+        <tr><td>6.</td><td class="ord">sechst-</td><td class="regel">+ -t-</td></tr>
+        <tr><td>7.</td><td class="ord">siebt-</td><td class="ausnahme">⚠️ (nicht siebent-)</td></tr>
+        <tr><td>8.</td><td class="ord">acht-</td><td class="ausnahme">⚠️ kein -t- (schon -t am Ende)</td></tr>
+        <tr><td>9.</td><td class="ord">neunt-</td><td class="regel">+ -t-</td></tr>
+        <tr><td>10.</td><td class="ord">zehnt-</td><td class="regel">+ -t-</td></tr>
+        <tr><td>19.</td><td class="ord">neunzehnt-</td><td class="regel">+ -t-</td></tr>
+        <tr><td>20.</td><td class="ord">zwanzigst-</td><td class="regel">+ -st-</td></tr>
+        <tr><td>21.</td><td class="ord">einundzwanzigst-</td><td class="regel">+ -st-</td></tr>
+        <tr><td>100.</td><td class="ord">hundertst-</td><td class="regel">+ -st-</td></tr>
+      </table>
+    </div>
+
+    <div class="group-card">
+      <h3>Adjektivendungen nach Ordinalzahlen</h3>
+      <div class="merksatz">
+        Ordinalzahlen sind <b>Adjektive</b> → sie bekommen Adjektivendungen je nach Artikel und Kasus!
+      </div>
+      <table class="zahl-table">
+        <tr><th>Kontext</th><th>Beispiel</th></tr>
+        <tr><td>Nom. (der)</td><td class="ord">Der <b>erste</b> Tag war schön.</td></tr>
+        <tr><td>Akk. (den)</td><td class="ord">Ich misse den <b>ersten</b> Tag.</td></tr>
+        <tr><td>Dat. (am)</td><td class="ord">Am <b>ersten</b> Januar feiern wir.</td></tr>
+        <tr><td>Nom. (das)</td><td class="ord">Das <b>dritte</b> Kind heißt Max.</td></tr>
+        <tr><td>Schreiben</td><td class="ord">am 1. Januar = am <b>ersten</b> Januar</td></tr>
+        <tr><td>Schreiben</td><td class="ord">Er wurde 3. = Er wurde <b>Dritter</b>.</td></tr>
+      </table>
+      <div class="warning-box" style="margin-top:10px;">
+        <h4>⚠️ Datum schreiben vs. sprechen</h4>
+        <p>Schreiben: <b>der 3. Mai</b> &nbsp;·&nbsp; Sprechen: <b>der dritte Mai</b><br>
+        Schreiben: <b>am 1.5.</b> &nbsp;·&nbsp; Sprechen: <b>am ersten fünften</b></p>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <h3>🎮 Ordinalzahl-Generator</h3>
+      <div class="num-display" id="ordDisplay">
+        <div class="nd-hint">👆 Klicke auf eine Zahl!</div>
+      </div>
+      <div class="num-grid" id="numGrid2"></div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Richtige Ordinalzahl wählen</h4>
+      <div id="mq3"></div>
+      <div class="mq-result" id="mqr3"></div>
+    </div>
+  </div>
+
+  <!-- E4: GROSSE ZAHLEN -->
+  <div id="e4" class="subtab-content">
+    <div class="lek-badge">🔢 Große Zahlen — Hunderte bis Millionen</div>
+
+    <div class="group-card">
+      <h3>Hunderte, Tausende, Millionen</h3>
+      <table class="zahl-table">
+        <tr><th>Zahl</th><th>Wort</th><th>Beispiel</th></tr>
+        <tr><td>100</td><td class="kard">(ein)hundert</td><td>100 km</td></tr>
+        <tr><td>200</td><td class="kard">zweihundert</td><td>200 Euro</td></tr>
+        <tr><td>500</td><td class="kard">fünfhundert</td><td>500 g</td></tr>
+        <tr><td>1.000</td><td class="kard">(ein)tausend</td><td>1.000 m = 1 km</td></tr>
+        <tr><td>2.500</td><td class="kard">zweitausendfünfhundert</td><td>2.500 €</td></tr>
+        <tr><td>10.000</td><td class="kard">zehntausend</td><td>10.000 Einwohner</td></tr>
+        <tr><td>100.000</td><td class="kard">hunderttausend</td><td>100.000 €</td></tr>
+        <tr><td>1.000.000</td><td class="kard">eine Million</td><td>1 Million Menschen</td></tr>
+        <tr><td>2.000.000</td><td class="kard">zwei Millionen</td><td>2 Millionen €</td></tr>
+        <tr><td>1.000.000.000</td><td class="kard">eine Milliarde</td><td>8 Milliarden Menschen</td></tr>
+      </table>
+      <div class="merksatz" style="margin-top:10px;">
+        <b>Wichtig:</b> Im Deutschen → <b>Punkt</b> als Tausendertrennzeichen, <b>Komma</b> als Dezimalzeichen<br>
+        1.500 = eintausendfünfhundert &nbsp;·&nbsp; 1,5 = eineinhalb / eins Komma fünf
+      </div>
+    </div>
+
+    <div class="group-card">
+      <h3>Zusammengesetzte große Zahlen</h3>
+      <table class="zahl-table">
+        <tr><th>Zahl</th><th>Ausgesprochen</th></tr>
+        <tr><td>125</td><td class="kard">hundertfünfundzwanzig</td></tr>
+        <tr><td>1.234</td><td class="kard">eintausendzweihundertvierunddreißig</td></tr>
+        <tr><td>12.345</td><td class="kard">zwölftausenddreihundertfünfundvierzig</td></tr>
+        <tr><td>1.000.050</td><td class="kard">eine Million (und) fünfzig</td></tr>
+      </table>
+    </div>
+
+    <div class="group-card">
+      <h3>Jahreszahlen</h3>
+      <div class="merksatz">
+        <b>Jahreszahlen:</b> bis 1999 → Hunderte lesen<br>
+        ab 2000 → zweitausend...<br>
+        1999 = <span class="kard">neunzehnhundertneunundneunzig</span><br>
+        2000 = <span class="kard">zweitausend</span><br>
+        2024 = <span class="kard">zweitausendvierundzwanzig</span>
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Große Zahlen lesen</h4>
+      <div id="mq4"></div>
+      <div class="mq-result" id="mqr4"></div>
+    </div>
+  </div>
+
+  <!-- E5: BRÜCHE & DEZIMAL -->
+  <div id="e5" class="subtab-content">
+    <div class="lek-badge">➗ Brüche &amp; Dezimalzahlen (A2+)</div>
+
+    <div class="group-card">
+      <h3>Bruchzahlen (Fractions)</h3>
+      <div class="merksatz">
+        <b>Bildung:</b> Ordinalzahl + <b>-el</b> (kein Artikel nötig bei Mengenangaben)<br>
+        Ausnahmen: ½ = <b>halb / die Hälfte</b> &nbsp;·&nbsp; ¼ = <b>ein Viertel</b>
+      </div>
+      <table class="zahl-table">
+        <tr><th>Bruch</th><th>Wort</th><th>Beispiel</th></tr>
+        <tr><td>½</td><td class="kard">ein halb / die Hälfte</td><td>ein halbes Kilo; anderthalb Stunden</td></tr>
+        <tr><td>⅓</td><td class="kard">ein Drittel</td><td>ein Drittel der Klasse</td></tr>
+        <tr><td>¼</td><td class="kard">ein Viertel</td><td>eine Viertelstunde (= 15 Min.)</td></tr>
+        <tr><td>¾</td><td class="kard">drei Viertel</td><td>drei Viertel der Zeit</td></tr>
+        <tr><td>⅕</td><td class="kard">ein Fünftel</td><td>ein Fünftel des Preises</td></tr>
+        <tr><td>⅔</td><td class="kard">zwei Drittel</td><td>zwei Drittel aller Studenten</td></tr>
+        <tr><td>1½</td><td class="kard">eineinhalb / anderthalb</td><td>eineinhalb Stunden</td></tr>
+        <tr><td>2½</td><td class="kard">zweieinhalb</td><td>zweieinhalb Kilo</td></tr>
+      </table>
+    </div>
+
+    <div class="group-card">
+      <h3>Dezimalzahlen (Dezimalkomma = Komma!)</h3>
+      <div class="merksatz">
+        Im Deutschen: <b>Komma</b> (nicht Punkt!) als Dezimalzeichen<br>
+        1,5 = <span class="kard">eins Komma fünf</span><br>
+        3,14 = <span class="kard">drei Komma eins vier</span>
+      </div>
+      <table class="zahl-table">
+        <tr><th>Zahl</th><th>Ausgesprochen</th><th>Kontext</th></tr>
+        <tr><td>0,5</td><td class="kard">null Komma fünf</td><td>0,5 Liter</td></tr>
+        <tr><td>1,5</td><td class="kard">eins Komma fünf / eineinhalb</td><td>1,5 kg</td></tr>
+        <tr><td>2,3</td><td class="kard">zwei Komma drei</td><td>2,3 Meter</td></tr>
+        <tr><td>3,99</td><td class="kard">drei Komma neun neun</td><td>3,99 Euro</td></tr>
+        <tr><td>98,6</td><td class="kard">achtundneunzig Komma sechs</td><td>Körpertemperatur</td></tr>
+      </table>
+
+      <div class="group-card" style="margin-top:10px;background:#fff7ed;border-color:#fed7aa;">
+        <h3>💰 Geldbeträge sprechen</h3>
+        <table class="zahl-table">
+          <tr><th>Betrag</th><th>Ausgesprochen</th></tr>
+          <tr><td>1,50 €</td><td class="kard">ein Euro fünfzig</td></tr>
+          <tr><td>3,99 €</td><td class="kard">drei Euro neunundneunzig</td></tr>
+          <tr><td>10,00 €</td><td class="kard">zehn Euro</td></tr>
+          <tr><td>25,50 €</td><td class="kard">fünfundzwanzig Euro fünfzig</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Brüche &amp; Dezimalzahlen</h4>
+      <div id="mq5"></div>
+      <div class="mq-result" id="mqr5"></div>
+    </div>
+  </div>
+
+</div><!-- /erklarung -->
+
+<!-- ═══════════════ ÜBUNGEN ═══════════════ -->
+<div id="uebungen" class="tab-content">
+
+  <div id="u1" class="subtab-content active">
+    <div class="ex-block-desc">📝 Übung 1 — Grundlagen: Kardinalzahl oder Ordinalzahl erkennen? (leicht)</div>
+    <div id="block1"></div>
+  </div>
+  <div id="u2" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 2 — Kardinalzahlen: Wie heißt die Zahl auf Deutsch?</div>
+    <div id="block2"></div>
+  </div>
+  <div id="u3" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 3 — Ordinalzahlen: Datum, Stockwerk, Reihenfolge.</div>
+    <div id="block3"></div>
+  </div>
+  <div id="u4" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 4 — Große Zahlen, Jahreszahlen &amp; Geldbeträge.</div>
+    <div id="block4"></div>
+  </div>
+  <div id="u5" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 5 — Mix: Brüche, Dezimal, Kontext — alles gemischt. (schwer)</div>
+    <div id="block5"></div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">🔄 Zurücksetzen</button>
+  <div class="score-bar" id="scoreBar">Punkte: 0 / 65</div>
+</div>
+
+</div><!-- /container -->
+<div class="footer-sig">Made with ♥ by Bảo Quang</div>
+
+<script>
+// ══════════════════════════════════════════
+//  TAB NAVIGATION
+// ══════════════════════════════════════════
+function switchMainTab(id, event) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('subtabs-erklarung').style.display = id === 'erklarung' ? 'flex' : 'none';
+  document.getElementById('subtabs-uebungen').style.display  = id === 'uebungen'  ? 'flex' : 'none';
+}
+function switchSubTab(mainId, subId, btn) {
+  document.getElementById(mainId).querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(subId).classList.add('active');
+  btn.parentElement.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════
+//  ZAHL DATA
+// ══════════════════════════════════════════
+const kardData = {
+  1:'eins',2:'zwei',3:'drei',4:'vier',5:'fünf',
+  6:'sechs',7:'sieben',8:'acht',9:'neun',10:'zehn',
+  11:'elf',12:'zwölf',13:'dreizehn',14:'vierzehn',15:'fünfzehn',
+  16:'sechzehn',17:'siebzehn',18:'achtzehn',19:'neunzehn',20:'zwanzig',
+  21:'einundzwanzig',30:'dreißig',40:'vierzig',50:'fünfzig',
+  60:'sechzig',70:'siebzig',80:'achtzig',90:'neunzig',100:'hundert'
+};
+const ordData = {
+  1:'erste',2:'zweite',3:'dritte',4:'vierte',5:'fünfte',
+  6:'sechste',7:'siebte',8:'achte',9:'neunte',10:'zehnte',
+  11:'elfte',12:'zwölfte',13:'dreizehnte',15:'fünfzehnte',
+  20:'zwanzigste',21:'einundzwanzigste',30:'dreißigste',100:'hundertste'
+};
+
+// Interactive number grids
+function buildKardGrid() {
+  const nums = [1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,20,21,30,60,70];
+  const grid = document.getElementById('numGrid1');
+  if (!grid) return;
+  nums.forEach(n => {
+    const btn = document.createElement('div');
+    btn.className = 'num-btn';
+    btn.innerHTML = `<div class="n">${n}</div><div class="w">${kardData[n]||'…'}</div>`;
+    btn.onclick = () => showKard(n);
+    grid.appendChild(btn);
+  });
+}
+function showKard(n) {
+  const d = document.getElementById('numDisplay');
+  d.innerHTML = `
+    <div class="nd-num">${n}</div>
+    <div class="nd-kard" style="color:#ea580c">${kardData[n]||'...'}</div>
+    <div class="nd-hint">🟠 Kardinalzahl — Wie viele?</div>`;
+}
+function buildOrdGrid() {
+  const nums = [1,2,3,4,5,6,7,8,9,10,11,12,20,21,30,100];
+  const grid = document.getElementById('numGrid2');
+  if (!grid) return;
+  nums.forEach(n => {
+    const btn = document.createElement('div');
+    btn.className = 'num-btn';
+    btn.innerHTML = `<div class="n">${n}.</div><div class="w">${ordData[n]||'…'}</div>`;
+    btn.onclick = () => showOrd(n);
+    grid.appendChild(btn);
+  });
+}
+function showOrd(n) {
+  const d = document.getElementById('ordDisplay');
+  d.innerHTML = `
+    <div class="nd-num">${n}.</div>
+    <div class="nd-ord" style="color:#7c3aed">der/die/das ${ordData[n]||'...'}</div>
+    <div class="nd-hint">🟣 Ordinalzahl — Der wievielte?</div>`;
+}
+
+// ══════════════════════════════════════════
+//  MINI QUIZ DATA
+// ══════════════════════════════════════════
+const mq1data = [
+  {q:'„Er wohnt im ___ Stock." — welche Zahlart?', opts:['Kardinalzahl (vier)','Ordinalzahl (vierten)'], correct:1, fb:'Stockwerk = Reihenfolge → Ordinalzahl: im vierten Stock.'},
+  {q:'„Ich habe ___ Geschwister." — welche Zahlart?', opts:['Kardinalzahl (zwei)','Ordinalzahl (zweiten)'], correct:0, fb:'Menge → Kardinalzahl: zwei Geschwister.'},
+  {q:'„Heute ist der ___ März." — welche Zahlart?', opts:['Kardinalzahl (fünf)','Ordinalzahl (fünfte)'], correct:1, fb:'Datum = Reihenfolge → Ordinalzahl: der fünfte März.'},
+  {q:'„Das Ticket kostet ___ Euro." — welche Zahlart?', opts:['Kardinalzahl (zwanzig)','Ordinalzahl (zwanzigste)'], correct:0, fb:'Preis = Menge → Kardinalzahl: zwanzig Euro.'},
+  {q:'„Sie wurde ___ beim Wettbewerb." — welche Zahlart?', opts:['Kardinalzahl (eins)','Ordinalzahl (Erste)'], correct:1, fb:'Platz/Rang = Reihenfolge → Ordinalzahl: Sie wurde Erste.'}
+];
+
+const mq2data = [
+  {q:'Wie schreibt man 16?', opts:['sechzehn','sechszehn','sechzehn'], correct:0, fb:'16 = sechzehn — das -s von sechs fällt weg!'},
+  {q:'Wie schreibt man 17?', opts:['siebenzehn','siebzehn','siebenzehn'], correct:1, fb:'17 = siebzehn — -en von sieben fällt weg!'},
+  {q:'Wie schreibt man 30?', opts:['dreißig','dreizig','dreizig'], correct:0, fb:'30 = dreißig — mit ß, nicht dreißig!'},
+  {q:'Wie schreibt man 21?', opts:['zwanzigeins','einundzwanzig','zwanzigeinen'], correct:1, fb:'Erst der Einer, dann und, dann der Zehner: einundzwanzig.'},
+  {q:'Wie schreibt man 60?', opts:['sechszig','sechzig','sechzig'], correct:1, fb:'60 = sechzig — kein -s (wie bei sechzehn).'}
+];
+
+const mq3data = [
+  {q:'1. → ?', opts:['erste','erste','erste'], correct:0, fb:'1. = erst- (Ausnahme! Nicht "erste" mit Vokal).'},
+  {q:'3. → ?', opts:['dritte','dreite','dreifte'], correct:0, fb:'3. = dritt- (Ausnahme!).'},
+  {q:'7. → ?', opts:['siebente','siebte','siebt'], correct:1, fb:'7. = siebt- (nicht siebent-!).'},
+  {q:'8. → ?', opts:['achtte','achte','achtste'], correct:1, fb:'8. = acht- (schon -t am Ende, kein Extra-t).'},
+  {q:'20. → ?', opts:['zwanzigste','zwanzigste','zwanzigste'], correct:0, fb:'Ab 20: + -st-: zwanzigste.'}
+];
+
+const mq4data = [
+  {q:'Wie liest man 1.500?', opts:['eintausendfünfhundert','fünfzehnhundert','fünfzehnhundert'], correct:0, fb:'1.500 = eintausendfünfhundert (oder: fünfzehnhundert ist auch üblich!).'},
+  {q:'Wie liest man 2024?', opts:['zweitausendvierundzwanzig','zwanzigerundzwanzig','zweitausendvierundzwanzig'], correct:0, fb:'2024 = zweitausendvierundzwanzig.'},
+  {q:'Wie liest man 1999?', opts:['neunzehnhundertneunundneunzig','tausendneunhundertneunundneunzig','neunzehnhundertneunundneunzig'], correct:0, fb:'1999 = neunzehnhundertneunundneunzig (typische Leseweise für Jahreszahlen bis 1999).'},
+  {q:'„Das kostet 3,99 €" — wie spricht man das aus?', opts:['drei Punkt neunundneunzig Euro','drei Euro neunundneunzig','drei Komma neun neun Euro'], correct:1, fb:'Geldbeträge: drei Euro neunundneunzig (kein Wort „Komma" bei Euros).'},
+  {q:'Wie liest man 1.000.000?', opts:['eine Million','einmillionen','ein Million'], correct:0, fb:'1.000.000 = eine Million (mit Artikel „eine"!).'}
+];
+
+const mq5data = [
+  {q:'½ Stunde = ?', opts:['eine halbe Stunde','ein Zweitel Stunde','halb Stunde'], correct:0, fb:'½ = eine halbe Stunde / eine Halbstunde.'},
+  {q:'¾ = ?', opts:['drei Viertel','dreiviertel','dreiViertel'], correct:0, fb:'¾ = drei Viertel (zwei Wörter!).'},
+  {q:'1,5 kg auf Deutsch?', opts:['eins Komma fünf Kilo','eineinhalb Kilo','ein und halb Kilo'], correct:1, fb:'1,5 = eineinhalb oder eins Komma fünf. Beide richtig!'},
+  {q:'Dezimalzeichen im Deutschen?', opts:['Punkt: 3.14','Komma: 3,14','Beides gleich'], correct:1, fb:'Im Deutschen: Komma als Dezimalzeichen! 3,14 = drei Komma eins vier.'},
+  {q:'1½ Stunden = ?', opts:['anderthalb Stunden','einundhalbig Stunden','einseinhalb Stunden'], correct:0, fb:'1½ = eineinhalb oder anderthalb Stunden. Beide korrekt!'}
+];
+
+// ══════════════════════════════════════════
+//  ÜBUNGEN DATA (5 × 13)
+// ══════════════════════════════════════════
+const block1 = [
+  {q:'„Ich brauche ___ Äpfel." — Kardinal oder Ordinal?', opts:['Kardinal: fünf','Ordinal: fünfte'], correct:0, fb:'Menge (wie viele?) → Kardinalzahl.'},
+  {q:'„Das ist der ___ Film." — Kardinal oder Ordinal?', opts:['Kardinal: drei','Ordinal: dritte'], correct:1, fb:'Reihenfolge (der wievielte?) → Ordinalzahl.'},
+  {q:'„Er wohnt in der ___ Etage."', opts:['Kardinal: zwei','Ordinal: zweite'], correct:1, fb:'Stockwerk = Reihenfolge → Ordinalzahl.'},
+  {q:'„Das Buch hat ___ Seiten."', opts:['Kardinal: zweihundert','Ordinal: zweihundertste'], correct:0, fb:'Anzahl → Kardinalzahl.'},
+  {q:'„Heute ist ihr ___ Geburtstag."', opts:['Kardinal: dreißig','Ordinal: dreißigste'], correct:1, fb:'Welcher Geburtstag? → Ordinalzahl.'},
+  {q:'„Das Ticket kostet ___ Euro."', opts:['Kardinal: fünfzig','Ordinal: fünfzigste'], correct:0, fb:'Preis → Kardinalzahl.'},
+  {q:'„Sie gewann den ___ Preis."', opts:['Kardinal: eins','Ordinal: ersten'], correct:1, fb:'Rang/Platz → Ordinalzahl.'},
+  {q:'„Wir haben ___ Schüler in der Klasse."', opts:['Kardinal: fünfundzwanzig','Ordinal: fünfundzwanzigste'], correct:0, fb:'Anzahl → Kardinalzahl.'},
+  {q:'„Er feiert am ___ Mai seinen Geburtstag."', opts:['Kardinal: zwölf','Ordinal: zwölften'], correct:1, fb:'Datum → Ordinalzahl (Dativ: am zwölften Mai).'},
+  {q:'„Das ist das ___ Mal, dass ich das sage!"', opts:['Kardinal: hundert','Ordinal: hundertste'], correct:1, fb:'Das wievielte Mal? → Ordinalzahl.'},
+  {q:'„Auf dem Tisch liegen ___ Bücher."', opts:['Kardinal: sieben','Ordinal: siebte'], correct:0, fb:'Wie viele Bücher? → Kardinalzahl.'},
+  {q:'„Der ___ Zug fährt um 8 Uhr ab."', opts:['Kardinal: nächst','Ordinal: nächste'], correct:1, fb:'Welcher Zug (Reihenfolge)? → Ordinalzahl.'},
+  {q:'„In Deutschland gibt es ca. ___ Millionen Einwohner."', opts:['Kardinal: achtzig','Ordinal: achtzigste'], correct:0, fb:'Anzahl → Kardinalzahl.'}
+];
+
+const block2 = [
+  {q:'Wie heißt 11 auf Deutsch?', opts:['zehnein','elf','elfe'], correct:1, fb:'11 = elf (Ausnahme, kein "-zehn"!).'},
+  {q:'Wie heißt 12 auf Deutsch?', opts:['zwölfzehn','zwölf','zwölfzig'], correct:1, fb:'12 = zwölf (Ausnahme!).'},
+  {q:'Wie heißt 17 auf Deutsch?', opts:['siebenzehn','siebzehn','siebenzehn'], correct:1, fb:'17 = siebzehn (sieben → sieb-).'},
+  {q:'Wie heißt 16 auf Deutsch?', opts:['sechszehn','sechzehn','sechzehn'], correct:1, fb:'16 = sechzehn (sechs → sech-).'},
+  {q:'Wie heißt 30 auf Deutsch?', opts:['dreizig','dreißig','dreizig'], correct:1, fb:'30 = dreißig (mit ß!).'},
+  {q:'Wie heißt 21 auf Deutsch?', opts:['zwanzigeins','zwanzigein','einundzwanzig'], correct:2, fb:'21 = einundzwanzig (erst Einer, dann und, dann Zehner).'},
+  {q:'Wie heißt 35 auf Deutsch?', opts:['fünfunddreißig','dreißigfünf','dreißigfünf'], correct:0, fb:'35 = fünfunddreißig.'},
+  {q:'Wie heißt 70 auf Deutsch?', opts:['siebenzig','siebzig','siebzig'], correct:1, fb:'70 = siebzig (sieben → sieb-).'},
+  {q:'Wie heißt 60 auf Deutsch?', opts:['sechszig','sechzig','sechzig'], correct:1, fb:'60 = sechzig (kein -s!).'},
+  {q:'Wie heißt 99 auf Deutsch?', opts:['neunundneunzig','neunzigneun','neunneunzig'], correct:0, fb:'99 = neunundneunzig.'},
+  {q:'Wie heißt 100 auf Deutsch?', opts:['hundert','zehen-zehn','hundert'], correct:0, fb:'100 = hundert (oder: einhundert).'},
+  {q:'Wie heißt 1000 auf Deutsch?', opts:['zehnhundert','tausend','tausend'], correct:1, fb:'1000 = tausend (oder: eintausend).'},
+  {q:'Wie heißt 1.000.000 auf Deutsch?', opts:['ein Million','eine Million','eins Million'], correct:1, fb:'1.000.000 = eine Million (mit Artikel „eine"!).'}
+];
+
+const block3 = [
+  {q:'1. → ?', opts:['erste','erste','este'], correct:0, fb:'1. = erst- (Ausnahme!).'},
+  {q:'2. → ?', opts:['zweite','zwote','zweite'], correct:0, fb:'2. = zweit- (Ausnahme!).'},
+  {q:'3. → ?', opts:['dreite','dritte','dritte'], correct:1, fb:'3. = dritt- (Ausnahme!).'},
+  {q:'7. → ?', opts:['siebente','siebte','siebte'], correct:1, fb:'7. = siebt- (nicht siebent-!).'},
+  {q:'8. → ?', opts:['achte','acht-te','achtte'], correct:0, fb:'8. = acht- (schon -t am Ende!).'},
+  {q:'4. → ?', opts:['vierte','vierste','viierte'], correct:0, fb:'4. = viert- (Regel: + -t-).'},
+  {q:'20. → ?', opts:['zwanzigste','zwanzigste','zwanzigste'], correct:0, fb:'20. = zwanzigst- (ab 20: + -st-).'},
+  {q:'„Heute ist der ___ Januar." (1.1.)', opts:['eine Januar','ersten Januar','erster Januar'], correct:1, fb:'Dativ: am ersten Januar → hier mit „der": der erste Januar (Nominativ).'},
+  {q:'„Sie wohnt im ___ Stock." (3)', opts:['dreite','dritten','dritte'], correct:1, fb:'Dativ (im = in + dem): dritten.'},
+  {q:'„Er wurde ___." (2. Platz)', opts:['Zweite','Zweiter','Zweitem'], correct:0, fb:'„Er wurde Zweiter." — ohne Artikel, maskulin, Nominativ.'},
+  {q:'„Das ist mein ___ Versuch." (1.)', opts:['erste','ersten','erster'], correct:2, fb:'„mein erster Versuch" — Maskulin, Nominativ, nach Possessivartikel → -er.'},
+  {q:'„Am ___ März fahre ich ab." (15.)', opts:['fünfzehnten','fünfzehnste','fünfzehnte'], correct:0, fb:'Dativ (am = an + dem): fünfzehnten.'},
+  {q:'21. → ?', opts:['einundzwanzigste','einundzwanzigste','einundzwanzigt'], correct:0, fb:'21. = einundzwanzigst- (+ -st- ab 20).'}
+];
+
+const block4 = [
+  {q:'Wie liest man 200?', opts:['zwohundert','zweihundert','zwohundert'], correct:1, fb:'200 = zweihundert.'},
+  {q:'Wie liest man 1.000?', opts:['zehnhundert','eintausend','tausend'], correct:2, fb:'1.000 = tausend oder eintausend. Beide korrekt!'},
+  {q:'Wie liest man 2.500?', opts:['zweitausendfünfhundert','zweitausend fünfhundert','beides richtig'], correct:2, fb:'Beides ist korrekt: zweitausendfünfhundert.'},
+  {q:'Wie liest man 1.000.000?', opts:['einmillion','eine Million','ein Millionen'], correct:1, fb:'1.000.000 = eine Million (mit Artikel!).'},
+  {q:'Wie liest man 3.000.000?', opts:['drei Millionen','drei Million','dreimillion'], correct:0, fb:'3.000.000 = drei Millionen (Plural!).'},
+  {q:'Wie liest man das Jahr 1985?', opts:['eintausendneunhundertfünfundachtzig','neunzehnhundertfünfundachtzig','neunzehnhundertfünfundachtzig'], correct:1, fb:'1985 = neunzehnhundertfünfundachtzig.'},
+  {q:'Wie liest man das Jahr 2000?', opts:['zweitausend','zwanzigerzehnhundert','zwei-null-null-null'], correct:0, fb:'2000 = zweitausend.'},
+  {q:'Wie liest man das Jahr 2025?', opts:['zweitausendfünfundzwanzig','zwanzigundzwanzig','zweitausend-fünfundzwanzig'], correct:0, fb:'2025 = zweitausendfünfundzwanzig.'},
+  {q:'„Das Handy kostet 299 €" — auf Deutsch?', opts:['zweihundertneunundneunzig Euro','neunundneunzig zweihundert Euro','zwei neun neun Euro'], correct:0, fb:'299 = zweihundertneunundneunzig Euro.'},
+  {q:'„10.000 Menschen" — auf Deutsch?', opts:['zehntausend','zehnmillionen','zehntausend'], correct:0, fb:'10.000 = zehntausend Menschen.'},
+  {q:'100.000 = ?', opts:['hundertmillionen','hunderttausend','zehnmal zehntausend'], correct:1, fb:'100.000 = hunderttausend.'},
+  {q:'„Das Haus kostet 350.000 €." — auf Deutsch?', opts:['dreihundertfünfzigtausend Euro','dreiundfünfzigtausend Euro','dreifünfzigtausend Euro'], correct:0, fb:'350.000 = dreihundertfünfzigtausend Euro.'},
+  {q:'1.000.000.000 = ?', opts:['eine Million','eine Milliarde','zehn Millionen'], correct:1, fb:'1.000.000.000 = eine Milliarde.'}
+];
+
+const block5 = [
+  {q:'½ auf Deutsch?', opts:['ein Halb','ein halb','halb'], correct:2, fb:'½ = halb (als Adjektiv: eine halbe Stunde).'},
+  {q:'¼ auf Deutsch?', opts:['ein Viertel','ein Viertel','eine Viertel'], correct:0, fb:'¼ = ein Viertel.'},
+  {q:'¾ auf Deutsch?', opts:['dreiviertel','drei Viertel','drei Viertel'], correct:1, fb:'¾ = drei Viertel (zwei Wörter!).'},
+  {q:'1,5 auf Deutsch (sprechen)?', opts:['eins Komma fünf','eins Punkt fünf','eineinhalb'], correct:2, fb:'1,5 = eineinhalb oder eins Komma fünf. Hier: eineinhalb.'},
+  {q:'Dezimalzeichen im Deutschen?', opts:['Punkt (3.14)','Komma (3,14)','Schrägstrich (3/14)'], correct:1, fb:'Im Deutschen: Komma! 3,14 = drei Komma eins vier.'},
+  {q:'„2,5 Stunden" auf Deutsch?', opts:['zweieinhalb Stunden','zweiundhalb Stunden','zwei Komma fünf Stunden'], correct:0, fb:'2,5 Stunden = zweieinhalb Stunden.'},
+  {q:'⅓ auf Deutsch?', opts:['ein Drittel','ein Dritte','ein Drittes'], correct:0, fb:'⅓ = ein Drittel (Ordinalzahl + -el).'},
+  {q:'„Die Hälfte der Klasse" = ?', opts:['½ der Klasse','die Halb Klasse','halbig Klasse'], correct:0, fb:'Die Hälfte = ½. Als Nomen: die Hälfte.'},
+  {q:'„Er hat 0,5 Liter getrunken." — sprechen?', opts:['null Punkt fünf Liter','null Komma fünf Liter','ein halbes Liter'], correct:2, fb:'Beides möglich: null Komma fünf oder ein halbes Liter.'},
+  {q:'Wie sagt man „1,50 €"?', opts:['eins Euro fünfzig','ein Euro fünfzig','eineinhalb Euro'], correct:1, fb:'1,50 € = ein Euro fünfzig (kein Wort „Komma"!).'},
+  {q:'„Das Projekt ist zu ⅔ fertig." — auf Deutsch?', opts:['zu zwei Drittel fertig','zu zweiDrittel fertig','zu zwei Dritteln fertig'], correct:2, fb:'⅔ = zwei Drittel → „zu zwei Dritteln" (Dativ Plural).'},
+  {q:'1½ Stunden = ?', opts:['eineinhalb Stunden','anderthalb Stunden','beides richtig'], correct:2, fb:'1½ = eineinhalb Stunden ODER anderthalb Stunden. Beide sind korrekt!'},
+  {q:'„3,99 €" sprechen?', opts:['drei Euro neunundneunzig','drei Komma neunundneunzig Euro','drei Punkt neunundneunzig'], correct:0, fb:'Geldbeträge: drei Euro neunundneunzig.'}
+];
+
+// ══════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════
+function renderMiniQuiz(containerId, data, resultId) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  data.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mq-item';
+    let optsHtml = item.opts.map((opt, oIdx) =>
+      `<button class="mq-opt" data-correct="${oIdx===item.correct}" onclick="checkMQ(this,'${containerId}_${idx}','${resultId}',${data.length})">${opt}</button>`
+    ).join('');
+    div.innerHTML = `<div><span class="mq-num">${idx+1}.</span>${item.q}</div><div class="mq-options">${optsHtml}</div><div class="mq-fb" id="mqfb_${containerId}_${idx}">${item.fb}</div>`;
+    c.appendChild(div);
+  });
+}
+
+const mqAnswered = {};
+function checkMQ(btn, key, resultId, total) {
+  if (key in mqAnswered) return;
+  const ok = btn.dataset.correct === 'true';
+  mqAnswered[key] = ok;
+  btn.parentElement.querySelectorAll('.mq-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  const fb = btn.parentElement.nextElementSibling;
+  fb.classList.add('show', ok ? 'correct-fb' : 'wrong-fb');
+  const prefix = key.split('_').slice(0,-1).join('_');
+  let cor = 0, ans = 0;
+  Object.keys(mqAnswered).forEach(k => {
+    if (k.startsWith(prefix + '_')) { ans++; if (mqAnswered[k]) cor++; }
+  });
+  document.getElementById(resultId).textContent =
+    ans === total ? `✅ Fertig! ${cor} / ${total} richtig` : `${cor} / ${ans} richtig (${total-ans} übrig)`;
+}
+
+function renderBlock(containerId, data, startNum) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  data.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'ex-item';
+    let optsHtml = item.opts.map((opt, oIdx) =>
+      `<button class="ex-opt" data-correct="${oIdx===item.correct}" onclick="checkEx(this,'${containerId}_${idx}')">${opt}</button>`
+    ).join('');
+    div.innerHTML = `<div class="ex-question"><span class="ex-num">${startNum+idx}.</span>${item.q}</div><div class="ex-options">${optsHtml}</div><div class="ex-feedback" id="exfb_${containerId}_${idx}">${item.fb}</div>`;
+    c.appendChild(div);
+  });
+}
+
+const exAnswered = {};
+function checkEx(btn, key) {
+  if (key in exAnswered) return;
+  const ok = btn.dataset.correct === 'true';
+  exAnswered[key] = ok;
+  btn.parentElement.querySelectorAll('.ex-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  const fb = btn.parentElement.nextElementSibling;
+  fb.classList.add('show', ok ? 'correct-fb' : 'wrong-fb');
+  updateScore();
+}
+
+function updateScore() {
+  const total = block1.length + block2.length + block3.length + block4.length + block5.length;
+  let score = 0;
+  Object.keys(exAnswered).forEach(k => { if (exAnswered[k]) score++; });
+  document.getElementById('scoreBar').textContent = `Punkte: ${score} / ${total}`;
+}
+
+function resetAll() { location.reload(); }
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderMiniQuiz('mq1', mq1data, 'mqr1');
+  renderMiniQuiz('mq2', mq2data, 'mqr2');
+  renderMiniQuiz('mq3', mq3data, 'mqr3');
+  renderMiniQuiz('mq4', mq4data, 'mqr4');
+  renderMiniQuiz('mq5', mq5data, 'mqr5');
+  renderBlock('block1', block1, 1);
+  renderBlock('block2', block2, 1);
+  renderBlock('block3', block3, 1);
+  renderBlock('block4', block4, 1);
+  renderBlock('block5', block5, 1);
+  buildKardGrid();
+  buildOrdGrid();
+});
+</script>
+</body>
+</html>

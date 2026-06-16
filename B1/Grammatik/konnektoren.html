@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konnektoren A1-B1</title>
+<style>
+  :root {
+    --accent: #d97706;
+    --accent-light: #fef3c7;
+    --accent-dark: #92400e;
+    --bg: #fffbeb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --text-light: #6b7280;
+    --border: #fde68a;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --purple: #7c3aed;
+    --purple-bg: #ede9fe;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding-bottom: 30px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--accent), #f59e0b);
+    color: white;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  header h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  header p { font-size: 0.85rem; opacity: 0.95; }
+
+  .tabs {
+    display: flex;
+    position: sticky;
+    top: 0;
+    background: var(--card);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    z-index: 100;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 6px;
+    border: none;
+    background: var(--card);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+  }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #fff8e8;
+    position: sticky;
+    top: 45px;
+    z-index: 99;
+    border-bottom: 1px solid var(--border);
+  }
+  .subtab-btn {
+    padding: 6px 12px;
+    border: 2px solid var(--border);
+    background: white;
+    color: var(--text-light);
+    border-radius: 16px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .subtab-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 14px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .subtab-content { display: none; animation: fadeIn 0.25s; }
+  .subtab-content.active { display: block; }
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+  .lek-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  .group-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .group-card h3 {
+    font-size: 1.05rem;
+    color: var(--accent-dark);
+    margin-bottom: 8px;
+  }
+  .konnektor-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .konnektor-chip {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .satz-box {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--border);
+    overflow-x: auto;
+  }
+  .pos0 { color: var(--blue); font-weight: 700; background: var(--blue-bg); padding: 1px 5px; border-radius: 4px; }
+  .verb { color: var(--red); font-weight: 700; background: var(--red-bg); padding: 1px 5px; border-radius: 4px; }
+  .subj { color: var(--green); font-weight: 700; background: var(--green-bg); padding: 1px 5px; border-radius: 4px; }
+  .konj { color: var(--purple); font-weight: 700; background: var(--purple-bg); padding: 1px 5px; border-radius: 4px; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8rem;
+    margin: 10px 0; padding: 8px; background: #f9fafb; border-radius: 8px;
+  }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  .merksatz {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 0.92rem;
+  }
+  .merksatz b { color: var(--accent-dark); }
+
+  .warning-box {
+    background: var(--red-bg);
+    border: 2px solid var(--red);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 12px 0;
+  }
+  .warning-box h4 { color: var(--red); margin-bottom: 6px; font-size: 1rem; }
+
+  .compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
+  .compare-table th { background: var(--accent); color: white; padding: 8px 6px; text-align: left; }
+  .compare-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:nth-child(even) { background: #fffdf5; }
+
+  .doppel-card {
+    display: flex; align-items: center; gap: 8px;
+    background: #f9fafb; border-radius: 8px; padding: 10px; margin: 6px 0; flex-wrap: wrap;
+  }
+  .doppel-part { background: var(--accent-light); color: var(--accent-dark); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
+  .arrow { color: var(--text-light); }
+
+  /* Interaktiv mini-quiz under each subtab */
+  .mini-quiz {
+    background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+    border: 2px dashed var(--green);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 14px 0;
+  }
+  .mini-quiz h4 {
+    color: var(--green);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mq-item {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #d1fae5;
+  }
+  .mq-num { color: var(--green); font-weight: 700; margin-right: 4px; }
+  .mq-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .mq-opt {
+    padding: 5px 11px; border: 2px solid #d1fae5; border-radius: 8px;
+    background: #f0fdfa; cursor: pointer; font-size: 0.88rem;
+  }
+  .mq-opt:hover { border-color: var(--green); }
+  .mq-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 700; }
+  .mq-opt.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .mq-opt.disabled { pointer-events: none; opacity: 0.6; }
+  .mq-fb { margin-top: 6px; padding: 6px 8px; border-radius: 6px; font-size: 0.82rem; display: none; }
+  .mq-fb.show { display: block; }
+  .mq-fb.correct-fb { background: var(--green-bg); color: var(--green); }
+  .mq-fb.wrong-fb { background: var(--red-bg); color: var(--red); }
+  .mq-result { text-align:center; font-weight:700; color: var(--green); margin-top: 6px; font-size: 0.85rem; }
+
+  .ex-block-desc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; }
+  .ex-item { background: var(--card); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .ex-num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+  .ex-question { margin-bottom: 8px; }
+  .ex-options { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ex-opt { padding: 6px 12px; border: 2px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-size: 0.9rem; }
+  .ex-opt:hover { border-color: var(--accent); }
+  .ex-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 700; }
+  .ex-opt.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .ex-opt.disabled { pointer-events: none; opacity: 0.6; }
+  .ex-feedback { margin-top: 8px; padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; display: none; }
+  .ex-feedback.show { display: block; }
+  .ex-feedback.correct-fb { background: var(--green-bg); color: var(--green); }
+  .ex-feedback.wrong-fb { background: var(--red-bg); color: var(--red); }
+
+  .score-bar {
+    position: sticky; bottom: 0; background: var(--card);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08); padding: 10px 16px; text-align: center;
+    font-weight: 700; color: var(--accent-dark); border-radius: 12px 12px 0 0; margin-top: 16px;
+  }
+  .reset-btn {
+    display: block; margin: 16px auto; background: white; border: 2px solid var(--accent);
+    color: var(--accent-dark); padding: 8px 20px; border-radius: 20px; font-weight: 600; cursor: pointer;
+  }
+  .footer-sig { text-align: center; color: var(--text-light); font-size: 0.8rem; margin-top: 30px; padding: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔗 Konnektoren A1 – B1</h1>
+  <p>Und, aber, weil, deshalb, wegen, je...desto, Doppelkonnektoren</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchMainTab('erklarung')">📘 Erklärung</button>
+  <button class="tab-btn" onclick="switchMainTab('uebungen')">✏️ Übungen</button>
+  <button class="tab-btn" onclick="switchMainTab('test')">⚡ Schnelltest</button>
+</div>
+
+<!-- SUBTABS für Erklärung -->
+<div class="subtabs" id="subtabs-erklarung">
+  <button class="subtab-btn active" onclick="switchSubTab('erklarung','e40',this)">und/aber/oder/denn</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e41',this)">deshalb/sonst/dann/also</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','evgl',this)">⚠️ deshalb/weil/wegen</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e42',this)">weil/dass/wenn</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e72',this)">wenn vs als</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e73',this)">während/bevor/nachdem/seit</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e75',this)">Doppelkonnektoren</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e76',this)">je...desto</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e77',this)">wegen/trotz + Genitiv</button>
+</div>
+
+<!-- SUBTABS für Übungen -->
+<div class="subtabs" id="subtabs-uebungen" style="display:none;">
+  <button class="subtab-btn active" onclick="switchSubTab('uebungen','u1',this)">Übung 1</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u2',this)">Übung 2</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u3',this)">Übung 3</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u4',this)">Übung 4</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u5',this)">Übung 5</button>
+</div>
+
+<div class="container">
+
+<!-- ============ TAB 1: ERKLÄRUNG ============ -->
+<div id="erklarung" class="tab-content active">
+
+  <!-- 40: und, aber, oder, denn -->
+  <div id="e40" class="subtab-content active">
+    <div class="lek-badge">Hauptsätze verbinden – Position 0</div>
+    <div class="legend">
+      <span><span class="legend-dot" style="background:var(--green-bg); border:1px solid var(--green);"></span>Subjekt</span>
+      <span><span class="legend-dot" style="background:var(--red-bg); border:1px solid var(--red);"></span>Verb</span>
+      <span><span class="legend-dot" style="background:var(--purple-bg); border:1px solid var(--purple);"></span>Position 0</span>
+    </div>
+    <div class="group-card">
+      <h3>Und, aber, oder, denn — Hauptsätze verbinden (Position 0)</h3>
+      <p><b>und, aber, oder, denn</b> stehen auf <b>Position 0</b>. Sie sind kein Satzglied. Danach: Subjekt – Verb (normal!).</p>
+      <div class="konnektor-list">
+        <span class="konnektor-chip">und</span>
+        <span class="konnektor-chip">aber</span>
+        <span class="konnektor-chip">oder</span>
+        <span class="konnektor-chip">denn</span>
+      </div>
+
+      <div class="satz-box">Ich habe kein Fahrrad, <span class="konj">aber</span> <span class="subj">wir</span> <span class="verb">haben</span> zwei Autos. <i>(Kontrast)</i></div>
+      <div class="satz-box">Wir haben zwei Autos, <span class="konj">denn</span> <span class="subj">wir</span> <span class="verb">mögen</span> Autos. <i>(Grund)</i></div>
+      <div class="satz-box">Ich habe einen Porsche <span class="konj">und</span> mein Mann <span class="verb">hat</span> einen Ferrari. <i>(Addition)</i></div>
+      <div class="satz-box">Möchtest du meinen Porsche, <span class="konj">oder</span> <span class="verb">willst</span> du seinen Ferrari? <i>(Alternative)</i></div>
+
+      <div class="merksatz">
+        <b>aber</b> = Kontrast (ngược lại, nhưng)<br>
+        <b>denn</b> = Grund (vì, lý do — wie "weil", aber normale Wortstellung!)<br>
+        <b>und</b> = Addition (và, thêm vào)<br>
+        <b>oder</b> = Alternative (hoặc, lựa chọn)
+      </div>
+      <div class="merksatz">
+        <b>Tipp:</b> Bei "und/oder/aber" kann man gleiche Wörter weglassen.<br>
+        Ich möchte mit dir essen gehen <span class="konj">und</span> (ich möchte mit dir) einen Film sehen.
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: Ergänzen Sie aber, und, denn, oder</h4>
+      <div id="mq40"></div>
+      <div class="mq-result" id="mqResult40"></div>
+    </div>
+  </div>
+
+  <!-- 41: deshalb, sonst, dann, danach -->
+  <div id="e41" class="subtab-content">
+    <div class="lek-badge">Hauptsätze verbinden – Position 1</div>
+    <div class="group-card">
+      <h3>Deshalb, sonst, dann, danach — Hauptsätze verbinden (Position 1)</h3>
+      <p><b>deshalb, sonst, dann, danach</b> stehen meistens auf <b>Position 1</b>. Danach: Verb (Position 2), dann Subjekt (Position 3).</p>
+      <div class="merksatz"><b>Formel:</b> Hauptsatz. → Deshalb/Sonst/Dann (Pos.1) + Verb (Pos.2) + Subjekt (Pos.3) + ...</div>
+
+      <div class="konnektor-list">
+        <span class="konnektor-chip">deshalb</span>
+        <span class="konnektor-chip">sonst</span>
+        <span class="konnektor-chip">dann</span>
+        <span class="konnektor-chip">danach</span>
+      </div>
+
+      <div class="satz-box">Ich brauche Geld. <span class="pos0">Deshalb</span> <span class="verb">arbeite</span> <span class="subj">ich</span>. <i>(konsekutiv = Folge)</i></div>
+      <div class="satz-box">Ich brauche Geld, <span class="pos0">sonst</span> <span class="verb">kann</span> <span class="subj">ich</span> nichts einkaufen. <i>(wenn nicht..., dann...)</i></div>
+      <div class="satz-box">Zuerst gehe ich einkaufen, <span class="pos0">dann</span> <span class="verb">koche</span> <span class="subj">ich</span>. <i>(temporal = danach)</i></div>
+
+      <div class="merksatz">
+        <b>deshalb</b> = vì vậy, vì thế (kết quả từ một lý do trước đó)<br>
+        <b>sonst</b> = nếu không thì (cảnh báo hậu quả)<br>
+        <b>dann / danach</b> = sau đó (thời gian, thứ tự việc)
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: Was passt zusammen?</h4>
+      <div id="mq41"></div>
+      <div class="mq-result" id="mqResult41"></div>
+    </div>
+  </div>
+
+  <!-- VERGLEICH deshalb/weil/wegen -->
+  <div id="evgl" class="subtab-content">
+    <div class="lek-badge">Vergleich – sehr wichtig!</div>
+    <div class="warning-box">
+      <h4>deshalb, weil, wegen — alle bedeuten "vì / vì vậy / do"!</h4>
+      <p>Aber: Grammatik ist <b>nicht gleich</b>. Vorsicht!</p>
+    </div>
+
+    <div class="group-card">
+      <table class="compare-table">
+        <tr><th>Wort</th><th>Was?</th><th>Verb?</th><th>Beispiel</th></tr>
+        <tr>
+          <td><b>weil</b></td>
+          <td>Konjunktion (Nebensatz)</td>
+          <td>Verb am <b>Ende</b></td>
+          <td>..., <span class="konj">weil</span> es <span class="verb">regnet</span>.</td>
+        </tr>
+        <tr>
+          <td><b>deshalb</b></td>
+          <td>Adverb, Position 1</td>
+          <td>Verb <b>direkt danach</b></td>
+          <td><span class="pos0">Deshalb</span> <span class="verb">bleibe</span> ich zu Hause.</td>
+        </tr>
+        <tr>
+          <td><b>wegen</b></td>
+          <td>Präposition + Nomen (Genitiv)</td>
+          <td>kein zweites Verb!</td>
+          <td><span class="pos0">Wegen</span> des Regens bleibe ich zu Hause.</td>
+        </tr>
+      </table>
+
+      <div class="merksatz">
+        <b>deshalb = "vì vậy, vì thế"</b> — es gibt VORHER einen Grund (einen Satz), und "deshalb" zeigt die Folge:<br>
+        Es regnet. (Grund) → <span class="pos0">Deshalb</span> bleibe ich zu Hause. (Folge)
+      </div>
+
+      <div class="satz-box">✅ <span class="konj">Weil</span> es regnet, <span class="verb">bleibe</span> ich zu Hause.</div>
+      <div class="satz-box">✅ Es regnet. <span class="pos0">Deshalb</span> <span class="verb">bleibe</span> ich zu Hause.</div>
+      <div class="satz-box">✅ <span class="pos0">Wegen</span> <b>des Regens</b> bleibe ich zu Hause.</div>
+      <div class="satz-box" style="border-left-color: var(--red); background: var(--red-bg);">❌ Wegen es regnet... → FALSCH! "wegen" + Nomen, kein Satz.</div>
+      <div class="satz-box" style="border-left-color: var(--red); background: var(--red-bg);">❌ Deshalb es regnet... → FALSCH! Nach "deshalb" kommt das Verb direkt.</div>
+
+      <div class="merksatz">
+        <b>wegen + Genitiv:</b><br>
+        wegen <b>des</b> Wetters (das Wetter, neutral)<br>
+        wegen <b>der</b> Prüfung (die Prüfung, feminin)<br>
+        wegen <b>der</b> Kinder (Plural)
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: deshalb, weil oder wegen?</h4>
+      <div id="mqVgl"></div>
+      <div class="mq-result" id="mqResultVgl"></div>
+    </div>
+  </div>
+
+  <!-- 42: weil, dass, wenn -->
+  <div id="e42" class="subtab-content">
+    <div class="lek-badge">Nebensätze – Verb am Ende</div>
+    <div class="group-card">
+      <h3>Weil, dass und wenn — Nebensätze</h3>
+      <p>Im Nebensatz steht das konjugierte Verb <b>am Ende</b>. Trennbare Verben stehen zusammen am Ende.</p>
+
+      <table class="compare-table">
+        <tr><th>Frage</th><th>Konjunktion</th><th>Subjekt</th><th>...</th><th>Verb</th></tr>
+        <tr><td>Was?</td><td>dass</td><td>mein Freund</td><td>heute</td><td>kommt.</td></tr>
+        <tr><td>Wann?</td><td>wenn</td><td>er</td><td>am Bahnhof</td><td>ankommt.</td></tr>
+        <tr><td>Warum?</td><td>weil</td><td>ich</td><td>meinen Freund</td><td>abholen will.</td></tr>
+      </table>
+
+      <div class="satz-box">Ich glaube, <span class="konj">dass</span> mein Freund heute <span class="verb">kommt</span>.</div>
+      <div class="satz-box">Ich gehe zum Bahnhof, <span class="konj">weil</span> ich meinen Freund abholen <span class="verb">will</span>.</div>
+
+      <div class="merksatz">
+        <b>Position 1 / Position 2:</b> Wenn der Nebensatz am Satzanfang steht, steht er auf Position 1. Das konjugierte Verb folgt direkt auf Position 2.<br>
+        <i>Wenn er Zeit hat,</i> <span class="verb">geht</span> er ins Theater.
+      </div>
+      <div class="merksatz">
+        Nebensätze mit <b>wenn</b> stehen oft auf Position 1, Nebensätze mit <b>weil</b> und <b>dass</b> selten.
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: Antworten Sie mit weil</h4>
+      <div id="mq42"></div>
+      <div class="mq-result" id="mqResult42"></div>
+    </div>
+  </div>
+  <!-- 72: wenn vs als -->
+  <div id="e72" class="subtab-content">
+    <div class="lek-badge">Temporale Nebensätze – Gegenwart vs. Vergangenheit</div>
+    <div class="group-card">
+      <h3>Ich gehe, wenn ... / Ich ging, als ... — wenn und als</h3>
+
+      <div class="merksatz">
+        <b>wenn</b>: Gegenwart und Zukunft. In der Vergangenheit nur für Routinen und wiederholte Ereignisse.
+      </div>
+      <div class="satz-box"><span class="konj">Wenn</span> ich mit dem Zug nach Hause fahre, <span class="verb">lese</span> ich immer.</div>
+      <div class="satz-box">(Immer) <span class="konj">wenn</span> ich im letzten Jahr mit dem Zug nach Hause gefahren bin, habe ich gelesen.</div>
+
+      <div class="merksatz">
+        <b>als</b>: ein einmaliges Ereignis in der Vergangenheit (nur 1 Mal!).
+      </div>
+      <div class="satz-box"><span class="konj">Als</span> ich letzte Woche nach Hause gefahren bin, hat der Zug auf einmal mitten auf der Strecke <span class="verb">gehalten</span>.</div>
+
+      <div class="merksatz">
+        <b>wenn</b> = khi/nếu (hiện tại, tương lai, hoặc nhiều lần)<br>
+        <b>als</b> = khi (1 lần, quá khứ, không lặp lại)
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: wenn oder als?</h4>
+      <div id="mq72"></div>
+      <div class="mq-result" id="mqResult72"></div>
+    </div>
+  </div>
+
+  <!-- 73: während, bevor, nachdem, seit -->
+  <div id="e73" class="subtab-content">
+    <div class="lek-badge">Temporale Nebensätze – Reihenfolge & Dauer</div>
+    <div class="group-card">
+      <h3>Während, bevor, nachdem und seit — Temporale Nebensätze</h3>
+
+      <table class="compare-table">
+        <tr><th>Wort</th><th>Bedeutung</th><th>Beispiel</th></tr>
+        <tr>
+          <td><b>bevor</b></td>
+          <td>bevor + Aktivität 2, Hauptsatz + Aktivität 1</td>
+          <td><span class="konj">Bevor</span> ich frühstücke, putze ich meine Zähne.</td>
+        </tr>
+        <tr>
+          <td><b>nachdem</b></td>
+          <td>nachdem + Aktivität 1, Hauptsatz + Aktivität 2</td>
+          <td><span class="konj">Nachdem</span> ich gefrühstückt habe, putze ich meine Zähne.</td>
+        </tr>
+        <tr>
+          <td><b>während</b></td>
+          <td>2 parallele Aktivitäten</td>
+          <td><span class="konj">Während</span> ich frühstücke, höre ich Radio.</td>
+        </tr>
+        <tr>
+          <td><b>seit(dem)</b></td>
+          <td>Beginn in der Vergangenheit, dauert noch an</td>
+          <td><span class="konj">Seitdem</span> ich immer meine Zähne putze, muss ich nicht mehr zum Zahnarzt.</td>
+        </tr>
+      </table>
+
+      <div class="merksatz">
+        <b>Zeitstufe bei nachdem:</b> Die Zeit im nachdem-Satz muss eine Stufe VOR der Zeit im Hauptsatz liegen.<br>
+        <i>Nachdem ich gefrühstückt habe,</i> <span class="verb">mache</span> ich Gymnastik. (Perfekt → Präsens)<br>
+        <i>Nachdem ich gefrühstückt hatte,</i> <span class="verb">habe</span> ich Gymnastik gemacht. (Plusquamperfekt → Perfekt)
+      </div>
+      <div class="merksatz">
+        In den temporalen Nebensätzen mit bevor, nachdem, während und seitdem steht das Verb am <b>Ende</b>.
+      </div>
+      <div class="merksatz">
+        <b>bevor</b> = trước khi · <b>nachdem</b> = sau khi · <b>während</b> = trong khi · <b>seit(dem)</b> = từ khi (đến giờ)
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: bevor, nachdem, während oder seitdem?</h4>
+      <div id="mq73"></div>
+      <div class="mq-result" id="mqResult73"></div>
+    </div>
+  </div>
+
+  <!-- 75: Doppelkonnektoren -->
+  <div id="e75" class="subtab-content">
+    <div class="lek-badge">Zweiteilige Konnektoren</div>
+    <div class="group-card">
+      <h3>Entweder...oder, weder...noch, sowohl...als auch, nicht nur...sondern auch — Doppelkonnektoren</h3>
+
+      <div class="doppel-card">
+        <span class="doppel-part">sowohl</span><span class="arrow">...</span><span class="doppel-part">als auch</span>
+        <span style="font-size:0.85rem; color:var(--text-light);">→ + + beides (cả hai)</span>
+      </div>
+      <div class="satz-box">Ich trinke Kaffee <span class="konj">sowohl</span> mit Milch <span class="konj">als auch</span> mit Zucker.</div>
+
+      <div class="doppel-card">
+        <span class="doppel-part">nicht nur</span><span class="arrow">...</span><span class="doppel-part">sondern auch</span>
+        <span style="font-size:0.85rem; color:var(--text-light);">→ + + beides, das 2. betont</span>
+      </div>
+      <div class="satz-box">Er trinkt Kaffee <span class="konj">nicht nur</span> mit viel Zucker, <span class="konj">sondern auch</span> mit Sahne.</div>
+
+      <div class="doppel-card">
+        <span class="doppel-part">weder</span><span class="arrow">...</span><span class="doppel-part">noch</span>
+        <span style="font-size:0.85rem; color:var(--text-light);">→ – – beides nicht</span>
+      </div>
+      <div class="satz-box">Sie trinkt Tee <span class="konj">weder</span> mit Milch <span class="konj">noch</span> mit Zucker.</div>
+
+      <div class="doppel-card">
+        <span class="doppel-part">entweder</span><span class="arrow">...</span><span class="doppel-part">oder</span>
+        <span style="font-size:0.85rem; color:var(--text-light);">→ a oder b, starkes "oder"</span>
+      </div>
+      <div class="satz-box">Ich trinke Tee <span class="konj">entweder</span> mit Zitrone <span class="konj">oder</span> mit Milch.</div>
+
+      <div class="merksatz">
+        <b>sowohl...als auch</b> = vừa... vừa... (cả hai đều có)<br>
+        <b>nicht nur...sondern auch</b> = không chỉ... mà còn... (cái thứ 2 quan trọng hơn)<br>
+        <b>weder...noch</b> = không... và cũng không... (cả hai đều không)<br>
+        <b>entweder...oder</b> = hoặc... hoặc... (chỉ chọn 1)
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: Was passt zusammen?</h4>
+      <div id="mq75"></div>
+      <div class="mq-result" id="mqResult75"></div>
+    </div>
+  </div>
+
+  <!-- 76: je...desto -->
+  <div id="e76" class="subtab-content">
+    <div class="lek-badge">Vergleichssätze</div>
+    <div class="group-card">
+      <h3>Je größer, desto besser! — Vergleichssätze</h3>
+
+      <table class="compare-table">
+        <tr><th>Nebensatz (immer am Beginn)</th><th>Hauptsatz</th></tr>
+        <tr>
+          <td>je + Komparativ (+ Nomen) ... Verb am Ende</td>
+          <td>desto/umso + Komparativ (+ Nomen), Verb = Position 2</td>
+        </tr>
+      </table>
+
+      <div class="satz-box"><span class="konj">Je</span> schneller man arbeitet, <span class="konj">desto</span> müder <span class="verb">wird</span> man.</div>
+      <div class="satz-box"><span class="konj">Je</span> mehr man arbeitet, <span class="konj">umso</span> müder <span class="verb">wird</span> man.</div>
+      <div class="satz-box"><span class="konj">Je</span> schneller man arbeitet, <span class="konj">desto</span> mehr Arbeit <span class="verb">schafft</span> man.</div>
+
+      <div class="merksatz">
+        <b>je + Komparativ</b> (Nebensatz, Verb am Ende), Komma, <b>desto/umso + Komparativ</b> + Verb (Position 2) + Subjekt.<br>
+        <b>je...desto/umso</b> = càng... càng...
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: Je... desto... Was passt zusammen?</h4>
+      <div id="mq76"></div>
+      <div class="mq-result" id="mqResult76"></div>
+    </div>
+  </div>
+
+  <!-- 77: während, wegen, trotz, innerhalb, außerhalb + Genitiv -->
+  <div id="e77" class="subtab-content">
+    <div class="lek-badge">Präpositionen mit Genitiv</div>
+    <div class="group-card">
+      <h3>Während, wegen, trotz, innerhalb, außerhalb — Präpositionen mit Genitiv</h3>
+
+      <table class="compare-table">
+        <tr><th>Präposition</th><th>≈ Konjunktion</th><th>Beispiel</th><th>Typ</th></tr>
+        <tr>
+          <td><b>während</b></td>
+          <td>(2 Aktionen parallel)</td>
+          <td><span class="konj">Während</span> des Essens raucht er.</td>
+          <td>temporal</td>
+        </tr>
+        <tr>
+          <td><b>wegen</b></td>
+          <td>≈ "weil"</td>
+          <td><span class="konj">Wegen</span> des Rauchs kann sie nicht essen.</td>
+          <td>kausal</td>
+        </tr>
+        <tr>
+          <td><b>trotz</b></td>
+          <td>≈ "obwohl"</td>
+          <td><span class="konj">Trotz</span> des Rauchs isst er.</td>
+          <td>konzessiv</td>
+        </tr>
+        <tr>
+          <td><b>innerhalb</b></td>
+          <td>(im Raum / in der Zeit)</td>
+          <td><span class="konj">Innerhalb</span> des Restaurants ist das Rauchen verboten.</td>
+          <td>lokal / temporal</td>
+        </tr>
+        <tr>
+          <td><b>außerhalb</b></td>
+          <td>(im Raum / in der Zeit)</td>
+          <td><span class="konj">Außerhalb</span> des Restaurants ist das Rauchen erlaubt.</td>
+          <td>lokal / temporal</td>
+        </tr>
+      </table>
+
+      <div class="merksatz">
+        Diese Präpositionen haben den <b>Genitiv</b>. In der gesprochenen Sprache benutzt man "während", "wegen" und "trotz" auch oft mit Dativ.
+      </div>
+      <div class="merksatz">
+        <b>wegen</b> = vì (giống "weil" nhưng + Nomen Genitiv, không có Verb thứ 2)<br>
+        <b>trotz</b> = mặc dù (giống "obwohl" nhưng + Nomen Genitiv)<br>
+        <b>während</b> = trong khi/trong lúc (+ Nomen Genitiv)<br>
+        <b>innerhalb / außerhalb</b> = trong vòng / ngoài (không gian hoặc thời gian)
+      </div>
+      <div class="satz-box">wegen <b>des</b> Lärms — während <b>der</b> Arbeit — trotz <b>des</b> Geschenks — innerhalb <b>eines</b> Tages</div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Interaktiv: Was passt zusammen?</h4>
+      <div id="mq77"></div>
+      <div class="mq-result" id="mqResult77"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ TAB 2: ÜBUNGEN ============ -->
+<div id="uebungen" class="tab-content">
+  <div id="u1" class="subtab-content active">
+    <div class="ex-block-desc">und, aber, oder, denn, sondern — keine Inversion.</div>
+    <div id="block1"></div>
+  </div>
+  <div id="u2" class="subtab-content">
+    <div class="ex-block-desc">weil, dass, denn — Verb am Ende oder normal?</div>
+    <div id="block2"></div>
+  </div>
+  <div id="u3" class="subtab-content">
+    <div class="ex-block-desc">deshalb, außerdem, trotzdem, also — Verb direkt danach.</div>
+    <div id="block3"></div>
+  </div>
+  <div id="u4" class="subtab-content">
+    <div class="ex-block-desc">wenn, obwohl, bevor, nachdem, wegen + Genitiv.</div>
+    <div id="block4"></div>
+  </div>
+  <div id="u5" class="subtab-content">
+    <div class="ex-block-desc">Alles mix + zweiteilige Konnektoren + je...desto.</div>
+    <div id="block5"></div>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">🔄 Zurücksetzen</button>
+  <div class="score-bar" id="scoreBar">Punkte: 0 / 65</div>
+</div>
+
+<!-- ============ TAB 3: SCHNELLTEST ============ -->
+<div id="test" class="tab-content">
+  <div class="ex-block-desc">15 Fragen, alles gemischt.</div>
+  <div id="testBlock"></div>
+  <button class="reset-btn" onclick="resetAll()">🔄 Zurücksetzen</button>
+  <div class="score-bar" id="testScoreBar">Punkte: 0 / 15</div>
+</div>
+</div>
+
+<div class="footer-sig">Made with love by Bảo Quang • BBQ</div>
+
+<script>
+function switchMainTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('subtabs-erklarung').style.display = (id === 'erklarung') ? 'flex' : 'none';
+  document.getElementById('subtabs-uebungen').style.display = (id === 'uebungen') ? 'flex' : 'none';
+}
+function switchSubTab(mainId, subId, btn) {
+  const main = document.getElementById(mainId);
+  main.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(subId).classList.add('active');
+  btn.parentElement.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+<script>
+// ============ MINI-QUIZ DATA (5 Fragen pro Subtab) ============
+// Format: {q: 'frage', opts: [...], correct: idx, fb: 'erklärung'}
+
+const mq40 = [
+  {q:'Ich mache eine Diät, ___ ich bin zu dick.', opts:['aber','denn','und'], correct:1, fb:'"denn" = Grund (vì). Normale Wortstellung: ich bin.'},
+  {q:'Ich möchte schlank sein, ___ ich habe große Lust zu essen.', opts:['aber','und','oder'], correct:0, fb:'"aber" = Kontrast (nhưng).'},
+  {q:'Ich liebe Schokolade ___ ich esse auch sehr gerne Eis.', opts:['denn','und','aber'], correct:1, fb:'"und" = Addition (và).'},
+  {q:'Ich mache eine Obstdiät ___ ich mache eine Eierdiät.', opts:['oder','und','denn'], correct:0, fb:'"oder" = Alternative (hoặc).'},
+  {q:'Sie geht mit ihren Freunden in den Park, ___ sie sehen einen Film im Kino.', opts:['oder','aber','denn'], correct:0, fb:'"oder" = Wahl zwischen zwei Aktivitäten.'}
+];
+
+const mq41 = [
+  {q:'Mein Fernseher ist kaputt. ___', opts:['Deshalb gehen wir ins Restaurant.','Deshalb gehen wir ins Kino.','Deshalb bin ich zu spät gekommen.'], correct:1, fb:'Fernseher kaputt → Folge: ins Kino gehen (Filme schauen).'},
+  {q:'Kannst du mir bitte Geld geben, ___', opts:['sonst kann ich mich nicht konzentrieren.','sonst können wir heute Abend nichts essen.','sonst kann ich die Rechnung nicht bezahlen.'], correct:2, fb:'Geld → Rechnung bezahlen.'},
+  {q:'Morgens trinkt er einen Kaffee, ___', opts:['dann fährt er drei Stationen mit der U-Bahn.','dann geht er schlafen.','dann geht er nach Hause.'], correct:0, fb:'Morgens Kaffee → dann zur Arbeit fahren (U-Bahn).'},
+  {q:'Ich brauche Geld. ___ arbeite ich.', opts:['Sonst','Deshalb','Dann'], correct:1, fb:'"deshalb" = konsekutiv, Folge aus dem Grund.'},
+  {q:'Zuerst gehe ich einkaufen, ___ koche ich.', opts:['deshalb','sonst','dann'], correct:2, fb:'"dann" = temporal, danach/als nächstes.'}
+];
+
+const mqVgl = [
+  {q:'Es regnet stark. ___ bleiben wir zu Hause.', opts:['Deshalb','Weil','Wegen'], correct:0, fb:'"Deshalb" + Verb direkt danach (Pos.1+2).'},
+  {q:'Wir bleiben zu Hause, ___ es regnet.', opts:['deshalb','weil','wegen'], correct:1, fb:'"weil" + Verb am Ende.'},
+  {q:'___ des Regens bleiben wir zu Hause.', opts:['Deshalb','Weil','Wegen'], correct:2, fb:'"Wegen" + Nomen im Genitiv, kein zweites Verb.'},
+  {q:'Welcher Satz ist RICHTIG?', opts:['Deshalb es regnet, bleiben wir zu Hause.','Wegen es regnet, bleiben wir zu Hause.','Es regnet. Deshalb bleiben wir zu Hause.'], correct:2, fb:'"Deshalb" + Verb direkt: "Deshalb bleiben wir...".'},
+  {q:'Wegen ___ Wetters (das Wetter) bleibe ich zu Hause.', opts:['des','der','dem'], correct:0, fb:'"das Wetter" neutral → Genitiv = "des Wetters".'}
+];
+
+const mq42 = [
+  {q:'Warum rufst du nicht an? — Ich rufe nicht an, ___', opts:['weil der Akku von meinem Handy leer ist.','weil ist der Akku von meinem Handy leer.','weil der Akku leer ist von meinem Handy.'], correct:0, fb:'"weil" + Subjekt + ... + Verb am Ende: "...leer ist".'},
+  {q:'Warum kommst du so spät? — ___', opts:['Weil ich musste so lange arbeiten.','Weil ich so lange arbeiten musste.','Weil so lange arbeiten ich musste.'], correct:1, fb:'"weil" + Subjekt + ... + Verb am Ende: "...arbeiten musste".'},
+  {q:'Ich glaube, ___ mein Freund heute kommt.', opts:['weil','dass','wenn'], correct:1, fb:'"dass" leitet einen Objektsatz ein (Was glaubst du?).'},
+  {q:'Mein Freund ruft an, ___ er am Bahnhof ankommt.', opts:['dass','weil','wenn'], correct:2, fb:'"wenn" = Frage "Wann?" — Zeitpunkt.'},
+  {q:'___ er Zeit hat, geht er ins Theater. (Position 1)', opts:['Wenn','Dass','Weil'], correct:0, fb:'"wenn" steht oft auf Position 1 (Nebensatz zuerst).'}
+];
+
+const mq72 = [
+  {q:'___ ich mit dem Zug nach Hause fahre, lese ich immer.', opts:['Wenn','Als'], correct:0, fb:'Routine, Gegenwart → "wenn".'},
+  {q:'___ ich letzte Woche nach Hause gefahren bin, hat der Zug plötzlich gehalten.', opts:['Wenn','Als'], correct:1, fb:'Einmaliges Ereignis, Vergangenheit → "als".'},
+  {q:'___ du heute Abend kommst, können wir ins Kino gehen.', opts:['Wenn','Als'], correct:0, fb:'Zukunft, Bedingung → "wenn".'},
+  {q:'___ ich letzte Woche in Madrid war, habe ich ein tolles Fußballspiel gesehen.', opts:['Wenn','Als'], correct:1, fb:'1 Mal in der Vergangenheit → "als".'},
+  {q:'Immer ___ er jetzt in der Stadt spazieren geht, trifft er Bekannte.', opts:['wenn','als'], correct:0, fb:'"immer wenn" = wiederholtes Ereignis → "wenn".'}
+];
+
+const mq73 = [
+  {q:'___ ich frühstücke, putze ich meine Zähne. (Zähne putzen kommt zuerst danach)', opts:['Bevor','Nachdem','Während'], correct:0, fb:'"bevor" = trước khi: trước khi ăn sáng, đánh răng trước.'},
+  {q:'___ ich gefrühstückt habe, putze ich meine Zähne. (Frühstück kommt zuerst)', opts:['Bevor','Nachdem','Seitdem'], correct:1, fb:'"nachdem" = sau khi: sau khi ăn sáng xong, đánh răng.'},
+  {q:'___ ich frühstücke, höre ich Radio. (zwei Aktivitäten parallel)', opts:['Während','Nachdem','Bevor'], correct:0, fb:'"während" = 2 hoạt động cùng lúc.'},
+  {q:'___ ich immer meine Zähne putze, muss ich nicht mehr zum Zahnarzt. (Beginn in der Vergangenheit, dauert an)', opts:['Bevor','Seitdem','Während'], correct:1, fb:'"seitdem" = từ khi đó đến giờ.'},
+  {q:'Nachdem ich gefrühstückt habe, ___ ich Gymnastik.', opts:['mache','machte','gemacht habe'], correct:0, fb:'Perfekt im Nebensatz → Präsens im Hauptsatz: "mache".'}
+];
+
+const mq75 = [
+  {q:'Im Fernsehen kann man ___ Filme ___ Nachrichten sehen.', opts:['sowohl / als auch','entweder / oder','weder / noch'], correct:0, fb:'"sowohl...als auch" = vừa... vừa... (cả hai có).'},
+  {q:'Es gibt nicht nur gute Serien, ___ auch interessante Dokumentationen.', opts:['oder','sondern','noch'], correct:1, fb:'"nicht nur... sondern auch".'},
+  {q:'Aber ich mag ___ Krimis ___ Science-Fiction-Filme.', opts:['sowohl / als auch','weder / noch','entweder / oder'], correct:1, fb:'"weder...noch" = không... và cũng không... (cả hai đều không thích).'},
+  {q:'Ich kann mich beim Fernsehen ___ informieren ___ entspannen.', opts:['weder / noch','sowohl / als auch','entweder / oder'], correct:2, fb:'"entweder...oder" = chỉ chọn 1 trong 2.'},
+  {q:'Wir haben noch kein Zimmer gefunden: ___ in einem Hotel ___ in einer Pension. (–/–)', opts:['weder / noch','sowohl / als auch','nicht nur / sondern auch'], correct:0, fb:'Beide negativ (chưa tìm được cả hai) → "weder...noch".'}
+];
+
+const mq76 = [
+  {q:'Je weniger man schläft, ___', opts:['desto müder ist man.','desto größere Portionen kann man essen.','desto weniger versteht man.'], correct:2, fb:'Ngủ ít → hiểu ít hơn.'},
+  {q:'Je mehr Bücher ich habe, ___', opts:['desto mehr Regale brauche ich.','desto müder ist man.','desto weniger versteht man.'], correct:0, fb:'Nhiều sách → cần nhiều kệ.'},
+  {q:'Je mehr Alkohol man trinkt, ___', opts:['desto größere Portionen kann man essen.','desto mehr Kopfschmerzen hat man am nächsten Morgen.','desto weniger versteht man.'], correct:1, fb:'Uống nhiều rượu → đau đầu hôm sau.'},
+  {q:'Je schneller du sprichst, ___', opts:['desto weniger versteht man.','desto müder ist man.','desto mehr Regale brauche ich.'], correct:0, fb:'Nói nhanh → hiểu ít.'},
+  {q:'Je größer die Wohnung ist, ___', opts:['desto weniger versteht man.','desto mehr muss man putzen.','desto müder ist man.'], correct:1, fb:'Nhà to → dọn dẹp nhiều hơn.'}
+];
+
+const mq77 = [
+  {q:'___ des Fluges höre und sehe ich Musik. (während Aktion 2 parallel)', opts:['Während','Wegen','Trotz'], correct:0, fb:'"während" = 2 hoạt động song song trong chuyến bay.'},
+  {q:'___ der Arbeit darf man jeden Tag das Handy nicht benutzen.', opts:['Wegen','Während','Innerhalb'], correct:1, fb:'"während der Arbeit" = trong lúc làm việc.'},
+  {q:'___ des Lärms ist sie jetzt nicht fit.', opts:['Wegen','Trotz','Während'], correct:0, fb:'"wegen" ≈ "weil" → vì tiếng ồn.'},
+  {q:'___ des Geschenks muss er viel arbeiten.', opts:['Wegen','Trotz','Während'], correct:1, fb:'"trotz" ≈ "obwohl" → mặc dù có quà (vẫn phải làm việc nhiều).'},
+  {q:'___ des Restaurants ist das Rauchen verboten.', opts:['Außerhalb','Innerhalb','Wegen'], correct:1, fb:'"innerhalb" = bên trong (không gian).'}
+];
+
+// ============ EXERCISES (5 x 13) ============
+const block1 = [
+  {q:'Ich mag Kaffee, ___ ich trinke selten welchen.', opts:['aber','und','denn'], correct:0, fb:'"aber" = nhưng (đối lập).'},
+  {q:'Wir können ins Kino gehen ___ zu Hause bleiben.', opts:['denn','oder','sondern'], correct:1, fb:'"oder" = hoặc.'},
+  {q:'Sie ist müde, ___ sie hat schlecht geschlafen.', opts:['denn','aber','und'], correct:0, fb:'"denn" = vì (giải thích lý do, KHÔNG đảo ngữ).'},
+  {q:'Er trinkt keinen Kaffee, ___ Tee.', opts:['aber','sondern','oder'], correct:1, fb:'"sondern" dùng sau phủ định để chỉ sự thay thế.'},
+  {q:'Ich kaufe Brot ___ Milch.', opts:['und','denn','aber'], correct:0, fb:'"und" = và (liệt kê).'},
+  {q:'Das Essen ist lecker, ___ es ist zu teuer.', opts:['und','aber','oder'], correct:1, fb:'"aber" = nhưng.'},
+  {q:'Möchtest du Tee ___ Kaffee?', opts:['oder','sondern','denn'], correct:0, fb:'Câu hỏi lựa chọn → "oder".'},
+  {q:'Ich bleibe heute zu Hause, ___ ich bin krank.', opts:['denn','sondern','oder'], correct:0, fb:'"denn" giải thích nguyên nhân, cấu trúc S-V bình thường.'},
+  {q:'Wir gehen nicht zu Fuß, ___ wir fahren mit dem Bus.', opts:['aber','sondern','denn'], correct:1, fb:'Phủ định + thay thế → "sondern".'},
+  {q:'Er ist klug ___ fleißig.', opts:['und','aber','sondern'], correct:0, fb:'"und" liên kết 2 tính từ tích cực.'},
+  {q:'Das Hotel ist schön, ___ es liegt weit weg.', opts:['und','aber','denn'], correct:1, fb:'Sự đối lập → "aber".'},
+  {q:'Komm bitte pünktlich, ___ wir warten nicht!', opts:['denn','sondern','oder'], correct:2, fb:'"oder" ở đây mang nghĩa cảnh báo "nếu không thì...".'},
+  {q:'Sie spricht nicht Englisch, ___ Französisch.', opts:['sondern','aber','und'], correct:0, fb:'Phủ định + thay thế → "sondern".'}
+];
+
+const block2 = [
+  {q:'Ich bleibe zu Hause, weil ich ___ bin.', opts:['krank ist','bin krank','krank bin'], correct:2, fb:'"weil" → Verb cuối câu: "...krank bin".'},
+  {q:'Sie sagt, dass sie morgen ___.', opts:['kommt','kommt sie','sie kommt'], correct:0, fb:'"dass" → Verb cuối: "...morgen kommt".'},
+  {q:'Wir bleiben zu Hause, denn es ___ stark.', opts:['regnet','regnet es','es regnet'], correct:0, fb:'"denn" KHÔNG đảo ngữ → "es regnet" giữ trật tự bình thường.'},
+  {q:'Welcher Satz ist richtig?', opts:['Weil ich müde bin, gehe ich ins Bett.','Weil ich bin müde, gehe ich ins Bett.','Weil müde ich bin, gehe ich ins Bett.'], correct:0, fb:'Trong Nebensatz "weil", Verb đứng cuối: "...müde bin".'},
+  {q:'Ich glaube, dass das Buch sehr interessant ___.', opts:['ist','sein','ist es'], correct:0, fb:'"dass" → Verb ("ist") ở cuối mệnh đề.'},
+  {q:'Er kommt nicht zur Arbeit, denn er ___ krank.', opts:['ist','ist er','er ist'], correct:0, fb:'"denn" không đảo ngữ: Subjekt-Verb bình thường → "er ist".'},
+  {q:'Chọn câu đúng nghĩa "Tôi học tiếng Đức vì nó thú vị":', opts:['Ich lerne Deutsch, weil es interessant ist.','Ich lerne Deutsch, deshalb ist es interessant.','Ich lerne Deutsch, denn interessant es ist.'], correct:0, fb:'"weil" + Verb cuối câu diễn đạt lý do.'},
+  {q:'Weiß du, ob er heute ___?', opts:['kommt','kommt er','er kommt'], correct:0, fb:'"ob" cũng kéo Verb xuống cuối: "...heute kommt".'},
+  {q:'Ich denke, dass das Wetter morgen besser ___.', opts:['wird','wird es','es wird'], correct:0, fb:'"dass" → Verb cuối: "...besser wird".'},
+  {q:'Câu nào có nghĩa "Vì trời mưa, chúng tôi ở nhà" và đúng ngữ pháp?', opts:['Weil es regnet, bleiben wir zu Hause.','Weil regnet es, bleiben wir zu Hause.','Weil es regnet, wir bleiben zu Hause.'], correct:0, fb:'Nebensatz "weil" đứng đầu → Verb cuối Nebensatz, rồi Verb của Hauptsatz đứng ngay sau dấu phẩy (đảo ngữ Hauptsatz).'},
+  {q:'Sie fragt, ob ich Zeit ___.', opts:['habe','habe ich','ich habe'], correct:0, fb:'"ob" → Verb cuối: "...Zeit habe".'},
+  {q:'Wir fahren nicht weg, denn das Auto ___ kaputt.', opts:['ist','ist das Auto','das Auto ist'], correct:0, fb:'"denn" không đảo ngữ → "das Auto ist" giữ nguyên trật tự.'},
+  {q:'Ich weiß, dass du viel ___.', opts:['arbeitest','arbeitest du','du arbeitest'], correct:0, fb:'"dass" → Verb cuối: "...viel arbeitest".'}
+];
+
+const block3 = [
+  {q:'Es ist spät. ___ müssen wir gehen.', opts:['Deshalb','Weil','Wegen'], correct:0, fb:'"Deshalb" = vì vậy (Position 1 + Verb ngay sau).'},
+  {q:'Es regnet. Deshalb ___ wir zu Hause.', opts:['wir bleiben','bleiben wir','bleiben'], correct:1, fb:'Sau "Deshalb" là Verb ngay (Position 2 tính từ deshalb), rồi Subjekt: "bleiben wir".'},
+  {q:'Der Test war schwer. ___ haben viele Schüler eine schlechte Note.', opts:['Deshalb','Obwohl','Wenn'], correct:0, fb:'Kết quả/hậu quả → "deshalb".'},
+  {q:'Das Zimmer ist klein. ___ ist es sehr gemütlich.', opts:['Deshalb','Trotzdem','Weil'], correct:1, fb:'"Trotzdem" = tuy vậy/dù vậy — diễn đạt sự đối lập với điều vừa nói.'},
+  {q:'Ich habe keine Zeit. ___ kann ich nicht kommen.', opts:['Außerdem','Deshalb','Trotzdem'], correct:1, fb:'Lý do → kết quả = "deshalb".'},
+  {q:'Das Essen war gut. ___ war der Service freundlich.', opts:['Außerdem','Deshalb','Sonst'], correct:0, fb:'"außerdem" = ngoài ra (thêm thông tin), không phải kết quả.'},
+  {q:'Beeil dich! ___ verpassen wir den Bus.', opts:['Sonst','Deshalb','Außerdem'], correct:0, fb:'"sonst" = nếu không thì (cảnh báo hậu quả).'},
+  {q:'Câu nào ĐÚNG ngữ pháp?', opts:['Deshalb ich bin müde.','Deshalb bin ich müde.','Ich deshalb bin müde.'], correct:1, fb:'"Deshalb" + Verb ngay + Subjekt: "Deshalb bin ich müde."'},
+  {q:'Er hat hart gelernt. ___ hat er die Prüfung bestanden.', opts:['Deshalb','Obwohl','Bevor'], correct:0, fb:'Nguyên nhân → kết quả = "deshalb".'},
+  {q:'Sie war krank. ___ ist sie zur Arbeit gegangen.', opts:['Deshalb','Trotzdem','Also'], correct:1, fb:'Kết quả ngược với mong đợi → "trotzdem".'},
+  {q:'Wir haben kein Auto. ___ fahren wir mit dem Bus.', opts:['Trotzdem','Also','Obwohl'], correct:1, fb:'"also" = vì vậy/như vậy, dùng để kết luận.'},
+  {q:'Das Buch ist interessant. ___ ist es ziemlich lang.', opts:['Außerdem','Deshalb','Also'], correct:0, fb:'Thông tin bổ sung (không phải kết quả) → "außerdem".'},
+  {q:'Lerne fleißig, ___ wirst du die Prüfung nicht bestehen.', opts:['sonst','deshalb','trotzdem'], correct:0, fb:'"sonst" = nếu không (thì).'}
+];
+
+const block4 = [
+  {q:'___ ich nach Hause komme, dusche ich.', opts:['Wenn','Als','Während'], correct:0, fb:'"wenn" = khi/nếu (điều kiện hoặc lặp lại).'},
+  {q:'___ ich Kind war, habe ich in Hue gewohnt.', opts:['Wenn','Als','Ob'], correct:1, fb:'"als" = khi (một lần, quá khứ).'},
+  {q:'Sie geht zur Schule, ___ sie krank ist.', opts:['weil','obwohl','wenn'], correct:1, fb:'"obwohl" = mặc dù (đối lập, vẫn xảy ra).'},
+  {q:'___ wir essen, waschen wir die Hände.', opts:['Nachdem','Bevor','Während'], correct:1, fb:'"bevor" = trước khi.'},
+  {q:'___ wir gegessen haben, gehen wir spazieren.', opts:['Bevor','Nachdem','Als'], correct:1, fb:'"nachdem" = sau khi (thường + Perfekt trong Nebensatz).'},
+  {q:'___ des schlechten Wetters bleiben wir zu Hause.', opts:['Weil','Wegen','Deshalb'], correct:1, fb:'"wegen" + Genitiv ("des schlechten Wetters").'},
+  {q:'Wegen ___ Prüfung kann ich heute nicht kommen. (die Prüfung)', opts:['des','der','dem'], correct:1, fb:'"die Prüfung" feminin → Genitiv = "der Prüfung".'},
+  {q:'Ich höre Musik, ___ ich lerne.', opts:['während','bevor','da'], correct:0, fb:'"während" = trong khi (2 việc đồng thời).'},
+  {q:'___ es schon spät ist, gehe ich jetzt.', opts:['Da','Ob','Wenn'], correct:0, fb:'"da" = vì/bởi vì (gần nghĩa "weil", văn viết).'},
+  {q:'Ich weiß nicht, ___ er morgen Zeit hat.', opts:['dass','ob','wenn'], correct:1, fb:'"ob" = liệu... có... không.'},
+  {q:'Wegen ___ Kinder müssen wir früh nach Hause. (die Kinder, Plural)', opts:['des','der','dem'], correct:1, fb:'Genitiv Plural luôn dùng "der".'},
+  {q:'Câu nào ĐÚNG?', opts:['Wegen es regnet, bleiben wir zu Hause.','Wegen des Regens bleiben wir zu Hause.','Wegen der Regen bleiben wir zu Hause.'], correct:1, fb:'"wegen" + Genitiv Nomen → "des Regens".'},
+  {q:'Immer ___ ich Stress habe, gehe ich joggen.', opts:['wenn','als','ob'], correct:0, fb:'Việc lặp đi lặp lại → "wenn".'}
+];
+
+const block5 = [
+  {q:'___ lerne ich Deutsch, ___ auch Englisch.', opts:['Sowohl ... als auch','Entweder ... oder','Weder ... noch'], correct:0, fb:'"sowohl...als auch" = vừa... vừa...'},
+  {q:'___ gehen wir ins Kino, ___ wir bleiben zu Hause.', opts:['Sowohl ... als auch','Entweder ... oder','Nicht nur ... sondern auch'], correct:1, fb:'"entweder...oder" = hoặc... hoặc...'},
+  {q:'___ ist das Essen gut, ___ ist es auch günstig.', opts:['Zwar ... aber','Nicht nur ... sondern auch','Weder ... noch'], correct:1, fb:'"nicht nur...sondern auch" = không chỉ... mà còn...'},
+  {q:'Ich trinke ___ Kaffee ___ Tee – nur Wasser.', opts:['weder ... noch','sowohl ... als auch','entweder ... oder'], correct:0, fb:'"weder...noch" = không... và cũng không...'},
+  {q:'___ ist die Wohnung klein, ___ ist sie sehr hell.', opts:['Zwar ... aber','Entweder ... oder','Sowohl ... als auch'], correct:0, fb:'"zwar...aber" = tuy... nhưng...'},
+  {q:'Je größer die Wohnung, ___', opts:['desto teurer ist sie.','desto kleiner ist sie.','desto schneller ist sie.'], correct:0, fb:'Nhà to hơn → đắt hơn.'},
+  {q:'Das Wetter ist schlecht. ___ gehen wir spazieren.', opts:['Trotzdem','Deshalb','Weil'], correct:0, fb:'Kết quả ngược mong đợi → "trotzdem".'},
+  {q:'Ich bleibe zu Hause, ___ ich krank bin.', opts:['weil','deshalb','wegen'], correct:0, fb:'Nebensatz lý do → "weil" + Verb cuối.'},
+  {q:'___ des Streiks fahren keine Busse.', opts:['Weil','Wegen','Deshalb'], correct:1, fb:'"wegen" + Genitiv ("des Streiks").'},
+  {q:'Er ist neu hier. ___ kennt er die Stadt noch nicht gut.', opts:['Deshalb','Obwohl','Bevor'], correct:0, fb:'Nguyên nhân → kết quả = "deshalb".'},
+  {q:'___ ich nach Berlin fahre, möchte ich Deutsch üben.', opts:['Bevor','Während','Nachdem'], correct:0, fb:'"bevor" = trước khi.'},
+  {q:'Sie arbeitet viel, ___ sie wenig verdient.', opts:['obwohl','wenn','da'], correct:0, fb:'"obwohl" = mặc dù (đối lập).'},
+  {q:'Chọn câu đúng nghĩa "Một mặt tôi muốn làm việc, mặt khác tôi cần nghỉ ngơi":', opts:['Einerseits will ich arbeiten, andererseits brauche ich Ruhe.','Sowohl will ich arbeiten als auch brauche ich Ruhe.','Entweder will ich arbeiten oder brauche ich Ruhe.'], correct:0, fb:'"einerseits...andererseits" = một mặt... mặt khác...'}
+];
+
+const testBlock = [
+  {q:'Es ist kalt. ___ ziehe ich eine Jacke an.', opts:['Deshalb','Weil','Wegen'], correct:0, fb:'"Deshalb" + Verb ngay sau.'},
+  {q:'Ich ziehe eine Jacke an, ___ es kalt ___.', opts:['weil / ist','deshalb / ist','wegen / ist'], correct:0, fb:'"weil" → Verb ("ist") cuối câu.'},
+  {q:'___ des kalten Wetters ziehe ich eine Jacke an.', opts:['Weil','Wegen','Deshalb'], correct:1, fb:'"Wegen" + Genitiv Nomen ("des kalten Wetters").'},
+  {q:'Sie ist müde, ___ sie geht nicht schlafen.', opts:['aber','und','sondern'], correct:0, fb:'"aber" = nhưng (đối lập, không đảo ngữ).'},
+  {q:'___ ich Zeit habe, helfe ich dir.', opts:['Wenn','Als','Ob'], correct:0, fb:'"wenn" = nếu/khi (điều kiện).'},
+  {q:'Ich weiß, dass er ___ kommt.', opts:['heute','heute kommt','kommt heute'], correct:1, fb:'"dass" → Verb cuối mệnh đề: "...heute kommt".'},
+  {q:'Das Auto ist alt. ___ funktioniert es gut.', opts:['Trotzdem','Deshalb','Außerdem'], correct:0, fb:'Đối lập với mong đợi → "trotzdem".'},
+  {q:'___ ich aufstehe, trinke ich Kaffee.', opts:['Nachdem','Bevor','Wenn'], correct:0, fb:'"nachdem" = sau khi.'},
+  {q:'Er lernt ___ Deutsch ___ Spanisch.', opts:['sowohl / als auch','entweder / oder','weder / noch'], correct:0, fb:'"sowohl...als auch" = vừa... vừa...'},
+  {q:'Câu nào ĐÚNG?', opts:['Deshalb ich gehe ins Bett.','Deshalb gehe ich ins Bett.','Ich deshalb gehe ins Bett.'], correct:1, fb:'Sau "Deshalb" là Verb ngay.'},
+  {q:'Wegen ___ Wetters (das Wetter) bleiben wir drinnen.', opts:['des','der','dem'], correct:0, fb:'"das Wetter" neutral → Genitiv = "des Wetters".'},
+  {q:'Ich rufe dich an, ___ ich ankomme.', opts:['wenn','dass','ob'], correct:0, fb:'"wenn" = khi (sự việc lặp lại/tương lai).'},
+  {q:'___ war das Essen lecker, ___ war es auch günstig.', opts:['Nicht nur / sondern auch','Entweder / oder','Zwar / aber'], correct:0, fb:'"nicht nur...sondern auch" = không chỉ... mà còn...'},
+  {q:'Sie kommt nicht zur Party, ___ sie krank ist.', opts:['denn','weil','deshalb'], correct:1, fb:'Lý do trong Nebensatz, Verb cuối → "weil".'},
+  {q:'Das Hotel ist gut. ___ ist es zu teuer.', opts:['Außerdem','Allerdings','Sonst'], correct:1, fb:'"allerdings" = tuy nhiên (đối lập, đứng đầu câu + đảo ngữ).'}
+];
+
+// ============ RENDER FUNCTIONS ============
+function renderMiniQuiz(containerId, data, resultId) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mq-item';
+    let optsHtml = '';
+    item.opts.forEach((opt, oIdx) => {
+      optsHtml += `<button class="mq-opt" data-correct="${oIdx === item.correct}" onclick="checkMiniAnswer(this, '${containerId}_${idx}', '${resultId}', ${data.length})">${opt}</button>`;
+    });
+    div.innerHTML = `
+      <div><span class="mq-num">${idx+1}.</span>${item.q}</div>
+      <div class="mq-options">${optsHtml}</div>
+      <div class="mq-fb" id="mqfb_${containerId}_${idx}">${item.fb}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+const miniAnswered = {};
+
+function checkMiniAnswer(btn, key, resultId, total) {
+  if (miniAnswered.hasOwnProperty(key)) return;
+  const isCorrect = btn.dataset.correct === 'true';
+  miniAnswered[key] = isCorrect;
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.mq-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  const fb = parent.nextElementSibling;
+  fb.classList.add('show');
+  fb.classList.add(isCorrect ? 'correct-fb' : 'wrong-fb');
+
+  // update result count for this quiz group
+  const prefix = key.split('_').slice(0, -1).join('_');
+  let correctCount = 0, answeredCount = 0;
+  Object.keys(miniAnswered).forEach(k => {
+    if (k.startsWith(prefix + '_')) {
+      answeredCount++;
+      if (miniAnswered[k]) correctCount++;
+    }
+  });
+  const resEl = document.getElementById(resultId);
+  if (answeredCount === total) {
+    resEl.textContent = `✅ Fertig! ${correctCount} / ${total} richtig`;
+  } else {
+    resEl.textContent = `${correctCount} / ${answeredCount} richtig (${total - answeredCount} übrig)`;
+  }
+}
+
+function renderBlock(containerId, data, startNum) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, idx) => {
+    const num = startNum + idx;
+    const div = document.createElement('div');
+    div.className = 'ex-item';
+    let optsHtml = '';
+    item.opts.forEach((opt, oIdx) => {
+      optsHtml += `<button class="ex-opt" data-correct="${oIdx === item.correct}" onclick="checkAnswer(this, '${containerId}_${idx}')">${opt}</button>`;
+    });
+    div.innerHTML = `
+      <div class="ex-question"><span class="ex-num">${num}.</span>${item.q}</div>
+      <div class="ex-options">${optsHtml}</div>
+      <div class="ex-feedback" id="fb_${containerId}_${idx}">${item.fb}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+const answered = {};
+
+function checkAnswer(btn, key) {
+  if (answered.hasOwnProperty(key)) return;
+  const isCorrect = btn.dataset.correct === 'true';
+  answered[key] = isCorrect;
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.ex-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  const fb = parent.nextElementSibling;
+  fb.classList.add('show');
+  fb.classList.add(isCorrect ? 'correct-fb' : 'wrong-fb');
+  updateScore();
+}
+
+function updateScore() {
+  const exTotal = block1.length + block2.length + block3.length + block4.length + block5.length;
+  let exScore = 0, testScore = 0;
+  Object.keys(answered).forEach(k => {
+    if (!answered[k]) return;
+    if (k.startsWith('testBlock_')) testScore++;
+    else exScore++;
+  });
+  document.getElementById('scoreBar').textContent = `Punkte: ${exScore} / ${exTotal}`;
+  document.getElementById('testScoreBar').textContent = `Punkte: ${testScore} / ${testBlock.length}`;
+}
+
+function resetAll() {
+  location.reload();
+}
+
+// ============ INIT ============
+renderMiniQuiz('mq40', mq40, 'mqResult40');
+renderMiniQuiz('mq41', mq41, 'mqResult41');
+renderMiniQuiz('mqVgl', mqVgl, 'mqResultVgl');
+renderMiniQuiz('mq42', mq42, 'mqResult42');
+renderMiniQuiz('mq72', mq72, 'mqResult72');
+renderMiniQuiz('mq73', mq73, 'mqResult73');
+renderMiniQuiz('mq75', mq75, 'mqResult75');
+renderMiniQuiz('mq76', mq76, 'mqResult76');
+renderMiniQuiz('mq77', mq77, 'mqResult77');
+
+renderBlock('block1', block1, 1);
+renderBlock('block2', block2, 1);
+renderBlock('block3', block3, 1);
+renderBlock('block4', block4, 1);
+renderBlock('block5', block5, 1);
+renderBlock('testBlock', testBlock, 1);
+
+</script>
+
+</body>
+</html>

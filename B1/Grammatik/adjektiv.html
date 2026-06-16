@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adjektive – B1 Grammatik</title>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --border: #d1dbe6;
+    --header-bg: #2c4a6e;
+    --header-text: #ffffff;
+    --accent1: #2c7a7b;   /* Komparativ: teal */
+    --accent2: #6b46c1;   /* Superlativ: indigo */
+    --accent3: #c05621;   /* Adj als Nomen: burnt orange */
+    --tab-active-k: #2c7a7b;
+    --tab-active-s: #6b46c1;
+    --tab-active-n: #c05621;
+    --text: #1a202c;
+    --muted: #4a5568;
+    --light-k: #e6fffa;
+    --light-s: #f3e8ff;
+    --light-n: #fff5eb;
+    --correct: #276749;
+    --correct-bg: #c6f6d5;
+    --wrong: #9b2c2c;
+    --wrong-bg: #fed7d7;
+    --radius: 10px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-bottom: 40px;
+  }
+
+  /* ── STICKY HEADER ── */
+  #sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  #sticky-header h1 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    flex: 1;
+    min-width: 160px;
+  }
+  #sticky-header input[type="text"] {
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    width: 150px;
+    outline: none;
+  }
+  #sticky-header input::placeholder { color: rgba(255,255,255,0.6); }
+  #timer-box {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* ── GROUP TABS ── */
+  .group-nav {
+    display: flex;
+    gap: 4px;
+    padding: 14px 16px 0;
+    flex-wrap: wrap;
+  }
+  .group-btn {
+    padding: 9px 20px;
+    border: 2px solid transparent;
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .group-btn.k-active { background: var(--accent1); color: #fff; border-color: var(--accent1); }
+  .group-btn.s-active { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+  .group-btn.n-active { background: var(--accent3); color: #fff; border-color: var(--accent3); }
+  .group-btn:not(.k-active):not(.s-active):not(.n-active):hover { background: #edf2f7; }
+
+  /* ── SECTION ── */
+  .group-section { display: none; padding: 0 16px 16px; }
+  .group-section.visible { display: block; }
+
+  .section-card {
+    background: var(--surface);
+    border-radius: 0 var(--radius) var(--radius) var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  /* ── INNER TABS ── */
+  .inner-tab-bar {
+    display: flex;
+    overflow-x: auto;
+    background: #f7fafc;
+    border-bottom: 2px solid var(--border);
+    padding: 0 8px;
+    gap: 2px;
+    scrollbar-width: none;
+  }
+  .inner-tab-bar::-webkit-scrollbar { display: none; }
+  .inner-tab {
+    padding: 10px 14px;
+    white-space: nowrap;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .inner-tab:hover { color: var(--text); }
+  .group-k .inner-tab.active { color: var(--accent1); border-bottom-color: var(--accent1); }
+  .group-s .inner-tab.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+  .group-n .inner-tab.active { color: var(--accent3); border-bottom-color: var(--accent3); }
+
+  /* ── TAB CONTENT ── */
+  .inner-panel { display: none; padding: 20px 18px; }
+  .inner-panel.visible { display: block; }
+
+  /* ── THEORY BLOCKS ── */
+  .theory-box {
+    background: var(--light-k);
+    border-left: 4px solid var(--accent1);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .group-s .theory-box { background: var(--light-s); border-left-color: var(--accent2); }
+  .group-n .theory-box { background: var(--light-n); border-left-color: var(--accent3); }
+
+  .theory-box h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .theory-box p { margin-bottom: 6px; }
+  .theory-box ul { margin-left: 18px; }
+  .theory-box li { margin-bottom: 3px; }
+
+  .rule-highlight {
+    display: inline-block;
+    background: rgba(0,0,0,0.08);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-weight: 700;
+    font-size: 13.5px;
+  }
+  .red { color: #c53030; font-weight: 700; }
+  .blue { color: #2b6cb0; font-weight: 700; }
+  .green { color: #276749; font-weight: 700; }
+
+  /* ── TABLE ── */
+  .gram-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 10px 0;
+  }
+  .gram-table th {
+    background: var(--header-bg);
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .gram-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .gram-table tr:nth-child(even) td { background: #f7fafc; }
+  .gram-table .warn { color: #c05621; font-weight: 700; }
+
+  /* ── EXAMPLE CARD ── */
+  .beispiel-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  @media(min-width:600px) { .beispiel-grid { grid-template-columns: 1fr 1fr; } }
+
+  .bsp-card {
+    background: #f7fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+  }
+  .bsp-card .bsp-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .bsp-card .bsp-de { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .bsp-card .bsp-info { font-size: 12.5px; color: var(--muted); font-style: italic; }
+
+  /* ── EXERCISES ── */
+  .uebung-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+  .aufgabe-desc {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--text);
+    border-left: 3px solid var(--border);
+    padding-left: 10px;
+  }
+
+  .item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .item-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 22px;
+    padding-top: 8px;
+  }
+  .item-content { flex: 1; min-width: 200px; }
+
+  input.blank {
+    border: none;
+    border-bottom: 2px solid var(--border);
+    background: transparent;
+    padding: 4px 6px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    width: 130px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input.blank:focus { border-bottom-color: var(--accent1); }
+  .group-s input.blank:focus { border-bottom-color: var(--accent2); }
+  .group-n input.blank:focus { border-bottom-color: var(--accent3); }
+  input.blank.correct { border-bottom-color: var(--correct); background: var(--correct-bg); border-radius: 4px; }
+  input.blank.wrong   { border-bottom-color: var(--wrong);   background: var(--wrong-bg);   border-radius: 4px; }
+
+  .hint-text {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .answer-reveal {
+    font-size: 12.5px;
+    color: var(--correct);
+    font-weight: 600;
+    display: none;
+    margin-top: 2px;
+  }
+  .answer-reveal.show { display: block; }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .btn {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+  }
+  .btn-check-k { background: var(--accent1); color: #fff; }
+  .btn-check-k:hover { background: #276749; }
+  .btn-check-s { background: var(--accent2); color: #fff; }
+  .btn-check-s:hover { background: #553c9a; }
+  .btn-check-n { background: var(--accent3); color: #fff; }
+  .btn-check-n:hover { background: #9c4221; }
+  .btn-reset { background: #edf2f7; color: var(--text); }
+  .btn-reset:hover { background: #e2e8f0; }
+
+  .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--header-bg);
+    color: #fff;
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .sub-section { margin-bottom: 22px; }
+  .sub-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+  }
+
+  /* ── COMPAR BOXES side-by-side ── */
+  .compare-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  @media(max-width:480px) { .compare-two { grid-template-columns: 1fr; } }
+  .compare-box {
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+  }
+  .compare-box .compare-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .cbox-wie { background: #e6fffa; }
+  .cbox-wie .compare-label { color: var(--accent1); }
+  .cbox-als { background: #ebf8ff; }
+  .cbox-als .compare-label { color: #2b6cb0; }
+  .cbox-am  { background: var(--light-s); }
+  .cbox-am .compare-label { color: var(--accent2); }
+  .cbox-der { background: var(--light-n); }
+  .cbox-der .compare-label { color: var(--accent3); }
+
+  /* sentence line */
+  .sent-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* inline connector word pill */
+  .pill {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .pill-wie  { background: var(--accent1); color: #fff; }
+  .pill-als  { background: #2b6cb0; color: #fff; }
+  .pill-am   { background: var(--accent2); color: #fff; }
+  .pill-der  { background: var(--accent3); color: #fff; }
+
+  /* ── EINER DER HÖCHSTEN ── */
+  .struktur-box {
+    background: #fffbeb;
+    border: 2px solid #f6ad55;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .struktur-box .str-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c05621;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .struktur-formula {
+    font-size: 15px;
+    font-weight: 700;
+    background: #fff;
+    border: 1px solid #fbd38d;
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  /* Adjektiv als Nomen declension table */
+  .decl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  .decl-table th {
+    background: var(--accent3);
+    color: #fff;
+    padding: 7px 10px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .decl-table th:first-child { text-align: left; }
+  .decl-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    font-size: 13px;
+  }
+  .decl-table td:first-child { text-align: left; font-weight: 700; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+  .decl-table tr:nth-child(even) td { background: #fff5eb; }
+  .decl-table .hl { color: var(--accent3); font-weight: 700; }
+
+  /* select exercise */
+  select.sel-blank {
+    border: none;
+    border-bottom: 2px solid var(--border);
+    background: transparent;
+    padding: 3px 6px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+  }
+  select.sel-blank:focus { border-bottom-color: var(--accent1); }
+  select.sel-blank.correct { border-bottom-color: var(--correct); background: var(--correct-bg); border-radius: 4px; }
+  select.sel-blank.wrong   { border-bottom-color: var(--wrong);   background: var(--wrong-bg);   border-radius: 4px; }
+
+  /* progress strip */
+  .progress-strip {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+  .pfill-k { background: var(--accent1); }
+  .pfill-s { background: var(--accent2); }
+  .pfill-n { background: var(--accent3); }
+
+  /* text with blanks inline */
+  .text-uebung {
+    font-size: 14px;
+    line-height: 2.2;
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+
+  /* scrollable table on mobile */
+  .table-wrap { overflow-x: auto; }
+
+  /* Lückentextbereich */
+  .luecken-text {
+    font-size: 14px;
+    line-height: 2.4;
+    padding: 12px 14px;
+    background: #f7fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<div id="sticky-header">
+  <h1>📘 Adjektive – B1 Grammatik</h1>
+  <input type="text" id="student-name" placeholder="Name eingeben …">
+  <div id="timer-box" onclick="toggleTimer()" title="Klicken zum Starten/Pausieren">⏱ 45:00</div>
+</div>
+
+<!-- GROUP NAVIGATION -->
+<div class="group-nav">
+  <button class="group-btn k-active" onclick="showGroup('k', this)">🔼 Komparativ</button>
+  <button class="group-btn" onclick="showGroup('s', this)">🏆 Superlativ</button>
+  <button class="group-btn" onclick="showGroup('n', this)">🏷️ Adj. als Nomen</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     GRUPPE K: KOMPARATIV
+═══════════════════════════════════════════════ -->
+<div id="group-k" class="group-section visible group-k">
+  <div class="section-card">
+
+    <div class="inner-tab-bar">
+      <div class="inner-tab active" onclick="showTab('k','k0',this)">📖 Theorie</div>
+      <div class="inner-tab" onclick="showTab('k','k1',this)">💡 Beispiele</div>
+      <div class="inner-tab" onclick="showTab('k','k2',this)">✏️ Übung 1</div>
+      <div class="inner-tab" onclick="showTab('k','k3',this)">✏️ Übung 2</div>
+      <div class="inner-tab" onclick="showTab('k','k4',this)">✏️ Übung 3</div>
+      <div class="inner-tab" onclick="showTab('k','k5',this)">✏️ Übung 4</div>
+      <div class="inner-tab" onclick="showTab('k','k6',this)">✏️ Übung 5</div>
+    </div>
+
+    <!-- THEORIE K -->
+    <div id="k0" class="inner-panel visible">
+      <div class="theory-box">
+        <h3>Komparativ – Bildung</h3>
+        <p>Im Komparativ hat das Adjektiv immer die Endung <span class="rule-highlight red">-er</span>.</p>
+        <p style="margin-top:8px;">Manchmal hat das Adjektiv im Komparativ einen Umlaut:</p>
+        <p><span class="red">jung → jünger</span> &nbsp;|&nbsp; <span class="red">alt → älter</span> &nbsp;|&nbsp; <span class="red">groß → größer</span></p>
+        <p style="margin-top:8px;">Vor einem Nomen hat das Adjektiv im Komparativ eine Adjektivendung:</p>
+        <p><span class="blue">das schnellere Auto</span></p>
+      </div>
+
+      <div class="sub-section-title">Unregelmäßige Formen</div>
+      <div class="table-wrap">
+        <table class="gram-table">
+          <tr><th>Grundform</th><th>Komparativ</th></tr>
+          <tr><td>gut</td><td class="warn">besser</td></tr>
+          <tr><td>viel</td><td class="warn">mehr</td></tr>
+          <tr><td>gern</td><td class="warn">lieber</td></tr>
+          <tr><td>hoch</td><td class="warn">höher</td></tr>
+          <tr><td>teuer</td><td class="warn">teurer</td></tr>
+        </table>
+      </div>
+
+      <div class="compare-two" style="margin-top:16px;">
+        <div class="compare-box cbox-wie">
+          <div class="compare-label">Gleichheit → <span class="pill pill-wie">wie</span></div>
+          <p><em>genau so / genauso … wie</em></p>
+          <p style="margin-top:6px;">Auto 1: 230 km/h<br>Auto 2: 230 km/h</p>
+          <p style="margin-top:6px; font-weight:600;">Auto 1 ist (genau) so schnell <span class="pill pill-wie">wie</span> Auto 2.</p>
+        </div>
+        <div class="compare-box cbox-als">
+          <div class="compare-label">Ungleichheit → <span class="pill pill-als">als</span></div>
+          <p><em>Komparativ + als</em></p>
+          <p style="margin-top:6px;">Auto 1: 120 km/h<br>Auto 2: 300 km/h</p>
+          <p style="margin-top:6px; font-weight:600;">Auto 2 ist (viel) schneller <span class="pill pill-als">als</span> Auto 1.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEISPIELE K -->
+    <div id="k1" class="inner-panel">
+      <div class="uebung-title">Beispiele – Komparativ &amp; Vergleichssätze</div>
+      <div class="beispiel-grid">
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 1 – Komparativ Grundform</div>
+          <div class="bsp-de">Berlin ist <span class="red">größer</span> als München.</div>
+          <div class="bsp-info">groß → größer (Umlaut) + als</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 2 – so … wie</div>
+          <div class="bsp-de">Lena ist genauso alt <span class="blue">wie</span> Marco.</div>
+          <div class="bsp-info">Gleichheit: genauso + Adj. + wie</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 3 – lieber / mehr</div>
+          <div class="bsp-de">Ich trinke <span class="red">lieber</span> Tee <span class="blue">als</span> Kaffee.</div>
+          <div class="bsp-info">gern → lieber (unregelmäßig)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 4 – Komparativ vor Nomen</div>
+          <div class="bsp-de">Er kauft ein <span class="red">teureres</span> Auto.</div>
+          <div class="bsp-info">teuer → teurer + Adjektivendung -es (Neutrum)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 5 – viel mehr</div>
+          <div class="bsp-de">In China wohnen <span class="red">viel mehr</span> Menschen als in Deutschland.</div>
+          <div class="bsp-info">viel → mehr (unregelmäßig) + Verstärkung</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÜBUNG K1 -->
+    <div id="k2" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-k" id="prog-k2" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 1 – Komparativformen</div>
+      <div class="aufgabe-desc">Ergänzen Sie den Komparativ. (Lektion 38, Aufgabe 1)</div>
+
+      <div id="ue-k2">
+        <!-- 12 items -->
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          <span class="hint-text">klein –</span> <input class="blank" data-ans="kleiner" data-group="k2"> 
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          <span class="hint-text">langsam –</span> <input class="blank" data-ans="langsamer" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          <span class="hint-text">interessant –</span> <input class="blank" data-ans="interessanter" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          <span class="hint-text">schlecht –</span> <input class="blank" data-ans="schlechter" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          <span class="hint-text">alt –</span> <input class="blank" data-ans="älter" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">6.</span><div class="item-content">
+          <span class="hint-text">gesund –</span> <input class="blank" data-ans="gesünder" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">7.</span><div class="item-content">
+          <span class="hint-text">groß –</span> <input class="blank" data-ans="größer" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">8.</span><div class="item-content">
+          <span class="hint-text">hoch –</span> <input class="blank" data-ans="höher" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">9.</span><div class="item-content">
+          <span class="hint-text">gut –</span> <input class="blank" data-ans="besser" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">10.</span><div class="item-content">
+          <span class="hint-text">viel –</span> <input class="blank" data-ans="mehr" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">11.</span><div class="item-content">
+          <span class="hint-text">gern –</span> <input class="blank" data-ans="lieber" data-group="k2">
+        </div></div>
+        <div class="item-row"><span class="item-num">12.</span><div class="item-content">
+          <span class="hint-text">teuer –</span> <input class="blank" data-ans="teurer" data-group="k2">
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-k" onclick="checkGroup('k2', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('k2')">Wiederholen</button>
+        <span class="score-badge" id="score-k2" style="display:none">0/12</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG K2 -->
+    <div id="k3" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-k" id="prog-k3" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 2 – Lückentext: Komparativ</div>
+      <div class="aufgabe-desc">Ergänzen Sie den passenden Komparativ. (Lektion 38, Aufgabe 2)</div>
+
+      <div class="luecken-text" id="ue-k3">
+        Österreich ist <span style="color:#c53030; font-weight:700;">größer</span> (groß) als die Schweiz, aber
+        <input class="blank" data-ans="kleiner" data-group="k3" style="width:110px"> (klein) als Deutschland.
+        Deutschland hat <input class="blank" data-ans="mehr" data-group="k3" style="width:90px"> (viel) Einwohner als die beiden anderen deutschsprachigen Länder.
+        Das Leben in der Schweiz ist <input class="blank" data-ans="teurer" data-group="k3" style="width:110px"> (teuer) als in Deutschland.
+        Aber die Gehälter sind in der Schweiz auch <input class="blank" data-ans="höher" data-group="k3" style="width:100px"> (hoch) als in Deutschland und Österreich.
+        In der Schweiz und Österreich gibt es <input class="blank" data-ans="mehr" data-group="k3" style="width:90px"> (viel) Berge als in Deutschland.
+        Die österreichische Küche ist sicher <input class="blank" data-ans="bekannter" data-group="k3" style="width:120px"> (bekannt) als die schweizerische Küche.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-k" onclick="checkGroup('k3', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('k3')">Wiederholen</button>
+        <span class="score-badge" id="score-k3" style="display:none">0/6</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG K3 -->
+    <div id="k4" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-k" id="prog-k4" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 3 – als oder wie?</div>
+      <div class="aufgabe-desc">Wählen Sie: <strong>als</strong> oder <strong>wie</strong>? (Lektion 38, Aufgabe 3)</div>
+
+      <div id="ue-k4">
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          Ich trinke lieber Kaffee <select class="sel-blank" data-ans="als" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> Tee.
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          Meine Tochter liebt ihn genauso sehr <select class="sel-blank" data-ans="wie" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> ich.
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          Deutsch lernen macht so viel Spaß <select class="sel-blank" data-ans="wie" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> Musik hören.
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          Ich kenne den Sohn besser <select class="sel-blank" data-ans="als" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> den Vater.
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          Sie sprechen fast so gut Deutsch <select class="sel-blank" data-ans="wie" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> ein Deutscher.
+        </div></div>
+        <div class="item-row"><span class="item-num">6.</span><div class="item-content">
+          Er geht öfter ins Kino <select class="sel-blank" data-ans="als" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> sie.
+        </div></div>
+        <div class="item-row"><span class="item-num">7.</span><div class="item-content">
+          Der Film heute war besser <select class="sel-blank" data-ans="als" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> der Film letzte Woche.
+        </div></div>
+        <div class="item-row"><span class="item-num">8.</span><div class="item-content">
+          Sie können genauso gut surfen <select class="sel-blank" data-ans="wie" data-group="k4"><option value="">–</option><option>als</option><option>wie</option></select> die Profis.
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-k" onclick="checkGroup('k4', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('k4')">Wiederholen</button>
+        <span class="score-badge" id="score-k4" style="display:none">0/8</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG K4 -->
+    <div id="k5" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-k" id="prog-k5" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 4 – Vergleichssätze schreiben</div>
+      <div class="aufgabe-desc">Ergänzen Sie die Vergleichssätze mit <em>wie</em> oder <em>als</em>. (Lektion 38, Aufgabe 4)</div>
+
+      <div id="ue-k5">
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          <input class="blank" data-ans="Mezut und Sami laufen genauso schnell." data-group="k5" style="width:100%; max-width:400px"> <span class="hint-text">(Mezut/Sami – gleich schnell laufen)</span>
+          <div class="answer-reveal" id="ans-k5-0">✓ Mezut und Sami laufen genauso schnell.</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          <input class="blank" data-ans="Marco läuft schneller als Mezut und Sami." data-group="k5" style="width:100%; max-width:400px"> <span class="hint-text">(Marco – schneller als Mezut/Sami)</span>
+          <div class="answer-reveal" id="ans-k5-1">✓ Marco läuft schneller als Mezut und Sami.</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          <input class="blank" data-ans="In meiner Tasse ist mehr Kaffee als in deiner Tasse." data-group="k5" style="width:100%; max-width:400px"> <span class="hint-text">(meine Tasse – mehr Kaffee als deine)</span>
+          <div class="answer-reveal" id="ans-k5-2">✓ In meiner Tasse ist mehr Kaffee als in deiner Tasse.</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          <input class="blank" data-ans="In Marias Tasse ist genauso viel Kaffee wie in meiner und deiner Tasse." data-group="k5" style="width:100%; max-width:400px"> <span class="hint-text">(Marias Tasse – gleich viel Kaffee)</span>
+          <div class="answer-reveal" id="ans-k5-3">✓ In Marias Tasse ist genauso viel Kaffee wie in meiner und deiner Tasse.</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          <input class="blank" data-ans="Lena schläft genauso lange wie Jonas." data-group="k5" style="width:100%; max-width:400px"> <span class="hint-text">(Lena/Jonas – gleich lange schlafen)</span>
+          <div class="answer-reveal" id="ans-k5-4">✓ Lena schläft genauso lange wie Jonas.</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">6.</span><div class="item-content">
+          <input class="blank" data-ans="Mia schläft länger als Lena und Jonas." data-group="k5" style="width:100%; max-width:400px"> <span class="hint-text">(Mia – länger als Lena/Jonas)</span>
+          <div class="answer-reveal" id="ans-k5-5">✓ Mia schläft länger als Lena und Jonas.</div>
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-k" onclick="checkGroupFree('k5')">Lösung anzeigen</button>
+        <button class="btn btn-reset" onclick="resetGroupFree('k5',6)">Wiederholen</button>
+      </div>
+    </div>
+
+    <!-- ÜBUNG K5 -->
+    <div id="k6" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-k" id="prog-k6" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 5 – Adjektivendungen im Komparativ</div>
+      <div class="aufgabe-desc">Ergänzen Sie die Adjektivendungen (wenn nötig). (Lektion 38, Aufgabe 6)</div>
+
+      <div id="ue-k6">
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          Anna ist Sofias ält<input class="blank" data-ans="ere" data-group="k6" style="width:60px">  Schwester. Leonie ist genauso alt wie Anna. Sie hat einen jüng<input class="blank" data-ans="eren" data-group="k6" style="width:60px"> und einen älter<input class="blank" data-ans="en" data-group="k6" style="width:60px"> Bruder.
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          Max kauft lieber teur<input class="blank" data-ans="ere" data-group="k6" style="width:60px"> Sachen. Elena findet das nicht gut. Sie sagt: Die teur<input class="blank" data-ans="eren" data-group="k6" style="width:60px"> Sachen sind oft nicht besser als die billig<input class="blank" data-ans="eren" data-group="k6" style="width:60px"> Sachen.
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          Der ält<input class="blank" data-ans="ere" data-group="k6" style="width:60px"> Bruder meines Vaters wohnt in Chicago, der jüng<input class="blank" data-ans="ere" data-group="k6" style="width:60px"> Bruder wohnt in unserer Stadt.
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-k" onclick="checkGroup('k6', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('k6')">Wiederholen</button>
+        <span class="score-badge" id="score-k6" style="display:none">0/8</span>
+      </div>
+    </div>
+
+  </div><!-- section-card -->
+</div><!-- group-k -->
+
+
+<!-- ═══════════════════════════════════════════════
+     GRUPPE S: SUPERLATIV
+═══════════════════════════════════════════════ -->
+<div id="group-s" class="group-section group-s">
+  <div class="section-card">
+
+    <div class="inner-tab-bar">
+      <div class="inner-tab active" onclick="showTab('s','s0',this)">📖 Theorie</div>
+      <div class="inner-tab" onclick="showTab('s','s1',this)">💡 Beispiele</div>
+      <div class="inner-tab" onclick="showTab('s','s2',this)">✏️ Übung 1</div>
+      <div class="inner-tab" onclick="showTab('s','s3',this)">✏️ Übung 2</div>
+      <div class="inner-tab" onclick="showTab('s','s4',this)">✏️ Übung 3</div>
+      <div class="inner-tab" onclick="showTab('s','s5',this)">✏️ Übung 4</div>
+      <div class="inner-tab" onclick="showTab('s','s6',this)">✏️ Übung 5</div>
+    </div>
+
+    <!-- THEORIE S -->
+    <div id="s0" class="inner-panel visible">
+      <div class="theory-box" style="background:var(--light-s); border-color:var(--accent2);">
+        <h3>Superlativ – Bildung</h3>
+        <p>Es gibt zwei Formen des Superlativs:</p>
+      </div>
+
+      <div class="compare-two">
+        <div class="compare-box cbox-am">
+          <div class="compare-label">Mit einem Verb → <span class="pill pill-am">am…sten</span></div>
+          <p>Er läuft <strong>am schnellsten</strong>.</p>
+          <p>Sie sind <strong>am schnellsten</strong>.</p>
+          <p style="margin-top:8px; font-size:12.5px; color:var(--muted);">Mit <em>am</em> ist die Endung immer: <strong>-sten</strong></p>
+        </div>
+        <div class="compare-box cbox-der">
+          <div class="compare-label">Vor einem Nomen → <span class="pill pill-der">der/die/das…ste(n)</span></div>
+          <p>Das ist der <strong>schnellste</strong> Mann.</p>
+          <p>Die <strong>schnellsten</strong> Sportler kommen aus Jamaika.</p>
+          <p style="margin-top:8px; font-size:12.5px; color:var(--muted);">Immer mit dem <strong>definiten Artikel</strong>. Kein <em>am</em>!</p>
+        </div>
+      </div>
+
+      <div class="theory-box" style="background:var(--light-s); border-color:var(--accent2); margin-top:14px;">
+        <h3>Besonderheiten</h3>
+        <ul>
+          <li>Umlaut im Komparativ → auch im Superlativ: <span class="red">kurz → kürzer → am kürzesten</span></li>
+          <li>Adjektiv endet auf <em>t, d, s, (sch), x, z</em>: Endung <span class="red">-esten</span>: <em>am härtesten, der kürzeste</em></li>
+        </ul>
+      </div>
+
+      <div class="sub-section-title" style="margin-top:14px;">Unregelmäßige Formen</div>
+      <div class="table-wrap">
+        <table class="gram-table">
+          <tr><th>Grundform</th><th>Komparativ</th><th>Superlativ (am…)</th><th>Superlativ (der…)</th></tr>
+          <tr><td>gut</td><td class="warn">besser</td><td class="warn">am besten</td><td class="warn">der/die/das beste</td></tr>
+          <tr><td>viel</td><td class="warn">mehr</td><td class="warn">am meisten</td><td class="warn">der/die/das meiste</td></tr>
+          <tr><td>gern</td><td class="warn">lieber</td><td class="warn">am liebsten</td><td class="warn">–</td></tr>
+          <tr><td>hoch</td><td class="warn">höher</td><td class="warn">am höchsten</td><td class="warn">der/die/das höchste</td></tr>
+          <tr><td>teuer</td><td class="warn">teurer</td><td class="warn">am teuersten</td><td class="warn">der/die/das teuerste</td></tr>
+          <tr><td>groß</td><td class="warn">größer</td><td class="warn">am größten</td><td class="warn">der/die/das größte</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- BEISPIELE S -->
+    <div id="s1" class="inner-panel">
+      <div class="uebung-title">Beispiele – Superlativ</div>
+      <div class="beispiel-grid">
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 1 – am…sten (Verb)</div>
+          <div class="bsp-de">Er läuft <span class="red">am schnellsten</span>.</div>
+          <div class="bsp-info">Superlativ mit Verb → am + Adjektiv + -sten</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 2 – der…ste (Nomen)</div>
+          <div class="bsp-de">Das ist <span class="red">der schnellste</span> Mann.</div>
+          <div class="bsp-info">Vor Nomen → definiter Artikel + Superlativendung</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 3 – unregelmäßig</div>
+          <div class="bsp-de">Kaffee mag ich <span class="red">am liebsten</span>.</div>
+          <div class="bsp-info">gern → lieber → am liebsten</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 4 – Endung -esten</div>
+          <div class="bsp-de">Das ist <span class="red">der kürzeste</span> Weg.</div>
+          <div class="bsp-info">kurz → kürzer → kürzest- (Endung auf z → -est-)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 5 – Plural</div>
+          <div class="bsp-de">Die <span class="red">schnellsten</span> Sportler kommen aus Jamaika.</div>
+          <div class="bsp-info">Plural: definiter Artikel + Superlativ + -en</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÜBUNG S1 -->
+    <div id="s2" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-s" id="prog-s2" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 1 – Drei Formen</div>
+      <div class="aufgabe-desc">Ergänzen Sie die fehlenden Formen. (Lektion 39, Aufgabe 1)</div>
+
+      <div class="table-wrap">
+        <table class="gram-table" id="ue-s2">
+          <tr>
+            <th>Grundform</th>
+            <th>Komparativ</th>
+            <th>Superlativ (am…sten)</th>
+            <th>Superlativ (der/die/das…ste)</th>
+          </tr>
+          <tr>
+            <td class="green">freundlich</td>
+            <td><input class="blank" data-ans="freundlicher" data-group="s2" style="width:110px"></td>
+            <td class="green">am freundlichsten</td>
+            <td><input class="blank" data-ans="der freundlichste" data-group="s2" style="width:140px"></td>
+          </tr>
+          <tr>
+            <td><input class="blank" data-ans="nett" data-group="s2" style="width:80px"></td>
+            <td><input class="blank" data-ans="netter" data-group="s2" style="width:80px"></td>
+            <td><input class="blank" data-ans="am nettesten" data-group="s2" style="width:120px"></td>
+            <td><input class="blank" data-ans="die netteste" data-group="s2" style="width:120px"></td>
+          </tr>
+          <tr>
+            <td class="green">groß</td>
+            <td><input class="blank" data-ans="größer" data-group="s2" style="width:80px"></td>
+            <td><input class="blank" data-ans="am größten" data-group="s2" style="width:110px"></td>
+            <td><input class="blank" data-ans="der größte" data-group="s2" style="width:110px"></td>
+          </tr>
+          <tr>
+            <td><input class="blank" data-ans="gut" data-group="s2" style="width:60px"></td>
+            <td class="green">mehr</td>
+            <td><input class="blank" data-ans="am meisten" data-group="s2" style="width:110px"></td>
+            <td><input class="blank" data-ans="die meisten" data-group="s2" style="width:110px"></td>
+          </tr>
+          <tr>
+            <td><input class="blank" data-ans="gut" data-group="s2" style="width:60px"></td>
+            <td><input class="blank" data-ans="besser" data-group="s2" style="width:80px"></td>
+            <td class="green">am besten</td>
+            <td><input class="blank" data-ans="das beste" data-group="s2" style="width:110px"></td>
+          </tr>
+          <tr>
+            <td class="green">hoch</td>
+            <td><input class="blank" data-ans="höher" data-group="s2" style="width:80px"></td>
+            <td><input class="blank" data-ans="am höchsten" data-group="s2" style="width:110px"></td>
+            <td><input class="blank" data-ans="das höchste" data-group="s2" style="width:110px"></td>
+          </tr>
+          <tr>
+            <td><input class="blank" data-ans="teuer" data-group="s2" style="width:80px"></td>
+            <td><input class="blank" data-ans="teurer" data-group="s2" style="width:80px"></td>
+            <td><input class="blank" data-ans="am teuersten" data-group="s2" style="width:120px"></td>
+            <td class="green">die teuersten Schuhe</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-s" onclick="checkGroup('s2', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('s2')">Wiederholen</button>
+        <span class="score-badge" id="score-s2" style="display:none">0</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG S2 -->
+    <div id="s3" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-s" id="prog-s3" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 2 – Endung -e oder -en?</div>
+      <div class="aufgabe-desc">Ergänzen Sie die Endung. (Lektion 39, Aufgabe 3)</div>
+
+      <div id="ue-s3">
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          Der Rhein ist der längst<input class="blank" data-ans="e" data-group="s3" style="width:40px"> Fluss Deutschlands.
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          Auf den höchst<input class="blank" data-ans="en" data-group="s3" style="width:40px"> Bergen der Schweiz liegt das ganze Jahr Schnee.
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          Die größt<input class="blank" data-ans="e" data-group="s3" style="width:40px"> österreichische Stadt ist Wien. Graz ist die zweitgrößt<input class="blank" data-ans="e" data-group="s3" style="width:40px"> Stadt.
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          Das größt<input class="blank" data-ans="e" data-group="s3" style="width:40px"> deutsche Unternehmen ist die VW-AG.
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          Die bekanntst<input class="blank" data-ans="en" data-group="s3" style="width:40px"> deutschen Automarken sind Mercedes, BMW und VW.
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-s" onclick="checkGroup('s3', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('s3')">Wiederholen</button>
+        <span class="score-badge" id="score-s3" style="display:none">0/6</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG S3 -->
+    <div id="s4" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-s" id="prog-s4" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 3 – Superlativ mit Adjektiv</div>
+      <div class="aufgabe-desc">Ergänzen Sie ein passendes Adjektiv im Superlativ. (Lektion 39, Aufgabe 4 &amp; 5)</div>
+
+      <div class="theory-box" style="background:var(--light-s); border-color:var(--accent2); margin-bottom:14px;">
+        <p style="font-size:13px;">Wortschatz: <strong>trocken · lang · viel · tief · hoch</strong></p>
+      </div>
+
+      <div id="ue-s4">
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          Der <input class="blank" data-ans="längste" data-group="s4" style="width:110px"> Fluss der Welt ist der Nil. Er ist 6.671 km lang.
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          Der <input class="blank" data-ans="tiefste" data-group="s4" style="width:110px"> See der Welt ist der Baikalsee. Er ist 1.637 m tief.
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          Das <input class="blank" data-ans="trockenste" data-group="s4" style="width:120px"> Gebiet in der Welt ist die Atacama-Wüste. Dort regnet es fast nie.
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          Der <input class="blank" data-ans="höchste" data-group="s4" style="width:110px"> Wasserfall liegt in Venezuela. Er hat eine Höhe von 978 Metern.
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          Die Länder mit den <input class="blank" data-ans="meisten" data-group="s4" style="width:110px"> Einwohnern sind China und Indien.
+        </div></div>
+
+        <div class="sub-section-title" style="margin-top:18px;">Superlativsätze ergänzen</div>
+        <div class="item-row"><span class="item-num">6.</span><div class="item-content">
+          Kaffee mag ich lieber als Saft, aber <input class="blank" data-ans="am liebsten mag ich Tee" data-group="s4" style="width:240px"> (Tee).
+          <div class="answer-reveal" id="ans-s4-5">✓ am liebsten mag ich Tee</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">7.</span><div class="item-content">
+          Tennis und Volleyball finde ich gut, aber <input class="blank" data-ans="am liebsten spiele ich Fußball" data-group="s4" style="width:240px"> (Fußball).
+          <div class="answer-reveal" id="ans-s4-6">✓ am liebsten spiele ich Fußball</div>
+        </div></div>
+        <div class="item-row"><span class="item-num">8.</span><div class="item-content">
+          Ich gehe gerne ins Theater und in die Oper, aber <input class="blank" data-ans="am liebsten gehe ich ins Kino" data-group="s4" style="width:240px"> (Kino).
+          <div class="answer-reveal" id="ans-s4-7">✓ am liebsten gehe ich ins Kino</div>
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-s" onclick="checkGroupMixed('s4')">Prüfen / Lösung</button>
+        <button class="btn btn-reset" onclick="resetGroupFree('s4',8)">Wiederholen</button>
+        <span class="score-badge" id="score-s4" style="display:none">0</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG S4 -->
+    <div id="s5" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-s" id="prog-s5" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 4 – am oder der/die/das?</div>
+      <div class="aufgabe-desc">Ergänzen Sie <em>am</em> oder <em>der, die, das</em> und beantworten Sie die Fragen. (Lektion 39, Aufgabe 6)</div>
+
+      <div id="ue-s5">
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          Welches Tier kann 
+          <select class="sel-blank" data-ans="am" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          schnellsten laufen?
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          Wie heißt 
+          <select class="sel-blank" data-ans="der" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          höchste Berg der Erde?
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          Welches Land hat 
+          <select class="sel-blank" data-ans="die" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          meisten Einwohner?
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          Welches Land ist 
+          <select class="sel-blank" data-ans="das" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          kleinste?
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          Wo regnet es 
+          <select class="sel-blank" data-ans="am" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          meisten?
+        </div></div>
+        <div class="item-row"><span class="item-num">6.</span><div class="item-content">
+          Kennen Sie 
+          <select class="sel-blank" data-ans="das" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          kleinste Land Europas?
+        </div></div>
+        <div class="item-row"><span class="item-num">7.</span><div class="item-content">
+          Welcher Mann ist 
+          <select class="sel-blank" data-ans="am" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          reichsten?
+        </div></div>
+        <div class="item-row"><span class="item-num">8.</span><div class="item-content">
+          Welcher Fluss ist 
+          <select class="sel-blank" data-ans="der" data-group="s5"><option value="">–</option><option>am</option><option>der</option><option>die</option><option>das</option></select>
+          längste Fluss der Welt?
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-s" onclick="checkGroup('s5', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('s5')">Wiederholen</button>
+        <span class="score-badge" id="score-s5" style="display:none">0/8</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG S5 -->
+    <div id="s6" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-s" id="prog-s6" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 5 – Komparativ oder Superlativ?</div>
+      <div class="aufgabe-desc">Ergänzen Sie Komparativ oder Superlativ. (Lektion 39, Aufgabe 7 – Meine drei Kinder)</div>
+
+      <div class="luecken-text" id="ue-s6">
+        Ich habe drei Kinder: Lena, Daniel und Leo. Daniel ist ein Jahr
+        <input class="blank" data-ans="älter" data-group="s6" style="width:80px"> (alt) als Lena und zwei Jahre
+        <input class="blank" data-ans="älter" data-group="s6" style="width:80px"> (alt) als Leo, aber er konnte
+        <input class="blank" data-ans="früher" data-group="s6" style="width:90px"> (früh) lesen als Lena. Lena ist die
+        <input class="blank" data-ans="beste" data-group="s6" style="width:80px"> (gut) Schülerin in ihrer Klasse. Daniel ist jetzt schon
+        <input class="blank" data-ans="größer" data-group="s6" style="width:90px"> (groß) als Lena. Leo ist jetzt noch
+        <input class="blank" data-ans="kleiner" data-group="s6" style="width:90px"> (klein) als Lena, aber ich glaube, er wird mal der
+        <input class="blank" data-ans="größte" data-group="s6" style="width:90px"> (groß) von den drei Kindern. Lena hat
+        <input class="blank" data-ans="längere" data-group="s6" style="width:90px"> (lang) Haare als Daniel, aber Leo hat die
+        <input class="blank" data-ans="längsten" data-group="s6" style="width:90px"> (lang) Haare. Lena liest
+        <input class="blank" data-ans="mehr" data-group="s6" style="width:80px"> (viel) als Leo. Leo spielt
+        <input class="blank" data-ans="am liebsten" data-group="s6" style="width:110px"> (gern) am Computer. Aber er kann
+        <input class="blank" data-ans="am schnellsten" data-group="s6" style="width:130px"> (schnell) laufen als die beiden anderen. Jedes Kind kann etwas
+        <input class="blank" data-ans="besser" data-group="s6" style="width:90px"> (gut) als seine Geschwister, aber ich liebe kein Kind
+        <input class="blank" data-ans="mehr" data-group="s6" style="width:80px"> (viel) als die anderen.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-s" onclick="checkGroup('s6', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('s6')">Wiederholen</button>
+        <span class="score-badge" id="score-s6" style="display:none">0</span>
+      </div>
+    </div>
+
+  </div>
+</div><!-- group-s -->
+
+
+<!-- ═══════════════════════════════════════════════
+     GRUPPE N: ADJEKTIV ALS NOMEN
+═══════════════════════════════════════════════ -->
+<div id="group-n" class="group-section group-n">
+  <div class="section-card">
+
+    <div class="inner-tab-bar">
+      <div class="inner-tab active" onclick="showTab('n','n0',this)">📖 Personen</div>
+      <div class="inner-tab" onclick="showTab('n','n1',this)">📖 Neutral</div>
+      <div class="inner-tab" onclick="showTab('n','n2',this)">⭐ Einer der…</div>
+      <div class="inner-tab" onclick="showTab('n','n3',this)">💡 Beispiele</div>
+      <div class="inner-tab" onclick="showTab('n','n4',this)">✏️ Übung 1</div>
+      <div class="inner-tab" onclick="showTab('n','n5',this)">✏️ Übung 2</div>
+      <div class="inner-tab" onclick="showTab('n','n6',this)">✏️ Übung 3</div>
+    </div>
+
+    <!-- THEORIE PERSONEN -->
+    <div id="n0" class="inner-panel visible">
+      <div class="theory-box" style="background:var(--light-n); border-color:var(--accent3);">
+        <h3>Adjektive für Personen als Nomen (Lektion 65)</h3>
+        <p>Viele Adjektive, die eine Person bezeichnen, können als Nomen benutzt werden. Sie werden dann <strong>großgeschrieben</strong>, aber wie ein Adjektiv dekliniert:</p>
+        <p style="margin-top:8px;"><span class="red">der kranke Mann</span> → <span class="blue">der Kranke</span></p>
+        <p><span class="red">ein kranker Mann</span> → <span class="blue">ein Kranker</span></p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="decl-table">
+          <tr>
+            <th></th>
+            <th>männlich (bestimmt)</th>
+            <th>männlich (unbestimmt)</th>
+            <th>weiblich (bestimmt)</th>
+            <th>weiblich (unbestimmt)</th>
+            <th>Plural</th>
+          </tr>
+          <tr>
+            <td>Nom.</td>
+            <td>der Jugend<span class="hl">liche</span></td>
+            <td>ein Jugend<span class="hl">licher</span></td>
+            <td>die Jugend<span class="hl">liche</span></td>
+            <td>eine Jugend<span class="hl">liche</span></td>
+            <td>die Jugend<span class="hl">lichen</span></td>
+          </tr>
+          <tr>
+            <td>Akk.</td>
+            <td>den Jugend<span class="hl">lichen</span></td>
+            <td>einen Jugend<span class="hl">lichen</span></td>
+            <td>die Jugend<span class="hl">liche</span></td>
+            <td>eine Jugend<span class="hl">liche</span></td>
+            <td>die Jugend<span class="hl">lichen</span></td>
+          </tr>
+          <tr>
+            <td>Dat.</td>
+            <td>dem Jugend<span class="hl">lichen</span></td>
+            <td>einem Jugend<span class="hl">lichen</span></td>
+            <td>der Jugend<span class="hl">lichen</span></td>
+            <td>einer Jugend<span class="hl">lichen</span></td>
+            <td>den Jugend<span class="hl">lichen</span></td>
+          </tr>
+          <tr>
+            <td>Gen.</td>
+            <td>des Jugend<span class="hl">lichen</span></td>
+            <td>eines Jugend<span class="hl">lichen</span></td>
+            <td>der Jugend<span class="hl">lichen</span></td>
+            <td>einer Jugend<span class="hl">lichen</span></td>
+            <td>der Jugend<span class="hl">lichen</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- THEORIE NEUTRAL -->
+    <div id="n1" class="inner-panel">
+      <div class="theory-box" style="background:var(--light-n); border-color:var(--accent3);">
+        <h3>Adjektive als neutrale Nomen (Lektion 66)</h3>
+        <p>Adjektive als Nomen schreibt man <strong>groß</strong>.</p>
+        <p style="margin-top:8px;">Nach <em>alles</em> und <em>das</em> → Endung <span class="red">-e</span>:</p>
+        <p><span class="blue">alles Gute, das Gute</span></p>
+        <p style="margin-top:8px;">Nach <em>nichts, etwas, viel, wenig, ein bisschen</em> → Endung <span class="red">-es</span>:</p>
+        <p><span class="blue">etwas Gutes, nichts Schlechtes, wenig Schönes, viel Gutes</span></p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="gram-table">
+          <tr><th>Vor dem Adj.-Nomen</th><th>Endung</th><th>Beispiel</th></tr>
+          <tr><td><strong>alles, das</strong></td><td class="warn">-e</td><td>alles Gute, das Beste</td></tr>
+          <tr><td><strong>etwas, nichts, viel, wenig, ein bisschen</strong></td><td class="warn">-es</td><td>etwas Schönes, nichts Teures</td></tr>
+        </table>
+      </div>
+
+      <div class="theory-box" style="background:#fffbeb; border-color:#f6ad55; margin-top:14px;">
+        <h3>⚠️ Merkhilfe</h3>
+        <p>Bei <em>alles/das</em> klingt die Endung <strong>-e</strong> weich und abgeschlossen.</p>
+        <p>Bei <em>etwas/nichts</em> klingt die Endung <strong>-es</strong> offen und unbestimmt.</p>
+        <p style="margin-top:8px; font-style:italic;">"Alles Gute!" – "Etwas Gutes passiert heute."</p>
+      </div>
+    </div>
+
+    <!-- EINER DER HÖCHSTEN -->
+    <div id="n2" class="inner-panel">
+      <div class="struktur-box">
+        <div class="str-title">⭐ Struktur: „einer der / eine der / eines der + Superlativ"</div>
+        <div class="struktur-formula">einer der höchsten Berge Deutschlands</div>
+        <p>Diese Struktur drückt aus, dass etwas zu den <strong>Besten / Größten / Wichtigsten</strong> gehört – aber nicht <em>das</em> Beste ist, sondern <em>eines davon</em>.</p>
+      </div>
+
+      <div class="theory-box" style="background:var(--light-n); border-color:var(--accent3);">
+        <h3>Bildungsregel</h3>
+        <p><strong>einer / eine / eines</strong> (Genus des Nomens) + <strong>der / der / der</strong> (Genitiv Plural) + <strong>Adjektiv im Superlativ + Genitiv-Endung</strong> + <strong>Nomen im Plural</strong></p>
+        <p style="margin-top:8px;">Das Nomen steht immer im <span class="red">Genitiv Plural</span>!</p>
+      </div>
+
+      <div class="table-wrap" style="margin-top:14px;">
+        <table class="gram-table">
+          <tr><th>Genus Nomen</th><th>Formel</th><th>Beispiel</th></tr>
+          <tr><td>Maskulinum</td><td>ein<span class="red">er</span> der + Superlativ + (s)ten + Pl.-Genitiv</td><td>einer der <em>höchsten Berge</em></td></tr>
+          <tr><td>Femininum</td><td>ein<span class="red">e</span> der + Superlativ + (s)ten + Pl.-Genitiv</td><td>eine der <em>bekanntesten Städte</em></td></tr>
+          <tr><td>Neutrum</td><td>ein<span class="red">es</span> der + Superlativ + (s)ten + Pl.-Genitiv</td><td>eines der <em>größten Gebäude</em></td></tr>
+        </table>
+      </div>
+
+      <div class="beispiel-grid" style="margin-top:16px;">
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 1</div>
+          <div class="bsp-de">Der Zugspitze ist <span class="red">einer der höchsten Berge</span> Deutschlands.</div>
+          <div class="bsp-info">Berg (m) → einer + der + höchsten + Berge (Gen. Pl.)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 2</div>
+          <div class="bsp-de">Hamburg ist <span class="red">eine der wichtigsten Städte</span> Europas.</div>
+          <div class="bsp-info">Stadt (f) → eine + der + wichtigsten + Städte (Gen. Pl.)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 3</div>
+          <div class="bsp-de">Das Brandenburger Tor ist <span class="red">eines der bekanntesten Gebäude</span> Berlins.</div>
+          <div class="bsp-info">Gebäude (n) → eines + der + bekanntesten + Gebäude (Gen. Pl.)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 4</div>
+          <div class="bsp-de">Beethoven war <span class="red">einer der größten Komponisten</span> der Geschichte.</div>
+          <div class="bsp-info">Komponist (m) → einer + der + größten + Komponisten</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 5</div>
+          <div class="bsp-de">Die Donau ist <span class="red">einer der längsten Flüsse</span> Europas.</div>
+          <div class="bsp-info">Fluss (m) → einer + der + längsten + Flüsse (Gen. Pl.)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEISPIELE N -->
+    <div id="n3" class="inner-panel">
+      <div class="uebung-title">Beispiele – Adjektiv als Nomen</div>
+      <div class="beispiel-grid">
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 1 – Person (Nominativ)</div>
+          <div class="bsp-de">Ich bin <span class="red">ein Jugendlicher</span>.</div>
+          <div class="bsp-info">jung → jugendlich → ein Jugendlicher (m, indef.)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 2 – Person (Dativ)</div>
+          <div class="bsp-de">Ich wohne bei <span class="red">dem Verrückten</span>.</div>
+          <div class="bsp-info">verrückt → der Verrückte → bei dem Verrückten (Dat.)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 3 – Neutral (etwas)</div>
+          <div class="bsp-de">Ich wünsche euch <span class="red">etwas Schönes</span>.</div>
+          <div class="bsp-info">schön → etwas + -es (nach nichts/etwas)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 4 – Neutral (alles)</div>
+          <div class="bsp-de"><span class="red">Alles Gute!</span></div>
+          <div class="bsp-info">gut → alles + -e (nach alles/das)</div>
+        </div>
+        <div class="bsp-card">
+          <div class="bsp-num">Beispiel 5 – Neutral (nichts)</div>
+          <div class="bsp-de">Euch soll <span class="red">nichts Schlechtes</span> passieren.</div>
+          <div class="bsp-info">schlecht → nichts + -es</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÜBUNG N1 -->
+    <div id="n4" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-n" id="prog-n4" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 1 – Adjektive als Nomen (Personen)</div>
+      <div class="aufgabe-desc">Ergänzen Sie die Formen: Mann / Frau / Mann oder Frau. (Lektion 65, Aufgabe 1)</div>
+
+      <div class="table-wrap">
+        <table class="gram-table" id="ue-n4">
+          <tr>
+            <th>Adjektiv</th>
+            <th>Mann (ein…)</th>
+            <th>Frau (eine…)</th>
+            <th>Mann/Frau (der/die…)</th>
+          </tr>
+          <tr>
+            <td class="green">angestellt</td>
+            <td class="green">ein Angestellter</td>
+            <td class="green">eine Angestellte</td>
+            <td class="green">der/die Angestellte</td>
+          </tr>
+          <tr>
+            <td>verwandt</td>
+            <td><input class="blank" data-ans="ein Verwandter" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Verwandte" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Verwandte" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>bekannt</td>
+            <td><input class="blank" data-ans="ein Bekannter" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Bekannte" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Bekannte" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>arbeitslos</td>
+            <td><input class="blank" data-ans="ein Arbeitsloser" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Arbeitslose" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Arbeitslose" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>erwachsen</td>
+            <td><input class="blank" data-ans="ein Erwachsener" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Erwachsene" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Erwachsene" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>krank</td>
+            <td><input class="blank" data-ans="ein Kranker" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Kranke" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Kranke" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>verlobt</td>
+            <td><input class="blank" data-ans="ein Verlobter" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Verlobte" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Verlobte" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>deutsch</td>
+            <td><input class="blank" data-ans="ein Deutscher" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Deutsche" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Deutsche" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>verrückt</td>
+            <td><input class="blank" data-ans="ein Verrückter" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Verrückte" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Verrückte" data-group="n4" style="width:150px"></td>
+          </tr>
+          <tr>
+            <td>selbstständig</td>
+            <td><input class="blank" data-ans="ein Selbstständiger" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="eine Selbstständige" data-group="n4" style="width:140px"></td>
+            <td><input class="blank" data-ans="der/die Selbstständige" data-group="n4" style="width:150px"></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-n" onclick="checkGroup('n4', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('n4')">Wiederholen</button>
+        <span class="score-badge" id="score-n4" style="display:none">0</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG N2 -->
+    <div id="n5" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-n" id="prog-n5" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 2 – Endungen ergänzen</div>
+      <div class="aufgabe-desc">Ergänzen Sie die Endungen. (Lektion 65, Aufgabe 2)</div>
+
+      <div id="ue-n5">
+        <div class="sub-section-title">der Bekannte</div>
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          Das ist ein Bekannt<input class="blank" data-ans="er" data-group="n5" style="width:40px">. Siehst du den Bekannt<input class="blank" data-ans="en" data-group="n5" style="width:40px">? Was ist mit dem Bekannt<input class="blank" data-ans="en" data-group="n5" style="width:40px">? Da steht das Auto des Bekannt<input class="blank" data-ans="en" data-group="n5" style="width:40px">.
+        </div></div>
+
+        <div class="sub-section-title" style="margin-top:12px;">der Deutsche</div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          Da sitzt ein Deutsch<input class="blank" data-ans="er" data-group="n5" style="width:40px">. Kennst du den Deutsch<input class="blank" data-ans="en" data-group="n5" style="width:40px">? Ich bin der Nachbar des Deutsch<input class="blank" data-ans="en" data-group="n5" style="width:40px">.
+        </div></div>
+
+        <div class="sub-section-title" style="margin-top:12px;">die Deutsche</div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          Meine Freundin ist eine Deutsch<input class="blank" data-ans="e" data-group="n5" style="width:40px">. Wie findest du die Deutsch<input class="blank" data-ans="e" data-group="n5" style="width:40px">? Ja, ich bin die Kollegin der Deutsch<input class="blank" data-ans="en" data-group="n5" style="width:40px">.
+        </div></div>
+
+        <div class="sub-section-title" style="margin-top:12px;">der Verrückte</div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          Er ist wirklich ein Verrückt<input class="blank" data-ans="er" data-group="n5" style="width:40px">. Ich wohne bei dem Verrückt<input class="blank" data-ans="en" data-group="n5" style="width:40px">. Ich bin der Untermieter des Verrückt<input class="blank" data-ans="en" data-group="n5" style="width:40px">.
+        </div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-n" onclick="checkGroup('n5', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('n5')">Wiederholen</button>
+        <span class="score-badge" id="score-n5" style="display:none">0</span>
+      </div>
+    </div>
+
+    <!-- ÜBUNG N3 -->
+    <div id="n6" class="inner-panel">
+      <div class="progress-strip"><div class="progress-fill pfill-n" id="prog-n6" style="width:0%"></div></div>
+      <div class="uebung-title">Übung 3 – Adjektive als neutrale Nomen</div>
+      <div class="aufgabe-desc">Machen Sie Nomen aus den Adjektiven und ergänzen Sie die Endungen. (Lektion 66)</div>
+
+      <div id="ue-n6">
+        <div class="sub-section-title">Nach etwas / alles / nichts / viel / wenig</div>
+        <div class="item-row"><span class="item-num">1.</span><div class="item-content">
+          bequem → etwas <input class="blank" data-ans="Bequemes" data-group="n6" style="width:130px">
+        </div></div>
+        <div class="item-row"><span class="item-num">2.</span><div class="item-content">
+          gut → alles <input class="blank" data-ans="Gute" data-group="n6" style="width:110px">
+        </div></div>
+        <div class="item-row"><span class="item-num">3.</span><div class="item-content">
+          negativ → nichts <input class="blank" data-ans="Negatives" data-group="n6" style="width:130px">
+        </div></div>
+        <div class="item-row"><span class="item-num">4.</span><div class="item-content">
+          ärgerlich → wenig <input class="blank" data-ans="Ärgerliches" data-group="n6" style="width:140px">
+        </div></div>
+        <div class="item-row"><span class="item-num">5.</span><div class="item-content">
+          alt → etwas <input class="blank" data-ans="Altes" data-group="n6" style="width:110px">
+        </div></div>
+        <div class="item-row"><span class="item-num">6.</span><div class="item-content">
+          neu → viel <input class="blank" data-ans="Neues" data-group="n6" style="width:110px">
+        </div></div>
+        <div class="item-row"><span class="item-num">7.</span><div class="item-content">
+          teuer → das <input class="blank" data-ans="Teuerste" data-group="n6" style="width:120px">
+        </div></div>
+        <div class="item-row"><span class="item-num">8.</span><div class="item-content">
+          positiv → alles <input class="blank" data-ans="Positive" data-group="n6" style="width:120px">
+        </div></div>
+        <div class="item-row"><span class="item-num">9.</span><div class="item-content">
+          hübsch → etwas <input class="blank" data-ans="Hübsches" data-group="n6" style="width:120px">
+        </div></div>
+
+        <div class="sub-section-title" style="margin-top:16px;">Brief: Endungen ergänzen (Lektion 66, Aufgabe: Ein Brief)</div>
+        <div class="luecken-text">
+          Lieber Klaus,<br><br>
+          gestern war ich auf der Hochzeit einer Bekannt<input class="blank" data-ans="en" data-group="n6" style="width:40px">. Das war wirklich hochinteressant.
+          Stell dir vor, sie hatte ihren Ex-Verlobt<input class="blank" data-ans="en" data-group="n6" style="width:40px"> eingeladen! Ich denke wirklich, sie ist eine Verrückt<input class="blank" data-ans="e" data-group="n6" style="width:40px">.
+          Die anderen Gäste waren vor allem Verwandt<input class="blank" data-ans="e" data-group="n6" style="width:40px">, auch viele Kinder und Jugendlich<input class="blank" data-ans="e" data-group="n6" style="width:40px">.
+          Ich habe zum Glück einen alten Bekannt<input class="blank" data-ans="en" data-group="n6" style="width:40px"> getroffen, deshalb habe ich nicht die ganze Zeit alleine da gesessen wie eine Dumm<input class="blank" data-ans="e" data-group="n6" style="width:40px">.<br><br>
+          Würdest du deine Ex-Verlobt<input class="blank" data-ans="e" data-group="n6" style="width:40px"> zu deiner Hochzeit einladen?<br><br>
+          Viele Grüße, <em>Bettina</em>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-check-n" onclick="checkGroup('n6', this)">Prüfen</button>
+        <button class="btn btn-reset" onclick="resetGroup('n6')">Wiederholen</button>
+        <span class="score-badge" id="score-n6" style="display:none">0</span>
+      </div>
+    </div>
+
+  </div>
+</div><!-- group-n -->
+
+
+<script>
+// ── TIMER ──
+var timerSecs = 45 * 60;
+var timerRunning = false;
+var timerInterval = null;
+
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function updateTimerDisplay() {
+  var m = Math.floor(timerSecs / 60);
+  var s = timerSecs % 60;
+  document.getElementById('timer-box').textContent = '\u23f1 ' + pad(m) + ':' + pad(s);
+}
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+  } else {
+    timerRunning = true;
+    timerInterval = setInterval(function() {
+      if (timerSecs > 0) {
+        timerSecs--;
+        updateTimerDisplay();
+      } else {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById('timer-box').textContent = '\u23f1 Zeit!';
+      }
+    }, 1000);
+  }
+}
+
+// ── GROUP SWITCH ──
+function showGroup(gid, btn) {
+  var groups = ['k','s','n'];
+  groups.forEach(function(g) {
+    var el = document.getElementById('group-' + g);
+    if (el) el.classList.remove('visible');
+  });
+  var target = document.getElementById('group-' + gid);
+  if (target) target.classList.add('visible');
+
+  var allBtns = document.querySelectorAll('.group-btn');
+  allBtns.forEach(function(b) {
+    b.classList.remove('k-active','s-active','n-active');
+  });
+  btn.classList.add(gid + '-active');
+}
+
+// ── INNER TAB SWITCH ──
+function showTab(groupId, panelId, clickedTab) {
+  var section = document.getElementById('group-' + groupId);
+  var panels = section.querySelectorAll('.inner-panel');
+  panels.forEach(function(p) { p.classList.remove('visible'); });
+  document.getElementById(panelId).classList.add('visible');
+
+  var tabs = section.querySelectorAll('.inner-tab');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  clickedTab.classList.add('active');
+}
+
+// ── NORMALIZE ──
+function norm(s) {
+  return s.trim().toLowerCase()
+    .replace(/\u00e4/g,'ae').replace(/\u00f6/g,'oe').replace(/\u00fc/g,'ue')
+    .replace(/\u00df/g,'ss')
+    .replace(/\u00c4/g,'ae').replace(/\u00d6/g,'oe').replace(/\u00dc/g,'ue');
+}
+
+// ── CHECK GROUP (inputs + selects) ──
+function checkGroup(grp, btn) {
+  var els = document.querySelectorAll('[data-group="' + grp + '"]');
+  var correct = 0, total = 0;
+  els.forEach(function(el) {
+    var ans = el.getAttribute('data-ans');
+    var val = el.value;
+    el.classList.remove('correct','wrong');
+    if (norm(val) === norm(ans)) {
+      el.classList.add('correct');
+      correct++;
+    } else {
+      el.classList.add('wrong');
+    }
+    total++;
+  });
+  var scoreEl = document.getElementById('score-' + grp);
+  if (scoreEl) {
+    scoreEl.style.display = 'inline-flex';
+    scoreEl.textContent = correct + '/' + total;
+  }
+  // update progress
+  var progEl = document.getElementById('prog-' + grp);
+  if (progEl) {
+    progEl.style.width = Math.round((correct/total)*100) + '%';
+  }
+}
+
+// ── RESET GROUP ──
+function resetGroup(grp) {
+  var els = document.querySelectorAll('[data-group="' + grp + '"]');
+  els.forEach(function(el) {
+    el.value = '';
+    el.classList.remove('correct','wrong');
+  });
+  var scoreEl = document.getElementById('score-' + grp);
+  if (scoreEl) scoreEl.style.display = 'none';
+  var progEl = document.getElementById('prog-' + grp);
+  if (progEl) progEl.style.width = '0%';
+}
+
+// ── FREE ANSWER (show solutions) ──
+function checkGroupFree(grp) {
+  var els = document.querySelectorAll('[data-group="' + grp + '"]');
+  els.forEach(function(el, i) {
+    var revId = 'ans-' + grp + '-' + i;
+    var revEl = document.getElementById(revId);
+    if (revEl) revEl.classList.add('show');
+  });
+}
+function resetGroupFree(grp, count) {
+  var els = document.querySelectorAll('[data-group="' + grp + '"]');
+  els.forEach(function(el) {
+    el.value = '';
+    el.classList.remove('correct','wrong');
+  });
+  for (var i = 0; i < count; i++) {
+    var revEl = document.getElementById('ans-' + grp + '-' + i);
+    if (revEl) revEl.classList.remove('show');
+  }
+}
+
+// ── MIXED CHECK (s4: first 5 checkable, rest free) ──
+function checkGroupMixed(grp) {
+  var els = document.querySelectorAll('[data-group="' + grp + '"]');
+  var correct = 0, checkable = 0;
+  var freeIdx = 0;
+  els.forEach(function(el, i) {
+    var ans = el.getAttribute('data-ans');
+    // items 0-4 are proper fill-in (single word); items 5+ are free sentences
+    if (i < 5) {
+      el.classList.remove('correct','wrong');
+      if (norm(el.value) === norm(ans)) {
+        el.classList.add('correct'); correct++;
+      } else {
+        el.classList.add('wrong');
+      }
+      checkable++;
+    } else {
+      // show free answer
+      var revEl = document.getElementById('ans-' + grp + '-' + i);
+      if (revEl) revEl.classList.add('show');
+    }
+  });
+  var scoreEl = document.getElementById('score-' + grp);
+  if (scoreEl) {
+    scoreEl.style.display = 'inline-flex';
+    scoreEl.textContent = correct + '/' + checkable + ' + Lösungen';
+  }
+  var progEl = document.getElementById('prog-' + grp);
+  if (progEl && checkable > 0) {
+    progEl.style.width = Math.round((correct/checkable)*100) + '%';
+  }
+}
+</script>
+</body>
+</html>

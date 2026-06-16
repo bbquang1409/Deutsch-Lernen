@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konjunktiv 2 – Wäre, hätte, würde …</title>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --card: #ffffff;
+    --primary: #2d6a4f;
+    --primary-light: #52b788;
+    --primary-ultra: #d8f3dc;
+    --accent: #e07a5f;
+    --accent-light: #fde8e3;
+    --gold: #f4a261;
+    --gold-light: #fff3e0;
+    --text: #1a1a2e;
+    --text-soft: #555577;
+    --border: #dde8e0;
+    --shadow: 0 2px 12px rgba(45,106,79,0.10);
+    --radius: 14px;
+    --tab-h: 52px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #1b4332 100%);
+    color: white;
+    padding: 28px 24px 24px;
+    text-align: center;
+  }
+  .page-header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; }
+  .page-header p { font-size: 0.95rem; opacity: 0.82; margin-top: 4px; }
+
+  /* ── MAIN TABS ── */
+  .tab-bar {
+    display: flex;
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 110px;
+    height: var(--tab-h);
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .18s;
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+  .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--primary-ultra);
+  }
+  .tab-btn:hover:not(.active) { background: #f0f4f1; }
+
+  /* ── PANELS ── */
+  .tab-panel { display: none; padding: 20px 16px 40px; max-width: 860px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  /* ── SECTION TITLES ── */
+  .sec-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 22px 0 10px;
+  }
+  .sec-title:first-child { margin-top: 4px; }
+  .sec-title::before {
+    content: '';
+    display: block;
+    width: 4px; height: 20px;
+    background: var(--primary-light);
+    border-radius: 3px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  /* ── GRAMMAR TABLES ── */
+  .gram-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .gram-table th {
+    background: var(--primary);
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+  }
+  .gram-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .gram-table tr:last-child td { border-bottom: none; }
+  .gram-table tr:nth-child(even) td { background: #f8fbf9; }
+  .gram-table .highlight { color: var(--accent); font-weight: 700; }
+  .gram-table .highlight2 { color: var(--primary); font-weight: 700; }
+
+  /* ── EXAMPLE BOXES ── */
+  .beispiel-box {
+    background: var(--primary-ultra);
+    border-left: 4px solid var(--primary-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    font-size: 0.93rem;
+  }
+  .beispiel-box .de { font-weight: 600; color: var(--primary); }
+  .beispiel-box .note { font-size: 0.82rem; color: var(--text-soft); margin-top: 2px; }
+
+  .rule-box {
+    background: var(--gold-light);
+    border: 1.5px dashed var(--gold);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 0.92rem;
+  }
+  .rule-box strong { color: #c0540a; }
+
+  .bedeutung-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  @media (max-width: 540px) { .bedeutung-grid { grid-template-columns: 1fr; } }
+
+  .bed-card {
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+  }
+  .bed-card.wunsch { background: #fff5f5; border-color: #f4a0a0; }
+  .bed-card.bedingung { background: #f5f0ff; border-color: #b89af0; }
+  .bed-card.hoeflich { background: #f0f8ff; border-color: #89c4f4; }
+  .bed-card.ratschlag { background: #fff9f0; border-color: #f4c88a; }
+  .bed-card.vorschlag { background: #f0fff4; border-color: #8ae4a8; }
+  .bed-card h4 { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .bed-card.wunsch h4 { color: #c0392b; }
+  .bed-card.bedingung h4 { color: #7b2fff; }
+  .bed-card.hoeflich h4 { color: #1a6fc4; }
+  .bed-card.ratschlag h4 { color: #c07800; }
+  .bed-card.vorschlag h4 { color: #1a8a3a; }
+  .bed-card p { font-size: 0.88rem; color: var(--text-soft); }
+  .bed-card .ex { font-size: 0.91rem; font-style: italic; margin-top: 4px; color: var(--text); }
+
+  /* ── INTERACTIVE EXAMPLE ── */
+  .interactive-demo {
+    background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
+    border: 1.5px solid var(--primary-light);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 14px 0;
+  }
+  .interactive-demo h3 { font-size: 0.9rem; color: var(--primary); margin-bottom: 10px; font-weight: 700; }
+  .demo-sentence {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .demo-blank {
+    display: inline-block;
+    min-width: 90px;
+    border-bottom: 2px solid var(--primary);
+    text-align: center;
+    padding: 0 4px;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: background .15s;
+    border-radius: 4px 4px 0 0;
+  }
+  .demo-blank:hover { background: var(--primary-ultra); }
+  .demo-blank.revealed { color: var(--primary); font-weight: 700; background: var(--primary-ultra); }
+  .demo-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .demo-chip {
+    background: var(--card);
+    border: 1.5px solid var(--primary-light);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .demo-chip:hover { background: var(--primary-light); color: white; }
+  .demo-chip.used { opacity: 0.35; pointer-events: none; }
+  .demo-chip.wrong { background: #fee2e2; border-color: #f87171; color: #b91c1c; animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+  /* ── SUB TABS (Übung) ── */
+  .sub-tab-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+    background: transparent;
+  }
+  .sub-tab-btn {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .sub-tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .sub-tab-btn:hover:not(.active) { border-color: var(--primary-light); color: var(--primary); }
+
+  .sub-panel { display: none; }
+  .sub-panel.active { display: block; }
+
+  /* ── EXERCISES ── */
+  .uebung-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .diff-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .diff-1 { background: #d1fae5; color: #065f46; }
+  .diff-2 { background: #dbeafe; color: #1e40af; }
+  .diff-3 { background: #fef3c7; color: #92400e; }
+  .diff-4 { background: #fee2e2; color: #991b1b; }
+  .diff-5 { background: #ede9fe; color: #4c1d95; }
+  .diff-6 { background: #fce7f3; color: #9d174d; }
+  .diff-7 { background: #fef9c3; color: #713f12; }
+
+  .q-block {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    transition: border-color .2s;
+  }
+  .q-block.correct { border-color: #6ee7b7; background: #f0fdf4; }
+  .q-block.wrong { border-color: #fca5a5; background: #fff5f5; }
+
+  .q-text { font-size: 0.93rem; margin-bottom: 8px; color: var(--text); }
+  .blank-input {
+    border: none;
+    border-bottom: 2px solid var(--primary-light);
+    background: transparent;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--primary);
+    font-weight: 600;
+    width: 110px;
+    outline: none;
+    text-align: center;
+    padding: 1px 4px;
+    transition: border-color .2s;
+  }
+  .blank-input:focus { border-bottom-color: var(--primary); }
+  .blank-input.correct { border-bottom-color: #10b981; color: #065f46; }
+  .blank-input.wrong { border-bottom-color: #ef4444; color: #b91c1c; }
+
+  .mc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .mc-opt {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: #f8f9fa;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    color: var(--text);
+  }
+  .mc-opt:hover { border-color: var(--primary-light); background: var(--primary-ultra); color: var(--primary); }
+  .mc-opt.selected-temp { border-color: var(--primary-light); background: var(--primary-ultra); color: var(--primary); }
+  .mc-opt.selected-correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+  .mc-opt.selected-wrong { background: #fee2e2; border-color: #f87171; color: #b91c1c; }
+  .mc-opt.show-correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+
+  .feedback { font-size: 0.85rem; margin-top: 6px; font-weight: 600; }
+  .feedback.ok { color: #065f46; }
+  .feedback.no { color: #991b1b; }
+  .feedback .reason { font-weight: 400; color: var(--text-soft); display: block; }
+
+  .check-all-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background .15s;
+  }
+  .check-all-btn:hover { background: #1b4332; }
+
+  .score-display {
+    display: none;
+    text-align: center;
+    background: var(--primary-ultra);
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .transform-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.92rem;
+    font-family: inherit;
+    color: var(--text);
+    margin-top: 6px;
+    outline: none;
+    transition: border-color .2s;
+    background: #fafafa;
+  }
+  .transform-input:focus { border-color: var(--primary); background: white; }
+  .transform-input.correct { border-color: #10b981; background: #f0fdf4; }
+  .transform-input.wrong { border-color: #ef4444; background: #fff5f5; }
+
+  .reset-btn {
+    background: transparent;
+    border: 1.5px solid var(--primary-light);
+    color: var(--primary);
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all .15s;
+  }
+  .reset-btn:hover { background: var(--primary-ultra); }
+
+  /* divider between sections in Erklärung */
+  .section-divider {
+    border: none;
+    border-top: 1.5px dashed var(--border);
+    margin: 24px 0 8px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Konjunktiv 2</h1>
+  <p>Wäre, hätte, würde … – Formen &amp; Gebrauch</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('erklaerung')">📖 Erklärung</button>
+  <button class="tab-btn" onclick="showTab('uebung')">✏️ Übungen</button>
+  <button class="tab-btn" onclick="showTab('schnelltest')">⚡ Schnelltest</button>
+</div>
+
+<!-- ══════════════════════ ERKLÄRUNG ══════════════════════ -->
+<div id="panel-erklaerung" class="tab-panel active">
+
+  <!-- 1. Was ist -->
+  <div class="sec-title">Was ist der Konjunktiv 2?</div>
+  <div class="card">
+    <p>Der Konjunktiv 2 ist eine besondere Verbform. Man verwendet ihn, wenn etwas <strong>nicht real</strong> ist – ein Wunsch, eine hypothetische Bedingung, eine höfliche Bitte oder ein Ratschlag.</p>
+    <div class="beispiel-box" style="margin-top:10px;">
+      <div class="de">Ich <span style="color:var(--accent);font-weight:700;">würde</span> gern tanzen. → Ich tanze (jetzt) nicht.</div>
+      <div class="note">Der Konjunktiv 2 zeigt: das ist nicht die Realität.</div>
+    </div>
+  </div>
+
+  <!-- 2. Gebrauch -->
+  <hr class="section-divider">
+  <div class="sec-title">Gebrauch: Wofür verwendet man den Konjunktiv 2?</div>
+  <div class="bedeutung-grid">
+    <div class="bed-card wunsch">
+      <h4>🌟 Wunsch</h4>
+      <p>Etwas, das man sich wünscht, aber (noch) nicht hat.</p>
+      <p class="ex">Er <strong>hätte</strong> gerne einen Porsche.<br>Er <strong>wäre</strong> gerne Olympiasieger.</p>
+      <p style="font-size:0.82rem;margin-top:4px;color:#888;">Tipp: oft mit <em>gern / lieber / am liebsten</em></p>
+    </div>
+    <div class="bed-card bedingung">
+      <h4>🔀 Irreale Bedingung</h4>
+      <p>Ein hypothetischer <em>wenn</em>-Satz – die Bedingung ist nicht real.</p>
+      <p class="ex">Wenn ich viel Geld <strong>hätte</strong>, <strong>wäre</strong> ich glücklich.</p>
+      <p style="font-size:0.82rem;margin-top:4px;color:#888;">Konjunktiv 2 steht im Haupt- <em>und</em> Nebensatz!</p>
+    </div>
+    <div class="bed-card hoeflich">
+      <h4>🤝 Höflichkeit</h4>
+      <p>Eine höfliche Bitte – freundlicher als Imperativ.</p>
+      <p class="ex"><strong>Könnten</strong> Sie mir bitte helfen?<br><strong>Würden</strong> Sie mir bitte helfen?</p>
+    </div>
+    <div class="bed-card ratschlag">
+      <h4>💬 Ratschlag</h4>
+      <p>Rat geben mit <em>sollen</em> im Konjunktiv 2.</p>
+      <p class="ex">Du <strong>solltest</strong> früher schlafen gehen.</p>
+    </div>
+    <div class="bed-card vorschlag">
+      <h4>💡 Vorschlag</h4>
+      <p>Einen Vorschlag machen mit <em>können</em> im Konjunktiv 2.</p>
+      <p class="ex">Wir <strong>könnten</strong> ins Kino gehen.</p>
+    </div>
+  </div>
+
+  <!-- 3. Form 1 -->
+  <hr class="section-divider">
+  <div class="sec-title">Form 1: würde + Infinitiv (meistens)</div>
+  <div class="card">
+    <p>Für <strong>die meisten Verben</strong> bildet man den Konjunktiv 2 mit <em>würde</em> + Infinitiv.</p>
+    <table class="gram-table" style="margin-top:10px;">
+      <tr><th>Pronomen</th><th>Konjunktiv 2 von <em>werden</em></th><th>Beispiel</th></tr>
+      <tr><td>ich</td><td class="highlight">würde</td><td>Ich <em>würde</em> Sie fragen.</td></tr>
+      <tr><td>du</td><td class="highlight">würdest</td><td>Du <em>würdest</em> gerne tanzen.</td></tr>
+      <tr><td>er/sie/es/man</td><td class="highlight">würde</td><td>Er <em>würde</em> gerne kommen.</td></tr>
+      <tr><td>wir</td><td class="highlight">würden</td><td>Wir <em>würden</em> gerne helfen.</td></tr>
+      <tr><td>ihr</td><td class="highlight">würdet</td><td>Ihr <em>würdet</em> das verstehen.</td></tr>
+      <tr><td>sie/Sie</td><td class="highlight">würden</td><td>Sie <em>würden</em> kommen.</td></tr>
+    </table>
+    <div class="rule-box" style="margin-top:10px;">
+      <strong>Position 2:</strong> würd- steht an Position 2. Der Infinitiv steht am Ende.<br>
+      → Ich <strong>würde</strong> heute gerne mit ihr <strong>tanzen</strong>.
+    </div>
+  </div>
+
+  <!-- 4. Form 2 -->
+  <hr class="section-divider">
+  <div class="sec-title">Form 2: Extra-Formen für sein, haben &amp; Modalverben</div>
+  <div class="card">
+    <p>Die Verben <strong>sein</strong>, <strong>haben</strong> und alle <strong>Modalverben</strong> haben eigene Konjunktiv-2-Formen. Man verwendet <strong>NICHT</strong> <em>würde</em> mit diesen Verben!</p>
+    <div class="rule-box" style="margin-top:10px;">
+      <strong>Bildung:</strong> Präteritum-Stamm + Umlaut (a→ä, o→ö, u→ü) + Endung<br>
+      Endungen: -e / -est / -e / -en / -et / -en
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;">
+      <table class="gram-table">
+        <tr><th colspan="3">sein / haben</th></tr>
+        <tr><th></th><th>sein → <em>wäre</em></th><th>haben → <em>hätte</em></th></tr>
+        <tr><td>ich</td><td class="highlight">wäre</td><td class="highlight">hätte</td></tr>
+        <tr><td>du</td><td class="highlight">wär(e)st</td><td class="highlight">hättest</td></tr>
+        <tr><td>er/sie/es</td><td class="highlight">wäre</td><td class="highlight">hätte</td></tr>
+        <tr><td>wir</td><td class="highlight">wären</td><td class="highlight">hätten</td></tr>
+        <tr><td>ihr</td><td class="highlight">wär(e)t</td><td class="highlight">hättet</td></tr>
+        <tr><td>sie/Sie</td><td class="highlight">wären</td><td class="highlight">hätten</td></tr>
+      </table>
+      <table class="gram-table">
+        <tr><th colspan="3">Modalverben</th></tr>
+        <tr><th>Verb</th><th>→</th><th>Konj. 2 (ich)</th></tr>
+        <tr><td>können</td><td>→</td><td class="highlight2">könnte</td></tr>
+        <tr><td>wollen</td><td>→</td><td class="highlight2">wollte</td></tr>
+        <tr><td>müssen</td><td>→</td><td class="highlight2">müsste</td></tr>
+        <tr><td>dürfen</td><td>→</td><td class="highlight2">dürfte</td></tr>
+        <tr><td>sollen</td><td>→</td><td class="highlight2">sollte</td></tr>
+      </table>
+    </div>
+    <div class="rule-box" style="margin-top:12px;">
+      <strong>Merke:</strong> „Ich <em>würde</em> gerne glücklich <em>sein</em>." → Besser: „Ich <strong>wäre</strong> gerne glücklich." ✓
+    </div>
+    <div class="beispiel-box" style="margin-top:8px;">
+      <div class="de">Wenn ich tanzen <strong>könnte</strong>, <strong>würde</strong> ich dich fragen.</div>
+      <div class="note">können → könnte (Konjunktiv 2, eigene Form)</div>
+    </div>
+  </div>
+
+  <!-- 5. Beispiel interaktiv -->
+  <hr class="section-divider">
+  <div class="sec-title">💡 Interaktive Beispiele</div>
+
+  <div class="interactive-demo" id="demo1">
+    <h3>🌟 Wunsch – Klick auf die Lücke, um die Antwort zu sehen</h3>
+    <div class="demo-sentence">
+      1. Er ist klein. → Er
+      <span class="demo-blank" onclick="revealBlank(this,'wäre')">______</span>
+      gerne größer.
+    </div>
+    <div class="demo-sentence">
+      2. Sie hat kein Auto. → Sie
+      <span class="demo-blank" onclick="revealBlank(this,'hätte')">______</span>
+      gerne ein Auto.
+    </div>
+    <div class="demo-sentence">
+      3. Wir können nicht fliegen. → Wir
+      <span class="demo-blank" onclick="revealBlank(this,'könnten')">______</span>
+      gerne fliegen.
+    </div>
+  </div>
+
+  <div class="interactive-demo" style="background:linear-gradient(135deg,#fff9f0,#fff3e0); border-color:var(--gold);">
+    <h3>🔀 Irreale Bedingung – Wähle das richtige Verb!</h3>
+    <div class="demo-sentence" style="margin-bottom:12px;">
+      Wenn ich viel Geld
+      <span class="demo-blank" id="blank-d2-1" data-answer="hätte">______</span>
+      ,
+      <span class="demo-blank" id="blank-d2-2" data-answer="würde">______</span>
+      ich eine Weltreise machen.
+    </div>
+    <div class="demo-chips">
+      <div class="demo-chip" onclick="assignChip(this,'blank-d2-1','hätte')">hätte</div>
+      <div class="demo-chip" onclick="assignChip(this,'blank-d2-2','wäre')">wäre</div>
+      <div class="demo-chip" onclick="assignChip(this,'blank-d2-1','habe')">habe</div>
+      <div class="demo-chip" onclick="assignChip(this,'blank-d2-2','würde')">würde</div>
+    </div>
+    <div id="feedback-d2" class="feedback" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="interactive-demo" style="background:linear-gradient(135deg,#f0f8ff,#e8f4fd); border-color:#89c4f4;">
+    <h3>🤝 Höflichkeit · 💬 Ratschlag · 💡 Vorschlag – Klick zum Enthüllen</h3>
+    <div class="demo-sentence">
+      Höflichkeit: „Kannst du mir helfen?" → Höflicher:
+      <span class="demo-blank" onclick="revealBlank(this,'Könntest')">______</span>
+      du mir bitte helfen?
+    </div>
+    <div class="demo-sentence" style="margin-top:8px;">
+      Vorschlag: Wir
+      <span class="demo-blank" onclick="revealBlank(this,'könnten')">______</span>
+      ins Kino gehen.
+    </div>
+    <div class="demo-sentence" style="margin-top:8px;">
+      Ratschlag: Du schläfst wenig. → Du
+      <span class="demo-blank" onclick="revealBlank(this,'solltest')">______</span>
+      mehr schlafen.
+    </div>
+  </div>
+
+  <div class="interactive-demo" style="background:linear-gradient(135deg,#f5f0ff,#ede9fe); border-color:#b89af0;">
+    <h3>🔄 Konjunktiv 2 oder Präteritum? – Klick zum Enthüllen</h3>
+    <p style="font-size:0.88rem; color:var(--text-soft); margin-bottom:10px;">
+      Achtung: Manche Formen sehen gleich aus! Nur der Kontext sagt, was es ist.
+    </p>
+    <div class="demo-sentence">
+      „Sie wollte gestern kommen." →
+      <span class="demo-blank" onclick="revealBlank(this,'Präteritum')">______</span>
+      (Vergangenheit, real).
+    </div>
+    <div class="demo-sentence" style="margin-top:8px;">
+      „Sie wollte gerne helfen, aber sie hat keine Zeit." →
+      <span class="demo-blank" onclick="revealBlank(this,'Konjunktiv 2')">______</span>
+      (irreal, hypothetisch).
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════ ÜBUNGEN (mit Sub-Tabs) ══════════════════════ -->
+<div id="panel-uebung" class="tab-panel">
+
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="showSub('ue1')">⭐ Übung 1</button>
+    <button class="sub-tab-btn" onclick="showSub('ue2')">⭐⭐ Übung 2</button>
+    <button class="sub-tab-btn" onclick="showSub('ue3')">⭐⭐⭐ Übung 3</button>
+    <button class="sub-tab-btn" onclick="showSub('ue4')">⭐⭐⭐⭐ Übung 4</button>
+    <button class="sub-tab-btn" onclick="showSub('ue5')">⭐⭐⭐⭐⭐ Übung 5</button>
+    <button class="sub-tab-btn" onclick="showSub('ue6')">🔥 Übung 6</button>
+    <button class="sub-tab-btn" onclick="showSub('ue7')">🏆 Übung 7</button>
+  </div>
+
+  <!-- Sub panel 1 -->
+  <div id="sub-ue1" class="sub-panel active">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-1">⭐ Leicht</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">sein / haben / würde – Grundformen</span>
+    </div>
+    <div id="ue1-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue1')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue1"></div>
+    <button class="reset-btn" onclick="resetSub('ue1')">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- Sub panel 2 -->
+  <div id="sub-ue2" class="sub-panel">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-2">⭐⭐ Mittel</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">Modalverben im Konjunktiv 2</span>
+    </div>
+    <div id="ue2-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue2')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue2"></div>
+    <button class="reset-btn" onclick="resetSub('ue2')">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- Sub panel 3 -->
+  <div id="sub-ue3" class="sub-panel">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-3">⭐⭐⭐ Mittelschwer</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">Wenn-Sätze: beide Verben im Konjunktiv 2</span>
+    </div>
+    <div id="ue3-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue3')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue3"></div>
+    <button class="reset-btn" onclick="resetSub('ue3')">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- Sub panel 4 -->
+  <div id="sub-ue4" class="sub-panel">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-4">⭐⭐⭐⭐ Schwer</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">Sätze umschreiben im Konjunktiv 2</span>
+    </div>
+    <div id="ue4-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue4')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue4"></div>
+    <button class="reset-btn" onclick="resetSub('ue4')">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- Sub panel 5 -->
+  <div id="sub-ue5" class="sub-panel">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-5">⭐⭐⭐⭐⭐ Sehr schwer</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">Gebrauch erkennen (Wunsch / Bedingung / Höflichkeit…)</span>
+    </div>
+    <div id="ue5-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue5')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue5"></div>
+    <button class="reset-btn" onclick="resetSub('ue5')">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- Sub panel 6 -->
+  <div id="sub-ue6" class="sub-panel">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-6">🔥 Fortgeschritten</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">Konjunktiv 2 oder Präteritum? – Analyse</span>
+    </div>
+    <div id="ue6-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue6')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue6"></div>
+    <button class="reset-btn" onclick="resetSub('ue6')">↺ Zurücksetzen</button>
+  </div>
+
+  <!-- Sub panel 7 -->
+  <div id="sub-ue7" class="sub-panel">
+    <div class="uebung-meta">
+      <span class="diff-badge diff-7">🏆 Gemischt</span>
+      <span style="font-size:0.9rem;color:var(--text-soft);">Freie Satzproduktion – schreibe eigene Sätze</span>
+    </div>
+    <div id="ue7-questions"></div>
+    <button class="check-all-btn" onclick="checkAll('ue7')">Antworten prüfen ✓</button>
+    <div class="score-display" id="score-ue7"></div>
+    <button class="reset-btn" onclick="resetSub('ue7')">↺ Zurücksetzen</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════ SCHNELLTEST ══════════════════════ -->
+<div id="panel-schnelltest" class="tab-panel">
+  <div class="sec-title">⚡ Schnelltest – 13 Fragen (gemischt)</div>
+  <p style="font-size:0.88rem;color:var(--text-soft);margin-bottom:14px;">Teste dein Wissen über alle Formen und den Gebrauch des Konjunktiv 2.</p>
+  <div id="kt-questions"></div>
+  <button class="check-all-btn" onclick="checkAll('kt')">Test auswerten ✓</button>
+  <div class="score-display" id="score-kt"></div>
+  <button class="reset-btn" onclick="resetSub('kt')">↺ Nochmal versuchen</button>
+</div>
+
+<footer>Made with ♥ by Bảo Quang · Konjunktiv 2 · B1</footer>
+
+<script>
+// ─── Main tab navigation ───
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const map = {erklaerung:0, uebung:1, schnelltest:2};
+  document.querySelectorAll('.tab-btn')[map[name]].classList.add('active');
+}
+
+// ─── Sub-tab navigation ───
+function showSub(name) {
+  document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sub-' + name).classList.add('active');
+  const map = {ue1:0,ue2:1,ue3:2,ue4:3,ue5:4,ue6:5,ue7:6};
+  document.querySelectorAll('.sub-tab-btn')[map[name]].classList.add('active');
+}
+
+// ─── Interactive demo helpers ───
+function revealBlank(el, answer) {
+  el.textContent = answer;
+  el.classList.add('revealed');
+}
+function assignChip(chip, blankId, value) {
+  const blank = document.getElementById(blankId);
+  if (!blank) return;
+  if (value === blank.dataset.answer) {
+    blank.textContent = value;
+    blank.classList.add('revealed');
+    chip.classList.add('used');
+    const b1 = document.getElementById('blank-d2-1');
+    const b2 = document.getElementById('blank-d2-2');
+    if (b1.classList.contains('revealed') && b2.classList.contains('revealed')) {
+      document.getElementById('feedback-d2').innerHTML = '<span style="color:#065f46;font-weight:700;">✓ Richtig! Im wenn-Satz und im Hauptsatz steht Konjunktiv 2.</span>';
+    }
+  } else {
+    chip.classList.add('wrong');
+    setTimeout(() => chip.classList.remove('wrong'), 600);
+  }
+}
+
+// ─── Exercise Data ───
+
+const ue1Data = [
+  { type:'fill', text:'Ohne deine Hilfe {blank} (sein) ich allein.', blanks:['wäre'], reason:'sein → wäre (ich-Form)' },
+  { type:'fill', text:'Ohne Geld {blank} (haben) wir kein Haus.', blanks:['hätten'], reason:'haben → hätten (wir-Form)' },
+  { type:'fill', text:'Ich {blank} gerne mehr Sport machen. (würde)', blanks:['würde'], reason:'würde + Infinitiv für normale Verben' },
+  { type:'mc', text:'Er ___ gerne Olympiasieger. (sein)', options:['war','wäre','würde sein','ist'], answer:'wäre', reason:'sein → wäre (Wunsch, eigene Form!)' },
+  { type:'fill', text:'Du {blank} (sein) ohne uns allein.', blanks:['wärst'], reason:'sein → du → wärst' },
+  { type:'mc', text:'Ohne meine Kinder ___ ich nicht glücklich. (sein)', options:['wäre','hätte','würde','war'], answer:'wäre', reason:'sein → wäre' },
+  { type:'fill', text:'Ohne seine Freunde {blank} (sein) er am Wochenende allein.', blanks:['wäre'], reason:'sein → er → wäre' },
+  { type:'fill', text:'Ich {blank} (haben) gerne mehr Zeit.', blanks:['hätte'], reason:'haben → ich → hätte' },
+  { type:'mc', text:'Ohne die Panne ___ sie schon wieder zu Hause. (sein)', options:['wäre','wären','würde sein','hat'], answer:'wäre', reason:'sein → sie (Singular) → wäre' },
+  { type:'fill', text:'Sie {blank} (haben) gerne ein Elektro-Fahrrad.', blanks:['hätte'], reason:'haben → sie (Singular) → hätte' },
+  { type:'fill', text:'Wir {blank} (haben) gerne ein neues Auto.', blanks:['hätten'], reason:'haben → wir → hätten' },
+  { type:'mc', text:'Ohne deine Hilfe ___ wir kein Haus. (haben)', options:['hätten','hätte','haben','hatten'], answer:'hätten', reason:'haben → wir → hätten' },
+  { type:'fill', text:'Er {blank} gern mit uns kommen. (würde)', blanks:['würde'], reason:'würde + Infinitiv kommen' }
+];
+
+const ue2Data = [
+  { type:'mc', text:'Sie ___ (müssen) Hausaufgaben machen, aber sie hat keine Lust.', options:['muss','müsste','musste','müssen'], answer:'müsste', reason:'müssen → müsste (irreal: sie macht es nicht)' },
+  { type:'fill', text:'Er {blank} (können) in unserem Team mitspielen, aber er hat keine Zeit.', blanks:['könnte'], reason:'können → könnte (ich/er-Form)' },
+  { type:'mc', text:'Die Kinder ___ (dürfen) ins Theater gehen, aber sie wollen nicht.', options:['dürfen','dürften','dürfte','durften'], answer:'dürften', reason:'dürfen → dürften (Plural)' },
+  { type:'fill', text:'Ich {blank} (können) den Marathon mitlaufen, aber ich habe meine Schuhe vergessen.', blanks:['könnte'], reason:'können → ich → könnte' },
+  { type:'mc', text:'Sie hat kein Geld, sie ___ (sollen) nicht wieder shoppen gehen.', options:['soll','sollte','sollten','sollen'], answer:'sollte', reason:'sollen → sollte (Ratschlag/irreal)' },
+  { type:'fill', text:'Entschuldigung, {blank} (können) Sie mir bitte helfen?', blanks:['könnten'], reason:'können → Sie → könnten (höfliche Bitte)' },
+  { type:'mc', text:'Du ___ (sollen) früher schlafen gehen. (Ratschlag)', options:['sollst','solltest','solltet','sollten'], answer:'solltest', reason:'sollen → du → solltest' },
+  { type:'fill', text:'Wir {blank} (können) heute Abend ins Kino gehen. (Vorschlag)', blanks:['könnten'], reason:'können → wir → könnten' },
+  { type:'mc', text:'Wenn ich fliegen ___ (können), würde ich nach Amerika reisen.', options:['kann','konnte','könnte','könnten'], answer:'könnte', reason:'können → ich → könnte (irrealer wenn-Satz)' },
+  { type:'fill', text:'Ihr {blank} (müssen) das nicht so schnell machen.', blanks:['müsstet'], reason:'müssen → ihr → müsstet' },
+  { type:'mc', text:'___ (wollen) ihr gerne mitkommen?', options:['Wollen','Wolltet','Wollten','Wolltest'], answer:'Wolltet', reason:'wollen → ihr → wolltet' },
+  { type:'fill', text:'Er {blank} (dürfen) das eigentlich nicht machen.', blanks:['dürfte'], reason:'dürfen → er → dürfte' },
+  { type:'mc', text:'Man ___ (müssen) keine Angst haben, wenn Katzen sprechen könnten.', options:['muss','müsste','müssen','musste'], answer:'müsste', reason:'müssen → man → müsste (irrealer Kontext)' }
+];
+
+const ue3Data = [
+  { type:'double-fill', before:'Wenn es vier Monate regnen ', blank1:{answer:'würde', hint:'(würde)'}, between:', ', blank2:{answer:'wären', hint:'(sein)'}, after:' alle Straßen nass.', reason:'würde + Infinitiv / sein → wären (wir-Form, „alle Straßen")' },
+  { type:'double-fill', before:'Wenn ich viel Geld ', blank1:{answer:'hätte', hint:'(haben)'}, between:', ', blank2:{answer:'würde', hint:'(werden)'}, after:' ich eine Weltreise machen.', reason:'haben → hätte / würde + Infinitiv' },
+  { type:'double-fill', before:'Wenn wir zur Arbeit schwimmen ', blank1:{answer:'könnten', hint:'(können)'}, between:', ', blank2:{answer:'wäre', hint:'(sein)'}, after:' das sehr lustig.', reason:'können → könnten / sein → wäre' },
+  { type:'double-fill', before:'Wenn mein Handy kaputt ', blank1:{answer:'wäre', hint:'(sein)'}, between:', ', blank2:{answer:'hätte', hint:'(haben)'}, after:' ich viel Ruhe.', reason:'sein → wäre / haben → hätte' },
+  { type:'double-fill', before:'Wenn alle Menschen gut Fußball spielen ', blank1:{answer:'könnten', hint:'(können)'}, between:', ', blank2:{answer:'gäbe', hint:'(es gibt)'}, after:' es keine Weltmeisterschaft.', reason:'können → könnten / es gibt → es gäbe' },
+  { type:'double-fill', before:'Wenn ich tanzen ', blank1:{answer:'könnte', hint:'(können)'}, between:', ', blank2:{answer:'würde', hint:'(werden)'}, after:' ich dich fragen.', reason:'können → könnte / würde + Infinitiv' },
+  { type:'double-fill', before:'Wenn Roboter alle Arbeit machen ', blank1:{answer:'könnten', hint:'(können)'}, between:', ', blank2:{answer:'hätten', hint:'(haben)'}, after:' alle Menschen Freizeit.', reason:'können → könnten / haben → hätten' },
+  { type:'double-fill', before:'Wenn es wärmer ', blank1:{answer:'wäre', hint:'(sein)'}, between:', ', blank2:{answer:'würde', hint:'(werden)'}, after:' es nicht so viel regnen.', reason:'sein → wäre / würde + Infinitiv' },
+  { type:'double-fill', before:'Wenn ich den Mut ', blank1:{answer:'hätte', hint:'(haben)'}, between:', ', blank2:{answer:'würde', hint:'(werden)'}, after:' ich dich fragen.', reason:'haben → hätte / würde + Infinitiv' },
+  { type:'double-fill', before:'Wenn Babys lesen ', blank1:{answer:'könnten', hint:'(können)'}, between:', ', blank2:{answer:'müssten', hint:'(müssen)'}, after:' Kinder nicht zur Schule gehen.', reason:'können → könnten / müssen → müssten' },
+  { type:'double-fill', before:'Wenn sie allein in der Stadt ', blank1:{answer:'wäre', hint:'(sein)'}, between:', ', blank2:{answer:'könnte', hint:'(können)'}, after:' er ihr helfen.', reason:'sein → wäre / können → könnte' },
+  { type:'double-fill', before:'Wenn ich jetzt Urlaub ', blank1:{answer:'hätte', hint:'(haben)'}, between:', ', blank2:{answer:'würde', hint:'(werden)'}, after:' ich dich besuchen.', reason:'haben → hätte / würde + Infinitiv' },
+  { type:'double-fill', before:'Wenn Deutschland in Afrika ', blank1:{answer:'läge', hint:'(liegen)'}, between:', ', blank2:{answer:'wäre', hint:'(sein)'}, after:' es viel wärmer.', reason:'liegen → läge (unregelmäßig!) / sein → wäre' }
+];
+
+const ue4Data = [
+  { type:'transform', prompt:'Umschreiben – Wunsch: Ich bin nicht reich.', answer:'Ich wäre gerne reich.', alt:['Ich wäre reich.'], reason:'sein → wäre + gerne (Wunsch)' },
+  { type:'transform', prompt:'Höflicher formulieren: „Kannst du das Fenster schließen?"', answer:'Könntest du bitte das Fenster schließen?', alt:['Könntest du das Fenster schließen?','Würdest du bitte das Fenster schließen?'], reason:'können → könntest (du) / oder würdest ... schließen' },
+  { type:'transform', prompt:'Ratschlag: Ich habe kein Geld. (weniger Schuhe kaufen)', answer:'Du solltest weniger Schuhe kaufen.', alt:['Du solltest weniger Schuhe kaufen'], reason:'sollen → solltest (Ratschlag)' },
+  { type:'transform', prompt:'Vorschlag: Wir essen gerne Indisch. (zum Inder gehen)', answer:'Wir könnten zum Inder gehen.', alt:['Wir könnten zum Inder gehen'], reason:'können → könnten (Vorschlag)' },
+  { type:'transform', prompt:'Irreale Bedingung: Sie ist kein Sprachgenie / muss viele Wörter wiederholen.\n→ Wenn sie ... (Konjunktiv 2)', answer:'Wenn sie ein Sprachgenie wäre, müsste sie keine Wörter wiederholen.', alt:['Wenn sie ein Sprachgenie wäre, müsste sie keine neuen Wörter wiederholen.'], reason:'sein → wäre / müssen → müsste – beide Konjunktiv 2' },
+  { type:'transform', prompt:'Höfliche Bitte (Sie-Form): „Sagen Sie mir, wie spät es ist."', answer:'Könnten Sie mir sagen, wie spät es ist?', alt:['Würden Sie mir bitte sagen, wie spät es ist?','Könnten Sie mir bitte sagen, wie spät es ist?'], reason:'könnten / würden Sie → höfliche Sie-Form' },
+  { type:'transform', prompt:'Irreale Bedingung: Er ist sehr schnell, deshalb kann er schnell laufen.\n→ Wenn er nicht so schnell wäre, ...', answer:'Wenn er nicht so schnell wäre, könnte er nicht so schnell laufen.', alt:['Wenn er nicht so schnell wäre, würde er nicht so schnell laufen können.'], reason:'wäre + könnte / würde ... laufen können' },
+  { type:'transform', prompt:'Ratschlag: Du hast Angst vor der Prüfung. (sich gut vorbereiten)', answer:'Du solltest dich gut vorbereiten.', alt:['Du solltest dich gut vorbereiten'], reason:'sollen → solltest (Ratschlag)' },
+  { type:'transform', prompt:'Wunsch: Sie bleiben immer zu Hause. (reisen)', answer:'Sie würden gerne reisen.', alt:['Sie würden gern reisen.'], reason:'würde + Infinitiv (normales Verb reisen)' },
+  { type:'transform', prompt:'Vorsichtige Vermutung: „Ich glaube, das ist nicht schwer." → Mit dürfen', answer:'Das dürfte nicht schwer sein.', alt:['Das dürfte nicht schwer sein'], reason:'dürfen → dürfte = vorsichtige Vermutung' },
+  { type:'transform', prompt:'Irreale Bedingung: Ich habe kein Auto, deshalb fahre ich nicht zum Supermarkt.\n→ Wenn ich ein Auto ... (haben), ... (würde fahren)', answer:'Wenn ich ein Auto hätte, würde ich zum Supermarkt fahren.', alt:['Wenn ich ein Auto hätte, würde ich zum Supermarkt fahren'], reason:'haben → hätte / würde + Infinitiv' },
+  { type:'transform', prompt:'Vorschlag: Du hast keine Lust zu tanzen. Aber vielleicht ... (Tanzkurs machen)', answer:'Wir könnten einen Tanzkurs machen.', alt:['Du könntest einen Tanzkurs machen.','Du könntest einen Tanzkurs machen'], reason:'können → könnten/könntest (Vorschlag)' },
+  { type:'transform', prompt:'Höfliche Bitte: „Geben Sie mir ein Glas Wasser."', answer:'Könnten Sie mir bitte ein Glas Wasser geben?', alt:['Würden Sie mir bitte ein Glas Wasser geben?','Könnten Sie mir ein Glas Wasser geben?'], reason:'könnten / würden Sie → höflich' }
+];
+
+const ue5Data = [
+  { type:'mc', text:'„Würden Sie mir bitte das Fenster öffnen?" – Welche Bedeutung?', options:['A) Wunsch','B) Irreale Bedingung','C) Höflichkeit','D) Ratschlag'], answer:'C) Höflichkeit', reason:'würden Sie → höfliche Bitte (C)' },
+  { type:'mc', text:'„Sie sollten lieber noch eine Jacke anziehen." – Bedeutung:', options:['A) Wunsch','B) Irreale Bedingung','C) Höflichkeit','D) Ratschlag'], answer:'D) Ratschlag', reason:'sollten → sollen im Konjunktiv 2 = Ratschlag (D)' },
+  { type:'mc', text:'„Wir könnten heute eine Fahrradtour machen." – Das ist ein:', options:['A) Wunsch','B) Irreale Bedingung','C) Höflichkeit','E) Vorschlag'], answer:'E) Vorschlag', reason:'könnten + Aktivität vorschlagen = Vorschlag (E)' },
+  { type:'mc', text:'„Ich würde mir gerne diese Schuhe hier kaufen." – Das ist:', options:['A) Wunsch','B) Irreale Bedingung','D) Ratschlag','E) Vorschlag'], answer:'A) Wunsch', reason:'würde gerne + kaufen = Wunsch (A)' },
+  { type:'mc', text:'„Wenn ich jetzt Urlaub hätte, würde ich dich besuchen." – Das ist:', options:['A) Wunsch','B) Irreale Bedingung','C) Höflichkeit','E) Vorschlag'], answer:'B) Irreale Bedingung', reason:'Wenn-Satz (nicht real) + würde = Irreale Bedingung (B)' },
+  { type:'mc', text:'„Er würde gerne länger bleiben." – Das ist:', options:['A) Wunsch','B) Irreale Bedingung','D) Ratschlag','E) Vorschlag'], answer:'A) Wunsch', reason:'würde gerne = Wunsch (A) – er bleibt aber nicht' },
+  { type:'mc', text:'Welche Form ist FALSCH für „sein" im Konjunktiv 2?', options:['wäre','wärst','wären','würde sein'], answer:'würde sein', reason:'sein hat eigene Konjunktiv-2-Form: wäre/wärst/wären. „würde sein" ist zu vermeiden!' },
+  { type:'mc', text:'„Ich ___ gerne mitgekommen." – Konjunktiv 2 Perfekt (kommen = Bewegungsverb)', options:['würde gerne mitgekommen','wäre gerne mitgekommen','käme gerne mit','komme gerne mit'], answer:'wäre gerne mitgekommen', reason:'Konjunktiv 2 Perfekt: wäre + Partizip II (kommen → sein-Verb)' },
+  { type:'mc', text:'„Wenn Blumen sprechen ___, wäre es im Garten laut."', options:['können','konnte','könnten','könntest'], answer:'könnten', reason:'können → Konjunktiv 2 → könnten (Plural „Blumen")' },
+  { type:'mc', text:'„Warst du gestern bei Anna?" – „Nein, ich hatte keine Zeit." – hatte hier = ?', options:['Konjunktiv 2','Präteritum','Beides möglich','Keines'], answer:'Präteritum', reason:'„gestern" zeigt reale Vergangenheit → Präteritum!' },
+  { type:'mc', text:'Welche Aussage über den wenn-Satz ist RICHTIG?', options:['Konjunktiv 2 nur im Nebensatz','Konjunktiv 2 nur im Hauptsatz','Konjunktiv 2 in beiden Sätzen','würde steht immer vor haben/sein'], answer:'Konjunktiv 2 in beiden Sätzen', reason:'Richtig! Beide Sätze bekommen Konjunktiv 2.' },
+  { type:'mc', text:'„Sie hätte gerne ein Abendkleid." – Was bedeutet das?', options:['Sie hat es gestern gekauft.','Sie wünscht sich eins, hat aber keins.','Sie muss es kaufen.','Sie soll es anziehen.'], answer:'Sie wünscht sich eins, hat aber keins.', reason:'hätte gerne = Wunsch (irreal)' },
+  { type:'mc', text:'Welcher Satz ist grammatisch KORREKT?', options:['Wenn ich reich wäre, ich würde ein Haus kaufen.','Wenn ich reich wäre, würde ich ein Haus kaufen.','Wenn ich reich war, würde ich ein Haus kaufen.','Wenn ich reich wäre, kaufe ich ein Haus.'], answer:'Wenn ich reich wäre, würde ich ein Haus kaufen.', reason:'Nebensatz: Verb am Ende (wäre). Hauptsatz: würde an Position 2. ✓' }
+];
+
+const ue6Data = [
+  { type:'mc', text:'„Wollten Sie gestern kommen?" – Das ist:', options:['Konjunktiv 2 (Höflichkeit)','Präteritum (Vergangenheit)','Beides möglich','Wunsch'], answer:'Beides möglich', reason:'Ohne Kontext: wollten kann beides sein! Der Kontext entscheidet.' },
+  { type:'mc', text:'„Er wollte gerne helfen, aber er hat keine Zeit." – Das ist:', options:['Präteritum','Konjunktiv 2','Zukunft','Imperativ'], answer:'Konjunktiv 2', reason:'Er hat JETZT keine Zeit → irreal → Konjunktiv 2' },
+  { type:'mc', text:'„Als ich jung war, wollte ich Pilot werden." – Das ist:', options:['Konjunktiv 2','Präteritum','Beides','Futur'], answer:'Präteritum', reason:'Als (Vergangenheit) + war = real vergangen → Präteritum' },
+  { type:'mc', text:'„Sie hätte das nicht tun sollen." – hätte hier:', options:['Präteritum','Konjunktiv 2 Perfekt','Präsens','Futur'], answer:'Konjunktiv 2 Perfekt', reason:'hätte + Partizip II = Konjunktiv 2 Perfekt (irreal in der Vergangenheit)' },
+  { type:'mc', text:'„Wir könnten nicht kommen, wir mussten noch arbeiten." (Entschuldigung für gestern)', options:['könnten = Konjunktiv 2','könnten = Präteritum von können','mussten = Konjunktiv 2','Beides Konjunktiv 2'], answer:'könnten = Präteritum von können', reason:'Kontext: gestern = Vergangenheit real. könnten ist hier Präteritum von können!' },
+  { type:'mc', text:'„Wenn ich damals mehr gelernt hätte, ..." – hätte hier:', options:['Präteritum','Konjunktiv 2 Perfekt','Präsens Konj. 2','Futur'], answer:'Konjunktiv 2 Perfekt', reason:'damals + wenn-Satz = irreale Bedingung in der Vergangenheit → Konjunktiv 2 Perfekt' },
+  { type:'mc', text:'„Ich würde morgen kommen, wenn ich nicht arbeiten müsste." – würde hier:', options:['Präteritum','Futur','Konjunktiv 2','Präsens'], answer:'Konjunktiv 2', reason:'Hypothetisch (ich komme nicht wirklich) + müsste → Konjunktiv 2' },
+  { type:'mc', text:'„Sie wollte früher immer Ärztin werden." (Kindheitstraum)', options:['Konjunktiv 2 – irreal','Präteritum – real vergangen','Beides','Kein Verb der Vergangenheit'], answer:'Präteritum – real vergangen', reason:'früher + immer = reale Aussage über Vergangenheit → Präteritum' },
+  { type:'mc', text:'Wie erkennt man Konjunktiv 2 vs. Präteritum im Kontext?', options:['Nur an der Form des Verbs','Nur an der Endung','Am Kontext: real oder irreal?','An der Satzlänge'], answer:'Am Kontext: real oder irreal?', reason:'Die Form kann identisch sein – erst der Kontext zeigt, ob es real (Präteritum) oder irreal (Konjunktiv 2) ist.' },
+  { type:'mc', text:'„Das dürfte nicht lange dauern." – dürfte hier:', options:['Präteritum','Konjunktiv 2 (vorsichtige Vermutung)','Präsens','Imperativ'], answer:'Konjunktiv 2 (vorsichtige Vermutung)', reason:'dürfen → dürfte = vorsichtige, abgeschwächte Vermutung (Konjunktiv 2)' },
+  { type:'mc', text:'„Ich sollte mehr Sport machen." – Das ist:', options:['Ratschlag (Konjunktiv 2)','Präteritum','Pflicht (sollen Präsens)','Wunsch'], answer:'Ratschlag (Konjunktiv 2)', reason:'sollte = sollen im Konjunktiv 2 → ich gebe mir selbst einen Ratschlag' },
+  { type:'mc', text:'„Als Kind durfte ich nicht lange aufbleiben." – durfte hier:', options:['Konjunktiv 2','Präteritum','Beides','Zukunft'], answer:'Präteritum', reason:'Als Kind (Vergangenheit, real) → Präteritum von dürfen' },
+  { type:'mc', text:'„Er müsste das eigentlich wissen." – müsste hier:', options:['Präteritum','Konjunktiv 2 (er weiß es aber nicht)','Futur','Imperativ'], answer:'Konjunktiv 2 (er weiß es aber nicht)', reason:'müsste = irreal: er sollte es wissen, tut es aber (wahrscheinlich) nicht → Konjunktiv 2' }
+];
+
+const ue7Data = [
+  { type:'transform', prompt:'Schreibe einen Wunsch-Satz mit „wäre" oder „hätte".\n(Thema: dein Traumberuf)', answer:'Ich wäre gerne Pilot.', alt:['Ich wäre gerne Ärztin.','Ich wäre gerne Musiker.','Ich hätte gerne mehr Zeit zum Lernen.','Ich wäre gerne Lehrer.'], reason:'Frei! Wichtig: wäre / hätte + gerne ✓' },
+  { type:'transform', prompt:'Schreibe eine höfliche Bitte an einen Kollegen.\n(er soll das Fenster öffnen)', answer:'Könntest du bitte das Fenster öffnen?', alt:['Würdest du bitte das Fenster öffnen?','Könntest du das Fenster öffnen?'], reason:'könntest/würdest du → Konjunktiv 2 höflich' },
+  { type:'transform', prompt:'Schreibe einen Ratschlag: Dein Freund ist müde. (früher schlafen)', answer:'Du solltest früher schlafen gehen.', alt:['Du solltest früher schlafen.','Du solltest mehr schlafen.'], reason:'sollen → solltest (Ratschlag)' },
+  { type:'transform', prompt:'Schreibe einen Vorschlag für das Wochenende.\n(ins Kino / in den Park / essen gehen)', answer:'Wir könnten am Wochenende ins Kino gehen.', alt:['Wir könnten in den Park gehen.','Wir könnten zusammen essen gehen.','Wir könnten ins Kino gehen.'], reason:'können → könnten + Aktivität (Vorschlag)' },
+  { type:'transform', prompt:'Schreibe einen vollständigen wenn-Satz (irreale Bedingung).\n„Ich habe kein Geld." → Wenn ich ...',  answer:'Wenn ich viel Geld hätte, würde ich eine Weltreise machen.', alt:['Wenn ich Geld hätte, würde ich ein Haus kaufen.','Wenn ich mehr Geld hätte, könnte ich verreisen.'], reason:'haben → hätte / würde + Infinitiv oder könnte + Infinitiv' },
+  { type:'transform', prompt:'Ergänze frei: „Wenn ich ein Tier wäre, ..."', answer:'Wenn ich ein Tier wäre, wäre ich ein Adler.', alt:['Wenn ich ein Tier wäre, würde ich fliegen.','Wenn ich ein Tier wäre, wäre ich ein Hund.','Wenn ich ein Tier wäre, könnte ich schnell laufen.'], reason:'Frei! Wichtig: wäre im wenn-Satz + Konjunktiv 2 im Hauptsatz ✓' },
+  { type:'transform', prompt:'Schreibe einen Satz mit Konjunktiv 2 Perfekt:\n„Ich habe gestern nicht gelernt." → Ich wäre besser ...',  answer:'Ich wäre besser zu Hause geblieben und hätte mehr gelernt.', alt:['Wenn ich gelernt hätte, hätte ich die Prüfung bestanden.','Ich hätte mehr lernen sollen.'], reason:'Konjunktiv 2 Perfekt: hätte/wäre + Partizip II' },
+  { type:'transform', prompt:'Formuliere eine sehr höfliche Bitte (Sie-Form): Jemand soll dir helfen, den Kinderwagen die Treppe hochzutragen.', answer:'Könnten Sie mir bitte helfen, den Kinderwagen die Treppe hochzutragen?', alt:['Würden Sie mir bitte mit dem Kinderwagen helfen?','Könnten Sie mir bitte mit dem Kinderwagen helfen?'], reason:'könnten/würden Sie ... → Konjunktiv 2 Höflichkeit (Sie-Form)' },
+  { type:'transform', prompt:'Schreibe einen Satz mit „sollte" als Ratschlag an dich selbst.', answer:'Ich sollte mehr Wasser trinken.', alt:['Ich sollte öfter Sport machen.','Ich sollte früher aufstehen.','Ich sollte mehr lernen.'], reason:'sollen → ich → sollte (Selbst-Ratschlag)' },
+  { type:'transform', prompt:'Schreibe einen wenn-Satz mit Modalverb:\n„Kinder lernen sehr schnell." → Wenn alle Erwachsenen ...', answer:'Wenn alle Erwachsenen so schnell lernen könnten, wäre das Lernen viel einfacher.', alt:['Wenn alle Erwachsenen so schnell lernen könnten, müssten wir weniger Zeit dafür brauchen.'], reason:'könnten (können) / wäre oder müssten – Konjunktiv 2' },
+  { type:'transform', prompt:'„Das Wetter ist schlecht." → Schreibe einen Vorschlag, was man machen könnte.', answer:'Wir könnten zu Hause einen Film schauen.', alt:['Wir könnten ein Brettspiel spielen.','Wir könnten ins Kino gehen.','Wir könnten ein Café besuchen.'], reason:'könnten + Aktivität = Vorschlag ✓' },
+  { type:'transform', prompt:'Schreibe einen Wunsch-Satz mit „würde".\n(Thema: etwas, das du gerne in der Zukunft tun möchtest)', answer:'Ich würde gerne einmal nach Japan reisen.', alt:['Ich würde gerne ein Buch schreiben.','Ich würde gerne eine neue Sprache lernen.','Ich würde gerne mehr reisen.'], reason:'würde gerne + Infinitiv = Wunsch ✓' },
+  { type:'transform', prompt:'Schreibe einen vollständigen Satz, der Konjunktiv 2 für eine irreale Bedingung in der VERGANGENHEIT ausdrückt.', answer:'Wenn ich mehr Zeit gehabt hätte, hätte ich dir geholfen.', alt:['Wenn ich das gewusst hätte, wäre ich früher gekommen.'], reason:'Konjunktiv 2 Perfekt: gehabt hätte / hätte geholfen – irreal in der Vergangenheit' }
+];
+
+const ktData = [
+  { type:'mc', text:'Konjunktiv 2 von „sein" – ich-Form:', options:['war','wäre','würde sein','bin'], answer:'wäre', reason:'sein → wäre (eigene Form, kein würde!)' },
+  { type:'mc', text:'Konjunktiv 2 von „haben" – wir-Form:', options:['hatten','hätten','hätte','haben'], answer:'hätten', reason:'haben → wir → hätten' },
+  { type:'mc', text:'Für normale Verben bildet man Konjunktiv 2 mit:', options:['haben + Infinitiv','würde + Infinitiv','sein + Infinitiv','wäre + Partizip'], answer:'würde + Infinitiv', reason:'würde (Position 2) + Infinitiv (am Ende)' },
+  { type:'mc', text:'Konjunktiv 2 von „können" – er/sie-Form:', options:['kann','konnten','könnte','könnten'], answer:'könnte', reason:'können → er/sie → könnte' },
+  { type:'mc', text:'„Entschuldigung, ___ Sie mir bitte helfen?"', options:['können','könnten','konnten','hätten'], answer:'könnten', reason:'können → Sie → könnten (höfliche Bitte)' },
+  { type:'mc', text:'„Du ___ früher schlafen gehen." (Ratschlag)', options:['sollst','sollen','solltest','solltet'], answer:'solltest', reason:'sollen → du → solltest (Ratschlag)' },
+  { type:'mc', text:'„Wir ___ heute Abend ins Kino gehen." (Vorschlag)', options:['können','könnten','würden','sollten'], answer:'könnten', reason:'können → wir → könnten (Vorschlag)' },
+  { type:'mc', text:'„Wenn ich Zeit ___, würde ich dir helfen." (haben)', options:['habe','hätte','hatte','haben'], answer:'hätte', reason:'haben → ich → hätte (irrealer wenn-Satz)' },
+  { type:'mc', text:'„Er ___ gerne Olympiasieger." (Wunsch, sein)', options:['wäre','würde sein','war','ist'], answer:'wäre', reason:'sein → wäre + gerne = Wunsch' },
+  { type:'mc', text:'Konjunktiv 2 von „müssen" – ihr-Form:', options:['müsst','müsstet','müssten','müssen'], answer:'müsstet', reason:'müssen → ihr → müsstet' },
+  { type:'mc', text:'Im wenn-Satz (irreale Bedingung) steht Konjunktiv 2:', options:['nur im Nebensatz','nur im Hauptsatz','in beiden Sätzen','in keinem'], answer:'in beiden Sätzen', reason:'Beide Sätze: Konjunktiv 2!' },
+  { type:'mc', text:'„Wäre ich reich, ..." – Das zeigt:', options:['Ratschlag','Höflichkeit','Wunsch','Irreale Bedingung'], answer:'Irreale Bedingung', reason:'wäre + wenn-Struktur (invertiert) = Irreale Bedingung' },
+  { type:'mc', text:'Konjunktiv 2 von „dürfen" – sie/Sie-Form:', options:['dürfen','dürften','dürfte','durften'], answer:'dürften', reason:'dürfen → sie/Sie → dürften' }
+];
+
+// ─── Render & Build ───
+function escQ(s) { return String(s).replace(/'/g, "&#39;"); }
+
+function buildQuestion(q, i, prefix) {
+  const num = `<strong style="color:var(--primary);font-size:0.88rem;">${i+1}.</strong> `;
+  if (q.type === 'mc') {
+    const opts = q.options.map(o =>
+      `<button class="mc-opt" onclick="selectMC(this,'${prefix}',${i},'${escQ(o)}')">${o}</button>`
+    ).join('');
+    const promptDisplay = (q.text||'').replace(/\n/g,'<br>');
+    return `<div class="q-text">${num}${promptDisplay}</div><div class="mc-options">${opts}</div><div class="feedback" id="${prefix}-fb${i}"></div>`;
+  }
+  if (q.type === 'fill') {
+    let text = q.text;
+    (q.blanks||[]).forEach((ans, bi) => {
+      text = text.replace('{blank}', `<input class="blank-input" id="${prefix}-b${i}-${bi}" data-answer="${escQ(ans)}" placeholder="...">`);
+    });
+    return `<div class="q-text">${num}${text}</div><div class="feedback" id="${prefix}-fb${i}"></div>`;
+  }
+  if (q.type === 'double-fill') {
+    return `<div class="q-text">${num}${q.before}
+      <input class="blank-input" id="${prefix}-b${i}-0" data-answer="${escQ(q.blank1.answer)}" placeholder="${q.blank1.hint}" style="width:85px;">
+      ${q.between}
+      <input class="blank-input" id="${prefix}-b${i}-1" data-answer="${escQ(q.blank2.answer)}" placeholder="${q.blank2.hint}" style="width:85px;">
+      ${q.after}
+    </div><div class="feedback" id="${prefix}-fb${i}"></div>`;
+  }
+  if (q.type === 'transform') {
+    const promptDisplay = (q.prompt||'').replace(/\n/g,'<br>');
+    return `<div class="q-text">${num}${promptDisplay}</div>
+      <input class="transform-input" id="${prefix}-t${i}" placeholder="Schreibe den Satz hier...">
+      <div class="feedback" id="${prefix}-fb${i}"></div>`;
+  }
+  return '';
+}
+
+function renderExercises(containerId, data, prefix) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  data.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-block';
+    div.id = `${prefix}-q${i}`;
+    div.innerHTML = buildQuestion(q, i, prefix);
+    container.appendChild(div);
+  });
+}
+
+function selectMC(btn, prefix, qi, val) {
+  const block = document.getElementById(`${prefix}-q${qi}`);
+  block.querySelectorAll('.mc-opt').forEach(b => { b.classList.remove('selected-temp'); });
+  btn.classList.add('selected-temp');
+  btn.dataset.selected = val;
+}
+
+function checkAll(prefix) {
+  const dataMap = {ue1:ue1Data,ue2:ue2Data,ue3:ue3Data,ue4:ue4Data,ue5:ue5Data,ue6:ue6Data,ue7:ue7Data,kt:ktData};
+  const data = dataMap[prefix];
+  let correct = 0;
+
+  data.forEach((q, i) => {
+    const block = document.getElementById(`${prefix}-q${i}`);
+    const fb = document.getElementById(`${prefix}-fb${i}`);
+    let ok = false;
+
+    if (q.type === 'mc') {
+      const opts = block.querySelectorAll('.mc-opt');
+      let selected = null;
+      opts.forEach(o => { if (o.classList.contains('selected-temp')) selected = o; });
+      if (selected) {
+        const val = selected.dataset.selected;
+        ok = (val === q.answer);
+        selected.className = 'mc-opt ' + (ok ? 'selected-correct' : 'selected-wrong');
+        if (!ok) opts.forEach(o => { if (o.textContent === q.answer) o.classList.add('show-correct'); });
+      } else {
+        opts.forEach(o => { if (o.textContent === q.answer) o.classList.add('show-correct'); });
+      }
+    } else if (q.type === 'fill') {
+      let allOk = true;
+      (q.blanks||[]).forEach((ans, bi) => {
+        const inp = document.getElementById(`${prefix}-b${i}-${bi}`);
+        if (!inp) return;
+        const isOk = inp.value.trim().toLowerCase() === ans.toLowerCase();
+        inp.className = 'blank-input ' + (isOk ? 'correct' : 'wrong');
+        if (!isOk) allOk = false;
+      });
+      ok = allOk;
+    } else if (q.type === 'double-fill') {
+      const inp0 = document.getElementById(`${prefix}-b${i}-0`);
+      const inp1 = document.getElementById(`${prefix}-b${i}-1`);
+      const ok0 = inp0 && inp0.value.trim().toLowerCase() === q.blank1.answer.toLowerCase();
+      const ok1 = inp1 && inp1.value.trim().toLowerCase() === q.blank2.answer.toLowerCase();
+      if (inp0) inp0.className = 'blank-input ' + (ok0 ? 'correct' : 'wrong');
+      if (inp1) inp1.className = 'blank-input ' + (ok1 ? 'correct' : 'wrong');
+      ok = ok0 && ok1;
+    } else if (q.type === 'transform') {
+      const inp = document.getElementById(`${prefix}-t${i}`);
+      if (inp) {
+        const val = inp.value.trim().toLowerCase().replace(/[.,!?]/g,'');
+        const main = (q.answer||'').toLowerCase().replace(/[.,!?]/g,'');
+        const alts = (q.alt||[]).map(a => a.toLowerCase().replace(/[.,!?]/g,''));
+        ok = val === main || alts.includes(val) || (val.length > 12 && keywordsMatch(val, main));
+        inp.className = 'transform-input ' + (ok ? 'correct' : 'wrong');
+      }
+    }
+
+    if (ok) correct++;
+    block.className = 'q-block ' + (ok ? 'correct' : 'wrong');
+    const correctStr = q.answer || (q.blanks ? q.blanks.join(' / ') : '') || `${q.blank1?.answer} / ${q.blank2?.answer}`;
+    if (fb) {
+      if (ok) {
+        fb.innerHTML = `<span class="ok">✓ Richtig!</span><span class="reason">${q.reason||''}</span>`;
+      } else {
+        fb.innerHTML = `<span class="no">✗ Nicht ganz.</span><span class="reason">Richtig: <strong>${correctStr}</strong> — ${q.reason||''}</span>`;
+      }
+    }
+  });
+
+  const score = document.getElementById(`score-${prefix}`);
+  if (score) {
+    score.style.display = 'block';
+    const pct = Math.round(correct/data.length*100);
+    const emoji = pct===100?'🎉':pct>=80?'👍':pct>=60?'😊':'📚';
+    score.innerHTML = `${emoji} Ergebnis: <strong>${correct} / ${data.length}</strong> richtig (${pct}%)`;
+  }
+}
+
+function keywordsMatch(val, main) {
+  const words = main.split(' ').filter(w => w.length > 4);
+  return words.length > 0 && words.filter(w => val.includes(w)).length >= Math.ceil(words.length * 0.6);
+}
+
+function resetSub(prefix) {
+  const dataMap = {ue1:ue1Data,ue2:ue2Data,ue3:ue3Data,ue4:ue4Data,ue5:ue5Data,ue6:ue6Data,ue7:ue7Data,kt:ktData};
+  const containerMap = {ue1:'ue1-questions',ue2:'ue2-questions',ue3:'ue3-questions',ue4:'ue4-questions',ue5:'ue5-questions',ue6:'ue6-questions',ue7:'ue7-questions',kt:'kt-questions'};
+  renderExercises(containerMap[prefix], dataMap[prefix], prefix);
+  const score = document.getElementById(`score-${prefix}`);
+  if (score) score.style.display = 'none';
+}
+
+// ─── Init all exercises ───
+['ue1','ue2','ue3','ue4','ue5','ue6','ue7'].forEach(p => {
+  const dataMap = {ue1:ue1Data,ue2:ue2Data,ue3:ue3Data,ue4:ue4Data,ue5:ue5Data,ue6:ue6Data,ue7:ue7Data};
+  renderExercises(`${p}-questions`, dataMap[p], p);
+});
+renderExercises('kt-questions', ktData, 'kt');
+</script>
+</body>
+</html>

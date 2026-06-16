@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflexive Verben – Übungen</title>
+<style>
+  :root{
+    --primary:#4a6fa5;
+    --primary-dark:#34507a;
+    --secondary:#5fb3a3;
+    --bg:#f4f6fa;
+    --card:#ffffff;
+    --accent:#6c63ff;
+    --correct:#5fb3a3;
+    --wrong:#e07a7a;
+    --text:#2e3a4d;
+    --muted:#7d8aa0;
+    --border:#dde3ee;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:80px;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:14px 16px 0;
+    max-width:900px;
+    margin:0 auto;
+  }
+  nav.tabs button{
+    flex:1 1 auto;
+    min-width:100px;
+    padding:12px 8px;
+    border:none;
+    border-radius:10px 10px 0 0;
+    background:#e3e8f3;
+    color:var(--primary-dark);
+    font-weight:600;
+    cursor:pointer;
+    font-size:0.9em;
+    transition:0.2s;
+  }
+  nav.tabs button.active{
+    background:var(--primary);
+    color:#fff;
+  }
+
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:16px;
+  }
+  .tab-content{
+    display:none;
+    background:var(--card);
+    border-radius:0 0 14px 14px;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06);
+    animation:fadeIn 0.3s ease;
+  }
+  .tab-content.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  h2{color:var(--primary-dark);border-bottom:2px solid var(--secondary);padding-bottom:6px;margin-top:0;}
+  h3{color:var(--primary);margin-top:24px;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:14px 0;
+    font-size:0.95em;
+  }
+  table th, table td{
+    border:1px solid var(--border);
+    padding:8px 10px;
+    text-align:center;
+  }
+  table th{background:var(--primary);color:#fff;}
+  table td.akk{color:var(--accent);font-weight:600;}
+  table td.dat{color:#e0825a;font-weight:600;}
+
+  .beispiel{
+    background:var(--bg);
+    border-left:4px solid var(--secondary);
+    border-radius:8px;
+    padding:10px 14px;
+    margin:10px 0;
+  }
+  .beispiel .de{font-weight:600;}
+  .beispiel .vi{color:var(--muted);font-style:italic;font-size:0.9em;margin-top:4px;}
+
+  .wortliste-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:10px;
+    margin-top:12px;
+  }
+  .verb-card{
+    background:var(--bg);
+    border-radius:10px;
+    padding:10px 14px;
+    border:1px solid var(--border);
+  }
+  .verb-card .verb{font-weight:700;color:var(--primary-dark);}
+  .verb-card .vi{color:var(--muted);font-size:0.85em;}
+
+  .frage{
+    margin:18px 0;
+    padding-bottom:14px;
+    border-bottom:1px dashed var(--border);
+  }
+  .frage:last-child{border-bottom:none;}
+  .frage-num{
+    display:inline-block;
+    background:var(--primary);
+    color:#fff;
+    border-radius:50%;
+    width:26px;height:26px;
+    line-height:26px;
+    text-align:center;
+    font-size:0.85em;
+    margin-right:8px;
+  }
+  .satz{font-size:1.02em;line-height:1.8;}
+  .luecke{
+    display:inline-block;
+    min-width:70px;
+    padding:4px 6px;
+    border:none;
+    border-bottom:2px solid var(--primary);
+    background:#eef2fb;
+    border-radius:4px;
+    font-size:1em;
+    text-align:center;
+    font-family:inherit;
+  }
+  .luecke.correct{
+    background:#e3f7f1;
+    border-color:var(--correct);
+    color:var(--correct);
+    font-weight:bold;
+  }
+  .luecke.wrong{
+    background:#fbeaea;
+    border-color:var(--wrong);
+    color:var(--wrong);
+    font-weight:bold;
+  }
+
+  .check-btn{
+    margin-top:16px;
+    padding:10px 24px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    font-size:1em;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .check-btn:hover{background:var(--primary-dark);}
+
+  .result-box{
+    margin-top:14px;
+    padding:12px;
+    border-radius:10px;
+    font-weight:600;
+    text-align:center;
+    display:none;
+  }
+  .result-box.show{display:block;}
+  .result-box.good{background:#e3f7f1;color:var(--correct);}
+  .result-box.bad{background:#fbeaea;color:var(--wrong);}
+
+  .hinweis{
+    background:#fff7e0;
+    border-left:4px solid #e3b341;
+    border-radius:8px;
+    padding:10px 14px;
+    margin:14px 0;
+    font-size:0.92em;
+  }
+
+  @media (max-width:600px){
+    nav.tabs button{font-size:0.8em;padding:10px 6px;}
+    .tab-content{padding:14px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="tabs">
+  <button class="active" onclick="showTab(0)">1. Erklärung</button>
+  <button onclick="showTab(1)">2. Wortliste</button>
+  <button onclick="showTab(2)">Übung A</button>
+  <button onclick="showTab(3)">Übung B</button>
+  <button onclick="showTab(4)">Übung C</button>
+  <button onclick="showTab(5)">Übung D</button>
+  <button onclick="showTab(6)">Übung E</button>
+  <button onclick="showTab(7)">Übung F</button>
+  <button onclick="showTab(8)">Übung G</button>
+</nav>
+
+<main>
+
+  <!-- TAB 0: ERKLÄRUNG -->
+  <section class="tab-content active" id="tab0">
+    <h2>Reflexivpronomen – Erklärung</h2>
+    <p>Ein <strong>reflexives Verb</strong> braucht ein Reflexivpronomen. Das Subjekt und das Objekt sind dieselbe Person.</p>
+
+    <h3>Tabelle: Reflexivpronomen</h3>
+    <table>
+      <tr><th>Person</th><th>Akkusativ</th><th>Dativ</th></tr>
+      <tr><td>ich</td><td class="akk">mich</td><td class="dat">mir</td></tr>
+      <tr><td>du</td><td class="akk">dich</td><td class="dat">dir</td></tr>
+      <tr><td>er/sie/es/man</td><td class="akk">sich</td><td class="dat">sich</td></tr>
+      <tr><td>wir</td><td class="akk">uns</td><td class="dat">uns</td></tr>
+      <tr><td>ihr</td><td class="akk">euch</td><td class="dat">euch</td></tr>
+      <tr><td>sie/Sie</td><td class="akk">sich</td><td class="dat">sich</td></tr>
+    </table>
+
+    <div class="hinweis">
+      <strong>Regel:</strong> Wenn der Satz schon ein Akkusativ-Objekt hat (z. B. "die Hände", "die Haare"), steht das Reflexivpronomen im <strong>Dativ</strong>.<br>
+      Beispiel: <em>Ich wasche <strong>mich</strong>.</em> (kein Akk.-Objekt → Akkusativ)<br>
+      <em>Ich wasche <strong>mir</strong> die Hände.</em> (Akk.-Objekt "die Hände" → Dativ)
+    </div>
+
+    <h3>5 Beispiele</h3>
+
+    <div class="beispiel">
+      <div class="de">1. Ich wasche <strong>mich</strong> jeden Morgen.</div>
+      <div class="vi">Tôi tự rửa (tắm) mỗi sáng.</div>
+    </div>
+    <div class="beispiel">
+      <div class="de">2. Ich wasche <strong>mir</strong> die Hände vor dem Essen.</div>
+      <div class="vi">Tôi rửa tay trước khi ăn. (có tân ngữ "die Hände" → Dativ)</div>
+    </div>
+    <div class="beispiel">
+      <div class="de">3. Er rasiert <strong>sich</strong> jeden Tag.</div>
+      <div class="vi">Anh ấy cạo râu mỗi ngày.</div>
+    </div>
+    <div class="beispiel">
+      <div class="de">4. Wir freuen <strong>uns</strong> auf die Ferien.</div>
+      <div class="vi">Chúng tôi vui mừng vì kỳ nghỉ.</div>
+    </div>
+    <div class="beispiel">
+      <div class="de">5. Kannst du <strong>dir</strong> vorstellen, dort zu leben?</div>
+      <div class="vi">Bạn có thể tưởng tượng được việc sống ở đó không?</div>
+    </div>
+
+  </section>
+
+  <!-- TAB 1: WORTLISTE -->
+  <section class="tab-content" id="tab1">
+    <h2>Wortliste – Reflexive Verben</h2>
+
+    <div class="hinweis">
+      <strong>Mẹo nhỏ – giới từ "auf" vs "über":</strong><br>
+      • <strong>auf + Akkusativ</strong> → việc <strong>sắp xảy ra</strong>, trong tương lai gần (ví dụ: <em>sich freuen auf den Urlaub</em> – vui vì sắp được đi nghỉ).<br>
+      • <strong>über + Akkusativ</strong> → việc <strong>đã hoặc đang xảy ra</strong> (ví dụ: <em>sich freuen über das Geschenk</em> – vui vì đã nhận được quà).<br>
+      Quy tắc này lặp lại ở bài <em>Verben mit Präposition</em> – ghi nhớ kỹ vì rất hay gặp!
+    </div>
+
+    <h3>Echte reflexive Verben (immer mit Reflexivpronomen)</h3>
+    <div class="wortliste-grid">
+      <div class="verb-card"><span class="verb">sich freuen (auf/über)</span><br><span class="vi">vui mừng (về)</span><br><span class="vi"><strong>auf</strong> = việc <strong>sắp xảy ra</strong> (tương lai); <strong>über</strong> = việc <strong>đã/đang xảy ra</strong></span></div>
+      <div class="verb-card"><span class="verb">sich ärgern (über)</span><br><span class="vi">tức giận (về)</span></div>
+      <div class="verb-card"><span class="verb">sich interessieren (für)</span><br><span class="vi">quan tâm đến</span></div>
+      <div class="verb-card"><span class="verb">sich langweilen</span><br><span class="vi">cảm thấy chán</span></div>
+      <div class="verb-card"><span class="verb">sich beeilen</span><br><span class="vi">vội vã, nhanh lên</span></div>
+      <div class="verb-card"><span class="verb">sich erinnern (an)</span><br><span class="vi">nhớ lại (về)</span></div>
+      <div class="verb-card"><span class="verb">sich verlieben (in)</span><br><span class="vi">yêu (ai đó)</span></div>
+      <div class="verb-card"><span class="verb">sich entschuldigen (bei/für)</span><br><span class="vi">xin lỗi (ai/về việc gì)</span></div>
+      <div class="verb-card"><span class="verb">sich beschweren (bei/über)</span><br><span class="vi">phàn nàn (với/về)</span></div>
+      <div class="verb-card"><span class="verb">sich kümmern (um)</span><br><span class="vi">chăm sóc, lo việc</span></div>
+      <div class="verb-card"><span class="verb">sich bedanken (bei/für)</span><br><span class="vi">cảm ơn</span></div>
+      <div class="verb-card"><span class="verb">sich verlaufen</span><br><span class="vi">đi lạc đường</span></div>
+      <div class="verb-card"><span class="verb">sich verlieren</span><br><span class="vi">bị thất lạc, lạc nhau</span></div>
+      <div class="verb-card"><span class="verb">sich aufregen (über)</span><br><span class="vi">bực bội, phấn khích quá độ</span></div>
+      <div class="verb-card"><span class="verb">sich entspannen</span><br><span class="vi">thư giãn</span></div>
+      <div class="verb-card"><span class="verb">sich konzentrieren (auf)</span><br><span class="vi">tập trung vào</span></div>
+      <div class="verb-card"><span class="verb">sich entscheiden (für/gegen)</span><br><span class="vi">quyết định (chọn/từ chối)</span></div>
+      <div class="verb-card"><span class="verb">sich verabschieden (von)</span><br><span class="vi">chào tạm biệt</span></div>
+      <div class="verb-card"><span class="verb">sich gewöhnen (an)</span><br><span class="vi">làm quen, quen dần với</span></div>
+      <div class="verb-card"><span class="verb">sich vorbereiten (auf)</span><br><span class="vi">chuẩn bị cho</span></div>
+      <div class="verb-card"><span class="verb">sich fühlen</span><br><span class="vi">cảm thấy (trong người)</span></div>
+      <div class="verb-card"><span class="verb">sich verändern</span><br><span class="vi">thay đổi</span></div>
+      <div class="verb-card"><span class="verb">sich verspäten</span><br><span class="vi">đến muộn, bị trễ</span></div>
+      <div class="verb-card"><span class="verb">sich erholen</span><br><span class="vi">hồi phục, nghỉ ngơi</span></div>
+      <div class="verb-card"><span class="verb">sich engagieren (für)</span><br><span class="vi">tích cực tham gia, dấn thân</span></div>
+      <div class="verb-card"><span class="verb">sich bewerben (um/bei)</span><br><span class="vi">ứng tuyển, nộp đơn</span></div>
+      <div class="verb-card"><span class="verb">sich anstrengen</span><br><span class="vi">cố gắng, nỗ lực</span></div>
+      <div class="verb-card"><span class="verb">sich orientieren</span><br><span class="vi">định hướng, tìm hiểu</span></div>
+      <div class="verb-card"><span class="verb">sich unterhalten (mit/über)</span><br><span class="vi">nói chuyện, trò chuyện</span></div>
+    </div>
+
+    <h3>Reflexive Verben mit Akkusativ oder Dativ (je nach Satz)</h3>
+    <div class="wortliste-grid">
+      <div class="verb-card"><span class="verb">sich waschen</span><br><span class="vi">tự rửa / rửa (bộ phận cơ thể)</span></div>
+      <div class="verb-card"><span class="verb">sich anziehen / sich ausziehen</span><br><span class="vi">mặc / cởi đồ</span></div>
+      <div class="verb-card"><span class="verb">sich kämmen</span><br><span class="vi">chải đầu</span></div>
+      <div class="verb-card"><span class="verb">sich schminken</span><br><span class="vi">trang điểm</span></div>
+      <div class="verb-card"><span class="verb">sich rasieren</span><br><span class="vi">cạo râu</span></div>
+      <div class="verb-card"><span class="verb">sich verletzen</span><br><span class="vi">tự làm bị thương</span></div>
+      <div class="verb-card"><span class="verb">sich vorstellen (sich/etwas)</span><br><span class="vi">tự giới thiệu / tưởng tượng điều gì</span></div>
+      <div class="verb-card"><span class="verb">sich anmelden</span><br><span class="vi">đăng ký</span></div>
+      <div class="verb-card"><span class="verb">sich (etwas) wünschen</span><br><span class="vi">mong muốn (điều gì cho mình)</span></div>
+      <div class="verb-card"><span class="verb">sich (etwas) kaufen</span><br><span class="vi">mua (cái gì) cho mình</span></div>
+      <div class="verb-card"><span class="verb">sich (etwas) vornehmen</span><br><span class="vi">đặt ra (kế hoạch) cho mình</span></div>
+      <div class="verb-card"><span class="verb">sich (Sorgen) machen</span><br><span class="vi">lo lắng</span></div>
+      <div class="verb-card"><span class="verb">sich umziehen (Kleidung)</span><br><span class="vi">thay đồ</span></div>
+    </div>
+
+    <h3>Reziproke Verben (für mehrere Personen)</h3>
+    <div class="wortliste-grid">
+      <div class="verb-card"><span class="verb">sich kennenlernen</span><br><span class="vi">làm quen với nhau</span></div>
+      <div class="verb-card"><span class="verb">sich treffen</span><br><span class="vi">gặp nhau</span></div>
+      <div class="verb-card"><span class="verb">sich verstehen</span><br><span class="vi">hiểu nhau</span></div>
+      <div class="verb-card"><span class="verb">sich küssen</span><br><span class="vi">hôn nhau</span></div>
+      <div class="verb-card"><span class="verb">sich streiten</span><br><span class="vi">cãi nhau</span></div>
+      <div class="verb-card"><span class="verb">sich verabreden (mit)</span><br><span class="vi">hẹn gặp với ai</span></div>
+      <div class="verb-card"><span class="verb">sich trennen (von)</span><br><span class="vi">chia tay, tách ra</span></div>
+      <div class="verb-card"><span class="verb">sich vertragen</span><br><span class="vi">hoà thuận, làm hoà</span></div>
+      <div class="verb-card"><span class="verb">sich melden (bei)</span><br><span class="vi">báo lại, liên lạc lại</span></div>
+    </div>
+  </section>
+
+  <!-- TAB 2: ÜBUNG A -->
+  <section class="tab-content" id="tab2">
+    <h2>Übung A – Sehr leicht (Akkusativ, ich/du/er/sie)</h2>
+    <div id="exA"></div>
+    <button class="check-btn" onclick="checkExercise('exA')">Prüfen</button>
+    <div class="result-box" id="resultA"></div>
+  </section>
+
+  <!-- TAB 3: ÜBUNG B -->
+  <section class="tab-content" id="tab3">
+    <h2>Übung B – Leicht (Akkusativ, alle Personen)</h2>
+    <div id="exB"></div>
+    <button class="check-btn" onclick="checkExercise('exB')">Prüfen</button>
+    <div class="result-box" id="resultB"></div>
+  </section>
+
+  <!-- TAB 4: ÜBUNG C -->
+  <section class="tab-content" id="tab4">
+    <h2>Übung C – Mittel (Akkusativ oder Dativ unterscheiden)</h2>
+    <div class="hinweis">Tipp: Hat der Satz schon ein Akkusativ-Objekt (z. B. "die Hände", "die Zähne", "ein Pferd")? Dann ist das Reflexivpronomen im <strong>Dativ</strong>.</div>
+    <div id="exC"></div>
+    <button class="check-btn" onclick="checkExercise('exC')">Prüfen</button>
+    <div class="result-box" id="resultC"></div>
+  </section>
+
+  <!-- TAB 5: ÜBUNG D -->
+  <section class="tab-content" id="tab5">
+    <h2>Übung D – Schwer (reziproke Verben &amp; Perfekt)</h2>
+    <div id="exD"></div>
+    <button class="check-btn" onclick="checkExercise('exD')">Prüfen</button>
+    <div class="result-box" id="resultD"></div>
+  </section>
+
+  <!-- TAB 6: ÜBUNG E -->
+  <section class="tab-content" id="tab6">
+    <h2>Übung E – Sehr schwer (gemischt, sich/– und Nebensätze)</h2>
+    <div class="hinweis">Vorsicht: Manche Verben sind <strong>nicht</strong> reflexiv. Schreibe "–" wenn kein Reflexivpronomen nötig ist.</div>
+    <div id="exE"></div>
+    <button class="check-btn" onclick="checkExercise('exE')">Prüfen</button>
+  <!-- TAB 7: ÜBUNG F -->
+  <section class="tab-content" id="tab7">
+    <h2>Übung F – Sätze bilden (Reflexivpronomen einsetzen)</h2>
+    <div class="hinweis">Lies den ganzen Satz und überlege, welches Reflexivpronomen passt.</div>
+    <div id="exF"></div>
+    <button class="check-btn" onclick="checkExercise('exF')">Prüfen</button>
+    <div class="result-box" id="resultF"></div>
+  </section>
+
+  <!-- TAB 8: ÜBUNG G -->
+  <section class="tab-content" id="tab8">
+    <h2>Übung G – Reflexivpronomen oder Personalpronomen?</h2>
+    <div class="hinweis">Vorsicht: In manchen Lücken brauchst du das <strong>Reflexivpronomen</strong> (sich/mich/uns...), in anderen das <strong>Personalpronomen</strong> für eine andere Person (ihm, ihr, ihnen...).</div>
+    <div id="exG"></div>
+    <button class="check-btn" onclick="checkExercise('exG')">Prüfen</button>
+    <div class="result-box" id="resultG"></div>
+  </section>
+
+</main>
+
+<script>
+/* ===================== DATA ===================== */
+
+const exercises = {
+  exA: [
+    {text:"Ich wasche ___ jeden Morgen.", ans:["mich"]},
+    {text:"Du beeilst ___, sonst kommst du zu spät.", ans:["dich"]},
+    {text:"Er rasiert ___ jeden Tag.", ans:["sich"]},
+    {text:"Sie kämmt ___ vor dem Spiegel.", ans:["sich"]},
+    {text:"Ich freue ___ auf das Wochenende.", ans:["mich"]},
+    {text:"Du ärgerst ___ über das Wetter.", ans:["dich"]},
+    {text:"Er interessiert ___ für Musik.", ans:["sich"]},
+    {text:"Ich ziehe ___ schnell an.", ans:["mich"]},
+    {text:"Sie schminkt ___ jeden Morgen.", ans:["sich"]},
+    {text:"Du langweilst ___ in der Pause.", ans:["dich"]},
+    {text:"Ich entspanne ___ am Abend.", ans:["mich"]},
+    {text:"Er meldet ___ für den Kurs an.", ans:["sich"]},
+    {text:"Ich dusche ___ vor dem Schlafen.", ans:["mich"]}
+  ],
+
+  exB: [
+    {text:"Wir freuen ___ auf die Party.", ans:["uns"]},
+    {text:"Ihr beeilt ___, der Bus kommt!", ans:["euch"]},
+    {text:"Sie (Pl.) interessieren ___ für Technik.", ans:["sich"]},
+    {text:"Wir kümmern ___ um die Kinder.", ans:["uns"]},
+    {text:"Ihr ärgert ___ immer über kleine Probleme.", ans:["euch"]},
+    {text:"Wir setzen ___ an den Tisch.", ans:["uns"]},
+    {text:"Ihr erinnert ___ an den Urlaub.", ans:["euch"]},
+    {text:"Können Sie ___ bitte vorstellen?", ans:["sich"]},
+    {text:"Wir entschuldigen ___ für die Verspätung.", ans:["uns"]},
+    {text:"Ihr meldet ___ online an.", ans:["euch"]},
+    {text:"Wir verlaufen ___ oft in der Altstadt.", ans:["uns"]},
+    {text:"Sie (Pl.) beschweren ___ beim Chef.", ans:["sich"]},
+    {text:"Wir bedanken ___ für die Hilfe.", ans:["uns"]}
+  ],
+
+  exC: [
+    {text:"Ich wasche ___ die Hände.", ans:["mir"]},
+    {text:"Du putzt ___ die Zähne.", ans:["dir"]},
+    {text:"Er wäscht ___ jeden Morgen.", ans:["sich"]},
+    {text:"Wir ziehen ___ die Schuhe aus.", ans:["uns"]},
+    {text:"Sie kämmt ___ die Haare.", ans:["sich","ihr"]},
+    {text:"Ich kann ___ kein Auto leisten.", ans:["mir"]},
+    {text:"Er wünscht ___ ein neues Fahrrad.", ans:["sich"]},
+    {text:"Kannst du ___ vorstellen, dort zu wohnen?", ans:["dir"]},
+    {text:"Ich stelle ___ kurz vor.", ans:["mich"]},
+    {text:"Sie hat ___ beim Sport die Hand verletzt.", ans:["sich"]},
+    {text:"Wir nehmen ___ vor, mehr Sport zu machen.", ans:["uns"]},
+    {text:"Er kauft ___ ein neues Handy.", ans:["sich"]},
+    {text:"Ich mache ___ Sorgen um meine Tochter.", ans:["mir"]}
+  ],
+
+  exD: [
+    {text:"Wir haben ___ vor zwei Monaten kennengelernt.", ans:["uns"]},
+    {text:"Sie haben ___ schon lange nicht mehr gesehen.", ans:["sich"]},
+    {text:"Habt ihr ___ wieder vertragen?", ans:["euch"]},
+    {text:"Jutta freut ___ auf das Wochenende.", ans:["sich"]},
+    {text:"Sie erinnert ___ an den ersten Tag.", ans:["sich"]},
+    {text:"Sie zieht ___ schick an.", ans:["sich"]},
+    {text:"Sie trifft ___ mit Paolo.", ans:["sich"]},
+    {text:"Paolo und Jutta ärgern ___ über das Essen.", ans:["sich"]},
+    {text:"Sie beschweren ___ beim Kellner.", ans:["sich"]},
+    {text:"Der Kellner entschuldigt ___ sofort.", ans:["sich"]},
+    {text:"Wir haben ___ vor einem Monat verliebt.", ans:["uns"]},
+    {text:"Ich habe ___ über die Geschenke gefreut.", ans:["mich"]},
+    {text:"Habt ihr ___ schon entschieden?", ans:["euch"]}
+  ],
+
+  exE: [
+    {text:"Ich kaufe ___ ein Buch.", ans:["mir"]},
+    {text:"Ich kaufe ein Buch für meinen Bruder.", ans:["–"], note:true},
+    {text:"Wir sehen ___ den Film im Kino an.", ans:["uns"]},
+    {text:"Ich sehe meine Schwester morgen.", ans:["–"], note:true},
+    {text:"Er stellt ___ vor, dass es bald Sommer wird.", ans:["sich"]},
+    {text:"Er stellt seine Frau den Eltern vor.", ans:["–"], note:true},
+    {text:"Wir ziehen ___ an, weil es kalt ist.", ans:["uns"]},
+    {text:"Sie zieht ihre Kinder an, weil sie noch klein sind.", ans:["–"], note:true},
+    {text:"Ich kann ___ nicht vorstellen, dass er lügt.", ans:["mir"]},
+    {text:"Wer kümmert ___ um die Kinder, wenn sie arbeiten?", ans:["sich"]},
+    {text:"Till und Mathilde haben ___ vor einem Monat verliebt.", ans:["sich"]},
+    {text:"Benno hat ___ in Anna-Maria verliebt und hat ___ den ganzen Abend nicht mehr von ihr getrennt.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Ich bin noch im Bad, weil ich ___ rasieren will.", ans:["mich"]}
+  ],
+
+  exF: [
+    {text:"Am Morgen trifft sich Frau Müller mit ihrer Kollegin zu Kaffee.", ans:["–"], note:true},
+    {text:"Die Kinder ziehen ___ die Schuhe an und machen ___ bereit für die Schule.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Nach der Arbeit setzt ___ Herr Meier in den Sessel und entspannt ___.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Bevor Lara zur Arbeit geht, schminkt sie ___ und kämmt ___ die Haare.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Hast du ___ schon dazu entschieden, das neue Auto zu kaufen?", ans:["dich"]},
+    {text:"Sie sehen ___ den Film an und freuen ___ über die spannende Handlung.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Ihr Mann bereitet ___ auf das Abendessen vor, während sie ein Buch liest.", ans:["sich"]},
+    {text:"Zuerst dusche ich ___, dann ziehe ich ___ an.", ans:["mich, mich"], split:["mich","mich"]},
+    {text:"Die Kinder freuen ___ auf den Ausflug und packen ihre Taschen.", ans:["sich"]},
+    {text:"Im Winter zieht ihr ___ warm an und schützt ___ vor der Kälte.", ans:["euch, euch"], split:["euch","euch"]},
+    {text:"Der Lehrer ärgert ___ über die lauten Schüler und beruhigt ___ dann wieder.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Ich erinnere ___ an den Termin und notiere ___ das Datum.", ans:["mich, mir"], split:["mich","mir"]},
+    {text:"Nach dem Sport duschen sie ___ und ziehen frische Kleidung an.", ans:["sich"]},
+    {text:"Die Familie trifft ___ jedes Jahr zu Weihnachten und freut ___ auf das Fest.", ans:["sich, sich"], split:["sich","sich"]},
+    {text:"Du sollst ___ für den Fehler entschuldigen und die Situation erklären.", ans:["dich"]}
+  ],
+
+  exG: [
+    {text:"Die Lehrerin erklärt den Schülern die Aufgabe. Sie zeigt ___ die Lösung, dann lässt sie ___ die Aufgabe selbst lösen.", ans:["ihnen, sie"], split:["ihnen","sie"]},
+    {text:"Der Arzt untersucht die Patientin. Er misst ___ den Blutdruck und gibt ___ danach die Diagnose.", ans:["ihr, ihr"], split:["ihr","ihr"]},
+    {text:"Der Friseur schneidet der Frau die Haare. Er föhnt ___ die Haare und stylt ___ danach.", ans:["ihr, sie"], split:["ihr","sie"]},
+    {text:"Die Krankenschwester gibt dem Patienten die Medikamente. Sie erklärt ___ die Dosierung und hilft ___ beim Aufstehen.", ans:["ihm, ihm"], split:["ihm","ihm"]},
+    {text:"Der Mechaniker repariert das Auto. Er prüft ___ gründlich und gibt ___ dem Kunden zurück.", ans:["es, es"], split:["es","es"]},
+    {text:"Der Vater liest seinem Kind eine Geschichte vor. Er zeigt ___ die Bilder und erklärt ___ die Handlung.", ans:["ihm, ihm"], split:["ihm","ihm"]},
+    {text:"Der Verkäufer zeigt der Kundin die guten Produkte. Er beschreibt ___ die Vorteile und verkauft ___ das gewünschte Produkt.", ans:["ihr, ihr"], split:["ihr","ihr"]},
+    {text:"Der Kellner serviert der Familie das Essen. Er bringt ___ die Getränke und fragt ___ nach weiteren Wünschen.", ans:["ihr, sie"], split:["ihr","sie"]},
+    {text:"Er stellt ___ dem Komitee vor. Dann kommen seine Kollegen, und er stellt ___ auch ___ vor.", ans:["sich, sie, vor"], split:["sich","sie","vor"]},
+    {text:"Der Arzt gibt dem Patienten das Rezept. Er erklärt ___ die Dosierung und entlässt ___ aus der Praxis.", ans:["ihm, ihn"], split:["ihm","ihn"]},
+    {text:"Die Mutter tröstet das Kind. Sie hält ___ fest und erzählt ___ eine lange Geschichte.", ans:["es, ihm"], split:["es","ihm"]},
+    {text:"Der Trainer lobt die Mannschaft. Er gibt ___ Tipps und motiviert ___ weiter.", ans:["ihr, sie"], split:["ihr","sie"]},
+    {text:"Ich stelle ___ meinem Chef vor. Dann kommen meine Kollegen, und ich stelle ___ auch ___ vor.", ans:["mich, ihnen, mich"], split:["mich","ihnen","mich"]},
+    {text:"Nach dem Sporttraining duscht ihr ___ und zieht ___ frische Kleidung an.", ans:["euch, euch"], split:["euch","euch"]},
+    {text:"Wir ziehen ___ schnell um, nachdem wir im Regen nass geworden sind. Wir trocknen ___ ab und wechseln ___ Kleidung.", ans:["uns, uns, uns"], split:["uns","uns","uns"]}
+  ]
+};
+
+/* ===================== BUILD EXERCISES ===================== */
+
+function buildExercise(containerId, data){
+  const container = document.getElementById(containerId);
+  data.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'frage';
+    let html = `<span class="frage-num">${idx+1}</span><span class="satz">`;
+
+    if(item.split){
+      // multiple blanks
+      let parts = item.text.split("___");
+      parts.forEach((part, i) => {
+        html += part;
+        if(i < parts.length - 1){
+          html += `<input type="text" class="luecke" data-q="${idx}" data-blank="${i}">`;
+        }
+      });
+    } else {
+      let parts = item.text.split("___");
+      html += parts[0];
+      html += `<input type="text" class="luecke" data-q="${idx}" data-blank="0">`;
+      html += parts[1] || "";
+    }
+    html += `</span>`;
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+}
+
+buildExercise('exA', exercises.exA);
+buildExercise('exB', exercises.exB);
+buildExercise('exC', exercises.exC);
+buildExercise('exD', exercises.exD);
+buildExercise('exE', exercises.exE);
+buildExercise('exF', exercises.exF);
+buildExercise('exG', exercises.exG);
+
+/* ===================== CHECK ANSWERS ===================== */
+
+function checkExercise(exId){
+  const data = exercises[exId];
+  const container = document.getElementById(exId);
+  const inputs = container.querySelectorAll('.luecke');
+  let correct = 0;
+  let total = 0;
+
+  inputs.forEach(input => {
+    const qIdx = parseInt(input.dataset.q);
+    const blankIdx = parseInt(input.dataset.blank);
+    const item = data[qIdx];
+    const userVal = input.value.trim().toLowerCase();
+
+    let correctAnswers;
+    if(item.split){
+      correctAnswers = [item.split[blankIdx].toLowerCase()];
+    } else {
+      correctAnswers = item.ans.map(a => a.toLowerCase());
+    }
+
+    total++;
+    input.classList.remove('correct','wrong');
+    if(correctAnswers.includes(userVal)){
+      input.classList.add('correct');
+      correct++;
+    } else {
+      input.classList.add('wrong');
+      input.title = "Richtig: " + (item.split ? item.split[blankIdx] : item.ans.join(" / "));
+    }
+  });
+
+  const resultBox = document.getElementById('result' + exId.slice(2));
+  resultBox.classList.add('show');
+  const percent = Math.round((correct/total)*100);
+  resultBox.textContent = `${correct} / ${total} richtig (${percent}%)`;
+  resultBox.className = 'result-box show ' + (percent >= 70 ? 'good' : 'bad');
+}
+
+/* ===================== TABS ===================== */
+
+function showTab(idx){
+  document.querySelectorAll('.tab-content').forEach((el,i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('nav.tabs button').forEach((btn,i) => {
+    btn.classList.toggle('active', i === idx);
+  });
+  window.scrollTo({top: 0, behavior:'smooth'});
+}
+
+</script>
+
+</body>
+</html>

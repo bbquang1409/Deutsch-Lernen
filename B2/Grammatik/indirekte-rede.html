@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indirekte Rede – B2</title>
+<style>
+  :root {
+    --accent: #0369a1;
+    --accent-light: #e0f2fe;
+    --accent-dark: #0c4a6e;
+    --bg: #f0f9ff;
+    --card: #ffffff;
+    --text: #1f2937;
+    --text-light: #6b7280;
+    --border: #bae6fd;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --purple: #7c3aed;
+    --purple-bg: #ede9fe;
+    --orange: #d97706;
+    --orange-bg: #fef3c7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding-bottom: 30px;
+  }
+  header {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9);
+    color: white;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  header h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  header p { font-size: 0.85rem; opacity: 0.9; }
+
+  .tabs {
+    display: flex;
+    position: sticky;
+    top: 0;
+    background: var(--card);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    z-index: 100;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 6px;
+    border: none;
+    background: var(--card);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+  }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #e0f2fe;
+    position: sticky;
+    top: 45px;
+    z-index: 99;
+    border-bottom: 1px solid var(--border);
+  }
+  .subtab-btn {
+    padding: 6px 12px;
+    border: 2px solid var(--border);
+    background: white;
+    color: var(--text-light);
+    border-radius: 16px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .subtab-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 14px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .subtab-content { display: none; animation: fadeIn 0.25s; }
+  .subtab-content.active { display: block; }
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+  .lek-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  .group-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .group-card h3 {
+    font-size: 1.05rem;
+    color: var(--accent-dark);
+    margin-bottom: 8px;
+  }
+
+  .satz-box {
+    background: #f0f9ff;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    font-size: 0.95rem;
+    border-left: 4px solid var(--border);
+    overflow-x: auto;
+  }
+  .direkt { color: var(--blue); font-weight: 700; background: var(--blue-bg); padding: 1px 5px; border-radius: 4px; }
+  .indirekt { color: var(--purple); font-weight: 700; background: var(--purple-bg); padding: 1px 5px; border-radius: 4px; }
+  .konj1 { color: var(--accent); font-weight: 700; background: var(--accent-light); padding: 1px 5px; border-radius: 4px; }
+  .verb { color: var(--red); font-weight: 700; background: var(--red-bg); padding: 1px 5px; border-radius: 4px; }
+  .subj { color: var(--green); font-weight: 700; background: var(--green-bg); padding: 1px 5px; border-radius: 4px; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8rem;
+    margin: 10px 0; padding: 8px; background: #f9fafb; border-radius: 8px;
+  }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  .merksatz {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 0.92rem;
+  }
+  .merksatz b { color: var(--accent-dark); }
+
+  .warning-box {
+    background: var(--red-bg);
+    border: 2px solid var(--red);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 12px 0;
+  }
+  .warning-box h4 { color: var(--red); margin-bottom: 6px; font-size: 1rem; }
+
+  .konjugation-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.88rem; }
+  .konjugation-table th { background: var(--accent); color: white; padding: 8px 6px; text-align: left; }
+  .konjugation-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .konjugation-table tr:nth-child(even) { background: #f0f9ff; }
+  .k1-form { color: var(--accent-dark); font-weight: 700; }
+  .ersatz { color: var(--orange); font-style: italic; }
+
+  .compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
+  .compare-table th { background: var(--accent); color: white; padding: 8px 6px; text-align: left; }
+  .compare-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:nth-child(even) { background: #f0f9ff; }
+
+  .pronomen-box {
+    display: flex; align-items: center; gap: 8px;
+    background: #f0f9ff; border-radius: 8px; padding: 10px; margin: 6px 0; flex-wrap: wrap;
+  }
+  .pronomen-from { background: var(--blue-bg); color: var(--blue); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
+  .pronomen-arrow { color: var(--text-light); font-size: 1.2rem; }
+  .pronomen-to { background: var(--purple-bg); color: var(--purple); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
+  .pronomen-note { font-size: 0.82rem; color: var(--text-light); }
+
+  /* Mini-Quiz */
+  .mini-quiz {
+    background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+    border: 2px dashed var(--green);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 14px 0;
+  }
+  .mini-quiz h4 {
+    color: var(--green);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mq-item {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #d1fae5;
+  }
+  .mq-num { color: var(--green); font-weight: 700; margin-right: 4px; }
+  .mq-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .mq-opt {
+    padding: 5px 11px; border: 2px solid #d1fae5; border-radius: 8px;
+    background: #f0fdfa; cursor: pointer; font-size: 0.88rem;
+  }
+  .mq-opt:hover { border-color: var(--green); }
+  .mq-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 700; }
+  .mq-opt.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .mq-opt.disabled { pointer-events: none; opacity: 0.6; }
+  .mq-fb { margin-top: 6px; padding: 6px 8px; border-radius: 6px; font-size: 0.82rem; display: none; }
+  .mq-fb.show { display: block; }
+  .mq-fb.correct-fb { background: var(--green-bg); color: var(--green); }
+  .mq-fb.wrong-fb { background: var(--red-bg); color: var(--red); }
+  .mq-result { text-align:center; font-weight:700; color: var(--green); margin-top: 6px; font-size: 0.85rem; }
+
+  /* Exercises */
+  .ex-block-desc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; padding: 8px 12px; background: var(--accent-light); border-radius: 8px; }
+  .ex-item { background: var(--card); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .ex-num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+  .ex-question { margin-bottom: 8px; font-size: 0.95rem; }
+  .ex-options { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ex-opt { padding: 6px 12px; border: 2px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-size: 0.88rem; }
+  .ex-opt:hover { border-color: var(--accent); }
+  .ex-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 700; }
+  .ex-opt.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .ex-opt.disabled { pointer-events: none; opacity: 0.6; }
+  .ex-feedback { margin-top: 8px; padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; display: none; }
+  .ex-feedback.show { display: block; }
+  .ex-feedback.correct-fb { background: var(--green-bg); color: var(--green); }
+  .ex-feedback.wrong-fb { background: var(--red-bg); color: var(--red); }
+
+  .score-bar {
+    position: sticky; bottom: 0; background: var(--card);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08); padding: 10px 16px; text-align: center;
+    font-weight: 700; color: var(--accent-dark); border-radius: 12px 12px 0 0; margin-top: 16px;
+  }
+  .reset-btn {
+    display: block; margin: 16px auto; background: white; border: 2px solid var(--accent);
+    color: var(--accent-dark); padding: 8px 20px; border-radius: 20px; font-weight: 600; cursor: pointer;
+  }
+  .footer-sig { text-align: center; color: var(--text-light); font-size: 0.8rem; margin-top: 30px; padding: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💬 Indirekte Rede – B2</h1>
+  <p>Konjunktiv I · Aussagen weitergeben · Er sagt, er sei...</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchMainTab('erklarung', event)">📘 Erklärung</button>
+  <button class="tab-btn" onclick="switchMainTab('uebungen', event)">✏️ Übungen</button>
+  <button class="tab-btn" onclick="switchMainTab('test', event)">⚡ Schnelltest</button>
+</div>
+
+<div class="subtabs" id="subtabs-erklarung">
+  <button class="subtab-btn active" onclick="switchSubTab('erklarung','e1',this)">Was ist das?</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e2',this)">Konjunktiv I bilden</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e3',this)">Ersatzformen</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e4',this)">Pronomen ändern</button>
+  <button class="subtab-btn" onclick="switchSubTab('erklarung','e5',this)">Fragen & Befehle</button>
+</div>
+
+<div class="subtabs" id="subtabs-uebungen" style="display:none;">
+  <button class="subtab-btn active" onclick="switchSubTab('uebungen','u1',this)">Übung 1</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u2',this)">Übung 2</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u3',this)">Übung 3</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u4',this)">Übung 4</button>
+  <button class="subtab-btn" onclick="switchSubTab('uebungen','u5',this)">Übung 5</button>
+</div>
+
+<div class="container">
+
+<!-- ============ TAB 1: ERKLÄRUNG ============ -->
+<div id="erklarung" class="tab-content active">
+
+  <!-- E1: Was ist Indirekte Rede? -->
+  <div id="e1" class="subtab-content active">
+    <div class="lek-badge">Indirekte Rede – Überblick</div>
+    <div class="legend">
+      <span><span class="legend-dot" style="background:var(--blue-bg); border:1px solid var(--blue);"></span>Direkte Rede</span>
+      <span><span class="legend-dot" style="background:var(--purple-bg); border:1px solid var(--purple);"></span>Indirekte Rede</span>
+      <span><span class="legend-dot" style="background:var(--accent-light); border:1px solid var(--accent);"></span>Konjunktiv I</span>
+    </div>
+    <div class="group-card">
+      <h3>Was ist die indirekte Rede?</h3>
+      <p>Die indirekte Rede gibt wieder, was jemand gesagt hat — ohne Anführungszeichen. Man benutzt dafür den <b>Konjunktiv I</b>.</p>
+
+      <div class="satz-box">
+        <b>Direkt:</b> Anna sagt: <span class="direkt">„Ich bin krank."</span>
+      </div>
+      <div class="satz-box">
+        <b>Indirekt:</b> Anna sagt, <span class="indirekt">sie <span class="konj1">sei</span> krank.</span>
+      </div>
+
+      <div class="merksatz">
+        <b>Wann benutzt man die indirekte Rede?</b><br>
+        ✅ In Zeitungen, Nachrichten, Berichten<br>
+        ✅ Im formellen Schreiben (B2 Prüfung!)<br>
+        ✅ Um eine Aussage weiterzugeben, ohne eigene Meinung<br>
+        <br>
+        <b>Einleiteverben:</b> sagen · berichten · erklären · behaupten · meinen · mitteilen
+      </div>
+
+      <div class="satz-box">Der Minister <span class="verb">erklärt</span>, die Lage <span class="konj1">sei</span> unter Kontrolle.</div>
+      <div class="satz-box">Die Zeitung <span class="verb">berichtet</span>, der Zug <span class="konj1">habe</span> Verspätung.</div>
+      <div class="satz-box">Er <span class="verb">meint</span>, das Wetter <span class="konj1">werde</span> besser.</div>
+
+      <div class="merksatz">
+        <b>Mit oder ohne „dass"?</b><br>
+        Beides ist möglich!<br>
+        ✅ Anna sagt, sie <span class="konj1">sei</span> krank. <i>(ohne dass → Verb am Ende NICHT notwendig)</i><br>
+        ✅ Anna sagt, <b>dass</b> sie krank <span class="konj1">sei</span>. <i>(mit dass → Verb am Ende!)</i>
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Direkt oder Indirekt?</h4>
+      <div id="mq1"></div>
+      <div class="mq-result" id="mqResult1"></div>
+    </div>
+  </div>
+
+  <!-- E2: Konjunktiv I bilden -->
+  <div id="e2" class="subtab-content">
+    <div class="lek-badge">Konjunktiv I – Formen</div>
+    <div class="group-card">
+      <h3>Konjunktiv I bilden</h3>
+      <p>Konjunktiv I = <b>Infinitivstamm</b> + Endungen</p>
+
+      <table class="konjugation-table">
+        <tr><th>Pronomen</th><th>Endung</th><th>sein</th><th>haben</th><th>werden</th><th>kommen</th></tr>
+        <tr><td>ich</td><td>-e</td><td class="k1-form">sei</td><td class="k1-form">habe</td><td class="k1-form">werde</td><td class="k1-form">komme</td></tr>
+        <tr><td>du</td><td>-est</td><td class="k1-form">sei(e)st</td><td class="k1-form">habest</td><td class="k1-form">werdest</td><td class="k1-form">kommest</td></tr>
+        <tr><td>er/sie/es</td><td>-e</td><td class="k1-form">sei</td><td class="k1-form">habe</td><td class="k1-form">werde</td><td class="k1-form">komme</td></tr>
+        <tr><td>wir</td><td>-en</td><td class="k1-form">seien</td><td class="k1-form">haben</td><td class="k1-form">werden</td><td class="k1-form">kommen</td></tr>
+        <tr><td>ihr</td><td>-et</td><td class="k1-form">seiet</td><td class="k1-form">habet</td><td class="k1-form">werdet</td><td class="k1-form">kommet</td></tr>
+        <tr><td>sie/Sie</td><td>-en</td><td class="k1-form">seien</td><td class="k1-form">haben</td><td class="k1-form">werden</td><td class="k1-form">kommen</td></tr>
+      </table>
+
+      <div class="merksatz">
+        <b>Wichtigste Formen für B2:</b><br>
+        ✅ <b>sein → sei</b> (3. Person Singular) — am häufigsten!<br>
+        ✅ <b>haben → habe</b><br>
+        ✅ <b>werden → werde</b><br>
+        ✅ Alle anderen Verben: Stamm + -e (er <span class="konj1">komme</span>, sie <span class="konj1">sage</span>, er <span class="konj1">arbeite</span>)
+      </div>
+
+      <div class="satz-box">Er sagt, er <span class="konj1">sei</span> Arzt. <i>(sein → sei)</i></div>
+      <div class="satz-box">Sie berichtet, sie <span class="konj1">habe</span> keine Zeit. <i>(haben → habe)</i></div>
+      <div class="satz-box">Er meint, das Projekt <span class="konj1">werde</span> fertig. <i>(werden → werde)</i></div>
+      <div class="satz-box">Sie sagt, sie <span class="konj1">komme</span> morgen. <i>(kommen → komme)</i></div>
+
+      <div class="warning-box">
+        <h4>⚠️ Vergangenheit in der indirekten Rede</h4>
+        <p>Vergangenes = <b>Konjunktiv I von „haben/sein" + Partizip II</b></p>
+        <div class="satz-box" style="margin-top:8px;">Er sagt: „Ich habe gearbeitet." → Er sagt, er <span class="konj1">habe</span> gearbeitet.</div>
+        <div class="satz-box">Sie sagt: „Ich bin gefahren." → Sie sagt, sie <span class="konj1">sei</span> gefahren.</div>
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Richtige Konjunktiv-I-Form wählen</h4>
+      <div id="mq2"></div>
+      <div class="mq-result" id="mqResult2"></div>
+    </div>
+  </div>
+
+  <!-- E3: Ersatzformen mit würde -->
+  <div id="e3" class="subtab-content">
+    <div class="lek-badge">Ersatzformen – Konjunktiv II statt I</div>
+    <div class="group-card">
+      <h3>Wenn Konjunktiv I = Indikativ → Konjunktiv II benutzen!</h3>
+      <p>Problem: Manchmal sieht Konjunktiv I genauso aus wie der normale Indikativ. Dann ist die indirekte Rede nicht klar — man benutzt <b>Konjunktiv II</b> als Ersatz.</p>
+
+      <table class="compare-table">
+        <tr><th>Pronomen</th><th>Indikativ</th><th>Konj. I</th><th>Gleich?</th><th>→ Ersatz</th></tr>
+        <tr><td>ich</td><td>komme</td><td class="k1-form">komme</td><td>❌ gleich!</td><td class="ersatz">würde kommen</td></tr>
+        <tr><td>du</td><td>kommst</td><td class="k1-form">kommest</td><td>✅ anders</td><td>—</td></tr>
+        <tr><td>er/sie</td><td>kommt</td><td class="k1-form">komme</td><td>✅ anders</td><td>—</td></tr>
+        <tr><td>wir</td><td>kommen</td><td class="k1-form">kommen</td><td>❌ gleich!</td><td class="ersatz">würden kommen</td></tr>
+        <tr><td>ihr</td><td>kommt</td><td class="k1-form">kommet</td><td>✅ anders</td><td>—</td></tr>
+        <tr><td>sie/Sie</td><td>kommen</td><td class="k1-form">kommen</td><td>❌ gleich!</td><td class="ersatz">würden kommen</td></tr>
+      </table>
+
+      <div class="merksatz">
+        <b>Faustregel für B2:</b><br>
+        3. Person Singular (er/sie/es) → fast immer Konjunktiv I ✅<br>
+        Alle anderen → oft Konjunktiv II (würde + Infinitiv) ✅<br>
+        <b>sein</b> ist immer klar: ich <span class="k1-form">sei</span>, wir <span class="k1-form">seien</span> → kein Problem!
+      </div>
+
+      <div class="satz-box">Er sagt, er <span class="konj1">komme</span> morgen. ✅ <i>(er/sie → klar)</i></div>
+      <div class="satz-box">Sie sagen, sie <span class="ersatz">würden</span> morgen <span class="ersatz">kommen</span>. ✅ <i>(sie → kommen = Indikativ → Ersatz!)</i></div>
+      <div class="satz-box">Ich sage, ich <span class="ersatz">würde</span> morgen <span class="ersatz">kommen</span>. ✅ <i>(ich → komme = Indikativ → Ersatz!)</i></div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Konjunktiv I oder Ersatzform?</h4>
+      <div id="mq3"></div>
+      <div class="mq-result" id="mqResult3"></div>
+    </div>
+  </div>
+
+  <!-- E4: Pronomen ändern -->
+  <div id="e4" class="subtab-content">
+    <div class="lek-badge">Pronomen & Zeitangaben anpassen</div>
+    <div class="group-card">
+      <h3>Pronomen ändern sich!</h3>
+      <p>Wenn man eine Aussage wiedergibt, müssen Pronomen und manchmal Zeitangaben angepasst werden.</p>
+
+      <h3 style="margin-top:12px;">Personalpronomen</h3>
+      <div class="pronomen-box">
+        <span class="pronomen-from">„Ich bin müde."</span>
+        <span class="pronomen-arrow">→</span>
+        <span class="pronomen-to">Er sagt, er sei müde.</span>
+        <span class="pronomen-note">(ich → er)</span>
+      </div>
+      <div class="pronomen-box">
+        <span class="pronomen-from">„Wir kommen heute."</span>
+        <span class="pronomen-arrow">→</span>
+        <span class="pronomen-to">Sie sagen, sie würden heute kommen.</span>
+        <span class="pronomen-note">(wir → sie)</span>
+      </div>
+      <div class="pronomen-box">
+        <span class="pronomen-from">„Du hast Recht."</span>
+        <span class="pronomen-arrow">→</span>
+        <span class="pronomen-to">Er sagt, ich hätte Recht.</span>
+        <span class="pronomen-note">(du → ich — je nach Kontext!)</span>
+      </div>
+
+      <h3 style="margin-top:12px;">Zeitangaben & Ortsangaben</h3>
+      <table class="compare-table">
+        <tr><th>Direkte Rede</th><th>Indirekte Rede</th></tr>
+        <tr><td>heute</td><td>an dem Tag / damals</td></tr>
+        <tr><td>morgen</td><td>am nächsten Tag / tags darauf</td></tr>
+        <tr><td>gestern</td><td>am Tag zuvor / tags davor</td></tr>
+        <tr><td>jetzt</td><td>damals / zu dem Zeitpunkt</td></tr>
+        <tr><td>hier</td><td>dort / da</td></tr>
+        <tr><td>dieser</td><td>jener / der</td></tr>
+      </table>
+
+      <div class="merksatz">
+        <b>Wichtig für B2:</b> Im Alltag und in der Prüfung genügt oft die einfache Pronomenänderung. Die Zeitangaben werden nur geändert, wenn die Zeit wirklich anders ist (Zeitungsbericht über Ereignisse in der Vergangenheit).
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Welches Pronomen ist richtig?</h4>
+      <div id="mq4"></div>
+      <div class="mq-result" id="mqResult4"></div>
+    </div>
+  </div>
+
+  <!-- E5: Fragen und Befehle -->
+  <div id="e5" class="subtab-content">
+    <div class="lek-badge">Indirekte Fragen & Aufforderungen</div>
+    <div class="group-card">
+      <h3>Indirekte Fragen</h3>
+      <p>Fragen in der indirekten Rede leitet man mit <b>ob</b> (Ja/Nein-Fragen) oder dem <b>Fragewort</b> (W-Fragen) ein. Das Verb steht am Ende.</p>
+
+      <div class="satz-box">
+        Direkt: „<span class="direkt">Kommst du morgen?</span>"<br>
+        Indirekt: Er fragt, <span class="indirekt">ob ich morgen <span class="konj1">komme</span>.</span>
+      </div>
+      <div class="satz-box">
+        Direkt: „<span class="direkt">Wo wohnst du?</span>"<br>
+        Indirekt: Sie fragt, <span class="indirekt">wo ich <span class="konj1">wohne</span>.</span>
+      </div>
+      <div class="satz-box">
+        Direkt: „<span class="direkt">Wann kommt der Zug?</span>"<br>
+        Indirekt: Er fragt, <span class="indirekt">wann der Zug <span class="konj1">komme</span>.</span>
+      </div>
+
+      <h3 style="margin-top:12px;">Indirekte Aufforderungen (Befehle)</h3>
+      <p>Befehle in der indirekten Rede → <b>sollen</b> + Infinitiv</p>
+
+      <div class="satz-box">
+        Direkt: „<span class="direkt">Komm sofort!</span>"<br>
+        Indirekt: Er sagt, ich <span class="indirekt"><span class="konj1">solle</span> sofort kommen.</span>
+      </div>
+      <div class="satz-box">
+        Direkt: „<span class="direkt">Mach das Fenster zu!</span>"<br>
+        Indirekt: Sie sagt, er <span class="indirekt"><span class="konj1">solle</span> das Fenster zumachen.</span>
+      </div>
+
+      <div class="merksatz">
+        <b>Zusammenfassung:</b><br>
+        Aussage → Konjunktiv I (er <span class="konj1">sei</span>, sie <span class="konj1">komme</span>...)<br>
+        Ja/Nein-Frage → <b>ob</b> + Verb am Ende<br>
+        W-Frage → <b>Fragewort</b> + Verb am Ende<br>
+        Befehl → <b>sollen</b> + Infinitiv
+      </div>
+    </div>
+
+    <div class="mini-quiz">
+      <h4>🎯 Frage oder Befehl — richtig umformen</h4>
+      <div id="mq5"></div>
+      <div class="mq-result" id="mqResult5"></div>
+    </div>
+  </div>
+
+</div><!-- /erklarung -->
+
+<!-- ============ TAB 2: ÜBUNGEN ============ -->
+<div id="uebungen" class="tab-content">
+  <div id="u1" class="subtab-content active">
+    <div class="ex-block-desc">📝 Übung 1 — Grundlagen: Richtige Konjunktiv-I-Form der 3. Person (er/sie/es) erkennen.</div>
+    <div id="block1"></div>
+  </div>
+  <div id="u2" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 2 — Direkte Rede → Indirekte Rede umformen (Aussagen).</div>
+    <div id="block2"></div>
+  </div>
+  <div id="u3" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 3 — Konjunktiv I oder Ersatzform (würde + Inf.)? Kontext: Zeitung, Bericht.</div>
+    <div id="block3"></div>
+  </div>
+  <div id="u4" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 4 — Indirekte Fragen (ob / Fragewort) und Aufforderungen (sollen).</div>
+    <div id="block4"></div>
+  </div>
+  <div id="u5" class="subtab-content">
+    <div class="ex-block-desc">📝 Übung 5 — Mix: Alles gemischt, schwieriger. Zeitungsstil, Vergangenheit, Pronomen.</div>
+    <div id="block5"></div>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">🔄 Zurücksetzen</button>
+  <div class="score-bar" id="scoreBar">Punkte: 0 / 65</div>
+</div>
+
+<!-- ============ TAB 3: SCHNELLTEST ============ -->
+<div id="test" class="tab-content">
+  <div class="ex-block-desc">⚡ 15 Fragen — alles gemischt: Formen, Umformungen, Fragen, Befehle.</div>
+  <div id="testBlock"></div>
+  <button class="reset-btn" onclick="resetAll()">🔄 Zurücksetzen</button>
+  <div class="score-bar" id="testScoreBar">Punkte: 0 / 15</div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer-sig">Made with ♥ by Bảo Quang</div>
+
+<script>
+function switchMainTab(id, event) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('subtabs-erklarung').style.display = (id === 'erklarung') ? 'flex' : 'none';
+  document.getElementById('subtabs-uebungen').style.display = (id === 'uebungen') ? 'flex' : 'none';
+}
+function switchSubTab(mainId, subId, btn) {
+  const main = document.getElementById(mainId);
+  main.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(subId).classList.add('active');
+  btn.parentElement.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ============ MINI-QUIZ DATA ============
+const mq1 = [
+  {q:'Welcher Satz ist Indirekte Rede?', opts:['Anna sagt: „Ich bin krank."','Anna sagt, sie sei krank.','Anna ist krank.'], correct:1, fb:'Indirekte Rede: kein Anführungszeichen, Konjunktiv I (sei).'},
+  {q:'Welches ist das richtige Einleiteverb für Indirekte Rede?', opts:['gehen','behaupten','schlafen'], correct:1, fb:'Einleiteverben: sagen, berichten, erklären, behaupten, meinen.'},
+  {q:'Der Zeuge sagt, er ___ den Täter gesehen. Was passt?', opts:['hat','habe','haben'], correct:1, fb:'Konjunktiv I: haben → habe (3. Person Sing.)'},
+  {q:'Welcher Satz benutzt Konjunktiv I korrekt?', opts:['Er sagt, er ist müde.','Er sagt, er sei müde.','Er sagt, er war müde.'], correct:1, fb:'\"sei\" ist Konjunktiv I von \"sein\" (3. Person Singular).'},
+  {q:'Die Zeitung berichtet, das Wetter ___ besser werden. Was passt?', opts:['wird','werde','werden'], correct:1, fb:'Konjunktiv I: werden → werde.'}
+];
+
+const mq2 = [
+  {q:'„Er schläft." — Konjunktiv I: Er ___', opts:['schlafe','schläft','schliefe'], correct:0, fb:'Stamm \"schlaf\" + -e = schlafe (Konjunktiv I).'},
+  {q:'„Sie hat keine Zeit." — Indirekte Rede: Sie ___ keine Zeit.', opts:['hat','habe','hätte'], correct:1, fb:'haben → habe (Konjunktiv I, 3. Pers. Sing.).'},
+  {q:'„Er ist Arzt." — Indirekte Rede: Er ___  Arzt.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (Konjunktiv I, wichtigste Form!).'},
+  {q:'„Sie kommt morgen." — Indirekte Rede: Sie ___ morgen.', opts:['kommt','komme','käme'], correct:1, fb:'kommen → komme (Stamm + -e).'},
+  {q:'Vergangenheit: „Er hat gearbeitet." → Er ___ gearbeitet.', opts:['hat','habe','hatte'], correct:1, fb:'Vergangenheit in indir. Rede: habe + Partizip II.'}
+];
+
+const mq3 = [
+  {q:'Er sagt, er ___ kommen. (3. Person → klar)', opts:['würde','komme','käme'], correct:1, fb:'3. Person Singular: „komme" ≠ „kommt" → Konjunktiv I möglich!'},
+  {q:'Sie sagen, sie ___ kommen. (Plural = Indikativ!)', opts:['kommen','seien','würden kommen'], correct:2, fb:'„kommen" (Konj. I) = „kommen" (Indikativ) → Ersatz: „würden kommen".'},
+  {q:'Ich sage, ich ___ morgen Zeit haben.', opts:['habe','würde Zeit haben','hätte'], correct:1, fb:'„habe" (Konj. I 1. Pers.) = „habe" (Indikativ) → Ersatz nötig.'},
+  {q:'Er sagt, er ___ das Buch gelesen. (Vergangenheit)', opts:['hat','habe','hätte'], correct:1, fb:'Vergangenheit: habe + Partizip II → „er habe... gelesen".'},
+  {q:'Wir sagen, wir ___ nicht dabei. (sein, Plural)', opts:['seien','wären','würden sein'], correct:0, fb:'sein-Formen sind immer klar: wir seien ≠ wir sind → kein Ersatz nötig!'}
+];
+
+const mq4 = [
+  {q:'Tom sagt: „Ich bin müde." → Tom sagt, ___ sei müde.', opts:['ich','er','wir'], correct:1, fb:'Tom spricht über sich → in indir. Rede: er (3. Pers. Sing.)'},
+  {q:'Maria sagt: „Wir kommen morgen." → Maria sagt, ___ würden morgen kommen.', opts:['wir','sie','ich'], correct:1, fb:'Maria + Gruppe → sie (3. Pers. Plural).'},
+  {q:'Der Chef sagt zu mir: „Du machst das gut." → Er sagt, ___ mache das gut.', opts:['du','er','ich'], correct:2, fb:'Der Chef sagt das zu mir (ich) → ich mache.'},
+  {q:'Lisa sagt: „Mein Auto ist kaputt." → Lisa sagt, ___ Auto sei kaputt.', opts:['mein','ihr','sein'], correct:1, fb:'Lisa ist weiblich → ihr Auto.'},
+  {q:'Jan sagt: „Ich habe das vergessen." → Jan sagt, ___ habe das vergessen.', opts:['ich','er','sie'], correct:1, fb:'Jan (männlich, 3. Pers.) → er habe.'}
+];
+
+const mq5 = [
+  {q:'„Kommst du morgen?" → Er fragt, ___ ich morgen komme.', opts:['dass','ob','wenn'], correct:1, fb:'Ja/Nein-Frage → „ob" in der indirekten Rede.'},
+  {q:'„Wo wohnst du?" → Sie fragt, ___ ich wohne.', opts:['ob','wo','dass'], correct:1, fb:'W-Frage → Fragewort (wo) übernehmen.'},
+  {q:'„Mach die Tür zu!" → Er sagt, ich ___ die Tür zumachen.', opts:['soll','solle','muss'], correct:1, fb:'Aufforderung → solle (Konjunktiv I von sollen).'},
+  {q:'„Wann kommt der Zug?" → Er fragt, wann der Zug ___.', opts:['kommt','komme','kommen'], correct:1, fb:'Indirekte Frage: Verb am Ende im Konjunktiv I.'},
+  {q:'„Bitte komm pünktlich!" → Sie bittet, er ___ pünktlich kommen.', opts:['muss','soll','solle'], correct:2, fb:'Bitte/Befehl indirekt → solle (Konjunktiv I von sollen).'}
+];
+
+// ============ ÜBUNGEN DATA (5 × 13) ============
+const block1 = [
+  {q:'„Er schreibt einen Brief." → Er ___ einen Brief.', opts:['schreibt','schreibe','schriebe'], correct:1, fb:'schreiben → schreibe (Stamm + -e, Konjunktiv I).'},
+  {q:'„Sie ist Lehrerin." → Sie ___ Lehrerin.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (häufigste Konjunktiv-I-Form!).'},
+  {q:'„Er hat Hunger." → Er ___ Hunger.', opts:['hat','habe','hätte'], correct:1, fb:'haben → habe (Konjunktiv I, 3. Pers. Sing.).'},
+  {q:'„Das Wetter wird besser." → Das Wetter ___ besser.', opts:['wird','werde','würde'], correct:1, fb:'werden → werde (Konjunktiv I).'},
+  {q:'„Sie arbeitet viel." → Sie ___ viel.', opts:['arbeitet','arbeite','arbeitete'], correct:1, fb:'arbeiten → arbeite (Stamm + -e).'},
+  {q:'„Er kommt um 8 Uhr." → Er ___ um 8 Uhr.', opts:['kommt','komme','käme'], correct:1, fb:'kommen → komme (Konjunktiv I).'},
+  {q:'„Das Konzert beginnt um 20 Uhr." → Das Konzert ___ um 20 Uhr.', opts:['beginnt','beginne','begänne'], correct:1, fb:'beginnen → beginne.'},
+  {q:'„Er fährt nach Berlin." → Er ___ nach Berlin.', opts:['fährt','fahre','führe'], correct:1, fb:'fahren → fahre (NICHT: fährt — das ist Indikativ!).'},
+  {q:'„Sie liest viel." → Sie ___ viel.', opts:['liest','lese','läse'], correct:1, fb:'lesen → lese (keine Vokaländerung im Konjunktiv I).'},
+  {q:'„Es gibt ein Problem." → Es ___ ein Problem.', opts:['gibt','gebe','gäbe'], correct:1, fb:'geben → gebe (Konjunktiv I, kein Umlaut!).'},
+  {q:'„Er sieht gut aus." → Er ___ gut aus.', opts:['sieht','sehe','sähe'], correct:1, fb:'sehen → sehe (kein ie im Konjunktiv I).'},
+  {q:'„Das Essen schmeckt gut." → Das Essen ___ gut.', opts:['schmeckt','schmecke','schmeckte'], correct:1, fb:'schmecken → schmecke.'},
+  {q:'„Er ist schon fertig." → Er ___ schon fertig.', opts:['ist','sei','war'], correct:1, fb:'sein → sei (3. Person Singular, immer eindeutig!).'}
+];
+
+const block2 = [
+  {q:'„Ich bin glücklich." — Anna sagt, sie ___ glücklich.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (Anna = sie, 3. Pers. Sing.).'},
+  {q:'„Ich habe das Buch gelesen." — Er sagt, er ___ das Buch gelesen.', opts:['hat','habe','hätte'], correct:1, fb:'Vergangenheit: habe + Partizip II.'},
+  {q:'„Wir kommen morgen." — Sie sagen, sie ___ morgen. (Plural)', opts:['kommen','würden kommen','kämen'], correct:1, fb:'kommen (Konj. I Plural) = kommen (Indikativ) → Ersatz: würden kommen.'},
+  {q:'„Ich arbeite zu Hause." — Sie sagt, sie ___ zu Hause.', opts:['arbeitet','arbeite','würde arbeiten'], correct:1, fb:'arbeiten → arbeite (3. Pers. Sing. ist eindeutig).'},
+  {q:'„Das ist nicht mein Fehler." — Er behauptet, das ___ nicht sein Fehler.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei.'},
+  {q:'„Ich habe keine Ahnung." — Sie erklärt, sie ___ keine Ahnung.', opts:['hat','habe','hätte'], correct:1, fb:'haben → habe.'},
+  {q:'„Er schläft noch." — Die Mutter sagt, er ___ noch.', opts:['schläft','schlafe','schliefe'], correct:1, fb:'schlafen → schlafe (kein Umlaut im Konj. I).'},
+  {q:'„Ich bin gestern angekommen." — Er sagt, er ___ gestern angekommen.', opts:['ist','sei','wäre'], correct:1, fb:'Vergangenheit mit sein: sei + Partizip II = sei angekommen.'},
+  {q:'„Das Projekt ist fertig." — Sie berichtet, das Projekt ___ fertig.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei.'},
+  {q:'„Ich verstehe das nicht." — Er sagt, er ___ das nicht.', opts:['versteht','verstehe','verstünde'], correct:1, fb:'verstehen → verstehe (Konj. I, 3. Pers.).'},
+  {q:'„Wir haben gewonnen!" — Sie rufen, sie ___ gewonnen.', opts:['haben','hätten','würden haben'], correct:0, fb:'seien = sein Konj. I Plural, haben = haben Konj. I Plural — hier auch möglich. Aber: hätten = Konj. II. In Berichten bevorzugt man Konj. I: hätten wäre Konj. II, haben = Konj. I Plural (eindeutig nur wenn = Indikativ, aber hier akzeptiert).'},
+  {q:'„Ich kann nicht kommen." — Sie sagt, sie ___ nicht kommen.', opts:['kann','könne','könnte'], correct:1, fb:'können → könne (Konjunktiv I, 3. Pers. Sing.).'},
+  {q:'„Das Wetter ist heute schön." — Die App sagt, das Wetter ___ heute schön.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (3. Pers. Sing., immer klar).'}
+];
+
+const block3 = [
+  {q:'Die Zeitung berichtet, der Minister ___ zurückgetreten. (sein, Vergangenheit)', opts:['ist','sei','wäre'], correct:1, fb:'Vergangenheit: sein → sei + Partizip II.'},
+  {q:'Er sagt, ich ___ ihm helfen. (Ersatz nötig! — ich + helfen)', opts:['helfe','würde helfen','hälfe'], correct:1, fb:'helfen (Konj. I 1. Pers.) = helfe = Indikativ → Ersatz: würde helfen.'},
+  {q:'Die Behörde teilt mit, alle Bürger ___ informiert. (werden Passiv)', opts:['werden','würden informiert werden','seien informiert'], correct:1, fb:'werden Plural (Konj. I) = werden (Indikativ) → Ersatz.'},
+  {q:'Er behauptet, er ___ das nie gesagt. (haben, Vergangenheit)', opts:['hat','habe','hätte'], correct:1, fb:'Vergangenheit: habe + Partizip II (nie gesagt).'},
+  {q:'Die Firma erklärt, sie ___ das Problem lösen. (wir → sie, Plural)', opts:['würden lösen','lösen','lösten'], correct:0, fb:'lösen (Konj. I Plural) = lösen (Indikativ) → Ersatz: würden lösen.'},
+  {q:'Der Arzt sagt, der Patient ___ sich erholen. (müssen, 3. Pers.)', opts:['muss','müsse','müsste'], correct:1, fb:'müssen → müsse (Konjunktiv I, 3. Pers.).'},
+  {q:'Die Studie zeigt, Kaffee ___ gesund sein. (können)', opts:['kann','könne','könnte'], correct:1, fb:'können → könne (Konjunktiv I, 3. Pers. Sing.).'},
+  {q:'Er sagt, wir ___ zu spät. (sein, Plural — kein Ersatz nötig!)', opts:['sind','seien','wären'], correct:1, fb:'sein hat klare Konj.-I-Formen: wir seien ≠ wir sind → kein Ersatz!'},
+  {q:'Die Nachricht lautet, das Konzert ___ abgesagt. (sein, Passiv)', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (3. Pers. Sing., Passiv Zustand).'},
+  {q:'Er erklärt, er ___ keine Zeit haben. (ich-Form)', opts:['habe','würde Zeit haben','hätte'], correct:1, fb:'habe (Konj. I 1. Pers.) = habe (Indikativ) → Ersatz: würde... haben.'},
+  {q:'Der Sprecher sagt, die Lage ___ unter Kontrolle. (sein)', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (3. Pers. Sing.).'},
+  {q:'Er berichtet, die Zahlen ___ gestiegen. (sein, Plural)', opts:['sind','seien','wären'], correct:1, fb:'sein Plural: seien ≠ sind → kein Ersatz!'},
+  {q:'Sie meint, ich ___ das missverstanden. (haben, Vergangenheit, 1. Pers.)', opts:['habe','hätte','würde haben'], correct:1, fb:'Vergangenheit (haben Konj. I 1. Pers.) = habe = Indikativ → Ersatz: hätte... missverstanden — Konj. II hier auch akzeptiert. Streng: würde haben.'}
+];
+
+const block4 = [
+  {q:'„Kommst du heute?" → Er fragt, ___ ich heute komme.', opts:['dass','ob','wenn'], correct:1, fb:'Ja/Nein-Frage → ob.'},
+  {q:'„Wo wohnst du?" → Sie fragt, ___ ich wohne.', opts:['ob','dass','wo'], correct:2, fb:'W-Frage → Fragewort (wo) einleiten.'},
+  {q:'„Geh sofort nach Hause!" → Er sagt, ich ___ sofort nach Hause gehen.', opts:['soll','solle','muss'], correct:1, fb:'Befehl → solle (Konjunktiv I von sollen).'},
+  {q:'„Wann kommt der Arzt?" → Sie fragt, wann der Arzt ___.', opts:['kommt','komme','käme'], correct:1, fb:'Indirekte Frage: Verb am Ende, Konjunktiv I.'},
+  {q:'„Haben Sie das gesehen?" → Er fragt, ob sie das ___.', opts:['gesehen haben','gesehen hätten','gesehen habe'], correct:0, fb:'Indirekte Frage Vergangenheit: haben + Partizip II → gesehen haben (Konj. I Plural).'},
+  {q:'„Bitte ruf mich an!" → Sie bittet, er ___ sie anrufen.', opts:['soll','solle','müsse'], correct:1, fb:'Bitte/Aufforderung → solle.'},
+  {q:'„Warum bist du nicht gekommen?" → Er fragt, warum ich nicht ___.', opts:['gekommen bin','gekommen sei','gekommen wäre'], correct:1, fb:'Vergangenheit mit sein → sei gekommen.'},
+  {q:'„Ist das wahr?" → Sie fragt, ___ das wahr sei.', opts:['ob','was','wann'], correct:0, fb:'Ja/Nein-Frage → ob.'},
+  {q:'„Mach keine Fehler!" → Er sagt, ich ___ keine Fehler machen.', opts:['soll','solle','müsse'], correct:1, fb:'Befehl → solle (Konjunktiv I von sollen).'},
+  {q:'„Wie lange dauert die Reise?" → Sie fragt, wie lange die Reise ___.', opts:['dauert','dauere','dauerte'], correct:1, fb:'Indirekte Frage: Konj. I am Ende.'},
+  {q:'„Kommen Sie bitte früher!" → Er bittet, sie ___ früher kommen.', opts:['sollen','sollten','sollen'], correct:0, fb:'Höfliche Aufforderung: sollen (Konj. I Plural) = sollen — auch: sollten (Konj. II) akzeptiert.'},
+  {q:'„Wo ist die Toilette?" → Der Gast fragt, wo die Toilette ___.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (Konjunktiv I).'},
+  {q:'„Iss mehr Gemüse!" → Der Arzt sagt, er ___ mehr Gemüse essen.', opts:['soll','solle','muss'], correct:1, fb:'Ärztliche Empfehlung als Aufforderung → solle.'}
+];
+
+const block5 = [
+  {q:'Die Zeitung schreibt, der Bürgermeister ___ zurücktreten. (wollen, 3. Pers.)', opts:['will','wolle','wollte'], correct:1, fb:'wollen → wolle (Konjunktiv I, 3. Pers. Sing.).'},
+  {q:'Er sagt: „Ich habe das Geld gefunden." → Er sagt, er ___ das Geld gefunden.', opts:['hat','habe','hätte'], correct:1, fb:'Vergangenheit: habe + Partizip II.'},
+  {q:'„Wir sind schon angekommen." — Sie berichten, sie ___ schon angekommen.', opts:['sind','seien','wären'], correct:1, fb:'sein Plural Konj. I: seien ≠ sind → kein Ersatz!'},
+  {q:'Der Sprecher erklärt, die Preise ___ steigen. (werden, 3. Pers. Plural)', opts:['werden','würden steigen','sollen'], correct:1, fb:'werden Plural (Konj. I) = werden (Indikativ) → Ersatz: würden steigen.'},
+  {q:'Er fragt mich: „Hast du das gemacht?" → Er fragt, ob ich das ___.', opts:['gemacht habe','gemacht hätte','gemacht hatte'], correct:0, fb:'Indirekte Frage, Vergangenheit, 1. Pers.: habe + Partizip II.'},
+  {q:'Der Chef sagt: „Komm pünktlich!" → Er sagt, ich ___ pünktlich kommen.', opts:['soll','solle','müsse'], correct:1, fb:'Aufforderung → solle.'},
+  {q:'Die Studie behauptet, Schlaf ___ wichtig für das Gedächtnis.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (Behauptung im Bericht).'},
+  {q:'Er sagt, er ___ das nicht verstehen. (können, 3. Pers.)', opts:['kann','könne','könnte'], correct:1, fb:'können → könne (Konjunktiv I).'},
+  {q:'Die Kinder sagen, sie ___ schon gegessen. (haben, Plural → Ersatz?)', opts:['haben','hätten','würden gegessen haben'], correct:0, fb:'Vergangenheit: haben (Konj. I Plural) = haben (Indikativ) — hier schwierig. In Prüfungen: hätten als Konj. II Ersatz auch akzeptiert, aber: habe wäre Sing. Streng: würden gegessen haben, aber: haben bleibt in vielen Büchern.'},
+  {q:'Die Polizei berichtet, der Verdächtige ___ geflohen. (sein, Vergangenheit)', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei + Partizip II (sei geflohen).'},
+  {q:'Er erklärt mir: „Das darfst du nicht." → Er erklärt, ich ___ das nicht.', opts:['darf','dürfe','dürfte'], correct:1, fb:'dürfen → dürfe (Konjunktiv I, 3. Pers. — hier: er sagt zu mir, also dürfe ich).'},
+  {q:'Sie berichtet, das Projekt ___ abgeschlossen. (sein, Vergangenheit, Passiv)', opts:['ist','sei','wäre'], correct:1, fb:'Passiv Zustand: sein → sei + Partizip II.'},
+  {q:'„Wo warst du gestern?" → Er fragt, wo ich gestern ___.', opts:['war','sei gewesen','gewesen sei'], correct:2, fb:'Vergangenheit mit sein in indir. Frage: sei gewesen (Konj. I) — Wortstellung: ...wo ich gestern gewesen sei.'}
+];
+
+const testBlock = [
+  {q:'„Er ist krank." — Indirekte Rede: Er ___ krank.', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei (wichtigste Konjunktiv-I-Form!).'},
+  {q:'Die Zeitung schreibt, das Wetter ___ schlechter. (werden)', opts:['wird','werde','würde'], correct:1, fb:'werden → werde (Konjunktiv I, 3. Pers. Sing.).'},
+  {q:'Er sagt: „Ich habe das vergessen." → Er sagt, er ___ das vergessen.', opts:['hat','habe','hätte'], correct:1, fb:'Vergangenheit: habe + Partizip II.'},
+  {q:'„Kommst du morgen?" → Er fragt, ___ ich morgen komme.', opts:['dass','ob','wenn'], correct:1, fb:'Ja/Nein-Frage → ob.'},
+  {q:'„Geh jetzt!" → Er sagt, ich ___ jetzt gehen.', opts:['soll','solle','muss'], correct:1, fb:'Befehl → solle.'},
+  {q:'Sie sagen, sie ___ keine Zeit. (haben, Plural — Ersatz?)', opts:['haben','würden haben','hätten'], correct:1, fb:'haben (Konj. I Plural) = haben (Indikativ) → Ersatz: würden haben.'},
+  {q:'„Wo wohnst du?" → Er fragt, ___ ich wohne.', opts:['ob','wo','dass'], correct:1, fb:'W-Frage → Fragewort behalten.'},
+  {q:'Er behauptet, er ___ das nie gesagt. (haben, Vergangenheit)', opts:['hat','habe','hätte'], correct:1, fb:'Vergangenheit: habe + Partizip II.'},
+  {q:'Die Behörde sagt, alle ___ informiert. (sein, Plural)', opts:['sind','seien','wären'], correct:1, fb:'sein Plural: seien ≠ sind → kein Ersatz!'},
+  {q:'„Sie liest viel." → Sie ___ viel. (Konjunktiv I)', opts:['liest','lese','läse'], correct:1, fb:'lesen → lese (kein Umlaut im Konjunktiv I!).'},
+  {q:'Er meint, das Problem ___ lösbar. (sein)', opts:['ist','sei','wäre'], correct:1, fb:'sein → sei.'},
+  {q:'„Ich kann nicht kommen." → Er sagt, er ___ nicht kommen.', opts:['kann','könne','könnte'], correct:1, fb:'können → könne (Konjunktiv I).'},
+  {q:'„Iss mehr Obst!" → Der Arzt sagt, er ___ mehr Obst essen.', opts:['soll','solle','müsse'], correct:1, fb:'Aufforderung → solle.'},
+  {q:'„Sie ist gestern angekommen." → Man sagt, sie ___ gestern angekommen.', opts:['ist','sei','wäre'], correct:1, fb:'sein Vergangenheit: sei + Partizip II (sei angekommen).'},
+  {q:'Welcher Satz ist KORREKTE indirekte Rede?', opts:['Er sagt, er ist müde.','Er sagt, er sei müde.','Er sagt, er wäre müde.'], correct:1, fb:'Konjunktiv I: sei (nicht Indikativ \"ist\", nicht Konj. II \"wäre\").'}
+];
+
+// ============ RENDER FUNCTIONS ============
+function renderMiniQuiz(containerId, data, resultId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  data.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mq-item';
+    let optsHtml = '';
+    item.opts.forEach((opt, oIdx) => {
+      optsHtml += `<button class="mq-opt" data-correct="${oIdx === item.correct}" onclick="checkMiniAnswer(this,'${containerId}_${idx}','${resultId}',${data.length})">${opt}</button>`;
+    });
+    div.innerHTML = `<div><span class="mq-num">${idx+1}.</span>${item.q}</div><div class="mq-options">${optsHtml}</div><div class="mq-fb" id="mqfb_${containerId}_${idx}">${item.fb}</div>`;
+    container.appendChild(div);
+  });
+}
+
+const miniAnswered = {};
+function checkMiniAnswer(btn, key, resultId, total) {
+  if (miniAnswered.hasOwnProperty(key)) return;
+  const isCorrect = btn.dataset.correct === 'true';
+  miniAnswered[key] = isCorrect;
+  btn.parentElement.querySelectorAll('.mq-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  const fb = btn.parentElement.nextElementSibling;
+  fb.classList.add('show', isCorrect ? 'correct-fb' : 'wrong-fb');
+  const prefix = key.split('_').slice(0,-1).join('_');
+  let correctCount = 0, answeredCount = 0;
+  Object.keys(miniAnswered).forEach(k => {
+    if (k.startsWith(prefix + '_')) { answeredCount++; if (miniAnswered[k]) correctCount++; }
+  });
+  const resEl = document.getElementById(resultId);
+  resEl.textContent = answeredCount === total
+    ? `✅ Fertig! ${correctCount} / ${total} richtig`
+    : `${correctCount} / ${answeredCount} richtig (${total - answeredCount} übrig)`;
+}
+
+function renderBlock(containerId, data, startNum) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  data.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'ex-item';
+    let optsHtml = '';
+    item.opts.forEach((opt, oIdx) => {
+      optsHtml += `<button class="ex-opt" data-correct="${oIdx === item.correct}" onclick="checkAnswer(this,'${containerId}_${idx}')">${opt}</button>`;
+    });
+    div.innerHTML = `<div class="ex-question"><span class="ex-num">${startNum+idx}.</span>${item.q}</div><div class="ex-options">${optsHtml}</div><div class="ex-feedback" id="fb_${containerId}_${idx}">${item.fb}</div>`;
+    container.appendChild(div);
+  });
+}
+
+const answered = {};
+function checkAnswer(btn, key) {
+  if (answered.hasOwnProperty(key)) return;
+  const isCorrect = btn.dataset.correct === 'true';
+  answered[key] = isCorrect;
+  btn.parentElement.querySelectorAll('.ex-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  const fb = btn.parentElement.nextElementSibling;
+  fb.classList.add('show', isCorrect ? 'correct-fb' : 'wrong-fb');
+  updateScore();
+}
+
+function updateScore() {
+  const exTotal = block1.length + block2.length + block3.length + block4.length + block5.length;
+  let exScore = 0, testScore = 0;
+  Object.keys(answered).forEach(k => {
+    if (!answered[k]) return;
+    if (k.startsWith('testBlock_')) testScore++; else exScore++;
+  });
+  document.getElementById('scoreBar').textContent = `Punkte: ${exScore} / ${exTotal}`;
+  document.getElementById('testScoreBar').textContent = `Punkte: ${testScore} / ${testBlock.length}`;
+}
+
+function resetAll() { location.reload(); }
+
+// ============ INIT ============
+renderMiniQuiz('mq1', mq1, 'mqResult1');
+renderMiniQuiz('mq2', mq2, 'mqResult2');
+renderMiniQuiz('mq3', mq3, 'mqResult3');
+renderMiniQuiz('mq4', mq4, 'mqResult4');
+renderMiniQuiz('mq5', mq5, 'mqResult5');
+renderBlock('block1', block1, 1);
+renderBlock('block2', block2, 1);
+renderBlock('block3', block3, 1);
+renderBlock('block4', block4, 1);
+renderBlock('block5', block5, 1);
+renderBlock('testBlock', testBlock, 1);
+</script>
+</body>
+</html>

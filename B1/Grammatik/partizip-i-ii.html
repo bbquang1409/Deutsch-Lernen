@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partizip I & II – Grammatik</title>
+<style>
+  :root {
+    --p1: #2563EB;
+    --p1-light: #EFF6FF;
+    --p1-mid: #BFDBFE;
+    --p2: #7C3AED;
+    --p2-light: #F5F3FF;
+    --p2-mid: #DDD6FE;
+    --mix: #0F766E;
+    --mix-light: #F0FDFA;
+    --hard: #DC2626;
+    --hard-light: #FEF2F2;
+    --success: #16A34A;
+    --warn: #D97706;
+    --bg: #FAFAFA;
+    --card: #FFFFFF;
+    --text: #1E293B;
+    --text-sub: #64748B;
+    --border: #E2E8F0;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: linear-gradient(135deg, var(--p1) 0%, var(--p2) 100%);
+    color: white;
+    padding: 28px 20px 20px;
+    text-align: center;
+  }
+  .site-header h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .site-header p {
+    opacity: 0.85;
+    margin-top: 6px;
+    font-size: 0.9rem;
+  }
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+  }
+
+  /* MAIN TABS */
+  .main-nav {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .main-tab {
+    flex: 1;
+    min-width: 100px;
+    padding: 14px 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .main-tab.active {
+    color: var(--p1);
+    border-bottom-color: var(--p1);
+    background: var(--p1-light);
+  }
+  .main-tab:hover:not(.active) { background: #F8FAFC; }
+
+  /* CONTENT */
+  .page { display: none; padding: 16px; max-width: 780px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* PILL LABELS */
+  .pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .pill-p1 { background: var(--p1-mid); color: var(--p1); }
+  .pill-p2 { background: var(--p2-mid); color: var(--p2); }
+
+  /* FORMULA BOXES */
+  .formula-box {
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 10px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.92rem;
+    line-height: 2;
+  }
+  .formula-box.p1 { background: var(--p1-light); border-left: 4px solid var(--p1); }
+  .formula-box.p2 { background: var(--p2-light); border-left: 4px solid var(--p2); }
+
+  .formula-highlight { font-weight: 800; color: var(--p1); }
+  .formula-highlight.p2 { color: var(--p2); }
+
+  /* EXAMPLE SENTENCES */
+  .ex-de {
+    font-style: italic;
+    font-weight: 600;
+    color: #1E293B;
+    font-size: 1rem;
+  }
+  .ex-vi { color: var(--text-sub); font-size: 0.88rem; margin-top: 2px; }
+  .highlight-p1 { color: var(--p1); font-weight: 800; font-style: normal; }
+  .highlight-p2 { color: var(--p2); font-weight: 800; font-style: normal; }
+
+  /* USAGE TABLE */
+  .usage-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin-top: 8px;
+  }
+  .usage-table th {
+    background: var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .usage-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .usage-table tr:last-child td { border-bottom: none; }
+
+  /* INTERACTIVE EXAMPLES */
+  .verb-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .verb-btn {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.18s;
+  }
+  .verb-btn.active-p1 { border-color: var(--p1); background: var(--p1-light); color: var(--p1); }
+  .verb-btn.active-p2 { border-color: var(--p2); background: var(--p2-light); color: var(--p2); }
+  .verb-btn:hover { border-color: #94A3B8; }
+
+  .demo-box {
+    background: linear-gradient(135deg, var(--p1-light), var(--p2-light));
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .demo-form { font-size: 1.8rem; font-weight: 900; margin-bottom: 4px; }
+  .demo-form.p1-color { color: var(--p1); }
+  .demo-form.p2-color { color: var(--p2); }
+  .demo-label { font-size: 0.78rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+
+  .sentence-list { list-style: none; }
+  .sentence-list li {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .sentence-list li:hover { background: var(--bg); }
+  .sentence-list li.selected { background: var(--p1-light); }
+
+  /* ÜBUNGEN */
+  .uebung-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 400px) {
+    .uebung-nav { grid-template-columns: repeat(3, 1fr); }
+  }
+  .u-tab {
+    padding: 8px 4px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: white;
+    transition: all 0.18s;
+    line-height: 1.3;
+  }
+  .u-tab.done { background: #DCFCE7; border-color: var(--success); color: var(--success); }
+  .u-tab.active-uebung { border-color: var(--p1); background: var(--p1-light); color: var(--p1); }
+
+  /* EXERCISE */
+  .ex-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .ex-type-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .ex-type-p1 { background: var(--p1-mid); color: var(--p1); }
+  .ex-type-p2 { background: var(--p2-mid); color: var(--p2); }
+  .ex-type-mix { background: #CCFBF1; color: var(--mix); }
+  .ex-type-hard { background: #FEE2E2; color: var(--hard); }
+
+  .sentence-item {
+    padding: 12px;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .sentence-item.correct { border-color: var(--success); background: #F0FDF4; }
+  .sentence-item.wrong { border-color: var(--hard); background: var(--hard-light); }
+
+  .sentence-num {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-sub);
+    margin-bottom: 4px;
+  }
+
+  .blank-input {
+    border: none;
+    border-bottom: 2px solid #94A3B8;
+    padding: 2px 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-style: italic;
+    background: transparent;
+    min-width: 80px;
+    color: var(--p1);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .blank-input:focus { border-bottom-color: var(--p1); }
+  .blank-input.correct-inp { color: var(--success); border-bottom-color: var(--success); }
+  .blank-input.wrong-inp { color: var(--hard); border-bottom-color: var(--hard); }
+
+  .feedback-inline {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    font-weight: 600;
+    display: none;
+  }
+  .feedback-inline.show { display: block; }
+  .feedback-inline.ok { color: var(--success); }
+  .feedback-inline.err { color: var(--hard); }
+
+  .ex-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.18s;
+  }
+  .btn-primary { background: var(--p1); color: white; }
+  .btn-primary:hover { background: #1D4ED8; }
+  .btn-secondary { background: white; color: var(--text); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-hard { background: var(--hard); color: white; }
+
+  .score-box {
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .score-box.show { display: block; }
+  .score-perfect { background: #DCFCE7; color: var(--success); }
+  .score-good { background: #FEF9C3; color: #854D0E; }
+  .score-bad { background: var(--hard-light); color: var(--hard); }
+
+  /* SELECT EXERCISES */
+  .select-input {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+    color: var(--p1);
+    font-weight: 700;
+  }
+  .select-input:focus { outline: 2px solid var(--p1); }
+
+  /* DRAG items */
+  .drag-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 10px;
+    border: 2px dashed var(--border);
+    min-height: 50px;
+    margin-bottom: 12px;
+  }
+  .drag-chip {
+    padding: 6px 12px;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-style: italic;
+    cursor: grab;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .drag-chip:hover { background: var(--p1-light); border-color: var(--p1); }
+  .drag-chip.placed { opacity: 0.4; cursor: default; }
+
+  .drop-zone {
+    display: inline-block;
+    min-width: 90px;
+    height: 28px;
+    background: var(--p1-light);
+    border: 2px dashed var(--p1);
+    border-radius: 6px;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 24px;
+    font-size: 0.82rem;
+    color: var(--p1);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .drop-zone.filled {
+    background: var(--p2-light);
+    border-color: var(--p2);
+    color: var(--p2);
+    font-weight: 700;
+    font-style: italic;
+  }
+  .drop-zone.correct-drop { background: #DCFCE7; border-color: var(--success); color: var(--success); }
+  .drop-zone.wrong-drop { background: var(--hard-light); border-color: var(--hard); color: var(--hard); }
+
+  .footer {
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 0.78rem;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Tip box */
+  .tip-box {
+    background: #FFF7ED;
+    border-left: 4px solid #F97316;
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.88rem;
+  }
+  .tip-box strong { color: #C2410C; }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 18px 0 10px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Hard exercise special styles */
+  .combo-sentence {
+    background: #FFF;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .combo-sentence .de-src {
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  @media (max-width: 500px) {
+    .ex-type-badge { font-size: 0.68rem; }
+    .uebung-nav { gap: 4px; }
+    .u-tab { font-size: 0.7rem; padding: 6px 2px; }
+    .formula-box { font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>▶ Partizip I &nbsp;&amp;&nbsp; ✓ Partizip II</h1>
+  <p>Erklärung · Interaktive Beispiele · 7 Übungen</p>
+  <div class="badge-row">
+    <div class="badge">A2 – B1</div>
+    <div class="badge">Grammatik</div>
+    <div class="badge">7 Übungen</div>
+  </div>
+</header>
+
+<!-- MAIN TABS -->
+<nav class="main-nav">
+  <button class="main-tab active" onclick="showPage('erklaerung', this)">📖 Erklärung</button>
+  <button class="main-tab" onclick="showPage('beispiele', this)">🔤 Interaktiv</button>
+  <button class="main-tab" onclick="showPage('uebungen', this)">✏️ Übungen</button>
+</nav>
+
+<!-- ============================================================ -->
+<!-- PAGE 1: ERKLÄRUNG -->
+<!-- ============================================================ -->
+<div id="erklaerung" class="page active">
+
+  <!-- PARTIZIP I -->
+  <div class="section-title">▶ <span style="color:var(--p1)">Partizip I</span></div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p1">P I</span> Was ist das Partizip I?</div>
+    <p>Das Partizip I beschreibt eine <strong>aktive, gleichzeitige</strong> Handlung oder einen dauerhaften Zustand. Es antwortet auf die Frage: <em>„Wie ist es?"</em> oder <em>„Wie macht es das?"</em></p>
+    <div class="tip-box">
+      <strong>Merksatz:</strong> Partizip I = aktiv + gleichzeitig (zur gleichen Zeit!)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p1">P I</span> Bildung</div>
+    <div class="formula-box p1">
+      Infinitiv &nbsp;+&nbsp; <span class="formula-highlight">-d</span><br>
+      <br>
+      <strong>lachen</strong> → lachen<span class="formula-highlight">d</span><br>
+      <strong>schlafen</strong> → schlafen<span class="formula-highlight">d</span><br>
+      <strong>schreien</strong> → schreien<span class="formula-highlight">d</span>
+    </div>
+    <div class="tip-box"><strong>Ausnahme:</strong> <em>sein</em> → seiend (selten benutzt)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p1">P I</span> Verwendung</div>
+    <table class="usage-table">
+      <tr>
+        <th>Funktion</th>
+        <th>Beispiel</th>
+      </tr>
+      <tr>
+        <td>🔵 Als <strong>Adjektiv</strong> (vor Nomen)</td>
+        <td><em>das <span class="highlight-p1">lachende</span> Kind</em></td>
+      </tr>
+      <tr>
+        <td>🔵 Als <strong>Adverb</strong></td>
+        <td><em>Er läuft <span class="highlight-p1">lachend</span> herein.</em></td>
+      </tr>
+      <tr>
+        <td>🔵 Relative Handlung</td>
+        <td><em>Die <span class="highlight-p1">schlafende</span> Katze liegt auf dem Sofa.</em></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p1">P I</span> Als Adjektiv → Deklination</div>
+    <p>Wenn Partizip I als Adjektiv vor einem Nomen steht, bekommt es die normale <strong>Adjektivendung</strong>:</p>
+    <div class="formula-box p1">
+      ein <span class="formula-highlight">schlafend<u>es</u></span> Kind (Neutrum, Nominativ)<br>
+      der <span class="formula-highlight">laufend<u>e</u></span> Mann (Maskulin, Nominativ)<br>
+      die <span class="formula-highlight">spielend<u>en</u></span> Kinder (Plural, Nominativ)
+    </div>
+  </div>
+
+  <!-- PARTIZIP II -->
+  <div class="section-title">✓ <span style="color:var(--p2)">Partizip II</span></div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p2">P II</span> Was ist das Partizip II?</div>
+    <p>Das Partizip II beschreibt eine <strong>abgeschlossene Handlung</strong> oder einen <strong>passiven Zustand</strong>. Es wird für Perfekt, Passiv und als Adjektiv benutzt.</p>
+    <div class="tip-box">
+      <strong>Merksatz:</strong> Partizip II = fertig / abgeschlossen / passiv
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p2">P II</span> Bildung</div>
+    <div class="formula-box p2">
+      <strong>Regelmäßige Verben:</strong><br>
+      <span class="formula-highlight p2">ge-</span> + Verbstamm + <span class="formula-highlight p2">-t</span><br>
+      machen → <span class="formula-highlight p2">ge</span>mach<span class="formula-highlight p2">t</span> &nbsp;|&nbsp; kaufen → <span class="formula-highlight p2">ge</span>kauf<span class="formula-highlight p2">t</span><br>
+      <br>
+      <strong>Unregelmäßige Verben:</strong><br>
+      <span class="formula-highlight p2">ge-</span> + Verbstamm + <span class="formula-highlight p2">-en</span> (oft Vokalwechsel!)<br>
+      schreiben → <span class="formula-highlight p2">ge</span>schrieb<span class="formula-highlight p2">en</span> &nbsp;|&nbsp; fahren → <span class="formula-highlight p2">ge</span>fahr<span class="formula-highlight p2">en</span><br>
+      <br>
+      <strong>Verben auf -ieren:</strong><br>
+      studieren → studier<span class="formula-highlight p2">t</span> &nbsp; (kein ge-!)<br>
+      <br>
+      <strong>Trennbare Verben:</strong><br>
+      aufmachen → auf<span class="formula-highlight p2">ge</span>mach<span class="formula-highlight p2">t</span><br>
+      <br>
+      <strong>Untrennbare Verben:</strong><br>
+      besuchen → besuch<span class="formula-highlight p2">t</span> &nbsp; (kein ge-!)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="pill pill-p2">P II</span> Verwendung</div>
+    <table class="usage-table">
+      <tr>
+        <th>Funktion</th>
+        <th>Beispiel</th>
+      </tr>
+      <tr>
+        <td>🟣 <strong>Perfekt</strong></td>
+        <td><em>Ich habe den Brief <span class="highlight-p2">geschrieben</span>.</em></td>
+      </tr>
+      <tr>
+        <td>🟣 <strong>Passiv</strong> (werden)</td>
+        <td><em>Das Auto wird <span class="highlight-p2">repariert</span>.</em></td>
+      </tr>
+      <tr>
+        <td>🟣 Als <strong>Adjektiv</strong></td>
+        <td><em>der <span class="highlight-p2">gebrochene</span> Arm</em></td>
+      </tr>
+      <tr>
+        <td>🟣 Zustandsbeschreibung</td>
+        <td><em>Das Fenster ist <span class="highlight-p2">geöffnet</span>.</em></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- VERGLEICH -->
+  <div class="section-title">⚖️ Vergleich P I vs. P II</div>
+  <div class="card">
+    <table class="usage-table">
+      <tr>
+        <th></th>
+        <th style="color:var(--p1)">▶ Partizip I</th>
+        <th style="color:var(--p2)">✓ Partizip II</th>
+      </tr>
+      <tr>
+        <td><strong>Aktiv/Passiv</strong></td>
+        <td>aktiv</td>
+        <td>oft passiv</td>
+      </tr>
+      <tr>
+        <td><strong>Zeit</strong></td>
+        <td>gleichzeitig</td>
+        <td>abgeschlossen</td>
+      </tr>
+      <tr>
+        <td><strong>Adjektiv</strong></td>
+        <td><em>das <span class="highlight-p1">schreibende</span> Kind</em><br><small>(= das Kind schreibt gerade)</small></td>
+        <td><em>der <span class="highlight-p2">geschriebene</span> Brief</em><br><small>(= man hat den Brief geschrieben)</small></td>
+      </tr>
+      <tr>
+        <td><strong>Adverb</strong></td>
+        <td><em>Er geht <span class="highlight-p1">singend</span>.</em></td>
+        <td>❌ kein Adverb</td>
+      </tr>
+    </table>
+    <div class="tip-box" style="margin-top:10px">
+      <strong>Eselsbrücke:</strong><br>
+      ▶ <em>Ein <span style="color:var(--p1)">kochend</span>es Wasser</em> = Wasser, das gerade kocht (aktiv)<br>
+      ✓ <em>Ein <span style="color:var(--p2)">gekochtes</span> Ei</em> = Ei, das jemand gekocht hat (fertig, passiv)
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 2: INTERAKTIVE BEISPIELE -->
+<!-- ============================================================ -->
+<div id="beispiele" class="page">
+
+  <div class="card">
+    <div class="card-title">🔤 Wähle ein Verb – sieh Partizip I & II</div>
+    <div class="verb-selector" id="verbSelector"></div>
+    <div class="demo-box" id="demoBox">
+      <div style="color:var(--text-sub); font-size:0.9rem">Wähle ein Verb oben ↑</div>
+    </div>
+    <div id="sentenceExamples"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧠 Welche Form? – Klick auf die richtige Antwort</div>
+    <div id="quizArea"></div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 3: ÜBUNGEN -->
+<!-- ============================================================ -->
+<div id="uebungen" class="page">
+
+  <div class="uebung-nav" id="uebungNav"></div>
+
+  <!-- ÜBUNG 1: P I Lückentext -->
+  <div id="ub1" class="uebung-block">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-p1">▶ Partizip I</span>
+      <strong>Übung 1</strong> – Partizip I bilden
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Bilde das Partizip I und ergänze die Lücken. Achte auf die Adjektivendung!</p>
+    <div id="ex1items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary" onclick="checkEx(1)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(1)">↺ Reset</button>
+    </div>
+    <div id="score1" class="score-box"></div>
+  </div>
+
+  <!-- ÜBUNG 2: P I Dropdown -->
+  <div id="ub2" class="uebung-block" style="display:none">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-p1">▶ Partizip I</span>
+      <strong>Übung 2</strong> – Richtige Form wählen
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Wähle die richtige Form des Partizips I aus dem Dropdown.</p>
+    <div id="ex2items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary" onclick="checkEx(2)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(2)">↺ Reset</button>
+    </div>
+    <div id="score2" class="score-box"></div>
+  </div>
+
+  <!-- ÜBUNG 3: P II Lückentext -->
+  <div id="ub3" class="uebung-block" style="display:none">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-p2">✓ Partizip II</span>
+      <strong>Übung 3</strong> – Partizip II bilden
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Schreibe das Partizip II. Achte auf regelmäßig / unregelmäßig!</p>
+    <div id="ex3items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary" onclick="checkEx(3)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(3)">↺ Reset</button>
+    </div>
+    <div id="score3" class="score-box"></div>
+  </div>
+
+  <!-- ÜBUNG 4: P II Perfekt -->
+  <div id="ub4" class="uebung-block" style="display:none">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-p2">✓ Partizip II</span>
+      <strong>Übung 4</strong> – Perfekt bilden
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Bilde das Perfekt mit haben oder sein + Partizip II.</p>
+    <div id="ex4items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary" onclick="checkEx(4)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(4)">↺ Reset</button>
+    </div>
+    <div id="score4" class="score-box"></div>
+  </div>
+
+  <!-- ÜBUNG 5: MISCH Lückentext -->
+  <div id="ub5" class="uebung-block" style="display:none">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-mix">⚡ Gemischt</span>
+      <strong>Übung 5</strong> – P I oder P II?
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Entscheide: Partizip I oder II? Schreibe die richtige Form.</p>
+    <div id="ex5items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary" onclick="checkEx(5)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(5)">↺ Reset</button>
+    </div>
+    <div id="score5" class="score-box"></div>
+  </div>
+
+  <!-- ÜBUNG 6: MISCH Drag & Drop -->
+  <div id="ub6" class="uebung-block" style="display:none">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-mix">⚡ Gemischt</span>
+      <strong>Übung 6</strong> – Zuordnen: P I oder P II?
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Klicke auf ein Wort und dann auf die passende Lücke. Wähle dann auch: adjektivisch oder adverbial?</p>
+    <div id="ex6items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary" onclick="checkEx(6)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(6)">↺ Reset</button>
+    </div>
+    <div id="score6" class="score-box"></div>
+  </div>
+
+  <!-- ÜBUNG 7: SEHR SCHWER -->
+  <div id="ub7" class="uebung-block" style="display:none">
+    <div class="ex-header">
+      <span class="ex-type-badge ex-type-hard">🔥 Sehr schwer</span>
+      <strong>Übung 7</strong> – Erweitertes Partizipialkonstrukt
+    </div>
+    <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:12px">Forme den Relativsatz in ein <strong>erweitertes Partizipialkonstrukt</strong> um. (B1+ Niveau)</p>
+    <div id="ex7items"></div>
+    <div class="ex-actions">
+      <button class="btn btn-primary btn-hard" onclick="checkEx(7)">✓ Prüfen</button>
+      <button class="btn btn-secondary" onclick="resetEx(7)">↺ Reset</button>
+      <button class="btn btn-secondary" onclick="showHints7()">💡 Tipps</button>
+    </div>
+    <div id="hints7" style="display:none" class="tip-box">
+      <strong>Wie geht das?</strong><br>
+      Relativsatz → Partizip-Konstrukt:<br>
+      <em>das Kind, das lacht</em> → <em>das <span class="highlight-p1">lachende</span> Kind</em> (P I = aktiv, gleichzeitig)<br>
+      <em>der Brief, der geschrieben wurde</em> → <em>der <span class="highlight-p2">geschriebene</span> Brief</em> (P II = passiv, abgeschlossen)<br>
+      <em>der Mann, der gerade schläft</em> → <em>der gerade <span class="highlight-p1">schlafende</span> Mann</em> (mit Adverb!)<br>
+      Achte auf die Adjektivdeklination nach dem Artikel!
+    </div>
+    <div id="score7" class="score-box"></div>
+  </div>
+
+  <div class="footer">Made with ♥ by Bảo Quang</div>
+</div>
+
+<script>
+// ===== DATA =====
+
+const verbData = [
+  {
+    inf: "lachen",
+    p1: "lachend",
+    p2: "gelacht",
+    sentences: {
+      p1: [
+        { de: "Das <P1>lachende</P1> Kind rennt durch den Park.", vi: "Đứa trẻ đang cười chạy qua công viên." },
+        { de: "Er geht <P1>lachend</P1> nach Hause.", vi: "Anh ấy vừa cười vừa đi về nhà." }
+      ],
+      p2: [
+        { de: "Die Kinder haben viel <P2>gelacht</P2>.", vi: "Bọn trẻ đã cười rất nhiều." },
+        { de: "Gestern wurde viel <P2>gelacht</P2>.", vi: "Hôm qua người ta đã cười rất nhiều." }
+      ]
+    }
+  },
+  {
+    inf: "schlafen",
+    p1: "schlafend",
+    p2: "geschlafen",
+    sentences: {
+      p1: [
+        { de: "Die <P1>schlafende</P1> Katze liegt auf dem Sofa.", vi: "Con mèo đang ngủ nằm trên sofa." },
+        { de: "Er sitzt <P1>schlafend</P1> auf dem Stuhl.", vi: "Anh ta ngồi ngủ trên ghế." }
+      ],
+      p2: [
+        { de: "Ich habe gut <P2>geschlafen</P2>.", vi: "Tôi đã ngủ ngon." },
+        { de: "Das Baby hat den ganzen Tag <P2>geschlafen</P2>.", vi: "Em bé đã ngủ cả ngày." }
+      ]
+    }
+  },
+  {
+    inf: "schreiben",
+    p1: "schreibend",
+    p2: "geschrieben",
+    sentences: {
+      p1: [
+        { de: "Die <P1>schreibende</P1> Studentin sitzt vorn.", vi: "Nữ sinh viên đang viết ngồi ở phía trước." },
+        { de: "Er sitzt <P1>schreibend</P1> am Tisch.", vi: "Anh ấy ngồi viết ở bàn." }
+      ],
+      p2: [
+        { de: "Sie hat den Brief <P2>geschrieben</P2>.", vi: "Cô ấy đã viết bức thư." },
+        { de: "Der <P2>geschriebene</P2> Brief liegt auf dem Tisch.", vi: "Bức thư đã được viết nằm trên bàn." }
+      ]
+    }
+  },
+  {
+    inf: "kochen",
+    p1: "kochend",
+    p2: "gekocht",
+    sentences: {
+      p1: [
+        { de: "Das <P1>kochende</P1> Wasser ist sehr heiß.", vi: "Nước đang sôi rất nóng." },
+        { de: "Er isst <P1>kochend</P1> das Essen. (falsch – man sagt: heiß)", vi: "(minh họa – khi dùng adverbial)" }
+      ],
+      p2: [
+        { de: "Sie hat das Mittagessen <P2>gekocht</P2>.", vi: "Cô ấy đã nấu bữa trưa." },
+        { de: "Das <P2>gekochte</P2> Gemüse schmeckt gut.", vi: "Rau đã nấu chín ngon." }
+      ]
+    }
+  },
+  {
+    inf: "fahren",
+    p1: "fahrend",
+    p2: "gefahren",
+    sentences: {
+      p1: [
+        { de: "Der <P1>fahrende</P1> Zug war sehr schnell.", vi: "Con tàu đang chạy rất nhanh." },
+        { de: "Ich sehe das <P1>fahrende</P1> Auto.", vi: "Tôi nhìn thấy chiếc xe đang chạy." }
+      ],
+      p2: [
+        { de: "Wir sind nach Berlin <P2>gefahren</P2>.", vi: "Chúng tôi đã đi đến Berlin." },
+        { de: "Das Auto ist gut <P2>gefahren</P2>.", vi: "Chiếc xe đã chạy tốt." }
+      ]
+    }
+  },
+  {
+    inf: "reparieren",
+    p1: "reparierend",
+    p2: "repariert",
+    sentences: {
+      p1: [
+        { de: "Der <P1>reparierende</P1> Mechaniker ist sehr erfahren.", vi: "Người thợ đang sửa chữa rất có kinh nghiệm." },
+        { de: "Er schaut <P1>reparierend</P1> auf das Auto.", vi: "Anh ấy vừa nhìn vừa sửa xe." }
+      ],
+      p2: [
+        { de: "Das Auto wurde <P2>repariert</P2>.", vi: "Chiếc xe đã được sửa chữa." },
+        { de: "Das <P2>reparierte</P2> Fahrrad funktioniert wieder.", vi: "Chiếc xe đạp đã sửa hoạt động lại." }
+      ]
+    }
+  }
+];
+
+const miniQuiz = [
+  { sentence: "Das ___ Kind weint. (weinen – aktiv, jetzt)", options: ["weinend", "geweint", "weinendes"], correct: 0, blank: "weinende" },
+  { sentence: "Der ___ Brief liegt hier. (schreiben – fertig, passiv)", options: ["schreibende", "schreibend", "geschriebene"], correct: 2, blank: "geschriebene" },
+  { sentence: "Sie kommt ___ ins Zimmer. (lachen – wie?)", options: ["lachend", "lachende", "gelacht"], correct: 0, blank: "lachend" },
+  { sentence: "Das ___ Wasser ist heiß. (kochen – gerade)", options: ["gekochte", "kochende", "kochen"], correct: 1, blank: "kochende" },
+  { sentence: "Ich habe gut ___. (schlafen – Perfekt)", options: ["schlafend", "geschlafen", "schlafende"], correct: 1, blank: "geschlafen" },
+];
+
+// ===== EXERCISES DATA =====
+
+const ex1Data = [
+  { template: "Das ___ Mädchen singt ein Lied.", verb: "singen", hint: "(singen, Neutrum Nom.)", answer: "singende" },
+  { template: "Der ___ Hund bellt die ganze Nacht.", verb: "bellen", hint: "(bellen, Maskulin Nom.)", answer: "bellende" },
+  { template: "Ich sehe die ___ Kinder.", verb: "spielen", hint: "(spielen, Plural Akk.)", answer: "spielenden" },
+  { template: "Die ___ Sonne scheint hell.", verb: "scheinen", hint: "(scheinen, Feminin Nom.)", answer: "scheinende" },
+  { template: "Er läuft ___ zur Schule.", verb: "singen", hint: "(als Adverb, keine Endung)", answer: "singend" },
+  { template: "Das ___ Baby schläft endlich.", verb: "weinen", hint: "(weinen, Neutrum Nom.)", answer: "weinende" },
+  { template: "Die ___ Studenten lernen fleißig.", verb: "arbeiten", hint: "(arbeiten, Plural Nom.)", answer: "arbeitenden" },
+];
+
+const ex2Data = [
+  {
+    template: "Die ___ Frau liest eine Zeitung.",
+    options: ["lesende", "gelesen", "gelest"],
+    answer: "lesende",
+    hint: "aktiv, gleichzeitig, Feminin Nom."
+  },
+  {
+    template: "Ein ___ Kind braucht Ruhe.",
+    options: ["schlafen", "geschlafenes", "schlafen des"],
+    answer: "schlafen des",
+    real: "schlafen", realAnswer: "schlafen",
+    // rewrite: display as select
+    trueOptions: ["schlafendes", "geschlafenes", "geschlafen"],
+    trueAnswer: "schlafendes",
+    hint: "aktiv, jetzt, Neutrum Nom."
+  },
+  {
+    template: "Ich höre den ___ Vogel.",
+    trueOptions: ["singendes", "gesungenen", "singenden"],
+    trueAnswer: "singenden",
+    hint: "aktiv, gleichzeitig, Maskulin Akk."
+  },
+  {
+    template: "Die ___ Menschen warteten lange.",
+    trueOptions: ["wartend", "wartenden", "gewartet"],
+    trueAnswer: "wartenden",
+    hint: "aktiv, gleichzeitig, Plural Nom."
+  },
+  {
+    template: "Er kam ___ ins Büro.",
+    trueOptions: ["tanzend", "tanzende", "getanzt"],
+    trueAnswer: "tanzend",
+    hint: "Adverb – keine Endung"
+  },
+  {
+    template: "Das ___ Feuer wärmte uns.",
+    trueOptions: ["brennendes", "gebrannt", "brennende"],
+    trueAnswer: "brennende",
+    hint: "aktiv, Neutrum Nom. (nach 'das' → schwache Deklination → -e)"
+  },
+  {
+    template: "Die ___ Lichter der Stadt sind schön.",
+    trueOptions: ["leuchtend", "leuchtenden", "geleuchtet"],
+    trueAnswer: "leuchtenden",
+    hint: "aktiv, Plural Nom. mit Artikel → -en"
+  },
+];
+
+const ex3Data = [
+  { template: "Ich habe das Buch ___.", verb: "lesen", answer: "gelesen", hint: "unregelmäßig: ge-+Vokalwechsel+-en" },
+  { template: "Er hat den Kuchen ___.", verb: "backen", answer: "gebacken", hint: "unregelmäßig: ge-+backen" },
+  { template: "Wir haben das Zimmer ___.", verb: "aufräumen", answer: "aufgeräumt", hint: "trennbar: auf|ge|räumt" },
+  { template: "Sie hat Musik ___.", verb: "studieren", answer: "studiert", hint: "auf -ieren: kein ge-!" },
+  { template: "Das Auto ist ___.", verb: "reparieren", answer: "repariert", hint: "auf -ieren: kein ge-!" },
+  { template: "Er hat den Fehler ___.", verb: "bemerken", answer: "bemerkt", hint: "untrennbar be-: kein ge-!" },
+  { template: "Ich habe lange ___.", verb: "warten", answer: "gewartet", hint: "Stamm endet auf -t: ge+warte+t" },
+];
+
+const ex4Data = [
+  { subject: "ich", verb: "kaufen", hilfsv: "habe", p2: "gekauft", template: "Ich ___ gestern ein Buch ___.", answer: ["habe", "gekauft"] },
+  { subject: "wir", verb: "fahren", hilfsv: "sind", p2: "gefahren", template: "Wir ___ nach München ___.", answer: ["sind", "gefahren"] },
+  { subject: "sie (Sg.)", verb: "schreiben", hilfsv: "hat", p2: "geschrieben", template: "Sie ___ einen langen Brief ___.", answer: ["hat", "geschrieben"] },
+  { subject: "er", verb: "ankommen", hilfsv: "ist", p2: "angekommen", template: "Er ___ um 8 Uhr ___.", answer: ["ist", "angekommen"] },
+  { subject: "ich", verb: "essen", hilfsv: "habe", p2: "gegessen", template: "Ich ___ zu viel ___.", answer: ["habe", "gegessen"] },
+  { subject: "du", verb: "einschlafen", hilfsv: "bist", p2: "eingeschlafen", template: "Du ___ sofort ___.", answer: ["bist", "eingeschlafen"] },
+  { subject: "wir", verb: "reservieren", hilfsv: "haben", p2: "reserviert", template: "Wir ___ den Tisch ___.", answer: ["haben", "reserviert"] },
+];
+
+const ex5Data = [
+  { template: "Das ___ Baby schläft endlich.", hint: "(weinen – aktiv, jetzt, Neutrum Nom.)", answer: "weinende", type: "PI" },
+  { template: "Ich habe den Film ___.", hint: "(sehen – Perfekt)", answer: "gesehen", type: "PII" },
+  { template: "Der ___ Brief kam gestern an.", hint: "(schreiben – passiv/fertig, Maskulin Nom.)", answer: "geschriebene", type: "PII" },
+  { template: "Sie rennt ___ durch die Straße.", hint: "(singen – wie? Adverb)", answer: "singend", type: "PI" },
+  { template: "Das ___ Wasser kocht.", hint: "(sprudeln – aktiv, Neutrum Nom.)", answer: "sprudelnde", type: "PI" },
+  { template: "Das Auto wurde ___ .", hint: "(reparieren – Passiv Präsens Partizip)", answer: "repariert", type: "PII" },
+  { template: "Die ___ Kinder machen Lärm.", hint: "(spielen – aktiv, Plural Nom.)", answer: "spielenden", type: "PI" },
+];
+
+const ex6Data = [
+  {
+    template: "Die [BLANK] Touristen fragen nach dem Weg.",
+    word: "fragenden",
+    p1form: "fragend",
+    answer: "fragenden",
+    correct_type: "PI_adj",
+    label: "fragende / fragenden (PI)"
+  },
+  {
+    template: "Das [BLANK] Geld liegt auf dem Tisch.",
+    word: "gestohlene",
+    p1form: null,
+    answer: "gestohlene",
+    correct_type: "PII_adj",
+    label: "gestohlene (PII)"
+  },
+  {
+    template: "Er arbeitet [BLANK] bis Mitternacht.",
+    word: "schweigend",
+    p1form: "schweigend",
+    answer: "schweigend",
+    correct_type: "PI_adv",
+    label: "schweigend (PI Adverb)"
+  },
+  {
+    template: "Der [BLANK] Motor macht Lärm.",
+    word: "laufende",
+    p1form: "laufend",
+    answer: "laufende",
+    correct_type: "PI_adj",
+    label: "laufende (PI)"
+  },
+  {
+    template: "Das [BLANK] Haus steht leer.",
+    word: "verlassene",
+    answer: "verlassene",
+    correct_type: "PII_adj",
+    label: "verlassene (PII)"
+  },
+  {
+    template: "Sie kam [BLANK] ins Zimmer.",
+    word: "lächelnd",
+    p1form: "lächelnd",
+    answer: "lächelnd",
+    correct_type: "PI_adv",
+    label: "lächelnd (PI Adverb)"
+  },
+  {
+    template: "Die [BLANK] Aufgaben müssen fertig sein.",
+    word: "ungelösten",
+    answer: "ungelösten",
+    correct_type: "PII_adj",
+    label: "ungelösten (PII)"
+  },
+];
+
+const ex7Data = [
+  {
+    src: "Das Kind, das lacht, ist glücklich.",
+    hint: "Kind → weibliches Neutrum / PI aktiv gleichzeitig",
+    answer: "Das lachende Kind ist glücklich.",
+    explain: "lachen (PI) + Neutrum Nom. → lachend + -e = lachende"
+  },
+  {
+    src: "Der Brief, der von ihr geschrieben wurde, ist sehr lang.",
+    hint: "Brief → Maskulin / PII passiv abgeschlossen",
+    answer: "Der von ihr geschriebene Brief ist sehr lang.",
+    explain: "schreiben (PII = geschrieben) + Maskulin Nom. nach 'der' → geschriebene. Erweiterung 'von ihr' bleibt vor dem Partizip!"
+  },
+  {
+    src: "Die Studenten, die fleißig lernen, bestehen die Prüfung.",
+    hint: "Plural / PI aktiv gleichzeitig",
+    answer: "Die fleißig lernenden Studenten bestehen die Prüfung.",
+    explain: "lernen (PI = lernend) + Plural Nom. → lernenden. Adverb 'fleißig' steht VOR dem Partizip!"
+  },
+  {
+    src: "Das Auto, das gestern repariert wurde, fährt wieder.",
+    hint: "Auto → Neutrum / PII passiv abgeschlossen",
+    answer: "Das gestern reparierte Auto fährt wieder.",
+    explain: "reparieren (PII = repariert, kein ge- nötig, -ieren) + Neutrum Nom. → reparierte. 'gestern' als Adverb steht vor Partizip!"
+  },
+  {
+    src: "Die Frau, die weinend durch den Park läuft, ist traurig.",
+    hint: "Frau → Feminin / Adverb bleibt Adverb → PI",
+    answer: "Die weinend durch den Park laufende Frau ist traurig.",
+    explain: "Haupthandlung = laufen (PI = laufend) + Feminin Nom. nach 'die' → laufende. 'weinend' ist ein weiteres PI als Adverb vor dem Hauptpartizip!"
+  },
+  {
+    src: "Die Bücher, die von Schülern ausgeliehen worden sind, fehlen.",
+    hint: "Bücher → Plural / PII passiv abgeschlossen",
+    answer: "Die von Schülern ausgeliehenen Bücher fehlen.",
+    explain: "ausleihen (PII = ausgeliehen) + Plural Nom. → ausgeliehenen. Trennbares Verb: aus|ge|liehen. 'von Schülern' steht vor dem Partizip als Erweiterung!"
+  },
+];
+
+// ===== INTERACTIVE DEMO =====
+
+function initVerbSelector() {
+  const sel = document.getElementById('verbSelector');
+  verbData.forEach((v, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'verb-btn';
+    btn.textContent = v.inf;
+    btn.onclick = () => selectVerb(i);
+    sel.appendChild(btn);
+  });
+  initMiniQuiz();
+}
+
+function selectVerb(idx) {
+  const v = verbData[idx];
+  document.querySelectorAll('.verb-btn').forEach((b, i) => {
+    b.className = 'verb-btn' + (i === idx ? ' active-p1' : '');
+  });
+
+  const box = document.getElementById('demoBox');
+  box.innerHTML = `
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <div>
+        <div class="demo-label">▶ Partizip I</div>
+        <div class="demo-form p1-color">${v.p1}</div>
+        <div style="font-size:0.78rem;color:var(--text-sub)">${v.inf} + -d</div>
+      </div>
+      <div>
+        <div class="demo-label">✓ Partizip II</div>
+        <div class="demo-form p2-color">${v.p2}</div>
+        <div style="font-size:0.78rem;color:var(--text-sub)">${v.p2.includes('iert') ? '(kein ge-!)' : 'ge- + Stamm'}</div>
+      </div>
+    </div>
+  `;
+
+  const exArea = document.getElementById('sentenceExamples');
+  let html = '<div class="section-title" style="margin-top:0;font-size:0.95rem">Beispielsätze:</div>';
+  html += '<ul class="sentence-list">';
+  [...v.sentences.p1, ...v.sentences.p2].forEach((s, i) => {
+    const isPII = i >= v.sentences.p1.length;
+    const formatted = s.de
+      .replace(/<P1>(.*?)<\/P1>/g, '<span class="highlight-p1">$1</span>')
+      .replace(/<P2>(.*?)<\/P2>/g, '<span class="highlight-p2">$1</span>');
+    html += `<li>
+      <span class="${isPII ? 'pill pill-p2' : 'pill pill-p1'}" style="font-size:0.68rem;margin-right:6px">${isPII ? 'PII' : 'PI'}</span>
+      <span class="ex-de">${formatted}</span>
+      <div class="ex-vi">${s.vi}</div>
+    </li>`;
+  });
+  html += '</ul>';
+  exArea.innerHTML = html;
+}
+
+function initMiniQuiz() {
+  const area = document.getElementById('quizArea');
+  let html = '';
+  miniQuiz.forEach((q, i) => {
+    html += `<div class="sentence-item" id="mq${i}">
+      <div class="sentence-num">Satz ${i+1}</div>
+      <div class="ex-de">${q.sentence}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        ${q.options.map((o, j) => `<button onclick="answerMini(${i},${j})" id="mq${i}opt${j}" style="padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;background:white;cursor:pointer;font-size:0.85rem;font-weight:600">${o}</button>`).join('')}
+      </div>
+      <div class="feedback-inline" id="mqfb${i}"></div>
+    </div>`;
+  });
+  area.innerHTML = html;
+}
+
+function answerMini(qi, oi) {
+  const q = miniQuiz[qi];
+  const fb = document.getElementById(`mqfb${qi}`);
+  const item = document.getElementById(`mq${qi}`);
+  q.options.forEach((_, j) => {
+    const btn = document.getElementById(`mq${qi}opt${j}`);
+    btn.disabled = true;
+    btn.style.opacity = j === q.correct ? '1' : '0.45';
+    if (j === q.correct) { btn.style.borderColor = 'var(--success)'; btn.style.background = '#F0FDF4'; btn.style.color = 'var(--success)'; }
+  });
+  fb.classList.add('show');
+  if (oi === q.correct) {
+    item.classList.add('correct');
+    fb.classList.add('ok');
+    fb.textContent = '✓ Richtig! ' + q.hint;
+  } else {
+    item.classList.add('wrong');
+    fb.classList.add('err');
+    fb.textContent = `✗ Falsch. Richtig: "${q.options[q.correct]}"`;
+  }
+}
+
+// ===== EXERCISE RENDERING =====
+
+function buildEx1() {
+  const cont = document.getElementById('ex1items');
+  cont.innerHTML = ex1Data.map((item, i) => `
+    <div class="sentence-item" id="ex1_${i}">
+      <div class="sentence-num">${i+1}. ${item.hint}</div>
+      <div class="ex-de">${item.template.replace('___', `<input class="blank-input" id="ex1inp${i}" placeholder="..." autocomplete="off" spellcheck="false">`)}</div>
+      <div class="feedback-inline" id="ex1fb${i}"></div>
+    </div>
+  `).join('');
+}
+
+function buildEx2() {
+  const cont = document.getElementById('ex2items');
+  cont.innerHTML = ex2Data.map((item, i) => {
+    const opts = item.trueOptions || item.options;
+    const selectHtml = `<select class="select-input" id="ex2inp${i}">
+      <option value="">– wählen –</option>
+      ${opts.map(o => `<option value="${o}">${o}</option>`).join('')}
+    </select>`;
+    return `<div class="sentence-item" id="ex2_${i}">
+      <div class="sentence-num">${i+1}. ${item.hint}</div>
+      <div class="ex-de">${item.template.replace('___', selectHtml)}</div>
+      <div class="feedback-inline" id="ex2fb${i}"></div>
+    </div>`;
+  }).join('');
+}
+
+function buildEx3() {
+  const cont = document.getElementById('ex3items');
+  cont.innerHTML = ex3Data.map((item, i) => `
+    <div class="sentence-item" id="ex3_${i}">
+      <div class="sentence-num">${i+1}. Verb: <strong>${item.verb}</strong> | Tipp: ${item.hint}</div>
+      <div class="ex-de">${item.template.replace('___', `<input class="blank-input" id="ex3inp${i}" placeholder="P.II..." autocomplete="off" spellcheck="false">`)}</div>
+      <div class="feedback-inline" id="ex3fb${i}"></div>
+    </div>
+  `).join('');
+}
+
+function buildEx4() {
+  const cont = document.getElementById('ex4items');
+  cont.innerHTML = ex4Data.map((item, i) => {
+    let tpl = item.template;
+    const parts = tpl.split('___');
+    return `<div class="sentence-item" id="ex4_${i}">
+      <div class="sentence-num">${i+1}. Verb: <strong>${item.verb}</strong> | Subjekt: ${item.subject}</div>
+      <div class="ex-de">
+        ${parts[0]}<input class="blank-input" id="ex4inp${i}a" placeholder="haben/sein..." style="min-width:70px" autocomplete="off" spellcheck="false">${parts[1]}<input class="blank-input" id="ex4inp${i}b" placeholder="P.II..." autocomplete="off" spellcheck="false">${parts[2] || ''}
+      </div>
+      <div class="feedback-inline" id="ex4fb${i}"></div>
+    </div>`;
+  }).join('');
+}
+
+function buildEx5() {
+  const cont = document.getElementById('ex5items');
+  cont.innerHTML = ex5Data.map((item, i) => `
+    <div class="sentence-item" id="ex5_${i}">
+      <div class="sentence-num">${i+1}. ${item.hint} <span class="pill ${item.type==='PI'?'pill-p1':'pill-p2'}">${item.type}</span></div>
+      <div class="ex-de">${item.template.replace('___', `<input class="blank-input" id="ex5inp${i}" placeholder="..." autocomplete="off" spellcheck="false">`)}</div>
+      <div class="feedback-inline" id="ex5fb${i}"></div>
+    </div>
+  `).join('');
+}
+
+function buildEx6() {
+  const chips = ex6Data.map((item, i) =>
+    `<div class="drag-chip" id="chip6_${i}" onclick="selectChip(${i})">${item.word}</div>`
+  ).join('');
+
+  const items = ex6Data.map((item, i) => `
+    <div class="sentence-item" id="ex6_${i}">
+      <div class="sentence-num">${i+1}.</div>
+      <div class="ex-de">${item.template.replace('[BLANK]', `<span class="drop-zone" id="dz6_${i}" onclick="placeChip(${i})">___</span>`)}</div>
+      <div class="feedback-inline" id="ex6fb${i}"></div>
+    </div>
+  `).join('');
+
+  document.getElementById('ex6items').innerHTML = `
+    <p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:8px">Klicke auf ein Wort zum Auswählen, dann auf die Lücke:</p>
+    <div class="drag-pool" id="chipPool6">${chips}</div>
+    ${items}
+  `;
+
+  window.selectedChip6 = null;
+  window.placements6 = {};
+}
+
+function selectChip(idx) {
+  document.querySelectorAll('.drag-chip').forEach(c => c.style.background = '');
+  document.getElementById(`chip6_${idx}`).style.background = 'var(--p1-light)';
+  document.getElementById(`chip6_${idx}`).style.borderColor = 'var(--p1)';
+  window.selectedChip6 = idx;
+}
+
+function placeChip(slotIdx) {
+  if (window.selectedChip6 === null) return;
+  const chipIdx = window.selectedChip6;
+  const dz = document.getElementById(`dz6_${slotIdx}`);
+  const chip = document.getElementById(`chip6_${chipIdx}`);
+  dz.textContent = ex6Data[chipIdx].word;
+  dz.classList.add('filled');
+  chip.classList.add('placed');
+  chip.style.background = '';
+  chip.style.borderColor = '';
+  window.placements6[slotIdx] = chipIdx;
+  window.selectedChip6 = null;
+  document.querySelectorAll('.drag-chip').forEach(c => { c.style.background = ''; c.style.borderColor = ''; });
+}
+
+function buildEx7() {
+  const cont = document.getElementById('ex7items');
+  cont.innerHTML = ex7Data.map((item, i) => `
+    <div class="combo-sentence" id="ex7_${i}">
+      <div class="de-src">🔸 Original: <em>${item.src}</em></div>
+      <div style="font-size:0.82rem;color:var(--text-sub);margin-bottom:6px">💡 Tipp: ${item.hint}</div>
+      <div style="font-size:0.88rem;margin-bottom:4px">→ Partizipialkonstrukt:</div>
+      <input class="blank-input" id="ex7inp${i}" placeholder="Schreibe den Satz um..." style="width:100%;min-width:0;display:block;margin-top:4px;border-bottom:2px solid #94A3B8" autocomplete="off" spellcheck="false">
+      <div class="feedback-inline" id="ex7fb${i}"></div>
+    </div>
+  `).join('');
+}
+
+// ===== CHECK FUNCTIONS =====
+
+function checkEx(n) {
+  let correct = 0, total = 0;
+
+  if (n === 1) {
+    ex1Data.forEach((item, i) => {
+      const inp = document.getElementById(`ex1inp${i}`);
+      const val = inp.value.trim().toLowerCase();
+      const ok = val === item.answer.toLowerCase();
+      setFeedback(1, i, ok, item.answer);
+      if (ok) correct++;
+      total++;
+    });
+    showScore(1, correct, total);
+    markTabDone(0, correct, total);
+  }
+
+  if (n === 2) {
+    ex2Data.forEach((item, i) => {
+      const sel = document.getElementById(`ex2inp${i}`);
+      const ans = item.trueAnswer || item.answer;
+      const ok = sel.value === ans;
+      setFeedback(2, i, ok, ans);
+      if (ok) correct++;
+      total++;
+    });
+    showScore(2, correct, total);
+    markTabDone(1, correct, total);
+  }
+
+  if (n === 3) {
+    ex3Data.forEach((item, i) => {
+      const inp = document.getElementById(`ex3inp${i}`);
+      const ok = inp.value.trim().toLowerCase() === item.answer.toLowerCase();
+      setFeedback(3, i, ok, item.answer);
+      if (ok) correct++;
+      total++;
+    });
+    showScore(3, correct, total);
+    markTabDone(2, correct, total);
+  }
+
+  if (n === 4) {
+    ex4Data.forEach((item, i) => {
+      const a = document.getElementById(`ex4inp${i}a`).value.trim().toLowerCase();
+      const b = document.getElementById(`ex4inp${i}b`).value.trim().toLowerCase();
+      const ok = a === item.answer[0].toLowerCase() && b === item.answer[1].toLowerCase();
+      const fb = document.getElementById(`ex4fb${i}`);
+      const el = document.getElementById(`ex4_${i}`);
+      fb.classList.add('show');
+      el.classList.remove('correct','wrong');
+      if (ok) {
+        el.classList.add('correct'); fb.classList.add('ok'); fb.classList.remove('err');
+        fb.textContent = '✓ Richtig!';
+        correct++;
+      } else {
+        el.classList.add('wrong'); fb.classList.add('err'); fb.classList.remove('ok');
+        fb.textContent = `✗ Richtig: "${item.answer[0]} … ${item.answer[1]}"`;
+      }
+      total++;
+    });
+    showScore(4, correct, total);
+    markTabDone(3, correct, total);
+  }
+
+  if (n === 5) {
+    ex5Data.forEach((item, i) => {
+      const inp = document.getElementById(`ex5inp${i}`);
+      const ok = inp.value.trim().toLowerCase() === item.answer.toLowerCase();
+      setFeedback(5, i, ok, item.answer);
+      if (ok) correct++;
+      total++;
+    });
+    showScore(5, correct, total);
+    markTabDone(4, correct, total);
+  }
+
+  if (n === 6) {
+    ex6Data.forEach((item, i) => {
+      const placed = window.placements6[i];
+      const dz = document.getElementById(`dz6_${i}`);
+      const fb = document.getElementById(`ex6fb${i}`);
+      const el = document.getElementById(`ex6_${i}`);
+      fb.classList.add('show');
+      el.classList.remove('correct','wrong');
+      dz.classList.remove('correct-drop','wrong-drop');
+      if (placed !== undefined && ex6Data[placed].word === item.answer) {
+        el.classList.add('correct'); dz.classList.add('correct-drop');
+        fb.classList.add('ok'); fb.classList.remove('err');
+        fb.textContent = `✓ Richtig! ${item.label}`;
+        correct++;
+      } else {
+        el.classList.add('wrong'); dz.classList.add('wrong-drop');
+        fb.classList.add('err'); fb.classList.remove('ok');
+        fb.textContent = `✗ Richtig: "${item.answer}" (${item.label})`;
+      }
+      total++;
+    });
+    showScore(6, correct, total);
+    markTabDone(5, correct, total);
+  }
+
+  if (n === 7) {
+    ex7Data.forEach((item, i) => {
+      const inp = document.getElementById(`ex7inp${i}`);
+      const val = inp.value.trim().replace(/\s+/g, ' ');
+      const ok = val.toLowerCase() === item.answer.toLowerCase();
+      const fb = document.getElementById(`ex7fb${i}`);
+      const el = document.getElementById(`ex7_${i}`);
+      fb.classList.add('show');
+      el.style.borderColor = '';
+      if (ok) {
+        el.style.borderColor = 'var(--success)'; el.style.background = '#F0FDF4';
+        fb.classList.add('ok'); fb.classList.remove('err');
+        fb.textContent = `✓ Richtig! ${item.explain}`;
+        correct++;
+      } else {
+        el.style.borderColor = 'var(--hard)'; el.style.background = 'var(--hard-light)';
+        fb.classList.add('err'); fb.classList.remove('ok');
+        fb.textContent = `✗ Richtig: "${item.answer}" | ${item.explain}`;
+      }
+      total++;
+    });
+    showScore(7, correct, total);
+    markTabDone(6, correct, total);
+  }
+}
+
+function setFeedback(exN, i, ok, correctAns) {
+  const fb = document.getElementById(`ex${exN}fb${i}`);
+  const el = document.getElementById(`ex${exN}_${i}`);
+  const inp = document.getElementById(`ex${exN}inp${i}`);
+  fb.classList.add('show');
+  el.classList.remove('correct','wrong');
+  if (inp) { inp.classList.remove('correct-inp','wrong-inp'); }
+  if (ok) {
+    el.classList.add('correct');
+    if (inp) inp.classList.add('correct-inp');
+    fb.classList.add('ok'); fb.classList.remove('err');
+    fb.textContent = '✓ Richtig!';
+  } else {
+    el.classList.add('wrong');
+    if (inp) inp.classList.add('wrong-inp');
+    fb.classList.add('err'); fb.classList.remove('ok');
+    fb.textContent = `✗ Richtig: "${correctAns}"`;
+  }
+}
+
+function showScore(n, correct, total) {
+  const box = document.getElementById(`score${n}`);
+  box.classList.add('show');
+  box.classList.remove('score-perfect','score-good','score-bad');
+  if (correct === total) {
+    box.className = 'score-box show score-perfect';
+    box.textContent = `🎉 Perfekt! ${correct}/${total} – Ausgezeichnet!`;
+  } else if (correct >= Math.ceil(total * 0.6)) {
+    box.className = 'score-box show score-good';
+    box.textContent = `👍 ${correct}/${total} – Gut! Überprüfe die Fehler.`;
+  } else {
+    box.className = 'score-box show score-bad';
+    box.textContent = `💪 ${correct}/${total} – Nochmal versuchen!`;
+  }
+}
+
+function resetEx(n) {
+  const scoreBox = document.getElementById(`score${n}`);
+  if (scoreBox) { scoreBox.classList.remove('show'); }
+
+  if (n === 6) {
+    buildEx6();
+    return;
+  }
+
+  const count = [0, ex1Data, ex2Data, ex3Data, ex4Data, ex5Data, ex6Data, ex7Data][n].length;
+  for (let i = 0; i < count; i++) {
+    const el = document.getElementById(`ex${n}_${i}`);
+    if (el) { el.classList.remove('correct','wrong'); el.style.borderColor=''; el.style.background=''; }
+    const fb = document.getElementById(`ex${n}fb${i}`);
+    if (fb) { fb.classList.remove('show','ok','err'); fb.textContent = ''; }
+
+    if (n === 4) {
+      const ia = document.getElementById(`ex4inp${i}a`);
+      const ib = document.getElementById(`ex4inp${i}b`);
+      if (ia) { ia.value = ''; ia.classList.remove('correct-inp','wrong-inp'); }
+      if (ib) { ib.value = ''; ib.classList.remove('correct-inp','wrong-inp'); }
+    } else if (n === 2) {
+      const sel = document.getElementById(`ex2inp${i}`);
+      if (sel) sel.selectedIndex = 0;
+    } else {
+      const inp = document.getElementById(`ex${n}inp${i}`);
+      if (inp) { inp.value = ''; inp.classList.remove('correct-inp','wrong-inp'); }
+    }
+  }
+}
+
+function showHints7() {
+  const h = document.getElementById('hints7');
+  h.style.display = h.style.display === 'none' ? 'block' : 'none';
+}
+
+// ===== NAV =====
+
+const tabLabels = ['Ü1 ▶PI', 'Ü2 ▶PI', 'Ü3 ✓PII', 'Ü4 ✓PII', 'Ü5 ⚡Mix', 'Ü6 ⚡Mix', 'Ü7 🔥'];
+
+function buildUebungNav() {
+  const nav = document.getElementById('uebungNav');
+  nav.innerHTML = tabLabels.map((lbl, i) =>
+    `<div class="u-tab ${i===0?'active-uebung':''}" id="utab${i}" onclick="showUebung(${i})">${lbl}</div>`
+  ).join('');
+}
+
+function showUebung(idx) {
+  document.querySelectorAll('.uebung-block').forEach((b,i) => {
+    b.style.display = i === idx ? 'block' : 'none';
+  });
+  document.querySelectorAll('.u-tab').forEach((t,i) => {
+    t.classList.toggle('active-uebung', i === idx);
+  });
+}
+
+function markTabDone(idx, correct, total) {
+  if (correct === total) {
+    const t = document.getElementById(`utab${idx}`);
+    if (t && !t.classList.contains('done')) {
+      t.classList.add('done');
+      t.classList.remove('active-uebung');
+    }
+  }
+}
+
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== INIT =====
+buildEx1();
+buildEx2();
+buildEx3();
+buildEx4();
+buildEx5();
+buildEx6();
+buildEx7();
+buildUebungNav();
+initVerbSelector();
+</script>
+</body>
+</html>

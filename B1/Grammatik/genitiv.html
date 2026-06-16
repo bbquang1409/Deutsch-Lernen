@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genitiv – Formen & Präpositionen</title>
+<style>
+  :root{
+    --slate:#5b6b8c;
+    --teal:#3f8a8c;
+    --sage:#8aa68a;
+    --indigo:#6b6b9c;
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#2e3440;
+    --muted:#6b7280;
+    --border:#d8dee6;
+    --green:#4f9d69;
+    --red:#c0564a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Tahoma, Verdana, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:40px;
+  }
+  .container{ max-width:760px; margin:0 auto; padding:16px; }
+  h1.pagetitle{ text-align:center; color:var(--slate); font-size:1.4rem; margin:10px 0 16px; }
+
+  .tabs{ display:flex; gap:6px; margin-bottom:16px; border-bottom:2px solid var(--border); flex-wrap:wrap; }
+  .tab-btn{
+    flex:1; min-width:120px; padding:10px 6px; background:#e9edf1; border:none;
+    border-radius:8px 8px 0 0; cursor:pointer; font-size:0.9rem; font-weight:bold; color:var(--slate);
+  }
+  .tab-btn.active{ background:var(--teal); color:#fff; }
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+
+  .intro{
+    background:var(--card); border-radius:10px; padding:18px 20px; margin-bottom:18px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.06); border-left:5px solid var(--teal);
+  }
+  .intro h2{margin-top:0; color:var(--slate); font-size:1.1rem;}
+  .intro table{ width:100%; border-collapse:collapse; margin:10px 0; font-size:0.92rem; }
+  .intro table th, .intro table td{ border:1px solid var(--border); padding:6px 8px; text-align:left; vertical-align:top; }
+  .intro table th{background:#eef2f5; color:var(--slate);}
+  .note{ background:#eef6f1; border-left:4px solid var(--green); padding:10px 14px; border-radius:6px; margin:10px 0; font-size:0.92rem; }
+  .note.warn{ background:#fbeeea; border-left:4px solid var(--red); }
+  .note.info{ background:#eef2fb; border-left:4px solid var(--indigo); }
+  code, .formel{ background:#eef2f5; padding:2px 6px; border-radius:4px; font-family:Consolas, monospace; color:var(--slate); }
+
+  /* Interactive */
+  .demo{ background:#fafbfc; border:1px dashed var(--sage); border-radius:8px; padding:14px; margin:14px 0; }
+  .demo-btns{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;}
+  .demo-btn{ background:var(--sage); color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:0.9rem; }
+  .demo-btn:hover{background:var(--indigo);}
+  .demo-btn.active{background:var(--teal);}
+  .demo-output{ margin-top:10px; padding:10px 14px; border-radius:6px; background:#eef2f5; font-size:1.02rem; min-height:50px; }
+  .hl-prep{color:var(--teal); font-weight:bold;}
+  .hl-art{color:var(--indigo); font-weight:bold;}
+  .hl-end{color:var(--red); font-weight:bold;}
+  .hl-noun{color:var(--teal); font-weight:bold;}
+
+  /* Exercises */
+  .section{ background:var(--card); border-radius:10px; padding:18px 20px; margin-bottom:18px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+  .section h2{
+    color:var(--slate); border-bottom:2px solid var(--sage); padding-bottom:8px; margin-top:0; font-size:1.1rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .level-tag{ font-size:0.7rem; padding:3px 8px; border-radius:12px; color:#fff; font-weight:normal; }
+  .lvl1{background:var(--sage);}
+  .lvl2{background:var(--teal);}
+  .lvl3{background:var(--slate);}
+  .lvl4{background:var(--indigo);}
+  .lvl5{background:var(--red);}
+  .section .desc{ color:var(--muted); font-size:0.9rem; margin-bottom:14px; }
+  .item{ margin-bottom:14px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:#fafbfc; }
+  .item .num{ font-weight:bold; color:var(--teal); margin-right:6px; }
+  .item input[type="text"]{ border:1px solid var(--border); border-radius:5px; padding:5px 8px; font-size:0.95rem; min-width:140px; font-family:inherit; }
+  .item input.correct{ border-color:var(--green); background:#eef9f0; }
+  .item input.wrong{ border-color:var(--red); background:#fdeeec; }
+  .feedback{ display:none; margin-top:6px; font-size:0.88rem; padding:6px 10px; border-radius:6px; }
+  .feedback.show{display:block;}
+  .feedback.correct{background:#eef9f0; color:var(--green); border:1px solid var(--green);}
+  .feedback.wrong{background:#fdeeec; color:var(--red); border:1px solid var(--red);}
+
+  .btn-row{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .btn{ background:var(--teal); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-size:0.95rem; font-weight:bold; }
+  .btn:hover{background:var(--slate);}
+  .btn.secondary{background:var(--sage);}
+  .btn.secondary:hover{background:var(--indigo);}
+  .score{ margin-top:10px; font-weight:bold; color:var(--slate); display:none; }
+  .score.show{display:block;}
+
+  footer{ text-align:center; color:var(--muted); font-size:0.85rem; padding:20px; }
+
+  @media (max-width:480px){
+    .tab-btn{font-size:0.8rem; padding:8px 4px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1 class="pagetitle">Genitiv – Formen & Präpositionen (B1)</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('tab1')">1. Erklärung: Formen</button>
+    <button class="tab-btn" onclick="showTab('tab2')">2. Übungen: Formen</button>
+    <button class="tab-btn" onclick="showTab('tab3')">3. Erklärung: Präpositionen</button>
+    <button class="tab-btn" onclick="showTab('tab4')">4. Übungen: Präpositionen</button>
+  </div>
+
+  <!-- ============ TAB 1: ERKLÄRUNG FORMEN ============ -->
+  <div class="tab-content active" id="tab1">
+
+    <div class="intro">
+      <h2>Genitiv – Formen</h2>
+      <table>
+        <tr><th>maskulin</th><th>neutral</th><th>feminin</th><th>Plural</th></tr>
+        <tr><td>des Vater<b>s</b></td><td>des Kind<b>es</b></td><td>der Mutter</td><td>der Eltern</td></tr>
+        <tr><td>eines Vater<b>s</b></td><td>eines Kind<b>es</b></td><td>einer Mutter</td><td>von Eltern</td></tr>
+      </table>
+
+      <div class="note">
+        <b>1. Endung:</b> maskulin/neutral + <b>-s</b> bzw. <b>-es</b> (nach -s, -ß, -sch, -x, -z und einsilbigen Wörtern). Feminin und Plural: keine Endung.
+      </div>
+      <div class="note">
+        <b>2. Eigennamen:</b> Name + <b>-s</b> + Nomen (ohne Artikel) – <span class="formel">Davids Auto</span>. Bei Namen auf -s/-x: Apostroph – <span class="formel">Hans' Auto</span>.
+      </div>
+      <div class="note info">
+        <b>3. Alternative:</b> Genitiv = <b>von + Dativ</b> – <span class="formel">das Auto des Vaters = das Auto von seinem Vater</span>. In der Schriftsprache bevorzugt man den Genitiv; in der gesprochenen Sprache oft "von".
+      </div>
+    </div>
+
+    <div class="intro">
+      <h2>Interaktives Beispiel</h2>
+      <p>Klicken Sie auf ein Nomen, um den Genitiv zu sehen.</p>
+      <div class="demo">
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="showGenitiv(0)">der Vater</button>
+          <button class="demo-btn" onclick="showGenitiv(1)">das Kind</button>
+          <button class="demo-btn" onclick="showGenitiv(2)">die Mutter</button>
+          <button class="demo-btn" onclick="showGenitiv(3)">das Glas</button>
+          <button class="demo-btn" onclick="showGenitiv(4)">die Eltern (Pl.)</button>
+          <button class="demo-btn" onclick="showGenitiv(5)">der Chef</button>
+        </div>
+        <div class="demo-output" id="genitivOutput">⇡ Klicken Sie auf ein Wort.</div>
+        <p style="font-size:0.85rem; color:var(--muted); margin-top:8px;">
+          <span class="hl-art">Artikel</span> · <span class="hl-end">Endung</span> · <span class="hl-noun">Nomen</span>
+        </p>
+      </div>
+
+    </div>
+
+    <div class="intro">
+      <h2>Transformation: Zwei Sätze → ein Satz mit Genitiv</h2>
+      <p>Klicken Sie auf ein Beispiel, um die Schritte zu sehen.</p>
+      <div class="demo">
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="showTransform(0)">Das ist ein Auto. Es gehört David.</button>
+          <button class="demo-btn" onclick="showTransform(1)">Das ist ein Buch. Es gehört dem Kind.</button>
+          <button class="demo-btn" onclick="showTransform(2)">Das ist eine Tür. Sie gehört dem Büro.</button>
+        </div>
+        <div class="demo-output" id="transformOutput">⇡ Klicken Sie auf ein Beispiel.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB 2: ÜBUNGEN FORMEN ============ -->
+  <div class="tab-content" id="tab2">
+
+    <div class="section" id="sec1">
+      <h2>Stufe 1 – Genitiv-Artikel <span class="level-tag lvl1">leicht</span></h2>
+      <p class="desc">Ergänzen Sie den passenden Artikel im Genitiv.</p>
+      <div id="items1"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(1)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(1)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score1"></div>
+    </div>
+
+    <div class="section" id="sec2">
+      <h2>Stufe 2 – Nomen-Endungen <span class="level-tag lvl2">etwas leichter</span></h2>
+      <p class="desc">Ergänzen Sie die Genitiv-Endung des Nomens.</p>
+      <div id="items2"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(2)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(2)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score2"></div>
+    </div>
+
+    <div class="section" id="sec3">
+      <h2>Stufe 3 – Genitiv bei Namen <span class="level-tag lvl3">mittel</span></h2>
+      <p class="desc">Schreiben Sie den Genitiv bei Namen.</p>
+      <div id="items3"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(3)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(3)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score3"></div>
+    </div>
+
+    <div class="section" id="sec4">
+      <h2>Stufe 4 – Genitiv ↔ von + Dativ <span class="level-tag lvl4">schwer</span></h2>
+      <p class="desc">Formen Sie um – wie angegeben.</p>
+      <div id="items4"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(4)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(4)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score4"></div>
+    </div>
+
+    <div class="section" id="sec5">
+      <h2>Stufe 5 – Sätze umformen <span class="level-tag lvl5">sehr schwer</span></h2>
+      <p class="desc">Schreiben Sie den ganzen Satz neu mit Genitiv (Beispiel: Der Freund von meiner Schwester → Der Freund meiner Schwester).</p>
+      <div id="items5"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(5)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(5)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score5"></div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB 3: ERKLÄRUNG PRÄPOSITIONEN ============ -->
+  <div class="tab-content" id="tab3">
+
+    <div class="intro">
+      <h2>Präpositionen mit Genitiv</h2>
+      <table>
+        <tr><th>Präposition</th><th>Bedeutung</th><th>Beispiel</th></tr>
+        <tr><td><b>während</b></td><td>temporal</td><td>Während des Essens raucht er.</td></tr>
+        <tr><td><b>wegen</b></td><td>kausal ("weil")</td><td>Wegen des Rauchs kann sie nicht essen.</td></tr>
+        <tr><td><b>trotz</b></td><td>konzessiv ("obwohl")</td><td>Trotz des Rauchs isst er.</td></tr>
+        <tr><td><b>innerhalb / außerhalb</b></td><td>lokal / temporal</td><td>Innerhalb / Außerhalb der Öffnungszeiten ...</td></tr>
+        <tr><td><b>aufgrund</b></td><td>kausal, formell</td><td>Aufgrund des Wetters fällt der Ausflug aus.</td></tr>
+      </table>
+
+      <div class="note">
+        <b>Bildung:</b> Präposition + Genitiv (Artikel + Nomen-Endung) – <span class="formel">wegen des Regens, trotz der Kälte, während der Ferien</span>
+      </div>
+      <div class="note info">
+        <b>Gesprochene Sprache:</b> <i>während, wegen, trotz</i> oft mit Dativ – <span class="formel">wegen dem Regen</span>. <i>innerhalb, außerhalb, aufgrund</i> stehen praktisch immer mit Genitiv. In Prüfungen: Genitiv verwenden.
+      </div>
+    </div>
+
+    <div class="intro">
+      <h2>Interaktives Beispiel</h2>
+      <p>Klicken Sie auf eine Präposition.</p>
+      <div class="demo">
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="showPrep(0)">während</button>
+          <button class="demo-btn" onclick="showPrep(1)">wegen</button>
+          <button class="demo-btn" onclick="showPrep(2)">trotz</button>
+          <button class="demo-btn" onclick="showPrep(3)">innerhalb</button>
+          <button class="demo-btn" onclick="showPrep(4)">außerhalb</button>
+          <button class="demo-btn" onclick="showPrep(5)">aufgrund</button>
+        </div>
+        <div class="demo-output" id="prepOutput">⇡ Klicken Sie auf eine Präposition.</div>
+        <p style="font-size:0.85rem; color:var(--muted); margin-top:8px;">
+          <span class="hl-prep">Präposition</span> · <span class="hl-art">Artikel</span> · <span class="hl-end">Endung</span>
+        </p>
+      </div>
+
+    </div>
+
+    <div class="intro">
+      <h2>Transformation: Zwei Sätze → ein Satz mit Präposition + Genitiv</h2>
+      <p>Klicken Sie auf ein Beispiel, um die Schritte zu sehen.</p>
+      <div class="demo">
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="showTransform2(0)">Es regnet. Wir bleiben zu Hause. (wegen)</button>
+          <button class="demo-btn" onclick="showTransform2(1)">Sie ist krank. Sie arbeitet weiter. (trotz)</button>
+          <button class="demo-btn" onclick="showTransform2(2)">Er isst. Er hört Musik. (während)</button>
+        </div>
+        <div class="demo-output" id="transformOutput2">⇡ Klicken Sie auf ein Beispiel.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB 4: ÜBUNGEN PRÄPOSITIONEN ============ -->
+  <div class="tab-content" id="tab4">
+
+    <div class="section" id="sec6">
+      <h2>Stufe 1 – Präposition + Genitiv-Artikel <span class="level-tag lvl1">leicht</span></h2>
+      <p class="desc">Ergänzen Sie die passende Präposition (wegen, trotz, während, innerhalb, außerhalb, aufgrund) und den Genitiv-Artikel.</p>
+      <div id="items6"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(6)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(6)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score6"></div>
+    </div>
+
+    <div class="section" id="sec7">
+      <h2>Stufe 2 – Nomen-Endung im Genitiv <span class="level-tag lvl2">etwas leichter</span></h2>
+      <p class="desc">Ergänzen Sie die Genitiv-Endung des Nomens nach der Präposition.</p>
+      <div id="items7"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(7)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(7)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score7"></div>
+    </div>
+
+    <div class="section" id="sec8">
+      <h2>Stufe 3 – Welche Präposition passt? <span class="level-tag lvl3">mittel</span></h2>
+      <p class="desc">Schreiben Sie die passende Präposition in die Lücke.</p>
+      <div id="items8"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(8)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(8)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score8"></div>
+    </div>
+
+    <div class="section" id="sec9">
+      <h2>Stufe 4 – Sätze verbinden <span class="level-tag lvl4">schwer</span></h2>
+      <p class="desc">Verbinden Sie die zwei Sätze mit der angegebenen Präposition + Genitiv.</p>
+      <div id="items9"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(9)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(9)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score9"></div>
+    </div>
+
+    <div class="section" id="sec10">
+      <h2>Stufe 5 – Genitiv-Endungen (Schriftsprache) <span class="level-tag lvl5">sehr schwer</span></h2>
+      <p class="desc">Ergänzen Sie die Endung des Artikels/Possessivums im Genitiv.</p>
+      <div id="items10"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkSection(10)">Prüfen</button>
+        <button class="btn secondary" onclick="resetSection(10)">Zurücksetzen</button>
+      </div>
+      <div class="score" id="score10"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>Genitiv – Formen & Präpositionen · B1 · Miteinander</footer>
+
+<script>
+
+/* ---------- TABS ---------- */
+function showTab(tabId){
+  var tabs = document.getElementsByClassName('tab-content');
+  for(var i=0; i<tabs.length; i++){ tabs[i].className = tabs[i].className.replace(' active',''); }
+  document.getElementById(tabId).className += ' active';
+
+  var btns = document.getElementsByClassName('tab-btn');
+  var map = {tab1:0, tab2:1, tab3:2, tab4:3};
+  for(var j=0; j<btns.length; j++){ btns[j].className = btns[j].className.replace(' active',''); }
+  btns[map[tabId]].className += ' active';
+}
+
+/* ---------- INTERAKTIVES BEISPIEL: Genitiv-Demo ---------- */
+var genitivData = [
+  {nom:"der Vater", art:"des", end:"-s", full:"des Vater<span class=\"hl-end\">s</span>"},
+  {nom:"das Kind", art:"des", end:"-es", full:"des Kind<span class=\"hl-end\">es</span>"},
+  {nom:"die Mutter", art:"der", end:"(keine)", full:"der Mutter"},
+  {nom:"das Glas", art:"des", end:"-es", full:"des Glas<span class=\"hl-end\">es</span>"},
+  {nom:"die Eltern (Pl.)", art:"der", end:"(keine)", full:"der Eltern"},
+  {nom:"der Chef", art:"des", end:"-s", full:"des Chef<span class=\"hl-end\">s</span>"}
+];
+
+function showGenitiv(idx){
+  var d = genitivData[idx];
+  var html = "<b>" + d.nom + "</b> &rarr; <span class=\"hl-art\">" + d.art + "</span> " + d.full +
+             "<br>Endung: <span class=\"hl-end\">" + d.end + "</span> · Beispiel: das Auto " + d.art + " " + d.full.replace(/<[^>]*>/g,"");
+  document.getElementById("genitivOutput").innerHTML = html;
+
+  var btns = document.querySelectorAll("#tab1 .demo-btn");
+  for(var i=0; i<btns.length; i++){ btns[i].className = btns[i].className.replace(' active',''); }
+  btns[idx].className += " active";
+}
+
+/* ---------- INTERAKTIVES BEISPIEL: Präposition-Demo ---------- */
+var prepData = [
+  {name:"während", sentence:"<span class=\"hl-prep\">Während</span> <span class=\"hl-art\">des</span> Essen<span class=\"hl-end\">s</span> raucht er.", note:"temporal: zwei Dinge passieren gleichzeitig"},
+  {name:"wegen", sentence:"<span class=\"hl-prep\">Wegen</span> <span class=\"hl-art\">des</span> Rauch<span class=\"hl-end\">s</span> kann sie nicht essen.", note:"kausal: Grund (= weil)"},
+  {name:"trotz", sentence:"<span class=\"hl-prep\">Trotz</span> <span class=\"hl-art\">des</span> Rauch<span class=\"hl-end\">s</span> isst er.", note:"konzessiv: Gegenargument (= obwohl)"},
+  {name:"innerhalb", sentence:"<span class=\"hl-prep\">Innerhalb</span> <span class=\"hl-art\">der</span> Öffnungszeiten ist alles offen.", note:"in einem Zeitraum / Bereich"},
+  {name:"außerhalb", sentence:"<span class=\"hl-prep\">Außerhalb</span> <span class=\"hl-art\">der</span> Öffnungszeiten ist es geschlossen.", note:"nicht in diesem Zeitraum / Bereich"},
+  {name:"aufgrund", sentence:"<span class=\"hl-prep\">Aufgrund</span> <span class=\"hl-art\">des</span> schlechten Wetter<span class=\"hl-end\">s</span> fällt der Ausflug aus.", note:"kausal, formell (= wegen)"}
+];
+
+function showPrep(idx){
+  var d = prepData[idx];
+  document.getElementById("prepOutput").innerHTML = d.sentence + "<br><span style='color:var(--muted); font-size:0.9rem;'>" + d.note + "</span>";
+  var btns = document.querySelectorAll("#tab3 .demo-btn");
+  for(var i=0; i<btns.length; i++){ btns[i].className = btns[i].className.replace(' active',''); }
+  btns[idx].className += " active";
+}
+
+/* ---------- TRANSFORMATION DEMO: Genitiv-Formen ---------- */
+var transformData = [
+  {
+    steps:[
+      "Schritt 1: Zwei Sätze – <i>Das ist ein Auto. Es gehört David.</i>",
+      "Schritt 2: David ist ein Name → <span class=\"hl-noun\">David</span> + <span class=\"hl-end\">-s</span> + Nomen (ohne Artikel)",
+      "Ergebnis: <b><span class=\"hl-noun\">Davids</span> Auto</b>"
+    ]
+  },
+  {
+    steps:[
+      "Schritt 1: Zwei Sätze – <i>Das ist ein Buch. Es gehört dem Kind.</i>",
+      "Schritt 2: \"das Kind\" ist neutral → Genitiv-Artikel <span class=\"hl-art\">des</span>, Nomen + <span class=\"hl-end\">-es</span>",
+      "Schritt 3: Nomen + Genitiv (Artikel zuerst)",
+      "Ergebnis: <b>das Buch <span class=\"hl-art\">des</span> Kind<span class=\"hl-end\">es</span></b>"
+    ]
+  },
+  {
+    steps:[
+      "Schritt 1: Zwei Sätze – <i>Das ist eine Tür. Sie gehört dem Büro.</i>",
+      "Schritt 2: \"das Büro\" ist neutral → Genitiv-Artikel <span class=\"hl-art\">des</span>, Nomen + <span class=\"hl-end\">-s</span>",
+      "Schritt 3: Nomen + Genitiv (Artikel zuerst)",
+      "Ergebnis: <b>die Tür <span class=\"hl-art\">des</span> Büro<span class=\"hl-end\">s</span></b> (= die Tür von dem Büro)"
+    ]
+  }
+];
+
+function showTransform(idx){
+  var steps = transformData[idx].steps;
+  var html = "";
+  for(var i=0; i<steps.length; i++){
+    html += "<p style='margin:4px 0;'>" + steps[i] + "</p>";
+  }
+  document.getElementById("transformOutput").innerHTML = html;
+
+  var btns = document.querySelectorAll("#tab1 .demo-btn");
+  for(var j=0; j<btns.length; j++){ btns[j].className = btns[j].className.replace(' active',''); }
+  btns[idx].className += " active";
+}
+
+/* ---------- TRANSFORMATION DEMO: Präpositionen ---------- */
+var transformData2 = [
+  {
+    steps:[
+      "Schritt 1: Zwei Sätze – <i>Es regnet. Wir bleiben zu Hause.</i> (Grund → <span class=\"hl-prep\">wegen</span>)",
+      "Schritt 2: \"der Regen\" → Genitiv-Artikel <span class=\"hl-art\">des</span>, Nomen + <span class=\"hl-end\">-s</span>",
+      "Schritt 3: Präposition + Genitiv-Phrase + Hauptsatz",
+      "Ergebnis: <b><span class=\"hl-prep\">Wegen</span> <span class=\"hl-art\">des</span> Regen<span class=\"hl-end\">s</span> bleiben wir zu Hause.</b>"
+    ]
+  },
+  {
+    steps:[
+      "Schritt 1: Zwei Sätze – <i>Sie ist krank. Sie arbeitet weiter.</i> (Gegenargument → <span class=\"hl-prep\">trotz</span>)",
+      "Schritt 2: \"ihre Krankheit\" → feminin, Possessiv-Genitiv <span class=\"hl-art\">ihrer</span>, keine Nomen-Endung",
+      "Schritt 3: Präposition + Genitiv-Phrase + Hauptsatz",
+      "Ergebnis: <b><span class=\"hl-prep\">Trotz</span> <span class=\"hl-art\">ihrer</span> Krankheit arbeitet sie weiter.</b>"
+    ]
+  },
+  {
+    steps:[
+      "Schritt 1: Zwei Sätze – <i>Er isst. Er hört Musik.</i> (gleichzeitig → <span class=\"hl-prep\">während</span>)",
+      "Schritt 2: \"das Essen\" → neutral, Genitiv-Artikel <span class=\"hl-art\">des</span>, Nomen + <span class=\"hl-end\">-s</span>",
+      "Schritt 3: Präposition + Genitiv-Phrase + Hauptsatz",
+      "Ergebnis: <b><span class=\"hl-prep\">Während</span> <span class=\"hl-art\">des</span> Essen<span class=\"hl-end\">s</span> hört er Musik.</b>"
+    ]
+  }
+];
+
+function showTransform2(idx){
+  var steps = transformData2[idx].steps;
+  var html = "";
+  for(var i=0; i<steps.length; i++){
+    html += "<p style='margin:4px 0;'>" + steps[i] + "</p>";
+  }
+  document.getElementById("transformOutput2").innerHTML = html;
+
+  var btns = document.querySelectorAll("#tab3 .demo-btn");
+  for(var j=0; j<btns.length; j++){ btns[j].className = btns[j].className.replace(' active',''); }
+  btns[idx].className += " active";
+}
+
+/* ---------- HELPER (Übungen) ---------- */
+function normalize(str){
+  str = str.toLowerCase();
+  str = str.replace(/\s+/g, " ");
+  str = str.trim();
+  str = str.replace(/[.,!?]+$/, "");
+  return str;
+}
+
+function checkAnswers(items, sectionNum){
+  var correctCount = 0;
+  for(var i=0; i<items.length; i++){
+    var input = document.getElementById("ans" + sectionNum + "_" + i);
+    var feedback = document.getElementById("fb" + sectionNum + "_" + i);
+    var userVal = normalize(input.value);
+    var isCorrect = false;
+    var accepted = items[i].answers;
+    for(var j=0; j<accepted.length; j++){
+      if(userVal === normalize(accepted[j])){
+        isCorrect = true;
+        break;
+      }
+    }
+    if(isCorrect){
+      input.className = "correct";
+      feedback.className = "feedback show correct";
+      feedback.innerHTML = "Richtig!";
+      correctCount++;
+    } else {
+      input.className = "wrong";
+      feedback.className = "feedback show wrong";
+      feedback.innerHTML = "Lösung: " + items[i].answers[0];
+    }
+  }
+  var scoreEl = document.getElementById("score" + sectionNum);
+  scoreEl.className = "score show";
+  scoreEl.innerHTML = "Ergebnis: " + correctCount + " / " + items.length + " richtig";
+}
+
+function resetAnswers(items, sectionNum){
+  for(var i=0; i<items.length; i++){
+    var input = document.getElementById("ans" + sectionNum + "_" + i);
+    var feedback = document.getElementById("fb" + sectionNum + "_" + i);
+    input.value = "";
+    input.className = "";
+    feedback.className = "feedback";
+    feedback.innerHTML = "";
+  }
+  var scoreEl = document.getElementById("score" + sectionNum);
+  scoreEl.className = "score";
+  scoreEl.innerHTML = "";
+}
+
+function buildSection(items, containerId){
+  var container = document.getElementById(containerId);
+  var html = "";
+  for(var i=0; i<items.length; i++){
+    var sectionNum = containerId.replace("items","");
+    html += '<div class="item">';
+    html += '<span class="num">' + (i+1) + '.</span>' + items[i].text;
+    html += '<br><input type="text" id="ans' + sectionNum + '_' + i + '" placeholder="Antwort">';
+    html += '<div class="feedback" id="fb' + sectionNum + '_' + i + '"></div>';
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+/* ===================================================================
+   TAB 2 – ÜBUNGEN FORMEN (Items 1-5)
+=================================================================== */
+
+/* STUFE 1: Genitiv-Artikel */
+var items1 = [
+  {text:"Das ist das Fahrrad ___ Lehrers.", answers:["des"]},
+  {text:"Das ist das Auto ___ Chefin.", answers:["der"]},
+  {text:"Das ist das Spielzeug ___ Kindes.", answers:["des"]},
+  {text:"Das ist die Wohnung ___ Studenten.", answers:["der"]},
+  {text:"Das ist der Computer ___ Kollegen.", answers:["eines"]},
+  {text:"Das ist die Tasche ___ Frau.", answers:["einer"]},
+  {text:"Das ist der Name ___ Mädchens.", answers:["eines"]},
+  {text:"Wegen ___ schlechten Wetters bleiben wir zu Hause.", answers:["des"]},
+  {text:"Trotz ___ Krankheit geht sie zur Arbeit.", answers:["der"]},
+  {text:"Das ist die Tür ___ Büros. (sein)", answers:["seines"]},
+  {text:"Das ist die Adresse ___ Schwester. (ihr)", answers:["ihrer"]},
+  {text:"Das ist das Geschenk ___ Kindes. (unser)", answers:["unseres"]},
+  {text:"Das sind die Bücher ___ Eltern. (mein)", answers:["meiner"]}
+];
+
+/* STUFE 2: Endungen -s / -es */
+var items2 = [
+  {text:"das Auto des Vater___", answers:["s"]},
+  {text:"das Zimmer des Kind___", answers:["es"]},
+  {text:"die Größe des Glas___", answers:["es"]},
+  {text:"der Preis des Haus___", answers:["es"]},
+  {text:"die Farbe des Auto___", answers:["s"]},
+  {text:"der Name des Chef___", answers:["s"]},
+  {text:"die Tür des Büro___", answers:["s"]},
+  {text:"das Ende des Tag___", answers:["es"]},
+  {text:"die Telefonnummer des Arzt___", answers:["es"]},
+  {text:"der Titel des Buch___", answers:["es"]},
+  {text:"die Adresse des Mann___", answers:["es"]},
+  {text:"das Datum des Geburtstag___", answers:["s"]},
+  {text:"der Bahnhof des Ort___", answers:["es"]}
+];
+
+/* STUFE 3: Genitiv bei Namen */
+var items3 = [
+  {text:"Das ist das Auto. (David)", answers:["Davids Auto"]},
+  {text:"Das ist die Tasche. (Anna)", answers:["Annas Tasche"]},
+  {text:"Das ist der Bruder. (Tobias)", answers:["Tobias' Bruder"]},
+  {text:"Das ist das Bilderbuch. (Judith)", answers:["Judiths Bilderbuch"]},
+  {text:"Das ist die Mutter. (Felix)", answers:["Felix' Mutter"]},
+  {text:"Das ist der Hund. (Susi)", answers:["Susis Hund"]},
+  {text:"Das ist das Handy. (Max)", answers:["Max' Handy"]},
+  {text:"Das ist die Wohnung. (Lena)", answers:["Lenas Wohnung"]},
+  {text:"Das ist der Chef. (Beatrix)", answers:["Beatrix' Chef"]},
+  {text:"Das ist die Idee. (Markus)", answers:["Markus' Idee"]},
+  {text:"Das ist das Fahrrad. (Sophie)", answers:["Sophies Fahrrad"]},
+  {text:"Das ist der Schlüssel. (Thomas)", answers:["Thomas' Schlüssel"]},
+  {text:"Das ist die Familie. (Paul)", answers:["Pauls Familie"]}
+];
+
+/* STUFE 4: Genitiv <-> von + Dativ */
+var items4 = [
+  {text:"Schreiben Sie mit 'von': das Auto des Lehrers", answers:["das Auto von dem Lehrer", "das Auto vom Lehrer"]},
+  {text:"Schreiben Sie mit 'von': die Tasche der Frau", answers:["die Tasche von der Frau"]},
+  {text:"Schreiben Sie mit Genitiv: das Haus von meinem Onkel", answers:["das Haus meines Onkels"]},
+  {text:"Schreiben Sie mit Genitiv: die Tochter von unserer Nachbarin", answers:["die Tochter unserer Nachbarin"]},
+  {text:"Schreiben Sie mit 'von': der Geburtstag des Kindes", answers:["der Geburtstag von dem Kind", "der Geburtstag vom Kind"]},
+  {text:"Schreiben Sie mit Genitiv: die Farbe von dem Auto", answers:["die Farbe des Autos"]},
+  {text:"Schreiben Sie mit 'von': die Eltern der Schüler", answers:["die Eltern von den Schülern"]},
+  {text:"Schreiben Sie mit Genitiv: das Büro von meiner Chefin", answers:["das Büro meiner Chefin"]},
+  {text:"Schreiben Sie mit 'von': der Name des Hotels", answers:["der Name von dem Hotel", "der Name vom Hotel"]},
+  {text:"Schreiben Sie mit Genitiv: die Größe von dem Zimmer", answers:["die Größe des Zimmers"]},
+  {text:"Schreiben Sie mit 'von' (kein Artikel, Plural): die Wünsche der Kunden", answers:["die Wünsche von Kunden"]},
+  {text:"Schreiben Sie mit Genitiv: der Plan von meinem Kollegen", answers:["der Plan meines Kollegen"]},
+  {text:"Schreiben Sie mit 'von': das Ende der Geschichte", answers:["das Ende von der Geschichte"]}
+];
+
+/* STUFE 5: Sätze umformen */
+var items5 = [
+  {text:"Der Freund von meiner Freundin hat schöne Augen.", answers:["der Freund meiner Freundin hat schöne augen"]},
+  {text:"Die Tasche von Luisa ist schöner als meine.", answers:["luisas tasche ist schöner als meine"]},
+  {text:"Das Auto von meinem Chef ist schneller als mein Motorrad.", answers:["das auto meines chefs ist schneller als mein motorrad"]},
+  {text:"Die Geschwister von meinen Freunden sind netter als meine.", answers:["die geschwister meiner freunde sind netter als meine"]},
+  {text:"Das Haus von meiner Schwester war teurer als unseres.", answers:["das haus meiner schwester war teurer als unseres"]},
+  {text:"Die Tür von ihrem Haus ist moderner als die Tür von unserem Haus.", answers:["die tür ihres hauses ist moderner als die tür unseres hauses"]},
+  {text:"Das Gehalt von meinem Schwager ist viel besser als das von uns.", answers:["das gehalt meines schwagers ist viel besser als unseres"]},
+  {text:"Aber die Probleme von meinen Nachbarn sind größer als meine.", answers:["aber die probleme meiner nachbarn sind größer als meine"]},
+  {text:"Die Kinder von meiner Kollegin gehen auf dieselbe Schule.", answers:["die kinder meiner kollegin gehen auf dieselbe schule"]},
+  {text:"Der Garten von unseren Großeltern ist sehr groß.", answers:["der garten unserer großeltern ist sehr groß"]},
+  {text:"Die Meinung von dem Arzt war anders.", answers:["die meinung des arztes war anders"]},
+  {text:"Der Computer von meinem Bruder ist neu.", answers:["der computer meines bruders ist neu"]},
+  {text:"Die Sprache von den Österreichern klingt anders.", answers:["die sprache der österreicher klingt anders"]}
+];
+
+/* ===================================================================
+   TAB 4 – ÜBUNGEN PRÄPOSITIONEN (Items 6-10)
+=================================================================== */
+
+/* STUFE 1: Präposition + Artikel */
+var items6 = [
+  {text:"___ Sturms bleiben die Schiffe im Hafen.", answers:["wegen des"]},
+  {text:"___ Müdigkeit arbeitet er weiter.", answers:["trotz der"]},
+  {text:"___ Sommerferien sind die Schulen geschlossen.", answers:["während der"]},
+  {text:"___ Gebäudes darf man nicht rauchen.", answers:["innerhalb des"]},
+  {text:"___ Stadt gibt es viele Felder.", answers:["außerhalb der"]},
+  {text:"___ Streiks fahren heute keine Busse.", answers:["aufgrund des"]},
+  {text:"___ Krankheit konnte sie nicht kommen. (ihr)", answers:["wegen ihrer"]},
+  {text:"___ Regens gehen wir spazieren.", answers:["trotz des"]},
+  {text:"___ Gesprächs war er sehr nervös.", answers:["während des"]},
+  {text:"___ Teams arbeitet er sehr gut. (sein)", answers:["innerhalb seines"]},
+  {text:"___ Öffnungszeiten erreicht man uns telefonisch.", answers:["außerhalb der"]},
+  {text:"___ hohen Nachfrage ist das Produkt ausverkauft.", answers:["aufgrund der"]},
+  {text:"___ Lärms kann ich mich nicht konzentrieren.", answers:["wegen des"]}
+];
+
+/* STUFE 2: Nomen-Endungen */
+var items7 = [
+  {text:"wegen des Regen___", answers:["s"]},
+  {text:"trotz des Geld___", answers:["es"]},
+  {text:"während des Unterricht___", answers:["s"]},
+  {text:"innerhalb eines Jahr___", answers:["es"]},
+  {text:"außerhalb der Stadt___", answers:[""]},
+  {text:"aufgrund des Problem___", answers:["s"]},
+  {text:"wegen des Kind___", answers:["es"]},
+  {text:"während des Spiel___", answers:["s"]},
+  {text:"trotz des Lärm___", answers:["s"]},
+  {text:"innerhalb des Hauses___", answers:[""]},
+  {text:"wegen des Geburtstag___", answers:["s"]},
+  {text:"trotz seiner Kopfschmerzen___", answers:[""]},
+  {text:"während des Fest___", answers:["es"]}
+];
+
+/* STUFE 3: Welche Präposition passt */
+var items8 = [
+  {text:"_______ des Wetters können wir nicht ausgehen.", answers:["wegen"]},
+  {text:"_______ des Geldes ist er nicht glücklich.", answers:["wegen"]},
+  {text:"Die Fahrkarte ist nur _______ der Stadt gültig.", answers:["innerhalb"]},
+  {text:"Sie geht _______ der Kälte ohne Mantel spazieren.", answers:["trotz"]},
+  {text:"_______ der Fahrt höre ich Musik.", answers:["während"]},
+  {text:"_______ der Öffnungszeiten können Sie eine Nachricht hinterlassen.", answers:["außerhalb"]},
+  {text:"_______ des Unterrichts sprach niemand.", answers:["während"]},
+  {text:"_______ der hohen Kosten haben sie das Projekt gestoppt.", answers:["aufgrund"]},
+  {text:"_______ eines Tages raucht er 40 Zigaretten.", answers:["innerhalb"]},
+  {text:"_______ des Lottogewinns hat sie das Examen gemacht.", answers:["trotz"]},
+  {text:"_______ der Krankheit muss er viel arbeiten.", answers:["trotz"]},
+  {text:"_______ der Ferien können sie lange schlafen.", answers:["während"]},
+  {text:"_______ des technischen Defekts fällt der Unterricht aus.", answers:["aufgrund"]}
+];
+
+/* STUFE 4: Sätze verbinden */
+var items9 = [
+  {text:"Es regnet. Wir bleiben zu Hause. (wegen)", answers:["wegen des regens bleiben wir zu hause"]},
+  {text:"Sie ist krank. Sie geht trotzdem zur Arbeit. (trotz)", answers:["trotz ihrer krankheit geht sie zur arbeit"]},
+  {text:"Ich esse. Ich höre Musik. (während)", answers:["während des essens höre ich musik"]},
+  {text:"Man kann jederzeit kommen. Es ist innerhalb der Öffnungszeiten. (innerhalb)", answers:["innerhalb der öffnungszeiten kann man jederzeit kommen"]},
+  {text:"Es gibt einen Streik. Die Busse fahren nicht. (aufgrund)", answers:["aufgrund des streiks fahren die busse nicht"]},
+  {text:"Es ist laut. Die Leute sind gestresst. (wegen)", answers:["wegen des lärms sind die leute gestresst"]},
+  {text:"Er hat Kopfschmerzen. Er arbeitet weiter. (trotz)", answers:["trotz seiner kopfschmerzen arbeitet er weiter"]},
+  {text:"Die Kinder schlafen. Im Haus ist es ruhig. (während)", answers:["während die kinder schlafen ist es im haus ruhig", "während des schlafens der kinder ist es im haus ruhig"]},
+  {text:"Es ist außerhalb der Schulzeit. Die Bibliothek ist geschlossen. (außerhalb)", answers:["außerhalb der schulzeit ist die bibliothek geschlossen"]},
+  {text:"Es gibt technische Probleme. Der Unterricht fällt aus. (aufgrund)", answers:["aufgrund technischer probleme fällt der unterricht aus"]},
+  {text:"Sie hat viel Erfahrung. Sie hat den Job nicht bekommen. (trotz)", answers:["trotz ihrer erfahrung hat sie den job nicht bekommen"]},
+  {text:"Es ist eine Woche. Wir fahren in den Urlaub. (innerhalb)", answers:["innerhalb einer woche fahren wir in den urlaub"]},
+  {text:"Der Preis ist hoch. Niemand kauft das Produkt. (wegen)", answers:["wegen des hohen preises kauft niemand das produkt"]}
+];
+
+/* STUFE 5: Genitiv-Endungen Schriftsprache */
+var items10 = [
+  {text:"Während d___ Treffens war es sehr ruhig.", answers:["es"]},
+  {text:"Wegen mein___ Arbeit kann ich nicht kommen.", answers:["er"]},
+  {text:"Trotz d___ Schwierigkeiten haben wir es geschafft.", answers:["er"]},
+  {text:"Innerhalb ein___ Monats bekommen Sie eine Antwort.", answers:["es"]},
+  {text:"Außerhalb d___ Saison sind die Preise niedriger.", answers:["er"]},
+  {text:"Aufgrund d___ hohen Kosten verzichten wir darauf.", answers:["er"]},
+  {text:"Während mein___ Praktikums habe ich viel gelernt.", answers:["es"]},
+  {text:"Wegen d___ starken Verkehrs kam er spät.", answers:["es"]},
+  {text:"Trotz sein___ Müdigkeit blieb er wach.", answers:["er"]},
+  {text:"Innerhalb d___ Frist müssen Sie antworten.", answers:["er"]},
+  {text:"Außerhalb d___ Gebäudes ist das Rauchen erlaubt.", answers:["es"]},
+  {text:"Wegen unser___ Kinder mussten wir früh gehen.", answers:["er"]},
+  {text:"Während d___ ganzen Tages hat es geregnet.", answers:["es"]}
+];
+
+/* Build all sections */
+buildSection(items1, "items1");
+buildSection(items2, "items2");
+buildSection(items3, "items3");
+buildSection(items4, "items4");
+buildSection(items5, "items5");
+buildSection(items6, "items6");
+buildSection(items7, "items7");
+buildSection(items8, "items8");
+buildSection(items9, "items9");
+buildSection(items10, "items10");
+
+function getItems(num){
+  if(num===1) return items1;
+  if(num===2) return items2;
+  if(num===3) return items3;
+  if(num===4) return items4;
+  if(num===5) return items5;
+  if(num===6) return items6;
+  if(num===7) return items7;
+  if(num===8) return items8;
+  if(num===9) return items9;
+  if(num===10) return items10;
+}
+
+function checkSection(num){
+  checkAnswers(getItems(num), num);
+}
+
+function resetSection(num){
+  resetAnswers(getItems(num), num);
+}
+
+</script>
+
+</body>
+</html>

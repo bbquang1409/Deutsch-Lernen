@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verben mit Akkusativ und Dativ – A2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+:root {
+  --bg:#f5f4f1; --card:#fff; --border:#e0dbd4; --text:#1e1c19; --muted:#7a736a;
+  --subj:#1d4ed8; --subj-bg:#eff6ff; --subj-bd:#bfdbfe;
+  --dativ:#b45309; --dativ-bg:#fffbeb; --dativ-bd:#fcd34d;
+  --akku:#047857; --akku-bg:#ecfdf5; --akku-bd:#6ee7b7;
+  --intrans:#6d28d9; --intrans-bg:#f5f3ff; --intrans-bd:#c4b5fd;
+  --accent:#b45309; --shadow:0 2px 8px rgba(30,28,25,.09); --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+
+/* HEADER */
+.phdr{background:linear-gradient(135deg,#fff8ee 0%,#fef3c7 100%);border-bottom:2px solid #fcd34d;padding:26px 20px 22px;text-align:center;}
+.phdr .eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:5px;}
+.phdr h1{font-family:'Playfair Display',serif;font-size:1.55rem;color:var(--text);line-height:1.2;}
+.phdr .sub{font-size:.8rem;color:var(--muted);margin-top:5px;}
+
+/* TABS */
+.tnav{display:flex;overflow-x:auto;background:#f0ece6;border-bottom:2px solid var(--border);
+  padding:8px 10px 0;gap:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tnav::-webkit-scrollbar{display:none;}
+.tbtn{flex-shrink:0;padding:9px 15px;font-size:.78rem;font-weight:600;color:var(--muted);
+  border:1.5px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;
+  background:transparent;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.tbtn.active{background:#fff;color:var(--accent);border-color:var(--border);
+  border-bottom-color:#fff;box-shadow:0 -2px 6px rgba(0,0,0,.06);margin-bottom:-2px;padding-bottom:11px;}
+.tbtn:hover:not(.active){background:#e8e2da;color:var(--text);}
+
+.tpanel{display:none;padding:18px 14px;max-width:680px;margin:0 auto;}
+.tpanel.active{display:block;}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);
+  padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.ctitle{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.ctitle::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;
+  font-size:.7rem;font-weight:700;letter-spacing:.02em;border:1.5px solid;}
+.bs{background:var(--subj-bg);color:var(--subj);border-color:var(--subj-bd);}
+.bd{background:var(--dativ-bg);color:var(--dativ);border-color:var(--dativ-bd);}
+.ba{background:var(--akku-bg);color:var(--akku);border-color:var(--akku-bd);}
+.bi{background:var(--intrans-bg);color:var(--intrans);border-color:var(--intrans-bd);}
+
+/* SENTENCE DIAGRAM */
+.sdiag{background:var(--bg);border-radius:9px;padding:13px 14px;margin:8px 0;
+  display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.w{padding:5px 11px;border-radius:7px;font-size:.95rem;font-weight:600;display:inline-block;}
+.ws{background:var(--subj-bg);color:var(--subj);border:2px solid var(--subj-bd);}
+.wv{background:#fef3c7;color:#92400e;border:2px solid #fcd34d;}
+.wd{background:var(--dativ-bg);color:var(--dativ);border:2px solid var(--dativ-bd);}
+.wa{background:var(--akku-bg);color:var(--akku);border:2px solid var(--akku-bd);}
+.wi{background:var(--intrans-bg);color:var(--intrans);border:2px solid var(--intrans-bd);}
+.wn{background:transparent;color:var(--text);border:none;padding:5px 4px;}
+
+/* FORMULA */
+.formula{border-radius:9px;padding:12px 14px;margin:10px 0;border:2px dashed;}
+.fa{border-color:var(--akku-bd);background:var(--akku-bg);}
+.fd{border-color:var(--dativ-bd);background:var(--dativ-bg);}
+.fb2{background:linear-gradient(135deg,#fffbeb,#ecfdf5);border-color:#86efac;}
+.fi{border-color:var(--intrans-bd);background:var(--intrans-bg);}
+.ftitle{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:5px;}
+.frow{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-weight:600;font-size:.88rem;}
+.arr{color:var(--muted);}
+
+/* TRICK */
+.trick{background:#fffbeb;border:2px solid var(--dativ-bd);border-radius:9px;
+  padding:12px 14px;margin:10px 0;}
+.ttitle{font-size:.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--dativ);margin-bottom:5px;}
+.trick p{font-size:.84rem;line-height:1.65;}
+
+/* ROLE BOXES */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0;}
+@media(max-width:400px){.roles{grid-template-columns:1fr;}}
+.rbox{padding:11px 13px;border-radius:9px;border:2px solid;font-size:.79rem;}
+.rbs{background:var(--subj-bg);border-color:var(--subj-bd);}
+.rbd{background:var(--dativ-bg);border-color:var(--dativ-bd);}
+.rba{background:var(--akku-bg);border-color:var(--akku-bd);}
+.rbi{background:var(--intrans-bg);border-color:var(--intrans-bd);}
+.rtitle{font-weight:700;margin-bottom:3px;}
+.rq{font-size:.7rem;color:var(--muted);margin-bottom:2px;}
+.reg{font-style:italic;font-size:.76rem;}
+
+/* BEISPIEL CARDS */
+.bsp-list{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
+.bsp-card{border-radius:9px;border:1.5px solid var(--border);background:var(--card);
+  cursor:pointer;overflow:hidden;transition:box-shadow .15s;}
+.bsp-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.1);}
+.bsp-front{padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.bsp-sent{font-size:.95rem;font-weight:600;flex:1;}
+.bsp-arrow{font-size:.8rem;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.bsp-card.open .bsp-arrow{transform:rotate(90deg);}
+.bsp-back{display:none;padding:11px 14px 13px;border-top:1px solid var(--border);
+  background:var(--bg);font-size:.82rem;line-height:1.65;}
+.bsp-card.open .bsp-back{display:block;}
+.bsp-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+.bsp-label{font-size:.68rem;color:var(--muted);margin-top:4px;}
+.bsp-explain{font-size:.82rem;color:var(--text);line-height:1.6;margin-top:6px;}
+
+/* VERB GRID */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px;margin:10px 0;}
+.vc{padding:8px 9px;border-radius:7px;font-size:.78rem;font-weight:600;text-align:center;border:1.5px solid;}
+.vca{background:var(--akku-bg);color:var(--akku);border-color:var(--akku-bd);}
+.vcd{background:var(--dativ-bg);color:var(--dativ);border-color:var(--dativ-bd);}
+.vcb{background:linear-gradient(135deg,var(--dativ-bg),var(--akku-bg));color:#1e1c19;border-color:#a7f3d0;}
+.vci{background:var(--intrans-bg);color:var(--intrans);border-color:var(--intrans-bd);}
+.vcn{font-size:.67rem;font-weight:400;color:var(--muted);display:block;margin-top:1px;}
+
+/* TABLE */
+.wtbl{width:100%;border-collapse:collapse;font-size:.81rem;margin:10px 0;}
+.wtbl th{background:#fef3c7;color:#92400e;border-bottom:2px solid #fcd34d;padding:7px 9px;text-align:left;
+  font-size:.68rem;font-weight:700;letter-spacing:.05em;}
+.wtbl td{padding:7px 9px;border-bottom:1px solid var(--border);vertical-align:top;}
+.wtbl tr:last-child td{border-bottom:none;}
+.wtbl tr:nth-child(even) td{background:#fafaf8;}
+.ts{color:var(--subj);font-weight:700;} .td{color:var(--dativ);font-weight:700;}
+.ta{color:var(--akku);font-weight:700;} .tv{color:var(--accent);font-weight:700;}
+
+/* EXERCISE */
+.exc{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);
+  padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.exhdr{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.exnum{width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.77rem;font-weight:700;flex-shrink:0;}
+.extitle{font-size:.9rem;font-weight:700;}
+.exdesc{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+
+/* Fill blank */
+.fsent{font-size:.92rem;line-height:2.5;margin-bottom:4px;}
+.fblank{display:inline-block;min-width:80px;border:none;border-bottom:2px solid var(--accent);
+  background:transparent;color:var(--text);font-size:.9rem;font-family:'Inter',sans-serif;
+  font-weight:600;padding:0 3px 1px;outline:none;text-align:center;}
+.fblank:focus{border-bottom-color:var(--subj);}
+.fblank.ok{border-bottom-color:var(--akku);color:var(--akku);}
+.fblank.no{border-bottom-color:#dc2626;color:#dc2626;}
+
+/* MCQ */
+.mcq-item{margin-bottom:14px;}
+.mcq-q{font-size:.87rem;font-weight:600;margin-bottom:7px;line-height:1.5;}
+.mcq-opts{display:flex;flex-wrap:wrap;gap:7px;}
+.mcq-btn{padding:7px 14px;border-radius:8px;font-size:.8rem;font-weight:600;
+  cursor:pointer;border:1.5px solid var(--border);background:var(--bg);
+  color:var(--text);transition:all .15s;font-family:'Inter',sans-serif;}
+.mcq-btn:hover{background:var(--dativ-bg);}
+.mcq-btn.ok{background:var(--akku-bg);border-color:var(--akku-bd);color:var(--akku);}
+.mcq-btn.no{background:#fef2f2;border-color:#fecaca;color:#dc2626;}
+.mcq-btn.show-ans{background:var(--akku-bg);border-color:var(--akku-bd);color:var(--akku);opacity:.7;}
+
+/* Build sentence */
+.bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.bchip{padding:6px 11px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);
+  font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;}
+.bchip:hover{background:#e8e4e0;}
+.bchip.used{opacity:.3;pointer-events:none;}
+.barea{min-height:42px;background:var(--bg);border:2px dashed var(--border);border-radius:8px;
+  padding:7px 11px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:7px;}
+.bplaced{padding:4px 9px;border-radius:6px;background:#fef3c7;color:#92400e;border:1.5px solid #fcd34d;
+  font-size:.8rem;font-weight:600;cursor:pointer;}
+.bempty{color:var(--muted);font-size:.78rem;font-style:italic;}
+
+/* Sort */
+.schips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;}
+.schip{padding:6px 13px;border-radius:20px;background:var(--bg);border:1.5px solid var(--border);
+  font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;user-select:none;}
+.schip:hover{background:var(--dativ-bg);}
+.schip.sel{background:var(--accent);color:#fff;border-color:var(--accent);}
+.scols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:9px 0;}
+@media(max-width:480px){.scols{grid-template-columns:1fr;}}
+.scol{background:var(--bg);border-radius:9px;border:2px dashed var(--border);
+  padding:9px;min-height:70px;}
+.scol.ca{border-color:var(--akku-bd);}
+.scol.cd{border-color:var(--dativ-bd);}
+.scol.cb{border-color:#86efac;}
+.chead{font-size:.67rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--muted);margin-bottom:7px;}
+.splaced{padding:4px 9px;margin:3px 0;border-radius:6px;font-size:.77rem;
+  font-weight:600;cursor:pointer;display:inline-block;}
+.spa{background:var(--akku-bg);color:var(--akku);border:1px solid var(--akku-bd);}
+.spd{background:var(--dativ-bg);color:var(--dativ);border:1px solid var(--dativ-bd);}
+.spb{background:var(--dativ-bg);color:#1e1c19;border:1px solid #fcd34d;}
+
+/* Buttons */
+.btn{padding:9px 18px;border-radius:8px;font-size:.8rem;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif;}
+.btnp{background:var(--accent);color:#fff;}
+.btnp:hover{background:#92400e;}
+.btns{background:var(--bg);color:var(--text);border:1.5px solid var(--border);}
+.btns:hover{background:var(--border);}
+.bsm{padding:7px 13px;font-size:.77rem;}
+.brow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+
+/* Feedback */
+.fb{margin-top:10px;padding:11px 13px;border-radius:8px;font-size:.81rem;
+  line-height:1.6;display:none;}
+.fb.show{display:block;}
+.fb.ok{background:var(--akku-bg);border:1.5px solid var(--akku-bd);color:#065f46;}
+.fb.no{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+
+/* Score */
+.scorebar{display:none;background:#fffbeb;border:2px solid #fcd34d;border-radius:10px;
+  padding:18px 20px;text-align:center;margin-top:14px;}
+.scorebar.show{display:block;}
+.sbig{font-size:2rem;font-weight:700;color:var(--accent);}
+.slbl{font-size:.78rem;color:var(--muted);margin-top:3px;}
+
+p{font-size:.86rem;line-height:1.7;}
+ul{padding-left:17px;}
+li{font-size:.86rem;line-height:1.7;margin-bottom:2px;}
+strong{font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="phdr">
+  <div class="eyebrow">Grammatik A2 · Kapitel 21–22</div>
+  <h1>Verben mit Akkusativ und Dativ</h1>
+  <div class="sub">Wer tut was? – Wem? – Was?</div>
+</div>
+
+<nav class="tnav">
+  <button class="tbtn active" data-tab="t1">Nur Akkusativ</button>
+  <button class="tbtn" data-tab="t2">Akku + Dativ</button>
+  <button class="tbtn" data-tab="t3">Nur Dativ</button>
+  <button class="tbtn" data-tab="t4">Wortstellung</button>
+  <button class="tbtn" data-tab="t5">Übungen</button>
+</nav>
+
+<!-- ══ TAB 1: NUR AKKUSATIV ══ -->
+<div class="tpanel active" id="tab-t1">
+  <div class="card">
+    <div class="ctitle">Erklärung</div>
+    <p>Viele Verben haben ein <strong>direktes Objekt</strong> – die Person oder Sache, auf die die Handlung direkt trifft. Dieses Objekt steht im <strong style="color:var(--akku)">Akkusativ</strong>. Man fragt: <strong>Wen? Was?</strong></p>
+    <div class="roles" style="margin-top:12px;">
+      <div class="rbox rbs"><div class="rtitle" style="color:var(--subj)">🔵 Subjekt (Nom.)</div><div class="rq">Wer? Was?</div><div class="reg">Die Person, die handelt.</div></div>
+      <div class="rbox rba"><div class="rtitle" style="color:var(--akku)">🟢 Akkusativ</div><div class="rq">Wen? Was?</div><div class="reg">Das Objekt der Handlung.</div></div>
+    </div>
+    <div class="trick"><div class="ttitle">💡 Merktrick</div><p>Fragen Sie: <strong>„Was kaufe ich?"</strong> → Das ist der Akkusativ. Bei Maskulin ändert sich der Artikel: <em>der → den</em>, <em>ein → einen</em>. Neutrum und Feminin bleiben gleich.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Regeln</div>
+    <div class="formula fa">
+      <div class="ftitle">Struktur</div>
+      <div class="frow"><span class="badge bs">Subjekt</span><span class="arr">+</span><span style="background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:6px;border:1.5px solid #fcd34d;font-size:.82rem;font-weight:700;">Verb</span><span class="arr">+</span><span class="badge ba">Akkusativ-Objekt</span></div>
+    </div>
+    <ul style="margin-top:10px;">
+      <li>Etwa <strong>80% aller Verben</strong> haben ein Akkusativ-Objekt.</li>
+      <li>Maskulin: <em>der Saft → <strong>den</strong> Saft</em> / <em>ein Ball → <strong>einen</strong> Ball</em></li>
+      <li>Feminin &amp; Neutrum: Artikel bleibt gleich (<em>die / das / eine / ein</em>)</li>
+      <li>Im Wörterbuch: <strong>V tr.</strong> = Verb transitiv = braucht Akkusativ</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">5 Beispiele – tippen für Analyse</div>
+    <div class="bsp-list" id="bsp1"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 2: AKKU + DATIV ══ -->
+<div class="tpanel" id="tab-t2">
+  <div class="card">
+    <div class="ctitle">Erklärung</div>
+    <p>Einige Verben brauchen <strong>zwei Objekte</strong>: eine Person (im <span style="color:var(--dativ);font-weight:700">Dativ</span>) und eine Sache (im <span style="color:var(--akku);font-weight:700">Akkusativ</span>). Das Dativ-Objekt ist der <em>Empfänger</em> – die Person, die etwas bekommt.</p>
+    <div class="roles" style="margin-top:12px;">
+      <div class="rbox rbs"><div class="rtitle" style="color:var(--subj)">🔵 Subjekt</div><div class="rq">Wer?</div><div class="reg">Handelnde Person.</div></div>
+      <div class="rbox rbd"><div class="rtitle" style="color:var(--dativ)">🟠 Dativ</div><div class="rq">Wem?</div><div class="reg">Person, die etwas erhält.</div></div>
+      <div class="rbox rba"><div class="rtitle" style="color:var(--akku)">🟢 Akkusativ</div><div class="rq">Was?</div><div class="reg">Sache, die weitergegeben wird.</div></div>
+    </div>
+    <div class="trick"><div class="ttitle">💡 Goldene Regel: Dativ VOR Akkusativ</div><p>Wenn beide Objekte <strong>Nomen</strong> sind: <span style="color:var(--dativ);font-weight:700">Dativ zuerst</span>, dann <span style="color:var(--akku);font-weight:700">Akkusativ</span>.<br>Wenn der Akkusativ ein <strong>Pronomen</strong> ist (es, ihn …): Pronomen kommt zuerst.<br><em>Ich gebe <span style="color:var(--dativ);">dem Mann</span> <span style="color:var(--akku);">das Buch</span>.</em> → Nomen: Dativ zuerst<br><em>Ich gebe <span style="color:var(--akku);">es</span> <span style="color:var(--dativ);">dem Mann</span>.</em> → Pronomen: Akku zuerst</p></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Regeln</div>
+    <div class="formula fb2">
+      <div class="ftitle">Struktur</div>
+      <div class="frow"><span class="badge bs">Subjekt</span><span class="arr">+</span><span style="background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:6px;border:1.5px solid #fcd34d;font-size:.82rem;font-weight:700;">Verb</span><span class="arr">+</span><span class="badge bd">Dativ (Wem?)</span><span class="arr">+</span><span class="badge ba">Akkusativ (Was?)</span></div>
+    </div>
+    <ul style="margin-top:10px;">
+      <li>Typische Verben: <em>geben, schenken, kaufen, bringen, zeigen, schicken, schreiben, erklären</em></li>
+      <li>Dativ Maskulin/Neutrum: <em>dem / einem / meinem</em></li>
+      <li>Dativ Feminin: <em>der / einer / meiner</em></li>
+      <li>Dativ Plural: <em>den Gästen, meinen Kindern</em> (Nomen +<strong>-n</strong>!)</li>
+    </ul>
+    <div class="vgrid" style="margin-top:10px;">
+      <div class="vc vcb">geben<span class="vcn">jdm. etw. geben</span></div>
+      <div class="vc vcb">schenken<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">kaufen<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">bringen<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">zeigen<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">schicken<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">schreiben<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">erklären<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">servieren<span class="vcn">jdm. etw.</span></div>
+      <div class="vc vcb">leihen<span class="vcn">jdm. etw.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">5 Beispiele – tippen für Analyse</div>
+    <div class="bsp-list" id="bsp2"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: NUR DATIV ══ -->
+<div class="tpanel" id="tab-t3">
+  <div class="card">
+    <div class="ctitle">Erklärung</div>
+    <p>Diese Verben sind <strong>logisch anders</strong>: Sie haben nur ein Subjekt und eine Person im <span style="color:var(--dativ);font-weight:700">Dativ</span> – kein Akkusativ-Objekt. Das Dativ-Objekt ist nicht der Empfänger einer Sache, sondern <em>die Person, die etwas erlebt oder fühlt</em>. <strong>Diese Verben müssen Sie auswendig lernen!</strong></p>
+    <div class="roles" style="margin-top:12px;">
+      <div class="rbox rbs"><div class="rtitle" style="color:var(--subj)">🔵 Subjekt</div><div class="rq">Wer? / Was?</div><div class="reg">Person oder Ding, das handelt.</div></div>
+      <div class="rbox rbd"><div class="rtitle" style="color:var(--dativ)">🟠 Dativ</div><div class="rq">Wem?</div><div class="reg">Person, die etw. erlebt/fühlt.</div></div>
+    </div>
+    <div class="trick"><div class="ttitle">⚠️ Sonderfall: Ding als Subjekt</div><p>Bei Verben wie <em>gefallen, schmecken, passen, gehören</em> ist das <strong>Ding das Subjekt</strong> (Nominativ), und die Person steht im Dativ:<br><em><span style="color:var(--subj);font-weight:700">Das Haus</span> gefällt <span style="color:var(--dativ);font-weight:700">den Leuten</span>.</em><br>Frage: Wem gefällt es? → den Leuten (Dativ)</p></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Regeln</div>
+    <div class="formula fd">
+      <div class="ftitle">Struktur</div>
+      <div class="frow"><span class="badge bs">Subjekt</span><span class="arr">+</span><span style="background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:6px;border:1.5px solid #fcd34d;font-size:.82rem;font-weight:700;">Verb</span><span class="arr">+</span><span class="badge bd">Dativ (Wem?)</span></div>
+    </div>
+    <div class="vgrid" style="margin-top:10px;">
+      <div class="vc vcd">helfen<span class="vcn">jdm. helfen</span></div>
+      <div class="vc vcd">danken<span class="vcn">jdm. danken</span></div>
+      <div class="vc vcd">antworten<span class="vcn">jdm. antworten</span></div>
+      <div class="vc vcd">gratulieren<span class="vcn">jdm.</span></div>
+      <div class="vc vcd">zuhören<span class="vcn">jdm. zuhören</span></div>
+      <div class="vc vcd">glauben<span class="vcn">jdm. glauben</span></div>
+      <div class="vc vcd">gefallen<span class="vcn">jdm. gefallen</span></div>
+      <div class="vc vcd">gehören<span class="vcn">jdm. gehören</span></div>
+      <div class="vc vcd">passen<span class="vcn">jdm. passen</span></div>
+      <div class="vc vcd">schmecken<span class="vcn">jdm.</span></div>
+      <div class="vc vcd">stehen<span class="vcn">jdm. stehen</span></div>
+      <div class="vc vcd">wehtun<span class="vcn">jdm. wehtun</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">5 Beispiele – tippen für Analyse</div>
+    <div class="bsp-list" id="bsp3"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 4: WORTSTELLUNG ══ -->
+<div class="tpanel" id="tab-t4">
+  <div class="card">
+    <div class="ctitle">Erklärung</div>
+    <p>Wenn ein Satz <strong>Dativ- und Akkusativ-Objekt</strong> hat, gibt es eine feste Reihenfolge. Die Regel hängt davon ab, ob die Objekte <em>Nomen</em> oder <em>Personalpronomen</em> sind.</p>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">Regeln – Übersicht</div>
+    <div class="trick">
+      <div class="ttitle">🔑 Regel 1: Beide Nomen → Dativ zuerst</div>
+      <p><span class="badge bs">Subj.</span> + Verb + <span class="badge bd">Dativ (Nomen)</span> + <span class="badge ba">Akku (Nomen)</span></p>
+    </div>
+    <table class="wtbl" style="margin-top:8px;">
+      <tr><th>Subjekt</th><th>Verb</th><th>Dativ</th><th>Akkusativ</th></tr>
+      <tr><td class="ts">Ich</td><td class="tv">kaufe</td><td class="td">meinem Sohn</td><td class="ta">einen Ball.</td></tr>
+      <tr><td class="ts">Er</td><td class="tv">schenkt</td><td class="td">der Frau</td><td class="ta">Blumen.</td></tr>
+      <tr><td class="ts">Wir</td><td class="tv">zeigen</td><td class="td">den Gästen</td><td class="ta">das Haus.</td></tr>
+    </table>
+
+    <div class="trick" style="margin-top:14px;">
+      <div class="ttitle">⚠️ Regel 2: Akku = Pronomen → Pronomen zuerst</div>
+      <p><span class="badge bs">Subj.</span> + Verb + <span class="badge ba">Akku (Pronomen!)</span> + <span class="badge bd">Dativ (Nomen)</span></p>
+    </div>
+    <table class="wtbl" style="margin-top:8px;">
+      <tr><th>Subjekt</th><th>Verb</th><th>Akku (PP)</th><th>Dativ</th></tr>
+      <tr><td class="ts">Ich</td><td class="tv">gebe</td><td class="ta">es</td><td class="td">dem Mann.</td></tr>
+      <tr><td class="ts">Er</td><td class="tv">zeigt</td><td class="ta">sie</td><td class="td">den Gästen.</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">5 Beispiele – tippen für Analyse</div>
+    <div class="bsp-list" id="bsp4"></div>
+  </div>
+</div>
+
+<!-- ══ TAB 5: ÜBUNGEN ══ -->
+<div class="tpanel" id="tab-t5">
+
+  <!-- Ü1: Verben sortieren -->
+  <div class="exc">
+    <div class="exhdr"><div class="exnum">1</div><div class="extitle">Verben sortieren</div></div>
+    <p class="exdesc">Tippen Sie auf ein Verb, dann auf die richtige Spalte. Tippen Sie auf ein platziertes Verb, um es zurückzunehmen. (13 Verben)</p>
+    <div class="schips" id="s1chips"></div>
+    <div class="scols">
+      <div class="scol ca"><div class="chead" style="color:var(--akku)">🟢 nur Akkusativ</div><div id="s1ca"></div></div>
+      <div class="scol cd"><div class="chead" style="color:var(--dativ)">🟠 nur Dativ</div><div id="s1cd"></div></div>
+      <div class="scol cb"><div class="chead" style="color:#065f46">🔄 Akku+Dativ</div><div id="s1cb"></div></div>
+    </div>
+    <div class="brow">
+      <button class="btn btnp bsm" id="ck1">Prüfen</button>
+      <button class="btn btns bsm" id="rs1">Zurücksetzen</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <!-- Ü2: Artikel ergänzen (Dativ) -->
+  <div class="exc">
+    <div class="exhdr"><div class="exnum">2</div><div class="extitle">Artikel ergänzen – Dativ</div></div>
+    <p class="exdesc">Ergänzen Sie den richtigen Dativ-Artikel. (13 Sätze)</p>
+    <div id="u2"></div>
+    <div class="brow">
+      <button class="btn btnp bsm" id="ck2">Prüfen</button>
+      <button class="btn btns bsm" id="rs2">Zurücksetzen</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <!-- Ü3: Sätze bauen -->
+  <div class="exc">
+    <div class="exhdr"><div class="exnum">3</div><div class="extitle">Sätze in der richtigen Reihenfolge bauen</div></div>
+    <p class="exdesc">Tippen Sie die Wörter in der richtigen Reihenfolge an. (13 Sätze)</p>
+    <div id="u3"></div>
+  </div>
+
+  <!-- Ü4: MCQ – Dativ oder Akkusativ? -->
+  <div class="exc">
+    <div class="exhdr"><div class="exnum">4</div><div class="extitle">Dativ oder Akkusativ?</div></div>
+    <p class="exdesc">Was ist das markierte Wort? (13 Aufgaben)</p>
+    <div id="u4"></div>
+    <div class="brow"><button class="btn btns bsm" id="rs4">Zurücksetzen</button></div>
+  </div>
+
+  <!-- Ü5: Verben mit Dativ – Sätze schreiben -->
+  <div class="exc">
+    <div class="exhdr"><div class="exnum">5</div><div class="extitle">Sätze mit Dativ-Verben schreiben</div></div>
+    <p class="exdesc">Schreiben Sie einen Satz. Tippen Sie auf „Lösung" wenn Sie fertig sind. (13 Aufgaben)</p>
+    <div id="u5"></div>
+  </div>
+
+  <div class="scorebar" id="scoreBar">
+    <div class="sbig" id="scoreNum">–</div>
+    <div class="slbl">Gesamtergebnis</div>
+    <button class="btn btns bsm" style="margin-top:10px" id="retryAll">Alle wiederholen</button>
+  </div>
+</div>
+
+<script>
+// ─── TABS ───
+document.querySelectorAll('.tbtn').forEach(b=>{
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tpanel').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-'+this.dataset.tab).classList.add('active');
+  });
+});
+
+// ─── BEISPIEL CARDS ───
+function mkBsp(containerId, items){
+  const c=document.getElementById(containerId);
+  c.innerHTML='';
+  items.forEach((item,i)=>{
+    const card=document.createElement('div');
+    card.className='bsp-card';
+    card.innerHTML=`
+      <div class="bsp-front">
+        <span style="font-size:.7rem;font-weight:700;color:var(--muted);min-width:18px;">${i+1}.</span>
+        <span class="bsp-sent">${item.sent}</span>
+        <span class="bsp-arrow">▶</span>
+      </div>
+      <div class="bsp-back">
+        <div class="bsp-row">${item.tags}</div>
+        <div class="bsp-explain">${item.explain}</div>
+      </div>`;
+    card.querySelector('.bsp-front').addEventListener('click',()=>card.classList.toggle('open'));
+    c.appendChild(card);
+  });
+}
+
+mkBsp('bsp1',[
+  {sent:'Der Kellner trinkt einen Saft.',
+   tags:'<span class="w ws">Der Kellner</span><span style="font-size:.9rem;padding:0 4px;">→</span><span class="w wv">trinkt</span><span style="font-size:.9rem;padding:0 4px;">→</span><span class="w wa">einen Saft</span>',
+   explain:'<strong>Akkusativ:</strong> Was trinkt er? → <em>einen Saft</em> (Maskulin: ein → einen)'},
+  {sent:'Ich kaufe ein neues Fahrrad.',
+   tags:'<span class="w ws">Ich</span><span class="w wv">kaufe</span><span class="w wa">ein neues Fahrrad</span>',
+   explain:'<strong>Akkusativ:</strong> Was kaufe ich? → <em>ein Fahrrad</em> (Neutrum: bleibt gleich)'},
+  {sent:'Sie liest die Zeitung.',
+   tags:'<span class="w ws">Sie</span><span class="w wv">liest</span><span class="w wa">die Zeitung</span>',
+   explain:'<strong>Akkusativ:</strong> Was liest sie? → <em>die Zeitung</em> (Feminin: bleibt gleich)'},
+  {sent:'Wir besuchen unsere Freunde.',
+   tags:'<span class="w ws">Wir</span><span class="w wv">besuchen</span><span class="w wa">unsere Freunde</span>',
+   explain:'<strong>Akkusativ:</strong> Wen besuchen wir? → <em>unsere Freunde</em> (Plural: keine Änderung)'},
+  {sent:'Er findet den neuen Job super.',
+   tags:'<span class="w ws">Er</span><span class="w wv">findet</span><span class="w wa">den neuen Job</span>',
+   explain:'<strong>Akkusativ:</strong> Was findet er super? → <em>den Job</em> (Maskulin: der → den)'},
+]);
+
+mkBsp('bsp2',[
+  {sent:'Ich kaufe meinem Sohn einen Ball.',
+   tags:'<span class="w ws">Ich</span><span class="w wv">kaufe</span><span class="w wd">meinem Sohn</span><span class="w wa">einen Ball</span>',
+   explain:'<strong>Dativ:</strong> Wem kaufe ich? → <em>meinem Sohn</em> (Mask.: mein→meinem) | <strong>Akkusativ:</strong> Was? → <em>einen Ball</em>'},
+  {sent:'Der Mann schenkt der Frau Blumen.',
+   tags:'<span class="w ws">Der Mann</span><span class="w wv">schenkt</span><span class="w wd">der Frau</span><span class="w wa">Blumen</span>',
+   explain:'<strong>Dativ:</strong> Wem? → <em>der Frau</em> (Fem.: die→der) | <strong>Akkusativ:</strong> Was? → <em>Blumen</em> (kein Artikel = Plural)'},
+  {sent:'Sie bringt dem Kind das Frühstück.',
+   tags:'<span class="w ws">Sie</span><span class="w wv">bringt</span><span class="w wd">dem Kind</span><span class="w wa">das Frühstück</span>',
+   explain:'<strong>Dativ:</strong> Wem? → <em>dem Kind</em> (Neutr.: das→dem) | <strong>Akkusativ:</strong> Was? → <em>das Frühstück</em>'},
+  {sent:'Wir schreiben unserer Lehrerin eine E-Mail.',
+   tags:'<span class="w ws">Wir</span><span class="w wv">schreiben</span><span class="w wd">unserer Lehrerin</span><span class="w wa">eine E-Mail</span>',
+   explain:'<strong>Dativ:</strong> Wem? → <em>unserer Lehrerin</em> (Fem.: unsere→unserer) | <strong>Akkusativ:</strong> Was? → <em>eine E-Mail</em>'},
+  {sent:'Der Ober serviert den Gästen die Getränke.',
+   tags:'<span class="w ws">Der Ober</span><span class="w wv">serviert</span><span class="w wd">den Gästen</span><span class="w wa">die Getränke</span>',
+   explain:'<strong>Dativ Plural:</strong> Wem? → <em>den Gästen</em> (Plural: die→den, +n am Nomen!) | <strong>Akkusativ:</strong> Was? → <em>die Getränke</em>'},
+]);
+
+mkBsp('bsp3',[
+  {sent:'Das Kind hilft dem alten Mann.',
+   tags:'<span class="w ws">Das Kind</span><span class="w wv">hilft</span><span class="w wd">dem alten Mann</span>',
+   explain:'<strong>helfen + Dativ:</strong> Wem hilft das Kind? → <em>dem Mann</em>. Kein Akkusativ!'},
+  {sent:'Das Haus gefällt den Leuten sehr.',
+   tags:'<span class="w ws">Das Haus</span><span class="w wv">gefällt</span><span class="w wd">den Leuten</span>',
+   explain:'<strong>gefallen + Dativ:</strong> Das Ding (<em>Haus</em>) ist das Subjekt! Die Person steht im Dativ: <em>den Leuten</em>.'},
+  {sent:'Die Jacke passt der Frau nicht gut.',
+   tags:'<span class="w ws">Die Jacke</span><span class="w wv">passt</span><span class="w wd">der Frau</span>',
+   explain:'<strong>passen + Dativ:</strong> Das Ding (<em>Jacke</em>) ist Subjekt. Wem passt sie? → <em>der Frau</em>'},
+  {sent:'Wir gratulieren unserem Chef zum Geburtstag.',
+   tags:'<span class="w ws">Wir</span><span class="w wv">gratulieren</span><span class="w wd">unserem Chef</span>',
+   explain:'<strong>gratulieren + Dativ:</strong> Wem? → <em>unserem Chef</em>. Kein Akkusativ-Objekt!'},
+  {sent:'Der Kopf tut mir weh.',
+   tags:'<span class="w ws">Der Kopf</span><span class="w wv">tut</span><span class="w wd">mir</span><span class="w wn">weh.</span>',
+   explain:'<strong>wehtun + Dativ:</strong> Das Ding (<em>Kopf</em>) ist Subjekt. Wem tut es weh? → <em>mir</em> (Dativ-Pronomen)'},
+]);
+
+mkBsp('bsp4',[
+  {sent:'Ich gebe dem Mann das Buch. (beide Nomen → Dativ zuerst)',
+   tags:'<span class="w ws">Ich</span><span class="w wv">gebe</span><span class="w wd">dem Mann</span><span class="w wa">das Buch</span>',
+   explain:'Beide Objekte sind Nomen → <strong>Dativ zuerst</strong>: <em>dem Mann</em> → dann Akkusativ: <em>das Buch</em>'},
+  {sent:'Ich gebe es dem Mann. (Akku = Pronomen → zuerst)',
+   tags:'<span class="w ws">Ich</span><span class="w wv">gebe</span><span class="w wa">es</span><span class="w wd">dem Mann</span>',
+   explain:'Akkusativ <em>es</em> ist ein Pronomen → <strong>Pronomen kommt zuerst</strong>, dann Dativ'},
+  {sent:'Er schenkt seiner Mutter einen Blumenstrauß.',
+   tags:'<span class="w ws">Er</span><span class="w wv">schenkt</span><span class="w wd">seiner Mutter</span><span class="w wa">einen Blumenstrauß</span>',
+   explain:'Nomen + Nomen → <strong>Dativ zuerst</strong>: <em>seiner Mutter</em>, dann Akkusativ: <em>einen Blumenstrauß</em>'},
+  {sent:'Sie zeigt ihn den Gästen. (ihn = Pronomen → zuerst)',
+   tags:'<span class="w ws">Sie</span><span class="w wv">zeigt</span><span class="w wa">ihn</span><span class="w wd">den Gästen</span>',
+   explain:'<em>ihn</em> ist Akkusativ-Pronomen → <strong>Pronomen kommt zuerst</strong>: <em>ihn</em>, dann Dativ: <em>den Gästen</em>'},
+  {sent:'Wir bringen den Kindern die Geschenke.',
+   tags:'<span class="w ws">Wir</span><span class="w wv">bringen</span><span class="w wd">den Kindern</span><span class="w wa">die Geschenke</span>',
+   explain:'Dativ Plural: <em>den Kindern</em> (+n am Ende!), dann Akkusativ: <em>die Geschenke</em>'},
+]);
+
+// ══ ÜBUNG 1: Sort verbs ══
+const s1data=[
+  {v:'trinken',c:'akku'},{v:'schenken',c:'both'},{v:'helfen',c:'dativ'},
+  {v:'lesen',c:'akku'},{v:'geben',c:'both'},{v:'danken',c:'dativ'},
+  {v:'kochen',c:'akku'},{v:'zeigen',c:'both'},{v:'antworten',c:'dativ'},
+  {v:'lieben',c:'akku'},{v:'schicken',c:'both'},{v:'gefallen',c:'dativ'},
+  {v:'suchen',c:'akku'},
+];
+let s1placed={},s1sel=null;
+function s1Build(){
+  const ch=document.getElementById('s1chips');
+  ch.innerHTML='';
+  s1data.forEach(({v})=>{
+    if(s1placed[v])return;
+    const el=document.createElement('div');
+    el.className='schip';el.textContent=v;el.dataset.v=v;
+    el.addEventListener('click',function(){
+      if(s1sel===this){this.classList.remove('sel');s1sel=null;}
+      else{document.querySelectorAll('.schip').forEach(x=>x.classList.remove('sel'));this.classList.add('sel');s1sel=this;}
+    });
+    ch.appendChild(el);
+  });
+  ['ca','cd','cb'].forEach(id=>{
+    const col=document.getElementById('s1'+id);col.innerHTML='';
+    Object.entries(s1placed).forEach(([vb,cat])=>{
+      const mapCat={ca:'akku',cd:'dativ',cb:'both'};
+      if(mapCat[id]!==cat)return;
+      const el=document.createElement('div');
+      el.className='splaced sp'+cat.charAt(0);el.textContent=vb;
+      el.addEventListener('click',()=>{delete s1placed[vb];s1Build();document.getElementById('fb1').classList.remove('show');});
+      col.appendChild(el);
+    });
+  });
+}
+['ca','cd','cb'].forEach(cid=>{
+  document.getElementById('s1'+cid).addEventListener('click',function(e){
+    if(!s1sel||e.target.classList.contains('splaced'))return;
+    const v=s1sel.dataset.v;
+    const m={ca:'akku',cd:'dativ',cb:'both'};
+    s1placed[v]=m[cid];s1sel.classList.remove('sel');s1sel=null;s1Build();
+  });
+});
+document.getElementById('ck1').addEventListener('click',()=>{
+  let ok=0,tot=0;
+  s1data.forEach(({v,c})=>{tot++;if(s1placed[v]===c)ok++;});
+  const fb=document.getElementById('fb1');
+  const miss=s1data.filter(({v})=>!s1placed[v]).length;
+  if(ok===tot){fb.className='fb show ok';fb.innerHTML='✅ Perfekt! Alle 13 richtig!';}
+  else{fb.className='fb show no';fb.innerHTML=`❌ ${ok}/${tot} richtig.${miss?' Noch '+miss+' nicht platziert.':''}`;}
+});
+document.getElementById('rs1').addEventListener('click',()=>{s1placed={};s1sel=null;s1Build();document.getElementById('fb1').classList.remove('show');});
+s1Build();
+
+// ══ ÜBUNG 2: Artikel ══
+const u2data=[
+  {pre:'Ich schreibe',ans:'meiner',suf:'Mutter eine E-Mail.',hint:'Dativ Feminin: meine → meiner'},
+  {pre:'Er kauft',ans:'seinem',suf:'Sohn einen Laptop.',hint:'Dativ Maskulin: sein → seinem'},
+  {pre:'Wir zeigen',ans:'den',suf:'Gästen das Zimmer.',hint:'Dativ Plural: die → den'},
+  {pre:'Sie serviert',ans:'dem',suf:'Chef den Kaffee.',hint:'Dativ Maskulin: der → dem'},
+  {pre:'Der Ober bringt',ans:'der',suf:'Frau die Rechnung.',hint:'Dativ Feminin: die → der'},
+  {pre:'Ich schenke',ans:'meinem',suf:'Vater eine Krawatte.',hint:'Dativ Maskulin: mein → meinem'},
+  {pre:'Er erklärt',ans:'einem',suf:'Kind den Weg.',hint:'Dativ Maskulin: ein → einem'},
+  {pre:'Sie schickt',ans:'ihrer',suf:'Freundin ein Paket.',hint:'Dativ Feminin: ihre → ihrer'},
+  {pre:'Der Lehrer gibt',ans:'den',suf:'Schülern die Hausaufgaben.',hint:'Dativ Plural: die → den'},
+  {pre:'Ich leihe',ans:'meinem',suf:'Bruder mein Fahrrad.',hint:'Dativ Maskulin: mein → meinem'},
+  {pre:'Sie empfiehlt',ans:'dem',suf:'Gast ein gutes Restaurant.',hint:'Dativ Maskulin: der → dem'},
+  {pre:'Wir bringen',ans:'unserer',suf:'Oma Blumen mit.',hint:'Dativ Feminin: unsere → unserer'},
+  {pre:'Er verkauft',ans:'einem',suf:'Kollegen sein altes Auto.',hint:'Dativ Maskulin: ein → einem'},
+];
+function u2Build(){
+  const c=document.getElementById('u2');c.innerHTML='';
+  u2data.forEach(({pre,ans,suf},i)=>{
+    const d=document.createElement('div');d.className='fsent';
+    d.innerHTML=`${i+1}. ${pre} <input class="fblank" data-i="${i}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="?"> ${suf}`;
+    c.appendChild(d);
+  });
+}
+document.getElementById('ck2').addEventListener('click',()=>{
+  let ok=0;
+  u2data.forEach(({ans},i)=>{
+    const inp=document.querySelector('.fblank[data-i="'+i+'"]');
+    const v=inp.value.trim().toLowerCase();
+    inp.classList.remove('ok','no');
+    if(v===ans.toLowerCase()){inp.classList.add('ok');ok++;}else inp.classList.add('no');
+  });
+  const fb=document.getElementById('fb2');
+  if(ok===u2data.length){fb.className='fb show ok';fb.innerHTML='✅ Alle 13 Artikel richtig!';}
+  else{
+    let h='';
+    u2data.forEach(({ans,hint},i)=>{
+      const inp=document.querySelector('.fblank[data-i="'+i+'"]');
+      if(inp.classList.contains('no'))h+=`<br>• Satz ${i+1}: <strong>${ans}</strong> – ${hint}`;
+    });
+    fb.className='fb show no';fb.innerHTML=`❌ ${ok}/13 richtig.${h}`;
+  }
+});
+document.getElementById('rs2').addEventListener('click',()=>{
+  document.querySelectorAll('.fblank').forEach(x=>{x.value='';x.classList.remove('ok','no');});
+  document.getElementById('fb2').classList.remove('show');
+});
+u2Build();
+
+// ══ ÜBUNG 3: Sätze bauen ══
+const u3data=[
+  {ws:['Ich','kaufe','meinem Bruder','ein Fahrrad','.'],sol:'Ich kaufe meinem Bruder ein Fahrrad .'},
+  {ws:['Die Mutter','bringt','dem Kind','das Frühstück','.'],sol:'Die Mutter bringt dem Kind das Frühstück .'},
+  {ws:['Er','schreibt','seiner Freundin','eine E-Mail','.'],sol:'Er schreibt seiner Freundin eine E-Mail .'},
+  {ws:['Wir','zeigen','den Gästen','das Zimmer','.'],sol:'Wir zeigen den Gästen das Zimmer .'},
+  {ws:['Sie','schenkt','ihren Eltern','Blumen','.'],sol:'Sie schenkt ihren Eltern Blumen .'},
+  {ws:['Der Ober','serviert','dem Chef','den Kaffee','.'],sol:'Der Ober serviert dem Chef den Kaffee .'},
+  {ws:['Ich','erkläre','meinem Kollegen','den Plan','.'],sol:'Ich erkläre meinem Kollegen den Plan .'},
+  {ws:['Sie','leiht','ihrer Schwester','das Auto','.'],sol:'Sie leiht ihrer Schwester das Auto .'},
+  {ws:['Wir','schicken','unserem Lehrer','eine Karte','.'],sol:'Wir schicken unserem Lehrer eine Karte .'},
+  {ws:['Er','gibt','den Kindern','die Geschenke','.'],sol:'Er gibt den Kindern die Geschenke .'},
+  {ws:['Die Chefin','empfiehlt','dem Bewerber','den Job','.'],sol:'Die Chefin empfiehlt dem Bewerber den Job .'},
+  {ws:['Ich','bringe','meiner Oma','Blumen','.'],sol:'Ich bringe meiner Oma Blumen .'},
+  {ws:['Er','verkauft','einem Freund','sein Motorrad','.'],sol:'Er verkauft einem Freund sein Motorrad .'},
+];
+let u3ans=u3data.map(()=>[]);
+let u3used=u3data.map(t=>new Array(t.ws.length).fill(false));
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const u3shuffled=u3data.map(t=>shuffle(t.ws.map((w,i)=>({w,idx:i}))));
+function u3Build(){
+  const c=document.getElementById('u3');c.innerHTML='';
+  u3data.forEach((task,ti)=>{
+    const box=document.createElement('div');box.style.marginBottom='18px';
+    box.innerHTML=`
+      <div style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;">Satz ${ti+1}</div>
+      <div class="barea" id="ba${ti}"><span class="bempty">Tippen Sie auf die Wörter …</span></div>
+      <div class="bchips" id="bc${ti}"></div>
+      <div class="fb" id="bf${ti}"></div>`;
+    c.appendChild(box);
+    u3shuffled[ti].forEach(({w,idx})=>{
+      const ch=document.createElement('div');
+      ch.className='bchip'+(u3used[ti][idx]?' used':'');
+      ch.textContent=w;ch.dataset.ti=ti;ch.dataset.idx=idx;
+      ch.addEventListener('click',function(){
+        if(this.classList.contains('used'))return;
+        const ti2=+this.dataset.ti,idx2=+this.dataset.idx;
+        u3ans[ti2].push({w:u3data[ti2].ws[idx2],el:this});
+        this.classList.add('used');u3used[ti2][idx2]=true;
+        u3renderArea(ti2);
+      });
+      document.getElementById('bc'+ti).appendChild(ch);
+    });
+    u3renderArea(ti);
+    const ckb=document.createElement('button');ckb.className='btn btnp bsm';ckb.textContent='Prüfen';ckb.dataset.ti=ti;
+    ckb.addEventListener('click',function(){
+      const ti2=+this.dataset.ti;
+      const ans=u3ans[ti2].map(a=>a.w).join(' ');
+      const fb=document.getElementById('bf'+ti2);
+      if(ans===u3data[ti2].sol){fb.className='fb show ok';fb.innerHTML='✅ Richtig!';}
+      else{fb.className='fb show no';fb.innerHTML='❌ Noch nicht richtig. Tipp: <em>'+u3data[ti2].sol+'</em>';}
+    });
+    box.appendChild(ckb);
+    const rsb=document.createElement('button');rsb.className='btn btns bsm';rsb.textContent='↩';rsb.style.marginLeft='6px';rsb.dataset.ti=ti;
+    rsb.addEventListener('click',function(){
+      const ti2=+this.dataset.ti;
+      u3ans[ti2]=[];u3used[ti2]=new Array(u3data[ti2].ws.length).fill(false);
+      document.querySelectorAll('[data-ti="'+ti2+'"].bchip').forEach(x=>x.classList.remove('used'));
+      u3renderArea(ti2);document.getElementById('bf'+ti2).classList.remove('show');
+    });
+    box.appendChild(rsb);
+  });
+}
+function u3renderArea(ti){
+  const area=document.getElementById('ba'+ti);
+  if(!u3ans[ti].length){area.innerHTML='<span class="bempty">Tippen Sie auf die Wörter …</span>';return;}
+  area.innerHTML='';
+  u3ans[ti].forEach(({w},pos)=>{
+    const el=document.createElement('div');el.className='bplaced';el.textContent=w;
+    el.addEventListener('click',function(){
+      const rem=u3ans[ti].splice(pos,1)[0];
+      document.querySelectorAll('[data-ti="'+ti+'"].bchip').forEach(chip=>{
+        if(chip.textContent===rem.w&&chip.classList.contains('used')){chip.classList.remove('used');u3used[ti][+chip.dataset.idx]=false;return;}
+      });
+      u3renderArea(ti);
+    });
+    area.appendChild(el);
+  });
+}
+u3Build();
+
+// ══ ÜBUNG 4: MCQ ══
+const u4data=[
+  {q:'Ich gebe <u>dem Mann</u> das Buch. – Was ist "dem Mann"?',opts:['Dativ','Akkusativ','Nominativ'],ans:'Dativ',exp:'"dem Mann" = Dativ. Wem gebe ich? → dem Mann (Empfänger)'},
+  {q:'Er kauft seiner Mutter <u>einen Kuchen</u>. – Was ist "einen Kuchen"?',opts:['Dativ','Akkusativ'],ans:'Akkusativ',exp:'"einen Kuchen" = Akkusativ. Was kauft er? → einen Kuchen (Sache)'},
+  {q:'<u>Das Haus</u> gefällt den Leuten. – Was ist "das Haus"?',opts:['Nominativ (Subjekt)','Akkusativ','Dativ'],ans:'Nominativ (Subjekt)',exp:'Bei "gefallen": Das Ding ist das Subjekt (Nominativ)! Die Person steht im Dativ.'},
+  {q:'Sie hilft <u>ihrer Freundin</u>. – Was ist "ihrer Freundin"?',opts:['Dativ','Akkusativ'],ans:'Dativ',exp:'"helfen" nimmt NUR Dativ. Wem hilft sie? → ihrer Freundin'},
+  {q:'Wir zeigen den Gästen <u>das Museum</u>. – Was ist "das Museum"?',opts:['Dativ','Akkusativ'],ans:'Akkusativ',exp:'"das Museum" = Akkusativ. Was zeigen wir? → das Museum (Sache)'},
+  {q:'Der Vater liest <u>dem Kind</u> eine Geschichte. – Was ist "dem Kind"?',opts:['Dativ','Akkusativ'],ans:'Dativ',exp:'"dem Kind" = Dativ. Wem liest er vor? → dem Kind (Empfänger)'},
+  {q:'Die Jacke passt <u>der Frau</u> nicht. – Was ist "der Frau"?',opts:['Dativ','Akkusativ','Nominativ'],ans:'Dativ',exp:'"passen" + Dativ. Wem passt die Jacke? → der Frau'},
+  {q:'Er schenkt <u>seinen Kollegen</u> Schokolade. – Was ist "seinen Kollegen"?',opts:['Dativ','Akkusativ'],ans:'Dativ',exp:'"seinen Kollegen" = Dativ Plural. Wem schenkt er? → seinen Kollegen'},
+  {q:'Ich erkläre ihr <u>den Plan</u>. – Was ist "den Plan"?',opts:['Dativ','Akkusativ'],ans:'Akkusativ',exp:'"den Plan" = Akkusativ Maskulin. Was erkläre ich? → den Plan (Sache)'},
+  {q:'Der Wein schmeckt <u>dem Gast</u>. – Was ist "dem Gast"?',opts:['Dativ','Akkusativ','Nominativ'],ans:'Dativ',exp:'"schmecken" + Dativ. Wem schmeckt er? → dem Gast. "Der Wein" ist das Subjekt!'},
+  {q:'Wir bringen <u>unserer Oma</u> Blumen. – Was ist "unserer Oma"?',opts:['Dativ','Akkusativ'],ans:'Dativ',exp:'"unserer Oma" = Dativ Feminin. Wem bringen wir? → unserer Oma'},
+  {q:'Er antwortet <u>dem Lehrer</u>. – Was ist "dem Lehrer"?',opts:['Dativ','Akkusativ'],ans:'Dativ',exp:'"antworten" nimmt NUR Dativ. Wem antwortet er? → dem Lehrer'},
+  {q:'Ich zeige <u>es</u> meinem Chef. – Warum steht "es" vor "meinem Chef"?',opts:['Akkusativ-Pronomen kommt zuerst','Dativ kommt zuerst','Subjekt-Pronomen'],ans:'Akkusativ-Pronomen kommt zuerst',exp:'"es" ist ein Akkusativ-Pronomen → kommt vor dem Dativ-Nomen "meinem Chef"'},
+];
+let u4ans=new Array(u4data.length).fill(null);
+function u4Build(){
+  const c=document.getElementById('u4');c.innerHTML='';
+  u4data.forEach((task,ti)=>{
+    const box=document.createElement('div');box.className='mcq-item';
+    box.innerHTML=`<div class="mcq-q">${ti+1}. ${task.q}</div><div class="mcq-opts" id="mo${ti}"></div><div class="fb" id="mf${ti}"></div>`;
+    c.appendChild(box);
+    task.opts.forEach(opt=>{
+      const btn=document.createElement('button');btn.className='mcq-btn';btn.textContent=opt;
+      btn.addEventListener('click',function(){
+        if(u4ans[ti]!==null)return;
+        u4ans[ti]=opt;
+        const ok=opt===task.ans;
+        document.querySelectorAll('#mo'+ti+' button').forEach(b=>{
+          if(b.textContent===task.ans)b.classList.add(ok&&b===this?'ok':'show-ans');
+          else if(b===this&&!ok)b.classList.add('no');
+        });
+        const fb=document.getElementById('mf'+ti);
+        fb.className='fb show '+(ok?'ok':'no');
+        fb.innerHTML=(ok?'✅ Richtig! ':'❌ Falsch. ')+task.exp;
+      });
+      document.getElementById('mo'+ti).appendChild(btn);
+    });
+  });
+}
+document.getElementById('rs4').addEventListener('click',()=>{u4ans=new Array(u4data.length).fill(null);u4Build();});
+u4Build();
+
+// ══ ÜBUNG 5: Dativ-Verben – offene Aufgaben ══
+const u5data=[
+  {prompt:'Mann – antworten – Frau',sol:'Der Mann antwortet der Frau.',tip:'antworten + Dativ: Wem antwortet er?'},
+  {prompt:'Anastasia hat Geburtstag. Wir – gratulieren',sol:'Wir gratulieren Anastasia.',tip:'gratulieren + Dativ'},
+  {prompt:'Du hast Probleme. Ich – helfen',sol:'Ich helfe dir.',tip:'helfen + Dativ: Wem helfe ich?'},
+  {prompt:'Der Vater erzählt. Die Kinder – zuhören',sol:'Die Kinder hören dem Vater zu.',tip:'zuhören + Dativ: Wem hören sie zu?'},
+  {prompt:'Das Essen – schmecken – die Gäste',sol:'Das Essen schmeckt den Gästen.',tip:'schmecken: Ding = Subj., Person = Dativ'},
+  {prompt:'Die neuen Schuhe – passen – die Frau – nicht',sol:'Die neuen Schuhe passen der Frau nicht.',tip:'passen: Ding = Subj., Person = Dativ'},
+  {prompt:'Das rote Kleid – gefallen – das Mädchen',sol:'Das rote Kleid gefällt dem Mädchen.',tip:'gefallen: Ding = Subj., Person = Dativ'},
+  {prompt:'Das neue Auto – gehören – der Chef',sol:'Das neue Auto gehört dem Chef.',tip:'gehören + Dativ: Wem gehört es?'},
+  {prompt:'Ich – danken – mein Lehrer',sol:'Ich danke meinem Lehrer.',tip:'danken + Dativ: Wem danke ich?'},
+  {prompt:'Der Kopf – wehtun – ich',sol:'Der Kopf tut mir weh.',tip:'wehtun + Dativ: Wem tut es weh? → mir'},
+  {prompt:'Kind – helfen – die alte Frau',sol:'Das Kind hilft der alten Frau.',tip:'helfen + Dativ'},
+  {prompt:'Diese Farbe – stehen – du – gut',sol:'Diese Farbe steht dir gut.',tip:'stehen (Farbe/Stil) + Dativ: Wem steht sie?'},
+  {prompt:'Ich – glauben – mein Freund',sol:'Ich glaube meinem Freund.',tip:'glauben + Dativ: Wem glaube ich?'},
+];
+function u5Build(){
+  const c=document.getElementById('u5');c.innerHTML='';
+  u5data.forEach((task,ti)=>{
+    const box=document.createElement('div');box.style.marginBottom='14px';
+    box.innerHTML=`
+      <div style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;">Aufgabe ${ti+1}</div>
+      <div style="font-size:.88rem;font-weight:600;background:var(--bg);padding:9px 12px;border-radius:8px;margin-bottom:7px;border:1px solid var(--border);">${task.prompt}</div>
+      <input type="text" id="u5i${ti}" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:.88rem;font-family:'Inter',sans-serif;background:#fff;color:var(--text);outline:none;" placeholder="Schreiben Sie Ihren Satz …" autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="fb" id="u5f${ti}"></div>`;
+    c.appendChild(box);
+    const inp=box.querySelector('input');
+    const showBtn=document.createElement('button');showBtn.className='btn btns bsm';showBtn.style.marginTop='5px';showBtn.textContent='Lösung anzeigen';showBtn.dataset.ti=ti;
+    showBtn.addEventListener('click',function(){
+      const ti2=+this.dataset.ti;
+      const fb=document.getElementById('u5f'+ti2);
+      const val=document.getElementById('u5i'+ti2).value.trim();
+      fb.className='fb show ok';
+      fb.innerHTML=`✅ <strong>Lösung:</strong> <em>${u5data[ti2].sol}</em><br><span style="font-size:.76rem;color:var(--muted);">${u5data[ti2].tip}</span>`;
+    });
+    box.appendChild(showBtn);
+  });
+}
+u5Build();
+
+// ── Retry all ──
+document.getElementById('retryAll').addEventListener('click',()=>{
+  s1placed={};s1sel=null;s1Build();document.getElementById('fb1').classList.remove('show');
+  document.querySelectorAll('.fblank').forEach(x=>{x.value='';x.classList.remove('ok','no');});
+  document.getElementById('fb2').classList.remove('show');
+  u3ans=u3data.map(()=>[]);u3used=u3data.map(t=>new Array(t.ws.length).fill(false));u3Build();
+  u4ans=new Array(u4data.length).fill(null);u4Build();
+  u5Build();
+  document.getElementById('scoreBar').classList.remove('show');
+});
+</script>
+</body>
+</html>

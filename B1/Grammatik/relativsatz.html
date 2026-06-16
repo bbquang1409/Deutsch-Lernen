@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relativsätze – Grammatik & Übungen B1</title>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --primary: #2d6a8f;
+    --primary-light: #e8f1f8;
+    --accent: #1a9b8a;
+    --accent-light: #e4f7f5;
+    --text: #1e2d3d;
+    --muted: #5a7085;
+    --border: #d0dde8;
+    --success: #2d8f5a;
+    --success-bg: #e6f7ee;
+    --error: #c0392b;
+    --error-bg: #fdecea;
+    --warn: #e67e22;
+    --warn-bg: #fef5ec;
+    --shadow: 0 2px 8px rgba(45,106,143,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header { background: var(--primary); color: #fff; padding: 14px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+  header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.3px; }
+  header p { font-size: 0.78rem; opacity: 0.82; margin-top: 2px; }
+
+  /* MAIN NAV TABS */
+  .section-nav { display: flex; gap: 8px; padding: 16px 16px 0; overflow-x: auto; }
+  .section-nav button {
+    flex-shrink: 0; padding: 8px 16px; border-radius: 20px; border: 2px solid var(--primary);
+    background: #fff; color: var(--primary); font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.18s;
+  }
+  .section-nav button.active { background: var(--primary); color: #fff; }
+  .section-nav button:hover:not(.active) { background: var(--primary-light); }
+
+  /* GRAMMAR TABS – wrap grid, no scroll */
+  .grammar-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 12px 16px; background: #fff;
+    border-bottom: 2px solid var(--border);
+  }
+  .grammar-tabs button {
+    flex: 1 1 calc(50% - 8px); min-width: 140px;
+    padding: 9px 10px; border: 2px solid var(--border);
+    border-radius: 8px; background: #f8fafc;
+    color: var(--muted); font-weight: 600; font-size: 0.8rem;
+    cursor: pointer; transition: all 0.15s; text-align: center;
+    line-height: 1.3;
+  }
+  .grammar-tabs button.active {
+    background: var(--primary); color: #fff;
+    border-color: var(--primary);
+  }
+  .grammar-tabs button:hover:not(.active) {
+    border-color: var(--primary); color: var(--primary); background: var(--primary-light);
+  }
+
+  /* PANELS */
+  .panel { display: none; padding: 16px; }
+  .panel.active { display: block; }
+
+  /* ERKLÄRUNG BOX */
+  .erklarung {
+    background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .erklarung h3 { color: var(--primary); font-size: 0.92rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .erklarung p { font-size: 0.85rem; line-height: 1.65; color: var(--text); margin-bottom: 6px; }
+  .erklarung ul { padding-left: 18px; font-size: 0.85rem; line-height: 1.7; }
+  .erklarung code { background: #fff; border-radius: 4px; padding: 1px 5px; font-family: monospace; color: var(--primary); }
+
+  /* TABELLE */
+  .table-wrap { overflow-x: auto; margin: 10px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.8rem; min-width: 300px; }
+  th { background: var(--primary); color: #fff; padding: 7px 10px; text-align: center; }
+  td { padding: 6px 10px; border: 1px solid var(--border); text-align: center; }
+  tr:nth-child(even) td { background: #f7fafd; }
+  td.key { font-weight: 700; background: var(--primary-light); color: var(--primary); }
+
+  /* BEISPIELE */
+  .beispiele { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .beispiele h3 { color: var(--accent); font-size: 0.88rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .beispiel { padding: 7px 0; border-bottom: 1px dashed var(--border); font-size: 0.84rem; line-height: 1.6; }
+  .beispiel:last-child { border-bottom: none; }
+  .beispiel .base { color: var(--muted); font-size: 0.78rem; margin-bottom: 2px; }
+  .beispiel .result { color: var(--text); }
+  .beispiel mark { background: #fff3b0; padding: 0 2px; border-radius: 3px; color: #7a5c00; font-weight: 700; }
+  .beispiel .note { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
+
+  /* ÜBUNGEN */
+  .uebung-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .uebung-card h3 { color: var(--primary); font-size: 0.9rem; margin-bottom: 4px; }
+  .uebung-card .instruction { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+
+  /* FILL-IN */
+  .fill-item { margin-bottom: 10px; font-size: 0.84rem; line-height: 1.7; }
+  .fill-item input[type=text] {
+    width: 90px; border: 2px solid var(--border); border-radius: 6px; padding: 3px 6px;
+    font-size: 0.82rem; color: var(--text); background: #f8fafc; transition: border-color 0.15s;
+    text-align: center;
+  }
+  .fill-item input[type=text]:focus { outline: none; border-color: var(--primary); background: #fff; }
+  .fill-item input.correct { border-color: var(--success); background: var(--success-bg); }
+  .fill-item input.wrong { border-color: var(--error); background: var(--error-bg); }
+
+  /* CONNECT */
+  .connect-item { margin-bottom: 14px; font-size: 0.84rem; }
+  .connect-item .sentences { color: var(--muted); font-size: 0.8rem; margin-bottom: 4px; line-height: 1.55; }
+  .connect-item textarea {
+    width: 100%; border: 2px solid var(--border); border-radius: 6px; padding: 6px 8px;
+    font-size: 0.82rem; resize: vertical; min-height: 48px; color: var(--text); background: #f8fafc;
+    transition: border-color 0.15s; font-family: inherit;
+  }
+  .connect-item textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+  .connect-item textarea.correct { border-color: var(--success); background: var(--success-bg); }
+  .connect-item textarea.wrong { border-color: var(--error); background: var(--error-bg); }
+  .connect-item .model-answer { display: none; font-size: 0.78rem; color: var(--success); margin-top: 3px; background: var(--success-bg); border-radius: 5px; padding: 4px 8px; }
+  .connect-item .model-answer.show { display: block; }
+
+  /* MC */
+  .mc-item { margin-bottom: 12px; font-size: 0.84rem; line-height: 1.6; }
+  .mc-item p { margin-bottom: 6px; }
+  .mc-options { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mc-options button {
+    padding: 4px 12px; border: 2px solid var(--border); border-radius: 16px;
+    background: #f8fafc; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; color: var(--text);
+  }
+  .mc-options button:hover { border-color: var(--primary); background: var(--primary-light); }
+  .mc-options button.correct { background: var(--success-bg); border-color: var(--success); color: var(--success); font-weight: 700; }
+  .mc-options button.wrong { background: var(--error-bg); border-color: var(--error); color: var(--error); }
+  .mc-options button.reveal { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+
+  /* ERROR FIND */
+  .error-item { margin-bottom: 10px; font-size: 0.84rem; line-height: 1.65; }
+  .error-item .wrong-sentence { color: var(--muted); font-size: 0.8rem; margin-bottom: 4px; }
+  .error-item input[type=text] {
+    width: 120px; border: 2px solid var(--border); border-radius: 6px; padding: 3px 6px;
+    font-size: 0.82rem; color: var(--text); background: #f8fafc; transition: border-color 0.15s;
+  }
+  .error-item input.correct { border-color: var(--success); background: var(--success-bg); }
+  .error-item input.wrong { border-color: var(--error); background: var(--error-bg); }
+
+  /* BUTTONS */
+  .btn-check {
+    margin-top: 12px; padding: 9px 22px; background: var(--primary); color: #fff;
+    border: none; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-check:hover { background: #1e4e6e; }
+  .btn-reset {
+    margin-top: 8px; margin-left: 10px; padding: 9px 18px; background: #fff; color: var(--muted);
+    border: 2px solid var(--border); border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-reset:hover { border-color: var(--muted); color: var(--text); }
+  .score-badge { display: inline-block; margin-top: 10px; padding: 6px 16px; border-radius: 16px; font-size: 0.85rem; font-weight: 700; }
+  .score-good { background: var(--success-bg); color: var(--success); }
+  .score-ok { background: var(--warn-bg); color: var(--warn); }
+  .score-bad { background: var(--error-bg); color: var(--error); }
+
+  /* DIVIDER */
+  .section-divider { height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 2px; margin: 8px 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📘 Relativsätze – Grammatik &amp; Übungen</h1>
+  <p>Niveau B1 · Miteinander! Deutsch für Alltag und Beruf</p>
+</header>
+
+<!-- SECTION NAV -->
+<div class="section-nav">
+  <button class="active" onclick="showSection('grammatik')">📖 Grammatik</button>
+  <button onclick="showSection('uebungen')">✏️ Übungen</button>
+</div>
+
+<!-- ========== GRAMMATIK SECTION ========== -->
+<div id="sec-grammatik" class="panel active">
+  <div class="grammar-tabs">
+    <button class="active" onclick="showTab('t1')">1. Nom. / Akk. / Dativ</button>
+    <button onclick="showTab('t2')">2. Genitiv<br><small>dessen / deren</small></button>
+    <button onclick="showTab('t3')">3. Genitiv<br><small>+ Präposition</small></button>
+    <button onclick="showTab('t4')">4. wo / wohin</button>
+    <button onclick="showTab('t5')">5. Relativpron.<br><small>„was"</small></button>
+    <button onclick="showTab('t6')">6. Präp. +<br><small>Relativpron. 🔴</small></button>
+    <button onclick="showTab('t7')">7. wer / wen<br><small>/ wem 🟡</small></button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div id="tab-t1" class="panel active">
+    <div class="erklarung">
+      <h3>📌 Erklärung – Relativpronomen im Nominativ, Akkusativ &amp; Dativ</h3>
+      <p>Ein <strong>Relativsatz</strong> ist ein Nebensatz, der ein Nomen im Hauptsatz näher beschreibt. Er wird durch ein <strong>Relativpronomen</strong> eingeleitet. Das Relativpronomen richtet sich nach <strong>Genus</strong> und <strong>Numerus</strong> des Bezugsworts und nach dem <strong>Kasus</strong>, den es im Nebensatz hat.</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Kasus</th><th>maskulin</th><th>feminin</th><th>neutrum</th><th>Plural</th></tr>
+          <tr><td class="key">Nominativ</td><td>der</td><td>die</td><td>das</td><td>die</td></tr>
+          <tr><td class="key">Akkusativ</td><td>den</td><td>die</td><td>das</td><td>die</td></tr>
+          <tr><td class="key">Dativ</td><td>dem</td><td>der</td><td>dem</td><td>denen</td></tr>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Nominativ</strong>: Das Relativpronomen ist das <em>Subjekt</em> des Relativsatzes.</li>
+        <li><strong>Akkusativ</strong>: Das Relativpronomen ist das <em>direkte Objekt</em>.</li>
+        <li><strong>Dativ</strong>: Das Relativpronomen ist das <em>indirekte Objekt</em> oder steht nach Präpositionen mit Dativ.</li>
+        <li>Das Verb steht immer am <strong>Ende</strong> des Relativsatzes.</li>
+      </ul>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="base">Der Mann arbeitet hier. Er ist mein Nachbar.</div>
+        <div class="result">Der Mann, <mark>der</mark> hier arbeitet, ist mein Nachbar. <em>(mask. Nom.)</em></div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Das Buch liegt auf dem Tisch. Ich lese es gerade.</div>
+        <div class="result">Das Buch, <mark>das</mark> ich gerade lese, liegt auf dem Tisch. <em>(neutr. Akk.)</em></div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Frau wohnt nebenan. Ich habe ihr geholfen.</div>
+        <div class="result">Die Frau, <mark>der</mark> ich geholfen habe, wohnt nebenan. <em>(fem. Dat.)</em></div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Kinder spielen im Garten. Ich kenne sie gut.</div>
+        <div class="result">Die Kinder, <mark>die</mark> ich gut kenne, spielen im Garten. <em>(Pl. Akk.)</em></div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Der Kollege hat mir geholfen. Ich vertraue ihm sehr.</div>
+        <div class="result">Der Kollege, <mark>dem</mark> ich sehr vertraue, hat mir geholfen. <em>(mask. Dat.)</em></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div id="tab-t2" class="panel">
+    <div class="erklarung">
+      <h3>📌 Erklärung – Relativpronomen im Genitiv (dessen / deren)</h3>
+      <p>Das Relativpronomen im <strong>Genitiv</strong> drückt eine <em>Zugehörigkeit</em> aus – es entspricht dem Possessivpronomen <em>sein/ihr</em>. Das Genitivpronomen steht direkt vor dem Nomen, das es besitzt. Ein Artikel wird <strong>nicht</strong> wiederholt.</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Bezugswort</th><th>Genus</th><th>Relativpronomen</th><th>Funktion</th></tr>
+          <tr><td>der Mann</td><td>maskulin</td><td class="key">dessen</td><td>= sein…</td></tr>
+          <tr><td>das Kind</td><td>neutrum</td><td class="key">dessen</td><td>= sein…</td></tr>
+          <tr><td>die Frau</td><td>feminin</td><td class="key">deren</td><td>= ihr…</td></tr>
+          <tr><td>die Leute</td><td>Plural</td><td class="key">deren</td><td>= ihr…</td></tr>
+        </table>
+      </div>
+      <ul>
+        <li>Schema: <code>Bezugswort + , + dessen/deren + Nomen + … + Verb</code></li>
+        <li>Das Nomen nach <em>dessen/deren</em> hat <strong>keinen Artikel</strong>.</li>
+        <li>Beispiel: ✗ <em>dessen sein Auto</em> → ✓ <em>dessen Auto</em></li>
+      </ul>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="base">Der Arzt arbeitet hier. Seine Patienten kommen aus aller Welt.</div>
+        <div class="result">Der Arzt, <mark>dessen</mark> Patienten aus aller Welt kommen, arbeitet hier.</div>
+        <div class="note">Bezugswort: Arzt (mask.) → dessen</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Lehrerin ist sehr beliebt. Ihre Methoden sind sehr kreativ.</div>
+        <div class="result">Die Lehrerin, <mark>deren</mark> Methoden sehr kreativ sind, ist sehr beliebt.</div>
+        <div class="note">Bezugswort: Lehrerin (fem.) → deren</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Das Unternehmen expandiert. Seine Produkte werden weltweit verkauft.</div>
+        <div class="result">Das Unternehmen, <mark>dessen</mark> Produkte weltweit verkauft werden, expandiert.</div>
+        <div class="note">Bezugswort: Unternehmen (neutr.) → dessen</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Studenten haben bestanden. Ihre Noten waren ausgezeichnet.</div>
+        <div class="result">Die Studenten, <mark>deren</mark> Noten ausgezeichnet waren, haben bestanden.</div>
+        <div class="note">Bezugswort: Studenten (Pl.) → deren</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Der Kandidat wurde gewählt. Sein Programm überzeugte die Mehrheit.</div>
+        <div class="result">Der Kandidat, <mark>dessen</mark> Programm die Mehrheit überzeugte, wurde gewählt.</div>
+        <div class="note">Bezugswort: Kandidat (mask.) → dessen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3 -->
+  <div id="tab-t3" class="panel">
+    <div class="erklarung">
+      <h3>📌 Erklärung – Genitiv-Relativpronomen nach Präposition</h3>
+      <p>Manchmal steht das Relativpronomen im <strong>Genitiv</strong>, aber eine <strong>Präposition</strong> bestimmt gleichzeitig den Kasus eines weiteren Nomens im Relativsatz. Die Präposition steht dabei <em>vor</em> dem Relativpronomen im Genitiv.</p>
+      <p><strong>Schema:</strong> <code>Bezugswort + , + Präposition + dessen/deren + Nomen + … + Verb</code></p>
+      <ul>
+        <li>Das Relativpronomen drückt die Zugehörigkeit aus (= Genitiv).</li>
+        <li>Die Präposition bestimmt den Kasus des Nomens dahinter.</li>
+        <li>Beispiel: <em>in deren Schwester</em> → Präp. <em>in</em> + Akk. // <em>von dessen Tüchtigkeit</em> → Präp. <em>von</em> + Dat.</li>
+      </ul>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="base">Erika will heiraten. Max ist seit langem in ihre Schwester verliebt.</div>
+        <div class="result">Erika, in <mark>deren</mark> Schwester Max seit langem verliebt ist, will heiraten.</div>
+        <div class="note">Erika (fem.) → deren; verliebt sein in + Akk.</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Das ist Ihr neuer Kollege. Von seiner Tüchtigkeit sind wir alle überzeugt.</div>
+        <div class="result">Das ist Ihr neuer Kollege, von <mark>dessen</mark> Tüchtigkeit wir alle überzeugt sind.</div>
+        <div class="note">Kollege (mask.) → dessen; überzeugt sein von + Dat.</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Politikerin ist bekannt. Über ihre Arbeit wird viel diskutiert.</div>
+        <div class="result">Die Politikerin, über <mark>deren</mark> Arbeit viel diskutiert wird, ist bekannt.</div>
+        <div class="note">Politikerin (fem.) → deren; diskutieren über + Akk.</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Der Forscher erhielt einen Preis. Mit seinen Ergebnissen hat er alle überrascht.</div>
+        <div class="result">Der Forscher, mit <mark>dessen</mark> Ergebnissen er alle überrascht hat, erhielt einen Preis.</div>
+        <div class="note">Forscher (mask.) → dessen; mit + Dat.</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Das Projekt wurde abgeschlossen. Wegen seiner Verzögerungen gab es Kritik.</div>
+        <div class="result">Das Projekt, wegen <mark>dessen</mark> Verzögerungen es Kritik gab, wurde abgeschlossen.</div>
+        <div class="note">Projekt (neutr.) → dessen; wegen + Gen.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4 -->
+  <div id="tab-t4" class="panel">
+    <div class="erklarung">
+      <h3>📌 Erklärung – Relativadverb „wo" und „wohin"</h3>
+      <p>Wenn das Bezugswort <strong>räumlich</strong> oder <strong>zeitlich</strong> ist, kann man statt einer Präposition + Relativpronomen das Relativadverb <code>wo</code> oder <code>wohin</code> verwenden.</p>
+      <ul>
+        <li><code>wo</code> = Ort ohne Bewegung oder Zeitpunkt: <em>Das ist die Stadt, wo ich aufgewachsen bin.</em></li>
+        <li><code>wohin</code> = Ziel einer Bewegung: <em>Das ist die Stadt, wohin wir fahren wollen.</em></li>
+        <li>Beide Formen sind <em>stilistisch neutral</em> und häufig in der gesprochenen Sprache.</li>
+        <li>Die Präposition-Form ist formeller: <em>in der Stadt, in der …</em></li>
+      </ul>
+      <p><strong>Zeitlicher Bezug:</strong> <code>wo</code> kann sich auch auf Zeitpunkte beziehen: <em>der Moment, wo alles klar wurde</em></p>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="base">Lasst uns zum Baggersee fahren. Dort kann man wunderbar baden.</div>
+        <div class="result">Lasst uns zum Baggersee fahren, <mark>wo</mark> man wunderbar baden kann.</div>
+        <div class="note">Alternativ: „in dem man wunderbar baden kann"</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Frank studiert an der RWTH Aachen. Sein Vater hat auch dort studiert.</div>
+        <div class="result">Frank studiert an der RWTH Aachen, <mark>wo</mark> auch sein Vater studiert hat.</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Udo will nach Südafrika fahren. Sein Freund ist auch schon dorthin gereist.</div>
+        <div class="result">Udo will nach Südafrika fahren, <mark>wohin</mark> sein Freund auch schon gereist ist.</div>
+        <div class="note">„wohin" wegen Bewegung zum Ziel</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Wir haben im Lotto gewonnen. Jetzt sind unsere finanziellen Probleme gelöst.</div>
+        <div class="result">Jetzt, <mark>wo</mark> wir im Lotto gewonnen haben, sind unsere finanziellen Probleme gelöst.</div>
+        <div class="note">„wo" mit zeitlichem Bezug (= jetzt, da)</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Sie träumt von Paris. Ihre Großmutter wurde dort geboren.</div>
+        <div class="result">Sie träumt von Paris, <mark>wo</mark> ihre Großmutter geboren wurde.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5 -->
+  <div id="tab-t5" class="panel">
+    <div class="erklarung">
+      <h3>📌 Erklärung – Relativpronomen „was"</h3>
+      <p>Das Relativpronomen <code>was</code> wird verwendet, wenn das Bezugswort:</p>
+      <ul>
+        <li>ein <strong>sächliches Indefinit- oder Demonstrativpronomen</strong> ist: <em>alles, das, etwas, nichts, vieles, manches, dasjenige</em></li>
+        <li>ein <strong>substantivierter Superlativ</strong> ist: <em>das Schönste, das Beste, das Schlimmste</em></li>
+        <li>sich auf einen <strong>ganzen Satz</strong> bezieht</li>
+      </ul>
+      <p>Steht <code>was</code> als Ergänzung nach einer Präposition, verwendet man <code>wo(r)- + Präposition</code>:</p>
+      <ul>
+        <li><em>worüber</em> (= über + was), <em>wofür, womit, woran, worauf …</em></li>
+        <li>Schema: <em>Er hat mich gerettet, <strong>wofür</strong> ich sehr dankbar bin.</em></li>
+      </ul>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="result">Alles, <mark>was</mark> sie gesagt haben, war erstunken und erlogen.</div>
+        <div class="note">Bezug: „alles" (Indefinitpronomen)</div>
+      </div>
+      <div class="beispiel">
+        <div class="result">Das ist das Hübscheste, <mark>was</mark> mir jemals geschenkt wurde.</div>
+        <div class="note">Bezug: „das Hübscheste" (substantivierter Superlativ)</div>
+      </div>
+      <div class="beispiel">
+        <div class="result">Da ist etwas, <mark>was</mark> ich nicht verstehe.</div>
+        <div class="note">Bezug: „etwas" (Indefinitpronomen)</div>
+      </div>
+      <div class="beispiel">
+        <div class="result">Einige Kollegen machen eine zu lange Pause, <mark>was</mark> unseren Chef sehr ärgert.</div>
+        <div class="note">Bezug: ganzer Satz</div>
+      </div>
+      <div class="beispiel">
+        <div class="result">Kurt schenkte Hilde zum Geburtstag einen Ring, <mark>worüber</mark> sie sich sehr freute.</div>
+        <div class="note">Bezug: ganzer Satz; sich freuen über → worüber</div>
+      </div>
+    </div>
+  </div>
+  <!-- TAB 6 -->
+  <div id="tab-t6" class="panel">
+    <div class="level-badge" style="background:#fdecea;border-left:4px solid #c0392b;border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:0.82rem;color:#c0392b;font-weight:700;">
+      🔴 B1 – Prüfungsrelevant · Häufig in Goethe B1 und telc B1
+    </div>
+    <div class="erklarung">
+      <h3>📌 Erklärung – Präposition + Relativpronomen</h3>
+      <p>Wenn das Verb oder Adjektiv im Relativsatz eine <strong>feste Präposition</strong> verlangt, steht diese Präposition <em>vor</em> dem Relativpronomen. Der Kasus des Relativpronomens wird dann von der <strong>Präposition</strong> bestimmt.</p>
+      <p><strong>Schema:</strong> <code>Bezugswort + , + Präposition + Relativpronomen (Kasus laut Präp.) + … + Verb</code></p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Präposition</th><th>Kasus</th><th>mask.</th><th>fem.</th><th>neutr.</th><th>Pl.</th></tr>
+          <tr><td>mit, von, bei, nach, aus, seit, zu</td><td class="key">Dativ</td><td>dem</td><td>der</td><td>dem</td><td>denen</td></tr>
+          <tr><td>für, durch, ohne, gegen, um, über*, an*, auf*</td><td class="key">Akkusativ</td><td>den</td><td>die</td><td>das</td><td>die</td></tr>
+          <tr><td colspan="6" style="font-size:0.75rem;color:#5a7085;text-align:left;padding:5px 10px;">* über, an, auf, in, unter, vor, zwischen → Dativ (Lage) oder Akkusativ (Richtung/Verb)</td></tr>
+        </table>
+      </div>
+      <ul>
+        <li>Merkhilfe: Erst die <strong>Präposition</strong> bestimmen → dann den <strong>Kasus</strong> → dann das <strong>Relativpronomen</strong> wählen.</li>
+        <li>Beispiel: <em>arbeiten für</em> → für + Akk. → fem. Akk. = <em>die</em> → <code>die Firma, für die er arbeitet</code></li>
+        <li>Nicht verwechseln: <em>„wo(r)- + Präp."</em> gilt nur bei <code>was</code>-Bezug (Tab 5), nicht hier!</li>
+      </ul>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="base">Das ist das Thema. Wir haben darüber gesprochen.</div>
+        <div class="result">Das ist das Thema, <mark>über das</mark> wir gesprochen haben.</div>
+        <div class="note">sprechen über + Akk. → neutr. Akk. = das</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Der Mann arbeitet sehr gut. Ich arbeite täglich mit ihm zusammen.</div>
+        <div class="result">Der Mann, <mark>mit dem</mark> ich täglich zusammenarbeite, arbeitet sehr gut.</div>
+        <div class="note">zusammenarbeiten mit + Dat. → mask. Dat. = dem</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Firma ist international bekannt. Er arbeitet für sie.</div>
+        <div class="result">Die Firma, <mark>für die</mark> er arbeitet, ist international bekannt.</div>
+        <div class="note">arbeiten für + Akk. → fem. Akk. = die</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Das ist der Kurs. Ich habe mich dafür angemeldet.</div>
+        <div class="result">Das ist der Kurs, <mark>für den</mark> ich mich angemeldet habe.</div>
+        <div class="note">sich anmelden für + Akk. → mask. Akk. = den</div>
+      </div>
+      <div class="beispiel">
+        <div class="base">Die Kollegen sind sehr hilfsbereit. Ich vertraue ihnen vollständig.</div>
+        <div class="result">Die Kollegen, <mark>denen</mark> ich vollständig vertraue, sind sehr hilfsbereit.</div>
+        <div class="note">vertrauen + Dat. (keine Präp.) → Pl. Dat. = denen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 7 -->
+  <div id="tab-t7" class="panel">
+    <div class="level-badge" style="background:#fef5ec;border-left:4px solid #e67e22;border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:0.82rem;color:#e67e22;font-weight:700;">
+      🟡 B1 Fortgeschritten · Vorkommt in Lesetexten und Sprichwörtern
+    </div>
+    <div class="erklarung">
+      <h3>📌 Erklärung – Relativpronomen „wer", „wen", „wem"</h3>
+      <p>Diese Konstruktion wird verwendet, wenn es <strong>kein konkretes Bezugswort</strong> gibt — also wenn man allgemein über „jemand, der …" spricht. Das Relativpronomen steht am <strong>Satzanfang</strong> und leitet den Relativsatz ein, der als Subjekt oder Objekt des Hauptsatzes fungiert.</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Kasus im Relativsatz</th><th>Pronomen</th><th>Bedeutung</th><th>Korrelat im HS</th></tr>
+          <tr><td class="key">Nominativ</td><td><strong>wer</strong></td><td>jeder, der …</td><td>der / derjenige</td></tr>
+          <tr><td class="key">Akkusativ</td><td><strong>wen</strong></td><td>jemanden, den …</td><td>den / denjenigen</td></tr>
+          <tr><td class="key">Dativ</td><td><strong>wem</strong></td><td>jemandem, dem …</td><td>dem / demjenigen</td></tr>
+        </table>
+      </div>
+      <ul>
+        <li>Oft steht im Hauptsatz ein <strong>Korrelat</strong> (<em>der, den, dem</em>), das auf den Relativsatz verweist.</li>
+        <li>Diese Struktur ist typisch für <strong>Sprichwörter, Ratschläge und allgemeine Aussagen</strong>.</li>
+        <li>Beispiel: <em>Wer A sagt, <strong>der</strong> muss auch B sagen.</em> (Sprichwort)</li>
+      </ul>
+    </div>
+    <div class="beispiele">
+      <h3>💡 Beispiele</h3>
+      <div class="beispiel">
+        <div class="result"><mark>Wer</mark> fleißig lernt, <strong>der</strong> besteht die Prüfung.</div>
+        <div class="note">wer = Nom. im RS; der = Korrelat im HS (Subjekt)</div>
+      </div>
+      <div class="beispiel">
+        <div class="result"><mark>Wen</mark> du einlädst, <strong>den</strong> kenne ich nicht.</div>
+        <div class="note">wen = Akk. im RS; den = Korrelat im HS (Objekt)</div>
+      </div>
+      <div class="beispiel">
+        <div class="result"><mark>Wem</mark> das gefällt, <strong>dem</strong> empfehle ich dieses Buch.</div>
+        <div class="note">wem = Dat. im RS; dem = Korrelat im HS</div>
+      </div>
+      <div class="beispiel">
+        <div class="result"><mark>Wer</mark> zu spät kommt, muss draußen warten.</div>
+        <div class="note">Kein Korrelat nötig, wenn der Kontext klar ist.</div>
+      </div>
+      <div class="beispiel">
+        <div class="result"><mark>Wer</mark> nicht wagt, <strong>der</strong> nicht gewinnt.</div>
+        <div class="note">Klassisches deutsches Sprichwort</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ÜBUNGEN SECTION ========== -->
+<div id="sec-uebungen" class="panel">
+  <div class="grammar-tabs">
+    <button class="active" onclick="showUebung('u1')">Ü 1<br><small>Lückentext</small></button>
+    <button onclick="showUebung('u2')">Ü 2<br><small>Sätze verbinden</small></button>
+    <button onclick="showUebung('u3')">Ü 3<br><small>Multiple Choice</small></button>
+    <button onclick="showUebung('u4')">Ü 4<br><small>Fehler korrigieren</small></button>
+    <button onclick="showUebung('u5')">Ü 5<br><small>Gemischt</small></button>
+    <button onclick="showUebung('u6')">Ü 6<br><small>Präp. + Rel. 🔴</small></button>
+  </div>
+
+  <!-- ÜBUNG 1: Lückentext -->
+  <div id="tab-u1" class="panel active">
+    <div class="uebung-card">
+      <h3>✏️ Übung 1 – Richtiges Relativpronomen einsetzen</h3>
+      <p class="instruction">Ergänzen Sie das passende Relativpronomen (der / die / das / den / dem / denen / dessen / deren / was / wo / wohin).</p>
+      <div id="u1-items"></div>
+      <button class="btn-check" onclick="checkU1()">Auswerten</button>
+      <button class="btn-reset" onclick="resetU1()">Zurücksetzen</button>
+      <div id="u1-score"></div>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 2: Sätze verbinden -->
+  <div id="tab-u2" class="panel">
+    <div class="uebung-card">
+      <h3>✏️ Übung 2 – Sätze mit Relativsatz verbinden</h3>
+      <p class="instruction">Verbinden Sie die zwei Sätze zu einem Satz mit einem Relativsatz.</p>
+      <div id="u2-items"></div>
+      <button class="btn-check" onclick="checkU2()">Musterlösung zeigen</button>
+      <button class="btn-reset" onclick="resetU2()">Zurücksetzen</button>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 3: Multiple Choice -->
+  <div id="tab-u3" class="panel">
+    <div class="uebung-card">
+      <h3>✏️ Übung 3 – Multiple Choice</h3>
+      <p class="instruction">Wählen Sie das richtige Relativpronomen.</p>
+      <div id="u3-items"></div>
+      <div id="u3-score"></div>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 4: Fehler korrigieren -->
+  <div id="tab-u4" class="panel">
+    <div class="uebung-card">
+      <h3>✏️ Übung 4 – Fehler korrigieren</h3>
+      <p class="instruction">In jedem Satz ist ein Relativpronomen falsch. Schreiben Sie das richtige Pronomen in das Feld.</p>
+      <div id="u4-items"></div>
+      <button class="btn-check" onclick="checkU4()">Auswerten</button>
+      <button class="btn-reset" onclick="resetU4()">Zurücksetzen</button>
+      <div id="u4-score"></div>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 5: Gemischt -->
+  <div id="tab-u5" class="panel">
+    <div class="uebung-card">
+      <h3>✏️ Übung 5 – Gemischte Formen</h3>
+      <p class="instruction">Alle Relativpronomen-Typen gemischt. Setzen Sie das passende Pronomen ein.</p>
+      <div id="u5-items"></div>
+      <button class="btn-check" onclick="checkU5()">Auswerten</button>
+      <button class="btn-reset" onclick="resetU5()">Zurücksetzen</button>
+      <div id="u5-score"></div>
+    </div>
+  </div>
+
+  <!-- ÜBUNG 6: Präposition + Relativpronomen -->
+  <div id="tab-u6" class="panel">
+    <div class="uebung-card">
+      <h3>✏️ Übung 6 – Präposition + Relativpronomen</h3>
+      <div style="background:#fdecea;border-left:3px solid #c0392b;border-radius:6px;padding:6px 12px;margin-bottom:10px;font-size:0.78rem;color:#c0392b;font-weight:700;">🔴 B1 Prüfungsrelevant</div>
+      <p class="instruction">Ergänzen Sie die Lücke mit Präposition + Relativpronomen (z.B. für den / mit der / über das …).</p>
+      <div id="u6-items"></div>
+      <button class="btn-check" onclick="checkU6()">Auswerten</button>
+      <button class="btn-reset" onclick="resetU6()">Zurücksetzen</button>
+      <div id="u6-score"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =========== NAVIGATION ===========
+function showSection(id) {
+  document.querySelectorAll('#sec-grammatik, #sec-uebungen').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.section-nav button').forEach(function(b, i) {
+    b.classList.toggle('active', (i===0 && id==='grammatik') || (i===1 && id==='uebungen'));
+  });
+}
+
+function showTab(id) {
+  var tabs = ['t1','t2','t3','t4','t5','t6','t7'];
+  tabs.forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.classList.remove('active');
+  });
+  var target = document.getElementById('tab-' + id);
+  if (target) target.classList.add('active');
+  // use onclick attribute match
+  document.querySelectorAll('#sec-grammatik .grammar-tabs button').forEach(function(b) {
+    var oc = b.getAttribute('onclick') || '';
+    b.classList.toggle('active', oc.indexOf("'" + id + "'") !== -1);
+  });
+}
+
+function showUebung(id) {
+  var us = ['u1','u2','u3','u4','u5','u6'];
+  us.forEach(function(u) {
+    var el = document.getElementById('tab-' + u);
+    if (el) el.classList.remove('active');
+  });
+  var target = document.getElementById('tab-' + id);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('#sec-uebungen .grammar-tabs button').forEach(function(b) {
+    var oc = b.getAttribute('onclick') || '';
+    b.classList.toggle('active', oc.indexOf("'" + id + "'") !== -1);
+  });
+}
+
+// =========== DATA ===========
+var u1Data = [
+  { pre: "Die Frau,", blank: "die", post: "neben mir wohnt, ist Ärztin." },
+  { pre: "Das Auto,", blank: "das", post: "ich gekauft habe, ist sehr sparsam." },
+  { pre: "Der Kollege,", blank: "dem", post: "ich geholfen habe, ist sehr dankbar." },
+  { pre: "Alles,", blank: "was", post: "er sagt, klingt überzeugend." },
+  { pre: "Das ist die Stadt,", blank: "wo", post: "ich aufgewachsen bin." },
+  { pre: "Der Student,", blank: "dessen", post: "Hausarbeit die beste war, bekommt einen Preis." },
+  { pre: "Die Kinder,", blank: "denen", post: "man zuhört, fühlen sich verstanden." },
+  { pre: "Das Schlimmste,", blank: "was", post: "passieren kann, ist Gleichgültigkeit." },
+  { pre: "Er fuhr nach Berlin,", blank: "wohin", post: "seine Schwester schon gezogen war." },
+  { pre: "Die Professorin,", blank: "deren", post: "Forschung bekannt ist, hält einen Vortrag." },
+  { pre: "Das Buch,", blank: "das", post: "ich lese, ist sehr interessant." },
+  { pre: "Die Kollegen,", blank: "die", post: "früh kommen, bekommen den besten Platz." },
+  { pre: "Kurt hat mir geholfen,", blank: "wofür", post: "ich sehr dankbar bin." }
+];
+
+var u2Data = [
+  { s1: "Das ist ein Kollege.", s2: "Ich vertraue ihm sehr.", answer: "Das ist ein Kollege, dem ich sehr vertraue." },
+  { s1: "Die Ärztin arbeitet im Krankenhaus.", s2: "Ihre Methoden sind sehr modern.", answer: "Die Ärztin, deren Methoden sehr modern sind, arbeitet im Krankenhaus." },
+  { s1: "Das Projekt wurde genehmigt.", s2: "Wir haben lange daran gearbeitet.", answer: "Das Projekt, an dem wir lange gearbeitet haben, wurde genehmigt." },
+  { s1: "Der Ingenieur kommt aus Österreich.", s2: "Sein Erfindung wurde patentiert.", answer: "Der Ingenieur, dessen Erfindung patentiert wurde, kommt aus Österreich." },
+  { s1: "Das ist die Bibliothek.", s2: "Meine Mutter hat dort studiert.", answer: "Das ist die Bibliothek, wo meine Mutter studiert hat." },
+  { s1: "Die Bewerber wurden eingeladen.", s2: "Ihre Unterlagen waren vollständig.", answer: "Die Bewerber, deren Unterlagen vollständig waren, wurden eingeladen." },
+  { s1: "Er hat eine Stelle bekommen.", s2: "Das hat uns alle überrascht.", answer: "Er hat eine Stelle bekommen, was uns alle überrascht hat." },
+  { s1: "Das ist mein Freund Max.", s2: "Ich fahre mit ihm nach München.", answer: "Das ist mein Freund Max, mit dem ich nach München fahre." },
+  { s1: "Wir besuchen Hamburg.", s2: "Dorthin wollen wir auch nächstes Jahr fahren.", answer: "Wir besuchen Hamburg, wohin wir auch nächstes Jahr fahren wollen." },
+  { s1: "Es gibt vieles.", s2: "Ich verstehe das nicht.", answer: "Es gibt vieles, was ich nicht verstehe." },
+  { s1: "Die Krankenschwester kümmert sich um die Patienten.", s2: "Sie hat ihr ganzes Leben diesem Beruf gewidmet.", answer: "Die Krankenschwester, die ihr ganzes Leben diesem Beruf gewidmet hat, kümmert sich um die Patienten." },
+  { s1: "Der Chef lobte die Mitarbeiterin.", s2: "Ihre Präsentation war ausgezeichnet.", answer: "Der Chef lobte die Mitarbeiterin, deren Präsentation ausgezeichnet war." },
+  { s1: "Das war das Beste.", s2: "Es ist mir je passiert.", answer: "Das war das Beste, was mir je passiert ist." }
+];
+
+var u3Data = [
+  { sentence: "Das Haus, ___ in der Mitte der Stadt liegt, ist sehr teuer.", options: ["der","das","die","dem"], answer: "das" },
+  { sentence: "Der Arzt, ___ ich gestern besucht habe, ist sehr kompetent.", options: ["der","den","dem","dessen"], answer: "den" },
+  { sentence: "Die Studenten, ___ die Prüfung bestanden haben, feiern heute.", options: ["die","der","den","denen"], answer: "die" },
+  { sentence: "Das ist etwas, ___ ich nicht erwartet habe.", options: ["das","was","die","der"], answer: "was" },
+  { sentence: "Das ist die Fabrik, ___ mein Vater 30 Jahre gearbeitet hat.", options: ["wo","wohin","die","der"], answer: "wo" },
+  { sentence: "Der Student, ___ Noten sehr gut sind, bekommt ein Stipendium.", options: ["dessen","deren","dem","der"], answer: "dessen" },
+  { sentence: "Wir reisen nach Paris, ___ wir schon immer fahren wollten.", options: ["wo","wohin","das","die"], answer: "wohin" },
+  { sentence: "Das Beste, ___ du tun kannst, ist ehrlich zu sein.", options: ["das","was","die","dem"], answer: "was" },
+  { sentence: "Die Lehrerin, ___ Methoden sehr kreativ sind, unterrichtet B1.", options: ["dessen","deren","die","der"], answer: "deren" },
+  { sentence: "Er schenkte ihr Blumen, ___ sie sich sehr freute.", options: ["was","worüber","wofür","womit"], answer: "worüber" },
+  { sentence: "Die Kollegen, ___ ich jeden Tag zusammenarbeite, sind sehr nett.", options: ["mit denen","mit den","mit die","mit der"], answer: "mit denen" },
+  { sentence: "Das ist der Moment, ___ alles klar wurde.", options: ["wo","wohin","der","dem"], answer: "wo" },
+  { sentence: "Die Politikerin, ___ Programm viele überzeugt hat, wurde gewählt.", options: ["dessen","deren","die","der"], answer: "deren" }
+];
+
+var u4Data = [
+  { wrong: "Das Buch, das ich ihm geschenkt hat, ist auf Deutsch.", wrongWord: "hat", answer: "habe" },
+  { wrong: "Die Frau, die ich gestern gesehen haben, ist meine Nachbarin.", wrongWord: "haben", answer: "habe" },
+  { wrong: "Der Mann, dem Auto gestohlen wurde, ruft die Polizei.", wrongWord: "dem", answer: "dessen" },
+  { wrong: "Das ist die Stadt, wohin ich aufgewachsen bin.", wrongWord: "wohin", answer: "wo" },
+  { wrong: "Alles, das er sagt, klingt unglaubwürdig.", wrongWord: "das", answer: "was" },
+  { wrong: "Die Studenten, deren ich geholfen habe, sind sehr dankbar.", wrongWord: "deren", answer: "denen" },
+  { wrong: "Er hat eine Prüfung bestanden, worüber wir stolz sind.", wrongWord: "worüber", answer: "worauf / wofür / was" },
+  { wrong: "Das Schlimmste, das mir passieren kann, ist Arbeit zu verlieren.", wrongWord: "das", answer: "was" },
+  { wrong: "Die Ärztin, die Methoden bekannt sind, arbeitet hier.", wrongWord: "die", answer: "deren" },
+  { wrong: "Wir fahren nach Berlin, wo unsere Freunde schon gezogen sind.", wrongWord: "wo", answer: "wohin" },
+  { wrong: "Das ist ein Kollege, dessen ich sehr vertraue.", wrongWord: "dessen", answer: "dem" },
+  { wrong: "Die Kinder, die ich gut kenne sie, spielen draußen.", wrongWord: "sie", answer: "(weglassen)" },
+  { wrong: "Er schenkte mir einen Ring, was ich mich sehr freute.", wrongWord: "was", answer: "worüber / über das" }
+];
+
+var u5Data = [
+  { pre: "Ich kenne jemanden,", blank: "der", post: "dir dabei helfen kann." },
+  { pre: "Das ist das Schönste,", blank: "was", post: "ich je erlebt habe." },
+  { pre: "Die Firma,", blank: "für die", post: "er arbeitet, ist international bekannt." },
+  { pre: "Wir fahren nach Wien,", blank: "wohin", post: "auch unsere Eltern reisen." },
+  { pre: "Der Professor,", blank: "dessen", post: "Vorlesungen immer voll sind, forscht über KI." },
+  { pre: "Das ist ein Problem,", blank: "das", post: "wir sofort lösen müssen." },
+  { pre: "Sie hat eine Stelle gefunden,", blank: "was", post: "uns alle sehr gefreut hat." },
+  { pre: "Das ist das Café,", blank: "wo", post: "wir uns zum ersten Mal getroffen haben." },
+  { pre: "Die Krankenschwester,", blank: "deren", post: "Geduld beispielhaft ist, arbeitet auf der Intensivstation." },
+  { pre: "Er hat mir erklärt,", blank: "wofür", post: "das Gerät gebraucht wird." },
+  { pre: "Nichts,", blank: "was", post: "er sagt, ist wahr." },
+  { pre: "Die Kinder,", blank: "denen", post: "man zuhört, entwickeln sich besser." },
+  { pre: "Das ist die Universität,", blank: "an der", post: "mein Bruder Medizin studiert." }
+];
+
+// =========== BUILD UI ===========
+function buildFillIn(containerId, data) {
+  var html = '';
+  data.forEach(function(item, i) {
+    html += '<div class="fill-item">' + (i+1) + '. ' + item.pre + ' <input type="text" id="' + containerId + '-' + i + '" placeholder="___"> ' + item.post + '</div>';
+  });
+  document.getElementById(containerId + '-items').innerHTML = html;
+}
+
+function buildConnect(containerId, data) {
+  var html = '';
+  data.forEach(function(item, i) {
+    html += '<div class="connect-item">' +
+      '<div class="sentences">' + (i+1) + '. ' + item.s1 + ' / ' + item.s2 + '</div>' +
+      '<textarea id="' + containerId + '-' + i + '" placeholder="Verbinden Sie die Sätze..."></textarea>' +
+      '<div class="model-answer" id="' + containerId + '-ans-' + i + '">✅ ' + item.answer + '</div>' +
+      '</div>';
+  });
+  document.getElementById(containerId + '-items').innerHTML = html;
+}
+
+function buildMC(data) {
+  var html = '';
+  data.forEach(function(item, i) {
+    html += '<div class="mc-item"><p>' + (i+1) + '. ' + item.sentence.replace('___','<strong>___</strong>') + '</p><div class="mc-options" id="mc-' + i + '">';
+    item.options.forEach(function(opt) {
+      html += '<button onclick="checkMC(' + i + ', this, \'' + opt + '\', \'' + item.answer + '\')">' + opt + '</button>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('u3-items').innerHTML = html;
+}
+
+function buildErrorFind(data) {
+  var html = '';
+  data.forEach(function(item, i) {
+    html += '<div class="error-item">' +
+      '<div class="wrong-sentence">' + (i+1) + '. Falsch: <em>"' + item.wrongWord + '"</em> — ' + item.wrong + '</div>' +
+      'Richtig: <input type="text" id="u4-' + i + '" placeholder="Korrektur...">' +
+      '</div>';
+  });
+  document.getElementById('u4-items').innerHTML = html;
+}
+
+// =========== CHECK FUNCTIONS ===========
+function normalize(s) { return s.trim().toLowerCase().replace(/\s+/g, ' '); }
+
+function checkFillIn(containerId, data, scoreId) {
+  var correct = 0;
+  data.forEach(function(item, i) {
+    var inp = document.getElementById(containerId + '-' + i);
+    var val = normalize(inp.value);
+    var answers = item.blank.toLowerCase().split('/').map(function(a){ return a.trim(); });
+    if (answers.indexOf(val) !== -1) { inp.className = 'correct'; correct++; }
+    else { inp.className = 'wrong'; }
+  });
+  showScore(scoreId, correct, data.length);
+}
+
+function checkU1() { checkFillIn('u1', u1Data, 'u1-score'); }
+function checkU5() { checkFillIn('u5', u5Data, 'u5-score'); }
+
+function resetFillIn(containerId, data, scoreId) {
+  data.forEach(function(item, i) {
+    var inp = document.getElementById(containerId + '-' + i);
+    inp.value = ''; inp.className = '';
+  });
+  document.getElementById(scoreId).innerHTML = '';
+}
+function resetU1() { resetFillIn('u1', u1Data, 'u1-score'); }
+function resetU5() { resetFillIn('u5', u5Data, 'u5-score'); }
+
+function checkU2() {
+  u2Data.forEach(function(item, i) {
+    document.getElementById('u2-ans-' + i).classList.add('show');
+  });
+}
+function resetU2() {
+  u2Data.forEach(function(item, i) {
+    var ta = document.getElementById('u2-' + i);
+    ta.value = ''; ta.className = '';
+    document.getElementById('u2-ans-' + i).classList.remove('show');
+  });
+}
+
+function checkMC(idx, btn, chosen, answer) {
+  var container = document.getElementById('mc-' + idx);
+  if (container.querySelector('.correct') || container.querySelector('.wrong')) return;
+  if (chosen === answer) { btn.className = 'correct'; }
+  else {
+    btn.className = 'wrong';
+    Array.from(container.querySelectorAll('button')).forEach(function(b) {
+      if (b.textContent === answer) b.className = 'reveal';
+    });
+  }
+  // running score
+  var correct = document.querySelectorAll('#u3-items .mc-options .correct').length;
+  var total = u3Data.length;
+  var attempted = document.querySelectorAll('#u3-items .mc-options .correct, #u3-items .mc-options .wrong').length;
+  if (attempted === total) showScore('u3-score', correct, total);
+}
+
+function checkU4() {
+  var correct = 0;
+  u4Data.forEach(function(item, i) {
+    var inp = document.getElementById('u4-' + i);
+    var val = normalize(inp.value);
+    var answers = item.answer.toLowerCase().split('/').map(function(a){ return a.trim().replace(/[()]/g,''); });
+    if (answers.indexOf(val) !== -1 || val === normalize(item.answer)) { inp.className = 'correct'; correct++; }
+    else { inp.className = 'wrong'; }
+  });
+  showScore('u4-score', correct, u4Data.length);
+}
+function resetU4() {
+  u4Data.forEach(function(item, i) {
+    var inp = document.getElementById('u4-' + i);
+    inp.value = ''; inp.className = '';
+  });
+  document.getElementById('u4-score').innerHTML = '';
+}
+
+function showScore(id, correct, total) {
+  var pct = Math.round(correct / total * 100);
+  var cls = pct >= 80 ? 'score-good' : pct >= 60 ? 'score-ok' : 'score-bad';
+  var emoji = pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '💪';
+  document.getElementById(id).innerHTML = '<span class="score-badge ' + cls + '">' + emoji + ' ' + correct + ' / ' + total + ' (' + pct + '%)</span>';
+}
+
+var u6Data = [
+  { pre: "Das ist das Thema,", blank: "über das", post: "wir letzte Woche gesprochen haben." },
+  { pre: "Der Kollege,", blank: "mit dem", post: "ich täglich arbeite, ist sehr zuverlässig." },
+  { pre: "Die Firma,", blank: "für die", post: "sie arbeitet, hat viele Standorte." },
+  { pre: "Das ist der Kurs,", blank: "für den", post: "ich mich angemeldet habe." },
+  { pre: "Das Projekt,", blank: "an dem", post: "wir arbeiten, ist sehr komplex." },
+  { pre: "Die Konferenz,", blank: "auf der", post: "er gesprochen hat, war sehr erfolgreich." },
+  { pre: "Das ist die Abteilung,", blank: "in der", post: "ich seit drei Jahren arbeite." },
+  { pre: "Der Direktor,", blank: "von dem", post: "ich viel gelernt habe, geht in Rente." },
+  { pre: "Das ist das Problem,", blank: "über das", post: "niemand sprechen will." },
+  { pre: "Die Maschine,", blank: "mit der", post: "wir produzieren, ist sehr alt." },
+  { pre: "Das ist der Vertrag,", blank: "über den", post: "wir noch diskutieren müssen." },
+  { pre: "Die Kollegin,", blank: "bei der", post: "ich hospitiert habe, ist sehr erfahren." },
+  { pre: "Das ist das Thema,", blank: "für das", post: "ich mich sehr interessiere." }
+];
+
+function checkU6() { checkFillIn('u6', u6Data, 'u6-score'); }
+function resetU6() { resetFillIn('u6', u6Data, 'u6-score'); }
+
+// =========== INIT ===========
+document.addEventListener('DOMContentLoaded', function() {
+  buildFillIn('u1', u1Data);
+  buildConnect('u2', u2Data);
+  buildMC(u3Data);
+  buildErrorFind(u4Data);
+  buildFillIn('u5', u5Data);
+  buildFillIn('u6', u6Data);
+});
+</script>
+</body>
+</html>

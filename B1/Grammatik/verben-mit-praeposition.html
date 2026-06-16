@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verben mit Präposition – B1/B1+</title>
+<style>
+  :root{
+    --primary:#4a6fa5;
+    --primary-dark:#34527d;
+    --secondary:#5fa8a3;
+    --accent:#8a7fc7;
+    --sage:#7da185;
+    --bg:#f4f6f9;
+    --card-bg:#ffffff;
+    --text:#2c3e50;
+    --text-light:#6b7c93;
+    --border:#dde4ed;
+    --correct:#5fa88f;
+    --wrong:#d98b8b;
+    --akk-color:#c97b63;
+    --dat-color:#4a6fa5;
+    --wechsel-color:#8a7fc7;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Segoe UI', Verdana, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    padding-bottom:40px;
+  }
+
+  .container{ max-width:900px; margin:0 auto; padding:16px; }
+
+  /* Navigation tabs */
+  .tabs{
+    display:flex; gap:8px; flex-wrap:wrap; margin:18px 0 20px;
+  }
+  .tab-btn{
+    flex:1 1 auto; min-width:110px; text-align:center;
+    padding:10px 14px; border-radius:8px; border:2px solid var(--border);
+    background:#fff; color:var(--primary-dark); font-weight:600; font-size:0.9rem;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .tab-btn:hover{border-color:var(--primary);}
+  .tab-btn.active{
+    background:var(--primary); color:#fff; border-color:var(--primary);
+  }
+
+  .tab-content{display:none;}
+  .tab-content.active{display:block; animation:fadeIn 0.3s;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* Cards */
+  .card{
+    background:var(--card-bg); border-radius:12px; padding:18px;
+    margin-bottom:16px; box-shadow:0 2px 6px rgba(0,0,0,0.05);
+    border:1px solid var(--border);
+  }
+  .card h2{ color:var(--primary-dark); font-size:1.2rem; margin-bottom:10px; }
+  .card h3{ color:var(--primary); font-size:1.05rem; margin:14px 0 8px; }
+  .intro-box{
+    background:#eef2f8; border-left:4px solid var(--primary);
+    padding:12px 16px; border-radius:8px; margin-bottom:14px; font-size:0.95rem;
+  }
+  .vn{ color:var(--text-light); font-style:italic; font-size:0.9rem; }
+
+  /* Verb table */
+  .verb-table-wrap{ overflow-x:auto; }
+  table.verbs{
+    width:100%; border-collapse:collapse; font-size:0.92rem; margin-top:10px;
+  }
+  table.verbs th, table.verbs td{
+    border:1px solid var(--border); padding:8px 10px; text-align:left; vertical-align:top;
+  }
+  table.verbs th{
+    background:var(--primary); color:#fff; font-weight:600; position:sticky; top:0;
+  }
+  table.verbs tr:nth-child(even){ background:#f8fafc; }
+  .case-tag{
+    display:inline-block; padding:2px 8px; border-radius:5px; font-size:0.78rem;
+    font-weight:700; color:#fff;
+  }
+  .akk{ background:var(--akk-color); }
+  .dat{ background:var(--dat-color); }
+  .wechsel{ background:var(--wechsel-color); }
+  .group-header td{
+    background:var(--secondary); color:#fff; font-weight:700; font-size:0.95rem;
+  }
+
+  /* Interactive examples */
+  .example-box{
+    background:#f1f5fb; border-radius:10px; padding:14px; margin-bottom:12px;
+    border:1px solid var(--border);
+  }
+  .example-box .de{ font-size:1.05rem; margin-bottom:4px; }
+  .blank{
+    display:inline-block; min-width:80px; border:none; border-bottom:2px solid var(--primary);
+    background:transparent; text-align:center; font-size:1rem; font-family:inherit;
+    color:var(--primary-dark); font-weight:600; padding:2px 6px;
+  }
+  .blank:focus{ outline:none; background:#fff; border-bottom:2px solid var(--accent); }
+  .blank.correct{ border-bottom:2px solid var(--correct); background:#e7f5f0; color:var(--correct); }
+  .blank.wrong{ border-bottom:2px solid var(--wrong); background:#fbeaea; color:var(--wrong); }
+
+  /* Buttons */
+  .btn{
+    background:var(--primary); color:#fff; border:none; padding:9px 18px;
+    border-radius:7px; cursor:pointer; font-size:0.92rem; font-weight:600;
+    transition:background 0.2s; margin-top:6px; margin-right:8px;
+  }
+  .btn:hover{ background:var(--primary-dark); }
+  .btn.secondary{ background:var(--secondary); }
+  .btn.secondary:hover{ background:var(--sage); }
+  .btn.small{ padding:5px 12px; font-size:0.82rem; }
+
+  .feedback{
+    margin-top:10px; padding:10px 14px; border-radius:8px; font-size:0.9rem;
+    display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.ok{ background:#e7f5f0; color:var(--correct); border:1px solid var(--correct); }
+  .feedback.no{ background:#fbeaea; color:#b35a5a; border:1px solid var(--wrong); }
+  .feedback.partial{ background:#fdf3e3; color:#a07a30; border:1px solid #e0c08a; }
+
+  .score-display{
+    font-weight:700; color:var(--primary-dark); margin-top:8px; font-size:0.95rem;
+  }
+
+  /* Exercise items */
+  .exercise{ margin-bottom:18px; padding-bottom:14px; border-bottom:1px dashed var(--border); }
+  .exercise:last-of-type{ border-bottom:none; }
+  .exercise .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; background:var(--secondary);
+    color:#fff; font-weight:700; font-size:0.85rem; margin-right:8px;
+  }
+  .exercise-text{ font-size:0.98rem; margin-bottom:8px; }
+
+  /* Multiple choice */
+  .mc-options{ display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+  .mc-option{
+    display:flex; align-items:center; gap:8px; padding:8px 12px;
+    border:1px solid var(--border); border-radius:7px; cursor:pointer;
+    background:#fafbfc; transition:all 0.15s; font-size:0.92rem;
+  }
+  .mc-option:hover{ background:#eef2f8; }
+  .mc-option.selected{ border-color:var(--primary); background:#e7eefc; }
+  .mc-option.correct-answer{ border-color:var(--correct); background:#e7f5f0; }
+  .mc-option.wrong-answer{ border-color:var(--wrong); background:#fbeaea; }
+
+  /* Matching (Zuordnen) */
+  .match-wrap{ display:flex; gap:20px; flex-wrap:wrap; margin-top:10px; }
+  .match-col{ flex:1; min-width:220px; }
+  .match-item{
+    padding:8px 12px; border:1px solid var(--border); border-radius:7px;
+    margin-bottom:6px; background:#fafbfc; font-size:0.9rem; cursor:pointer;
+  }
+  .match-item.active{ border-color:var(--primary); background:#e7eefc; }
+  .match-item.matched-correct{ border-color:var(--correct); background:#e7f5f0; }
+  .match-item.matched-wrong{ border-color:var(--wrong); background:#fbeaea; }
+
+  /* Difficulty badges */
+  .diff{
+    display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.75rem;
+    font-weight:700; color:#fff; margin-bottom:8px;
+  }
+  .diff-1{ background:#7da185; }
+  .diff-2{ background:#7da185; }
+  .diff-3{ background:#5fa8a3; }
+  .diff-4{ background:#5fa8a3; }
+  .diff-5{ background:#c97b63; }
+  .diff-6{ background:#c97b63; }
+
+  /* Writing exercise textarea */
+  textarea.free-write{
+    width:100%; min-height:70px; border:1px solid var(--border); border-radius:8px;
+    padding:10px; font-family:inherit; font-size:0.92rem; resize:vertical;
+  }
+  textarea.free-write:focus{ outline:none; border-color:var(--primary); }
+
+  .hint-toggle{
+    color:var(--accent); cursor:pointer; font-size:0.85rem; text-decoration:underline;
+    display:inline-block; margin-top:4px;
+  }
+  .hint-text{ display:none; font-size:0.85rem; color:var(--text-light); margin-top:4px; padding:6px 10px; background:#f4f0fb; border-radius:6px;}
+  .hint-text.show{ display:block; }
+
+  /* Da-/Wo- adverb box */
+  .pron-table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:0.92rem; }
+  .pron-table th, .pron-table td{ border:1px solid var(--border); padding:8px 10px; text-align:center; }
+  .pron-table th{ background:var(--accent); color:#fff; }
+
+  @media (max-width:600px){
+    .tab-btn{ font-size:0.82rem; padding:8px 8px; }
+    table.verbs{ font-size:0.82rem; }
+    .match-wrap{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="erklaerung">💡 Erklärung & Beispiele</button>
+    <button class="tab-btn" data-tab="liste">📋 Liste (50 Verben)</button>
+    <button class="tab-btn" data-tab="uebungen">✏️ Übungen 1–7</button>
+  </div>
+
+  <!-- ============ TAB: LISTE ============ -->
+  <div class="tab-content" id="tab-liste">
+    <div class="card">
+      <h2>50 wichtige Verben mit Präposition (B1/B1+)</h2>
+      <div class="intro-box">
+        🇩🇪 Diese Verben sind <strong>fest mit einer Präposition verbunden</strong>. Die Präposition bestimmt den Kasus (Akkusativ oder Dativ) des folgenden Objekts.<br>
+        🇻🇳 Đây là những động từ luôn đi kèm <strong>một giới từ cố định</strong>. Giới từ này quyết định cách (Akkusativ hay Dativ) của danh từ/đại từ đi sau.
+        <br><br>
+        <span class="case-tag akk">Akk</span> = Akkusativ &nbsp;
+        <span class="case-tag dat">Dat</span> = Dativ &nbsp;
+        <span class="case-tag wechsel">A/D</span> = je nach Bedeutung
+      </div>
+      <div class="verb-table-wrap">
+        <table class="verbs">
+          <thead>
+            <tr><th>#</th><th>Verb + Präposition</th><th>Kasus</th><th>Bedeutung (VN)</th><th>Beispiel</th></tr>
+          </thead>
+          <tbody id="verbTableBody">
+            <!-- filled by data, see structure below -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: ERKLAERUNG ============ -->
+  <div class="tab-content active" id="tab-erklaerung">
+    <div class="card">
+      <h2>💡 Wie lernt man Verben mit Präposition?</h2>
+      <div class="intro-box">
+        🇩🇪 Lerne Verb + Präposition <strong>immer zusammen als eine Einheit</strong> – wie ein Wort! Übersetze nicht wörtlich aus dem Vietnamesischen, denn die Präpositionen sind oft anders.<br>
+        🇻🇳 Hãy học Verb + Präposition như <strong>một cụm từ duy nhất</strong>, đừng dịch từng từ từ tiếng Việt sang, vì giới từ tiếng Đức thường khác hoàn toàn so với tiếng Việt (ví dụ: "nghĩ về" → <em>denken an</em>, không phải <em>denken über</em>).
+      </div>
+
+      <h3>1. Fragewörter (để hỏi về bổ ngữ giới từ)</h3>
+      <table class="pron-table">
+        <tr><th></th><th>für Sachen (đồ vật/việc)</th><th>für Personen (người)</th></tr>
+        <tr><td><strong>mit an, auf, über...</strong></td><td>wor- + Präposition<br>(z. B. worauf, woran, worüber)</td><td>Präposition + wen/wem<br>(z. B. auf wen, an wen)</td></tr>
+        <tr><td><strong>mit von, mit, bei...</strong></td><td>wo- + Präposition<br>(z. B. wovon, womit)</td><td>Präposition + wen/wem<br>(z. B. von wem, mit wem)</td></tr>
+      </table>
+      <p style="margin-top:8px; font-size:0.9rem;" class="vn">
+        🇻🇳 Quy tắc nhỏ: nếu giới từ bắt đầu bằng nguyên âm (an, auf, über, in, unter...) → thêm <strong>"r"</strong>: wor + an = <strong>woran</strong>, wor + auf = <strong>worauf</strong>.
+      </p>
+
+      <h3>2. Präpositionalpronomen / -adverbien (da-, dazu, damit, dafür...)</h3>
+      <table class="pron-table">
+        <tr><th></th><th>für Sachen</th><th>für Personen</th></tr>
+        <tr><td><strong>mit an, auf, über...</strong></td><td>da(r)- + Präposition<br>(z. B. darauf, daran, darüber)</td><td>Präposition + Personalpronomen<br>(z. B. auf ihn, an sie)</td></tr>
+        <tr><td><strong>mit von, mit, bei...</strong></td><td>da- + Präposition<br>(z. B. davon, damit)</td><td>Präposition + Personalpronomen<br>(z. B. von ihm, mit ihr)</td></tr>
+      </table>
+      <div class="intro-box" style="margin-top:10px;">
+        🇩🇪 Beispiel: <em>Interessierst du dich für Filme?</em> → <em>Ja, ich interessiere mich sehr <strong>dafür</strong>.</em> (für Filme = Sache → dafür)<br>
+        <em>Interessierst du dich für Anna?</em> → <em>Ja, ich interessiere mich sehr <strong>für sie</strong>.</em> (Anna = Person → für + Pronomen)<br><br>
+        🇻🇳 "da-/dafür/damit/dazu..." chỉ dùng để <strong>thay thế cho đồ vật/sự việc</strong> (không dùng cho người). Khi thay cho người, dùng <strong>giới từ + đại từ nhân xưng</strong> (für ihn, an sie, mit ihm...).
+      </div>
+
+      <h3>3. Nebensätze mit "dass" / Fragewort</h3>
+      <div class="intro-box">
+        🇩🇪 Wenn nach dem Präpositionalverb ein ganzer Satz folgt, benutzt man <strong>da(r)- + Präposition + dass-Satz</strong> oder <strong>da(r)- + Präposition + Fragewort-Satz</strong>.<br>
+        Beispiel: <em>Ich freue mich darauf, dass wir uns wiedersehen.</em><br>
+        Beispiel: <em>Interessierst du dich dafür, welche Filme gut sind?</em><br><br>
+        🇻🇳 Khi sau động từ giới từ là một <strong>câu phụ</strong> (mệnh đề dass hoặc câu hỏi gián tiếp), ta dùng <strong>da(r)- + giới từ</strong> để "báo hiệu" trước, rồi mới đến mệnh đề phụ.
+      </div>
+
+      <h3>4. Häufige Fehler (Lỗi thường gặp)</h3>
+      <div class="intro-box">
+        ❌ <em>denken über</em> → ✅ <strong>denken an</strong> (+ Akk.) — nghĩ về<br>
+        ❌ <em>warten für</em> → ✅ <strong>warten auf</strong> (+ Akk.) — chờ đợi<br>
+        ❌ <em>sich interessieren von</em> → ✅ <strong>sich interessieren für</strong> (+ Akk.) — quan tâm đến<br>
+        ❌ <em>sich freuen für</em> (Zukunft) → ✅ <strong>sich freuen auf</strong> (+ Akk.) — vui mừng vì (sắp xảy ra)<br>
+        ❌ <em>sich freuen auf</em> (Vergangenheit/Gegenwart) → ✅ <strong>sich freuen über</strong> (+ Akk.) — vui vì (đã/đang xảy ra)
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>✨ 5 Interaktive Beispiele</h2>
+      <p class="intro-box">🇻🇳 Điền giới từ và biến đổi đúng. Nhấn "Prüfen" để kiểm tra.</p>
+      <div id="exampleContainer"></div>
+      <button class="btn" id="checkExamplesBtn">Alle prüfen</button>
+      <div class="feedback" id="exampleFeedback"></div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: UEBUNGEN ============ -->
+  <div class="tab-content" id="tab-uebungen">
+    <div id="uebungenContainer"></div>
+  </div>
+
+</div>
+
+<script>
+/* ====== TAB SWITCHING ====== */
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+</script>
+
+<script>
+// ===== Daten: 50 Verben mit Präposition (B1/B1+) =====
+
+var VERB_GROUPS = [
+  {
+    title: "Verben mit Akkusativ",
+    cssClass: "akk",
+    verbs: [
+      { verb: "denken an + Akk.", vn: "nghĩ về, nghĩ đến", example: "Ich denke oft an meine Familie." },
+      { verb: "sich erinnern an + Akk.", vn: "nhớ đến, nhớ về", example: "Erinnerst du dich an deinen ersten Schultag?" },
+      { verb: "sich gewöhnen an + Akk.", vn: "làm quen với, quen dần với", example: "Ich muss mich an das neue Klima gewöhnen." },
+      { verb: "glauben an + Akk.", vn: "tin vào, tin tưởng vào", example: "Sie glaubt fest an ihre Pläne." },
+      { verb: "sich wenden an + Akk.", vn: "liên hệ với, hỏi ai đó", example: "Bei Problemen wenden Sie sich an die Personalabteilung." },
+      { verb: "warten auf + Akk.", vn: "chờ đợi", example: "Wir warten schon eine Stunde auf den Bus." },
+      { verb: "sich freuen auf + Akk.", vn: "vui mừng vì (sắp xảy ra)", example: "Ich freue mich auf das Wochenende." },
+      { verb: "sich freuen über + Akk.", vn: "vui vì (đã/đang xảy ra)", example: "Sie freut sich über das Geschenk." },
+      { verb: "sich vorbereiten auf + Akk.", vn: "chuẩn bị cho", example: "Er bereitet sich auf die Prüfung vor." },
+      { verb: "achten auf + Akk.", vn: "chú ý đến, để ý đến", example: "Achten Sie bitte auf Ihre Sachen." },
+      { verb: "sich konzentrieren auf + Akk.", vn: "tập trung vào", example: "Konzentriere dich auf die Arbeit!" },
+      { verb: "verzichten auf + Akk.", vn: "từ bỏ, không dùng đến", example: "Ich verzichte heute auf Süßigkeiten." },
+      { verb: "hoffen auf + Akk.", vn: "hy vọng vào", example: "Wir hoffen auf gutes Wetter." },
+      { verb: "reagieren auf + Akk.", vn: "phản ứng lại với", example: "Er reagiert sehr ruhig auf Kritik." },
+      { verb: "sich beziehen auf + Akk.", vn: "liên quan đến, dựa vào", example: "Der Text bezieht sich auf das letzte Kapitel." },
+      { verb: "sich interessieren für + Akk.", vn: "quan tâm đến", example: "Interessierst du dich für Politik?" },
+      { verb: "sich entscheiden für/gegen + Akk.", vn: "quyết định chọn/từ chối", example: "Sie hat sich für den neuen Job entschieden." },
+      { verb: "sich bedanken für + Akk.", vn: "cảm ơn về điều gì", example: "Ich bedanke mich für Ihre Hilfe." },
+      { verb: "sich entschuldigen für + Akk.", vn: "xin lỗi về điều gì", example: "Er entschuldigt sich für die Verspätung." },
+      { verb: "kämpfen für/gegen + Akk.", vn: "đấu tranh cho/chống lại", example: "Sie kämpft für ihre Rechte." },
+      { verb: "sorgen für + Akk.", vn: "chăm sóc, lo cho", example: "Eltern sorgen für ihre Kinder." },
+      { verb: "sich ärgern über + Akk.", vn: "bực mình vì", example: "Ich ärgere mich über den Stau." },
+      { verb: "sich beschweren über + Akk.", vn: "phàn nàn về", example: "Der Nachbar beschwert sich über den Lärm." },
+      { verb: "diskutieren über + Akk.", vn: "thảo luận về", example: "Wir diskutieren über das neue Projekt." },
+      { verb: "nachdenken über + Akk.", vn: "suy nghĩ kỹ về", example: "Ich denke noch über das Angebot nach." },
+      { verb: "sich informieren über + Akk.", vn: "tìm hiểu thông tin về", example: "Bitte informieren Sie sich über die Regeln." },
+      { verb: "sich unterhalten über + Akk.", vn: "trò chuyện về", example: "Wir haben uns über die Reise unterhalten." },
+      { verb: "lachen über + Akk.", vn: "cười về điều gì", example: "Alle lachen über den Witz." },
+      { verb: "berichten über + Akk.", vn: "báo cáo, đưa tin về", example: "Die Zeitung berichtet über den Unfall." },
+      { verb: "sich streiten über/um + Akk.", vn: "tranh luận/cãi nhau về", example: "Sie streiten sich über das Geld." },
+      { verb: "sich kümmern um + Akk.", vn: "chăm sóc, lo liệu", example: "Er kümmert sich um seine kranke Mutter." },
+      { verb: "sich bewerben um + Akk.", vn: "ứng tuyển vào", example: "Ich bewerbe mich um die Stelle." },
+      { verb: "sich bemühen um + Akk.", vn: "cố gắng vì, nỗ lực vì", example: "Sie bemüht sich um eine gute Note." },
+      { verb: "bitten um + Akk.", vn: "yêu cầu, xin", example: "Darf ich Sie um Hilfe bitten?" }
+    ]
+  },
+  {
+    title: "Verben mit Dativ",
+    cssClass: "dat",
+    verbs: [
+      { verb: "träumen von + Dat.", vn: "mơ về", example: "Sie träumt von einem eigenen Haus." },
+      { verb: "halten von + Dat.", vn: "đánh giá về", example: "Was hältst du von dem Plan?" },
+      { verb: "abhängen von + Dat.", vn: "phụ thuộc vào", example: "Der Erfolg hängt von der Vorbereitung ab." },
+      { verb: "sich verabschieden von + Dat.", vn: "tạm biệt", example: "Wir haben uns von den Gästen verabschiedet." },
+      { verb: "erzählen von + Dat.", vn: "kể về", example: "Großvater erzählt gern von früher." },
+      { verb: "sprechen/reden von + Dat.", vn: "nói về", example: "Er spricht von seinen Plänen." },
+      { verb: "Angst haben vor + Dat.", vn: "sợ điều gì", example: "Sie hat Angst vor Spinnen." },
+      { verb: "sich fürchten vor + Dat.", vn: "sợ hãi điều gì", example: "Das Kind fürchtet sich vor dem Dunkeln." },
+      { verb: "warnen vor + Dat.", vn: "cảnh báo về", example: "Der Arzt warnt vor zu viel Zucker." },
+      { verb: "schützen vor + Dat.", vn: "bảo vệ khỏi", example: "Die Creme schützt vor der Sonne." },
+      { verb: "sich schützen vor + Dat.", vn: "tự bảo vệ trước", example: "Man muss sich vor Viren schützen." },
+      { verb: "leiden unter/an + Dat.", vn: "chịu đựng, mắc bệnh", example: "Er leidet unter dem Stress." },
+      { verb: "sterben an + Dat.", vn: "chết vì (bệnh)", example: "Viele Menschen sterben an Krebs." },
+      { verb: "teilnehmen an + Dat.", vn: "tham gia vào", example: "Sie nimmt an dem Kurs teil." },
+      { verb: "sich beteiligen an + Dat.", vn: "tham gia, góp phần vào", example: "Alle beteiligen sich an der Aktion." },
+      { verb: "zweifeln an + Dat.", vn: "nghi ngờ về", example: "Ich zweifle an seiner Ehrlichkeit." },
+      { verb: "sich beschäftigen mit + Dat.", vn: "bận tâm với, làm việc với", example: "Sie beschäftigt sich mit dem neuen Projekt." },
+      { verb: "telefonieren mit + Dat.", vn: "gọi điện với", example: "Ich telefoniere oft mit meiner Schwester." },
+      { verb: "sich treffen mit + Dat.", vn: "gặp gỡ với", example: "Wir treffen uns mit Freunden." },
+      { verb: "rechnen mit + Dat.", vn: "tính toán với, mong đợi", example: "Wir rechnen mit Regen am Abend." },
+      { verb: "vergleichen mit + Dat.", vn: "so sánh với", example: "Man kann diese Stadt nicht mit Berlin vergleichen." },
+      { verb: "anfangen/beginnen mit + Dat.", vn: "bắt đầu với", example: "Wir beginnen mit der ersten Übung." },
+      { verb: "aufhören mit + Dat.", vn: "ngừng lại với", example: "Er hat mit dem Rauchen aufgehört." },
+      { verb: "einverstanden sein mit + Dat.", vn: "đồng ý với", example: "Ich bin mit dem Plan einverstanden." },
+      { verb: "gratulieren zu + Dat.", vn: "chúc mừng về", example: "Wir gratulieren dir zum Geburtstag." },
+      { verb: "passen zu + Dat.", vn: "hợp với, phù hợp với", example: "Die Schuhe passen gut zu dem Kleid." },
+      { verb: "einladen zu + Dat.", vn: "mời tham dự", example: "Sie lädt mich zu ihrer Party ein." },
+      { verb: "gehören zu + Dat.", vn: "thuộc về", example: "Diese Gewohnheit gehört zu unserer Kultur." }
+    ]
+  },
+  {
+    title: "Verben mit Akkusativ oder Dativ (je nach Bedeutung)",
+    cssClass: "wechsel",
+    verbs: [
+      { verb: "sich freuen auf (Zukunft) / über (Gegenwart-Vergangenheit) + Akk.", vn: "vui vì sắp tới / vui vì đã/đang", example: "Ich freue mich auf den Urlaub und über das schöne Wetter heute." },
+      { verb: "denken an + Akk. / denken über + Akk. (nachdenken)", vn: "nghĩ về (người/việc) / suy nghĩ về (vấn đề)", example: "Ich denke an dich. — Ich denke über das Problem nach." },
+      { verb: "schreiben an + Akk. (Person) / über + Akk. (Thema)", vn: "viết cho (ai) / viết về (đề tài)", example: "Ich schreibe an meine Freundin. — Ich schreibe über meine Reise." }
+    ]
+  }
+];
+
+// Flatten all verbs for exercise generation
+var ALL_VERBS = [];
+VERB_GROUPS.forEach(function(g){
+  g.verbs.forEach(function(v){
+    ALL_VERBS.push(Object.assign({}, v, {cssClass: g.cssClass}));
+  });
+});
+
+
+// ===== App-Logik =====
+
+/* ---------- 1. Verb-Tabelle rendern ---------- */
+(function renderVerbTable(){
+  var tbody = document.getElementById('verbTableBody');
+  var html = '';
+  var counter = 1;
+  VERB_GROUPS.forEach(function(group){
+    html += '<tr class="group-header"><td colspan="5">' + group.title + '</td></tr>';
+    group.verbs.forEach(function(v){
+      var tagLabel = group.cssClass === 'akk' ? 'Akk' : (group.cssClass === 'dat' ? 'Dat' : 'A/D');
+      html += '<tr>' +
+        '<td>' + counter + '</td>' +
+        '<td><strong>' + v.verb + '</strong></td>' +
+        '<td><span class="case-tag ' + group.cssClass + '">' + tagLabel + '</span></td>' +
+        '<td class="vn">' + v.vn + '</td>' +
+        '<td>' + v.example + '</td>' +
+        '</tr>';
+      counter++;
+    });
+  });
+  tbody.innerHTML = html;
+})();
+
+/* ---------- 2. Interaktive Beispiele (5) ---------- */
+var EXAMPLES = [
+  {
+    sentence: "Ich freue mich schon sehr ___ (1) die Sommerferien, denn dann fahren wir nach Deutschland.",
+    blanks: ["auf"],
+    note: "sich freuen auf + Akk. (Zukunft)"
+  },
+  {
+    sentence: "Mein Kollege hat sich ___ (1) seine Verspätung entschuldigt und mich ___ (2) Verständnis gebeten.",
+    blanks: ["für", "um"],
+    note: "sich entschuldigen für + Akk. / bitten um + Akk."
+  },
+  {
+    sentence: "Wir haben lange ___ (1) das Thema diskutiert, aber konnten uns nicht entscheiden, ob wir ___ (2) den neuen Plan stimmen.",
+    blanks: ["über", "für"],
+    note: "diskutieren über + Akk. / sich entscheiden für + Akk."
+  },
+  {
+    sentence: "Erinnerst du dich noch ___ (1) unseren Deutschlehrer? Er hat sich immer ___ (2) unsere Fehler geärgert, aber auch viel ___ (3) uns geholfen.",
+    blanks: ["an", "über", "für"],
+    note: "sich erinnern an + Akk. / sich ärgern über + Akk. / sich bemühen für + Akk. (helfen für ist eigentlich frei, hier: sorgen für)"
+  },
+  {
+    sentence: "Viele Migranten müssen sich erst ___ (1) das neue Land gewöhnen, ___ (2) eine Wohnung kümmern und sich ___ (3) Jobs bewerben.",
+    blanks: ["an", "um", "um"],
+    note: "sich gewöhnen an + Akk. / sich kümmern um + Akk. / sich bewerben um + Akk."
+  }
+];
+
+(function renderExamples(){
+  var container = document.getElementById('exampleContainer');
+  var html = '';
+  EXAMPLES.forEach(function(ex, i){
+    var parts = ex.sentence.split(/(___ \(\d\))/);
+    var sentenceHtml = '';
+    var blankIndex = 0;
+    parts.forEach(function(part){
+      if(/^___ \(\d\)$/.test(part)){
+        sentenceHtml += '<input type="text" class="blank example-blank" data-ex="' + i + '" data-blank="' + blankIndex + '" autocomplete="off">';
+        blankIndex++;
+      } else {
+        sentenceHtml += part;
+      }
+    });
+    html += '<div class="example-box">' +
+      '<div class="de"><strong>' + (i+1) + '.</strong> ' + sentenceHtml + '</div>' +
+      '<div class="vn">💡 ' + ex.note + '</div>' +
+      '</div>';
+  });
+  container.innerHTML = html;
+})();
+
+document.getElementById('checkExamplesBtn').addEventListener('click', function(){
+  var allBlanks = document.querySelectorAll('.example-blank');
+  var correctCount = 0;
+  var total = 0;
+  allBlanks.forEach(function(input){
+    var exIdx = parseInt(input.dataset.ex);
+    var blankIdx = parseInt(input.dataset.blank);
+    var correctAnswer = EXAMPLES[exIdx].blanks[blankIdx];
+    var userVal = input.value.trim().toLowerCase();
+    total++;
+    if(userVal === correctAnswer.toLowerCase()){
+      input.classList.add('correct');
+      input.classList.remove('wrong');
+      correctCount++;
+    } else {
+      input.classList.add('wrong');
+      input.classList.remove('correct');
+    }
+  });
+  var fb = document.getElementById('exampleFeedback');
+  fb.classList.add('show');
+  if(correctCount === total){
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Super! Alle ' + total + ' Lücken sind richtig! (' + correctCount + '/' + total + ')';
+  } else {
+    fb.className = 'feedback show partial';
+    fb.textContent = '📝 Du hast ' + correctCount + ' von ' + total + ' richtig. Versuche es noch einmal! (rote Felder korrigieren)';
+  }
+});
+
+/* ---------- 3. Übungen 1–7 ---------- */
+var ueContainer = document.getElementById('uebungenContainer');
+var ueHtml = '';
+
+/* --- Übung 1: Leicht — Lückentext, Verben mit Akkusativ-Präpositionen (Multiple Choice Dropdown) --- */
+var u1Data = [
+  { text: "Ich freue mich sehr ___ das Geschenk von meiner Oma.", answer: "über" },
+  { text: "Wir warten schon zwanzig Minuten ___ den Bus.", answer: "auf" },
+  { text: "Er denkt oft ___ seine Kindheit in Vietnam.", answer: "an" },
+  { text: "Interessierst du dich ___ klassische Musik?", answer: "für" },
+  { text: "Die Kinder freuen sich schon ___ Weihnachten.", answer: "auf" },
+  { text: "Bitte achten Sie ___ Ihre persönlichen Sachen.", answer: "auf" },
+  { text: "Ich bedanke mich herzlich ___ Ihre Unterstützung.", answer: "für" },
+  { text: "Sie hat sich ___ ihre Verspätung entschuldigt.", answer: "für" }
+];
+var u1Options = ["an", "auf", "für", "über"];
+
+ueHtml += '<div class="card"><h2>Übung 1 — Lückentext: Präposition wählen</h2>' +
+  '<span class="diff diff-1">Leicht</span>' +
+  '<div class="intro-box">🇻🇳 Chọn giới từ đúng (an / auf / für / über) cho mỗi câu.</div>';
+u1Data.forEach(function(item, i){
+  var sentenceWithBlank = item.text.replace('___', '<select class="u1-select" data-idx="' + i + '"><option value="">--</option>' +
+    u1Options.map(function(o){ return '<option value="' + o + '">' + o + '</option>'; }).join('') + '</select>');
+  ueHtml += '<div class="exercise"><span class="num">' + (i+1) + '</span><span class="exercise-text">' + sentenceWithBlank + '</span></div>';
+});
+ueHtml += '<button class="btn" id="checkU1">Prüfen</button><div class="feedback" id="feedbackU1"></div></div>';
+
+/* --- Übung 2: Leicht-Mittel — Multiple Choice, Bedeutung erkennen --- */
+var u2Data = [
+  {
+    q: "'Ich muss mich erst an das neue Klima gewöhnen.' Welches Synonym passt am besten zu 'sich gewöhnen an'?",
+    options: ["sich Schritt für Schritt anpassen an", "Angst haben vor", "sich beschweren über", "sich erinnern an"],
+    correct: 0
+  },
+  {
+    q: "'Worauf freust du dich?' — Welche Antwort passt grammatisch?",
+    options: ["Ich freue mich auf den Sommerurlaub.", "Ich freue mich für den Sommerurlaub.", "Ich freue mich von dem Sommerurlaub.", "Ich freue mich um den Sommerurlaub."],
+    correct: 0
+  },
+  {
+    q: "'Ich habe Angst ___ Spinnen.' Welche Präposition passt?",
+    options: ["auf", "über", "vor", "an"],
+    correct: 2
+  },
+  {
+    q: "Welcher Satz ist grammatisch richtig?",
+    options: ["Er nimmt an dem Kurs teil.", "Er nimmt auf dem Kurs teil.", "Er nimmt für den Kurs teil.", "Er nimmt mit dem Kurs teil."],
+    correct: 0
+  },
+  {
+    q: "'Er kümmert sich um seine kranke Mutter.' Was bedeutet 'sich um jemanden kümmern' hier am ehesten?",
+    options: ["sich mit jemandem vergleichen", "sich um jemanden sorgen und ihm helfen", "von jemandem abhängen", "sich für jemanden bewerben"],
+    correct: 1
+  }
+];
+
+ueHtml += '<div class="card"><h2>Übung 2 — Multiple Choice</h2>' +
+  '<span class="diff diff-2">Leicht-Mittel</span>' +
+  '<div class="intro-box">🇻🇳 Chọn đáp án đúng nhất cho mỗi câu hỏi.</div>';
+u2Data.forEach(function(item, i){
+  ueHtml += '<div class="exercise"><span class="num">' + (i+1) + '</span><span class="exercise-text">' + item.q + '</span>' +
+    '<div class="mc-options" data-idx="' + i + '" data-correct="' + item.correct + '">';
+  item.options.forEach(function(opt, oi){
+    ueHtml += '<div class="mc-option" data-option="' + oi + '">' + opt + '</div>';
+  });
+  ueHtml += '</div></div>';
+});
+ueHtml += '<button class="btn" id="checkU2">Prüfen</button><div class="feedback" id="feedbackU2"></div></div>';
+
+/* --- Übung 3: Mittel — Zuordnen (Matching), Verb + passende Präposition --- */
+var u3Pairs = [
+  { left: "sich interessieren", right: "für" },
+  { left: "warten", right: "auf" },
+  { left: "träumen", right: "von" },
+  { left: "sich beschäftigen", right: "mit" },
+  { left: "Angst haben", right: "vor" },
+  { left: "teilnehmen", right: "an" }
+];
+
+ueHtml += '<div class="card"><h2>Übung 3 — Zuordnen: Verb + Präposition</h2>' +
+  '<span class="diff diff-3">Mittel</span>' +
+  '<div class="intro-box">🇻🇳 Nhấn vào động từ bên trái, sau đó nhấn giới từ đúng bên phải để ghép cặp.</div>' +
+  '<div class="match-wrap">' +
+  '<div class="match-col" id="u3Left"></div>' +
+  '<div class="match-col" id="u3Right"></div>' +
+  '</div>' +
+  '<button class="btn" id="checkU3">Prüfen</button><div class="feedback" id="feedbackU3"></div></div>';
+
+/* --- Übung 4: Mittel — Lückentext mit Pronomen (da-/wo- und Personalpronomen) --- */
+var u4Data = [
+  { text: "— Interessierst du dich für Politik? — Ja, ich interessiere mich sehr ___.", answer: "dafür" },
+  { text: "— Denkst du noch an deinen alten Lehrer? — Ja, ich denke oft an ___.", answer: "ihn" },
+  { text: "— Erzählt Oma gern von ihrer Jugend? — Ja, sie erzählt oft ___.", answer: "davon" },
+  { text: "— Freust du dich über das Geschenk von Maria? — Ja, ich freue mich sehr ___.", answer: "über es" },
+  { text: "— Wartest du auf deine Kollegin? — Ja, ich warte schon lange ___.", answer: "auf sie" },
+  { text: "— Hast du Angst vor der Prüfung? — Ja, ich habe wirklich Angst ___.", answer: "davor" }
+];
+
+ueHtml += '<div class="card"><h2>Übung 4 — Pronomen: da(r)- oder Präposition + Person</h2>' +
+  '<span class="diff diff-4">Mittel</span>' +
+  '<div class="intro-box">🇻🇳 Điền pronomen đúng: dùng <strong>da(r)-</strong> cho đồ vật/sự việc, dùng <strong>giới từ + đại từ nhân xưng</strong> cho người.</div>';
+u4Data.forEach(function(item, i){
+  var sentenceWithBlank = item.text.replace('___', '<input type="text" class="blank u4-input" data-idx="' + i + '" autocomplete="off">');
+  ueHtml += '<div class="exercise"><span class="num">' + (i+1) + '</span><span class="exercise-text">' + sentenceWithBlank + '</span></div>';
+});
+ueHtml += '<button class="btn" id="checkU4">Prüfen</button><div class="feedback" id="feedbackU4"></div></div>';
+
+/* --- Übung 5: Schwer — Sätze umformen / Lückentext mit Dativ-Verben (frei + Kontrolle) --- */
+var u5Data = [
+  { text: "Der Erfolg eines Projekts hängt oft ___ (1) der Vorbereitung und ___ (2) der Motivation des Teams ab.", answers: ["von", "von"] },
+  { text: "Wir gratulieren euch herzlich ___ (1) eurem Examen und freuen uns ___ (2) die Feier am Samstag.", answers: ["zu", "auf"] },
+  { text: "Der Arzt warnt seine Patienten ___ (1) zu viel Stress und rät ihnen, sich ___ (2) Entspannungsübungen zu beschäftigen.", answers: ["vor", "mit"] },
+  { text: "Viele Studierende zweifeln manchmal ___ (1) ihren Fähigkeiten, aber sie sollten ___ (2) sich selbst glauben.", answers: ["an", "an"] }
+];
+
+ueHtml += '<div class="card"><h2>Übung 5 — Komplexe Sätze (Dativ-Präpositionen)</h2>' +
+  '<span class="diff diff-5">Schwer</span>' +
+  '<div class="intro-box">🇻🇳 Điền giới từ Dativ phù hợp (von, zu, vor, mit, an...). Một số câu có 2 chỗ trống.</div>';
+u5Data.forEach(function(item, i){
+  var html = item.text;
+  for(var b=0; b<item.answers.length; b++){
+    html = html.replace('___ (' + (b+1) + ')', '<input type="text" class="blank u5-input" data-idx="' + i + '" data-blank="' + b + '" autocomplete="off">');
+  }
+  ueHtml += '<div class="exercise"><span class="num">' + (i+1) + '</span><span class="exercise-text">' + html + '</span></div>';
+});
+ueHtml += '<button class="btn" id="checkU5">Prüfen</button><div class="feedback" id="feedbackU5"></div></div>';
+
+/* --- Übung 6: Sehr schwer — Sätze bilden / Transformation (freies Schreiben + Musterlösung) --- */
+var u6Data = [
+  {
+    instruction: "Bilden Sie einen Satz mit 'sich freuen auf'. Thema: ein zukünftiges Ereignis (z. B. Urlaub, Geburtstag).",
+    sample: "Ich freue mich schon sehr auf meinen Geburtstag nächste Woche."
+  },
+  {
+    instruction: "Bilden Sie einen Satz mit 'sich beschweren über'. Thema: Lärm vom Nachbarn.",
+    sample: "Mein Nachbar hat sich gestern über den Lärm aus unserer Wohnung beschwert."
+  },
+  {
+    instruction: "Formen Sie um: 'Ich denke an meine Reise nach Deutschland.' → Benutzen Sie 'darüber nachdenken'.",
+    sample: "Ich denke darüber nach, eine Reise nach Deutschland zu machen."
+  },
+  {
+    instruction: "Bilden Sie einen Nebensatz mit 'sich freuen darauf, dass...'.",
+    sample: "Ich freue mich darauf, dass wir uns endlich wiedersehen."
+  },
+  {
+    instruction: "Bilden Sie einen Satz mit 'sich bewerben um' + 'sich vorbereiten auf' (zwei Präpositionalverben in einem Satz).",
+    sample: "Ich bewerbe mich um die Stelle als Pflegekraft und bereite mich intensiv auf das Vorstellungsgespräch vor."
+  }
+];
+
+ueHtml += '<div class="card"><h2>Übung 6 — Sätze bilden / Transformation</h2>' +
+  '<span class="diff diff-6">Sehr schwer</span>' +
+  '<div class="intro-box">🇻🇳 Tự viết câu theo yêu cầu. Sau khi viết, bấm "Musterlösung zeigen" để so sánh với câu mẫu (không có đáp án duy nhất, hãy tự kiểm tra cấu trúc giới từ + cách).</div>';
+u6Data.forEach(function(item, i){
+  ueHtml += '<div class="exercise"><span class="num">' + (i+1) + '</span><span class="exercise-text">' + item.instruction + '</span>' +
+    '<textarea class="free-write" id="u6-input-' + i + '" placeholder="Schreiben Sie Ihren Satz hier..."></textarea>' +
+    '<span class="hint-toggle" data-target="u6-sample-' + i + '">Musterlösung zeigen / verbergen</span>' +
+    '<div class="hint-text" id="u6-sample-' + i + '"><strong>Beispiel:</strong> ' + item.sample + '</div>' +
+    '</div>';
+});
+ueHtml += '</div>';
+
+/* --- Übung 7: Sehr schwer — Fehler finden und korrigieren --- */
+var u7Data = [
+  {
+    wrong: "Ich interessiere mich von klassischer Musik.",
+    correct: "Ich interessiere mich für klassischer Musik.",
+    explanation: "sich interessieren <strong>für</strong> + Akk. (nicht 'von')"
+  },
+  {
+    wrong: "Wir warten für den Bus seit zwanzig Minuten.",
+    correct: "Wir warten auf den Bus seit zwanzig Minuten.",
+    explanation: "warten <strong>auf</strong> + Akk. (nicht 'für')"
+  },
+  {
+    wrong: "Sie denkt über ihre Kindheit oft.",
+    correct: "Sie denkt an ihre Kindheit oft.",
+    explanation: "denken <strong>an</strong> + Akk. (nicht 'über', wenn man an etwas/jemanden zurückdenkt)"
+  },
+  {
+    wrong: "Er hat sich für die Verspätung bei seinem Chef bedankt.",
+    correct: "Er hat sich für die Verspätung bei seinem Chef entschuldigt.",
+    explanation: "sich <strong>entschuldigen</strong> für + Akk. (nicht 'sich bedanken', wenn es um einen Fehler geht)"
+  },
+  {
+    wrong: "Ich freue mich über meinen Urlaub nächste Woche.",
+    correct: "Ich freue mich auf meinen Urlaub nächste Woche.",
+    explanation: "sich freuen <strong>auf</strong> + Akk. für Zukünftiges (nicht 'über', das ist für Gegenwart/Vergangenheit)"
+  },
+  {
+    wrong: "Die Kinder haben Angst über den Hund.",
+    correct: "Die Kinder haben Angst vor dem Hund.",
+    explanation: "Angst haben <strong>vor</strong> + Dat. (nicht 'über')"
+  }
+];
+
+ueHtml += '<div class="card"><h2>Übung 7 — Fehler finden und korrigieren</h2>' +
+  '<span class="diff diff-6">Sehr schwer</span>' +
+  '<div class="intro-box">🇻🇳 Mỗi câu dưới đây có <strong>1 lỗi sai về giới từ hoặc cách</strong>. Hãy viết lại toàn bộ câu đúng vào ô bên dưới, sau đó nhấn "Prüfen".</div>';
+u7Data.forEach(function(item, i){
+  ueHtml += '<div class="exercise"><span class="num">' + (i+1) + '</span><span class="exercise-text">❌ ' + item.wrong + '</span>' +
+    '<textarea class="free-write u7-input" data-idx="' + i + '" placeholder="Schreiben Sie den korrigierten Satz hier..." style="min-height:50px;"></textarea>' +
+    '<div class="feedback u7-feedback" id="u7-feedback-' + i + '"></div>' +
+    '</div>';
+});
+ueHtml += '<button class="btn" id="checkU7">Alle prüfen</button><div class="feedback" id="feedbackU7Summary"></div></div>';
+
+ueContainer.innerHTML = ueHtml;
+
+/* ---------- Render Übung 3 Matching ---------- */
+(function renderU3(){
+  var leftCol = document.getElementById('u3Left');
+  var rightCol = document.getElementById('u3Right');
+  var lefts = u3Pairs.map(function(p, i){ return {text: p.left, idx: i}; });
+  var rights = u3Pairs.map(function(p, i){ return {text: p.right, idx: i}; });
+
+  // shuffle rights
+  for(var i = rights.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i+1));
+    var tmp = rights[i]; rights[i] = rights[j]; rights[j] = tmp;
+  }
+
+  var lHtml = '';
+  lefts.forEach(function(l){
+    lHtml += '<div class="match-item" data-idx="' + l.idx + '" data-side="left">' + l.text + '</div>';
+  });
+  var rHtml = '';
+  rights.forEach(function(r){
+    rHtml += '<div class="match-item" data-idx="' + r.idx + '" data-side="right">' + r.text + '</div>';
+  });
+  leftCol.innerHTML = lHtml;
+  rightCol.innerHTML = rHtml;
+
+  var selectedLeft = null;
+  var matches = {}; // leftIdx -> rightElement
+
+  document.querySelectorAll('#u3Left .match-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      document.querySelectorAll('#u3Left .match-item').forEach(function(el){ el.classList.remove('active'); });
+      item.classList.add('active');
+      selectedLeft = item;
+    });
+  });
+  document.querySelectorAll('#u3Right .match-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      if(!selectedLeft) return;
+      var leftIdx = selectedLeft.dataset.idx;
+      matches[leftIdx] = item;
+      // visual link: mark both as "linked" via simple background, no permanent decision yet
+      document.querySelectorAll('#u3Left .match-item').forEach(function(el){ el.classList.remove('active'); });
+      // remember pairing via data attribute
+      selectedLeft.dataset.linkedRight = item.dataset.idx;
+      selectedLeft.style.borderColor = 'var(--accent)';
+      selectedLeft.style.background = '#eef0fb';
+      item.style.borderColor = 'var(--accent)';
+      item.style.background = '#eef0fb';
+      selectedLeft = null;
+    });
+  });
+
+  document.getElementById('checkU3').addEventListener('click', function(){
+    var correctCount = 0;
+    var total = u3Pairs.length;
+    document.querySelectorAll('#u3Left .match-item').forEach(function(leftEl){
+      var leftIdx = leftEl.dataset.idx;
+      var linkedRightIdx = leftEl.dataset.linkedRight;
+      leftEl.classList.remove('matched-correct', 'matched-wrong');
+      if(linkedRightIdx === leftIdx){
+        leftEl.classList.add('matched-correct');
+        correctCount++;
+      } else {
+        leftEl.classList.add('matched-wrong');
+      }
+    });
+    var fb = document.getElementById('feedbackU3');
+    fb.classList.add('show');
+    if(correctCount === total){
+      fb.className = 'feedback show ok';
+      fb.textContent = '✅ Perfekt! Alle ' + total + ' Paare sind richtig!';
+    } else {
+      fb.className = 'feedback show partial';
+      fb.textContent = '📝 ' + correctCount + ' von ' + total + ' Paaren sind richtig. Grüne = richtig, rote = nochmal versuchen.';
+    }
+  });
+})();
+
+/* ---------- Check buttons logic ---------- */
+
+// Übung 1
+document.getElementById('checkU1').addEventListener('click', function(){
+  var selects = document.querySelectorAll('.u1-select');
+  var correctCount = 0;
+  selects.forEach(function(sel){
+    var idx = parseInt(sel.dataset.idx);
+    sel.style.borderColor = '';
+    if(sel.value === u1Data[idx].answer){
+      sel.style.borderColor = 'var(--correct)';
+      sel.style.background = '#e7f5f0';
+      correctCount++;
+    } else {
+      sel.style.borderColor = 'var(--wrong)';
+      sel.style.background = '#fbeaea';
+    }
+  });
+  var fb = document.getElementById('feedbackU1');
+  fb.classList.add('show');
+  if(correctCount === u1Data.length){
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Sehr gut! Alle ' + u1Data.length + ' Antworten sind richtig!';
+  } else {
+    fb.className = 'feedback show partial';
+    fb.textContent = '📝 ' + correctCount + ' von ' + u1Data.length + ' richtig. Versuche die roten noch einmal!';
+  }
+});
+
+// Übung 2
+document.querySelectorAll('#tab-uebungen .mc-options').forEach(function(group){
+  group.querySelectorAll('.mc-option').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      group.querySelectorAll('.mc-option').forEach(function(o){ o.classList.remove('selected'); });
+      opt.classList.add('selected');
+    });
+  });
+});
+document.getElementById('checkU2').addEventListener('click', function(){
+  var groups = document.querySelectorAll('#tab-uebungen .mc-options');
+  // filter to only U2 groups (first 5)
+  var correctCount = 0;
+  var total = 0;
+  groups.forEach(function(group, gi){
+    if(gi >= u2Data.length) return; // only u2 groups (rendered first)
+    total++;
+    var correctIdx = parseInt(group.dataset.correct);
+    var selected = group.querySelector('.mc-option.selected');
+    group.querySelectorAll('.mc-option').forEach(function(opt, oi){
+      opt.classList.remove('correct-answer', 'wrong-answer');
+      if(oi === correctIdx) opt.classList.add('correct-answer');
+      else if(selected && opt === selected) opt.classList.add('wrong-answer');
+    });
+    if(selected && parseInt(selected.dataset.option) === correctIdx){
+      correctCount++;
+    }
+  });
+  var fb = document.getElementById('feedbackU2');
+  fb.classList.add('show');
+  if(correctCount === total){
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Ausgezeichnet! ' + correctCount + '/' + total + ' richtig!';
+  } else {
+    fb.className = 'feedback show partial';
+    fb.textContent = '📝 ' + correctCount + '/' + total + ' richtig. Grün = richtige Antwort, rot = deine falsche Wahl.';
+  }
+});
+
+// Übung 4
+document.getElementById('checkU4').addEventListener('click', function(){
+  var inputs = document.querySelectorAll('.u4-input');
+  var correctCount = 0;
+  inputs.forEach(function(input){
+    var idx = parseInt(input.dataset.idx);
+    var userVal = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    var correctVal = u4Data[idx].answer.toLowerCase();
+    input.classList.remove('correct', 'wrong');
+    if(userVal === correctVal){
+      input.classList.add('correct');
+      correctCount++;
+    } else {
+      input.classList.add('wrong');
+    }
+  });
+  var fb = document.getElementById('feedbackU4');
+  fb.classList.add('show');
+  if(correctCount === u4Data.length){
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Perfekt! ' + correctCount + '/' + u4Data.length + ' richtig!';
+  } else {
+    fb.className = 'feedback show partial';
+    fb.textContent = '📝 ' + correctCount + '/' + u4Data.length + ' richtig. Rote Felder: schaue dir die da(r)-Regel und Personalpronomen noch einmal an.';
+  }
+});
+
+// Übung 5
+document.getElementById('checkU5').addEventListener('click', function(){
+  var inputs = document.querySelectorAll('.u5-input');
+  var correctCount = 0;
+  var total = 0;
+  inputs.forEach(function(input){
+    var idx = parseInt(input.dataset.idx);
+    var blankIdx = parseInt(input.dataset.blank);
+    var userVal = input.value.trim().toLowerCase();
+    var correctVal = u5Data[idx].answers[blankIdx].toLowerCase();
+    total++;
+    input.classList.remove('correct', 'wrong');
+    if(userVal === correctVal){
+      input.classList.add('correct');
+      correctCount++;
+    } else {
+      input.classList.add('wrong');
+    }
+  });
+  var fb = document.getElementById('feedbackU5');
+  fb.classList.add('show');
+  if(correctCount === total){
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Hervorragend! ' + correctCount + '/' + total + ' richtig! Du beherrschst die Dativ-Präpositionen sehr gut.';
+  } else {
+    fb.className = 'feedback show partial';
+    fb.textContent = '📝 ' + correctCount + '/' + total + ' richtig. Diese Übung ist schwer — vergleiche die roten Felder mit der Liste oben.';
+  }
+});
+
+// Übung 7 — Fehler finden und korrigieren (Vergleich mit korrigiertem Satz)
+function normalizeSentence(s){
+  return s.trim().toLowerCase()
+    .replace(/[.,!?;:„"'`]/g, '')
+    .replace(/\s+/g, ' ');
+}
+document.getElementById('checkU7').addEventListener('click', function(){
+  var inputs = document.querySelectorAll('.u7-input');
+  var correctCount = 0;
+  var total = u7Data.length;
+  inputs.forEach(function(input){
+    var idx = parseInt(input.dataset.idx);
+    var fb = document.getElementById('u7-feedback-' + idx);
+    fb.classList.add('show');
+    var userVal = normalizeSentence(input.value);
+    var correctVal = normalizeSentence(u7Data[idx].correct);
+    input.classList.remove('correct', 'wrong');
+    if(userVal === correctVal){
+      input.classList.add('correct');
+      fb.className = 'feedback u7-feedback show ok';
+      fb.innerHTML = '✅ Richtig! ' + u7Data[idx].explanation;
+      correctCount++;
+    } else {
+      input.classList.add('wrong');
+      fb.className = 'feedback u7-feedback show no';
+      fb.innerHTML = '❌ Noch nicht ganz richtig. ' + u7Data[idx].explanation + '<br>✅ Richtiger Satz: <em>' + u7Data[idx].correct + '</em>';
+    }
+  });
+  var summary = document.getElementById('feedbackU7Summary');
+  summary.classList.add('show');
+  if(correctCount === total){
+    summary.className = 'feedback show ok';
+    summary.textContent = '✅ Perfekt! ' + correctCount + '/' + total + ' Sätze korrigiert!';
+  } else {
+    summary.className = 'feedback show partial';
+    summary.textContent = '📝 ' + correctCount + '/' + total + ' richtig. Lies die Erklärungen bei den roten Sätzen und versuche es noch einmal.';
+  }
+});
+
+/* ---------- Hint toggles (Übung 6) ---------- */
+document.querySelectorAll('.hint-toggle').forEach(function(toggle){
+  toggle.addEventListener('click', function(){
+    var target = document.getElementById(toggle.dataset.target);
+    target.classList.toggle('show');
+  });
+});
+
+</script>
+</body>
+</html>
