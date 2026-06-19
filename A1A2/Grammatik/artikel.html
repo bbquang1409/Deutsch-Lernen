@@ -769,6 +769,9 @@ function updateUbScore(n) {
   document.getElementById('sb' + n).style.width = pct + '%';
   document.getElementById('st' + n).textContent = correct + ' / ' + total + ' richtig';
   if (correct === total) document.getElementById('ut' + n).classList.add('done');
+  var _ans = ubAnswered[n] ? Object.keys(ubAnswered[n]).length : total;
+  if (_ans === total) _dlLog('Uebung ' + n, correct, total);
+  if (answered === total) dlLogResult(n, correct, total);
   if (answered === total) dlLogResult(n, correct, total);
 }
 
@@ -827,5 +830,59 @@ window.addEventListener('DOMContentLoaded', function() {
   [1,2,3,4,5].forEach(function(n) { buildUbung(n); });
 });
 </script>
+
+// ═══════════════════════════════════════
+//  DEUTSCH-LERNEN · LOGGING
+// ═══════════════════════════════════════
+const GOOGLE_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const FILE_NAME = "Artikel (A1-A2)";
+
+let dlUser = null;
+function dlGetUser() {{
+  if (dlUser) return dlUser;
+  const s = localStorage.getItem('dl_user');
+  if (s) {{ dlUser = JSON.parse(s); return dlUser; }}
+  return null;
+}}
+function dlLogResult(setNum, score, total) {{
+  const user = dlGetUser();
+  if (!user) return;
+  fetch(SHEET_URL, {{
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({{
+      name: user.name,
+      email: user.email,
+      file: FILE_NAME,
+      set: 'Uebung ' + setNum,
+      score: score,
+      total: total
+    }})
+  }}).catch(function(){{}});
+}}
+
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+const _DL_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE = "Artikel (A1-A2)";
+let _dlUser = null;
+function _dlGetUser() {
+  if (_dlUser) return _dlUser;
+  try { const s = localStorage.getItem('dl_user'); if (s) { _dlUser = JSON.parse(s); return _dlUser; } } catch(e) {}
+  return null;
+}
+function _dlLog(setName, score, total) {
+  const u = _dlGetUser();
+  if (!u) return;
+  fetch(_DL_SHEET_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: JSON.stringify({ name: u.name, email: u.email, file: _DL_FILE, set: setName, score: score, total: total })
+  }).catch(function(){});
+}
+
 </body>
 </html>

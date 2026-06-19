@@ -876,6 +876,7 @@ function updateUbScore(n){
   document.getElementById('sb'+n).style.width=(c/total*100)+'%';
   document.getElementById('st'+n).textContent=c+' / '+total+' richtig';
   if(c===total)document.getElementById('ut'+n).classList.add('done');
+  var _a=ubAnswered[n]?Object.keys(ubAnswered[n]).length:total; if(_a===total)_dlLog('Uebung '+n,c,total);
 }
 function resetUb(n){ubAnswered[n]={};document.getElementById('ut'+n).classList.remove('done');buildUbung(n);document.getElementById('sb'+n).style.width='0%';document.getElementById('st'+n).textContent='0 / '+UB[n].length+' richtig';}
 function showUbung(n){document.querySelectorAll('.ub-pane').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.ub-tab').forEach(function(t){t.classList.remove('active');});document.getElementById('up'+n).classList.add('active');document.getElementById('ut'+n).classList.add('active');}
@@ -895,5 +896,57 @@ window.addEventListener('DOMContentLoaded',function(){
   [1,2,3,4,5].forEach(function(n){buildUbung(n);});
 });
 </script>
+
+// ═══════════════════════════════════════
+//  DEUTSCH-LERNEN · LOGGING
+// ═══════════════════════════════════════
+const GOOGLE_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const FILE_NAME = "Negation (A1-A2)";
+
+let dlUser = null;
+function dlGetUser() {{
+  if (dlUser) return dlUser;
+  const s = localStorage.getItem('dl_user');
+  if (s) {{ dlUser = JSON.parse(s); return dlUser; }}
+  return null;
+}}
+function dlLogResult(setNum, score, total) {{
+  const user = dlGetUser();
+  if (!user) return;
+  fetch(SHEET_URL, {{
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({{
+      name: user.name,
+      email: user.email,
+      file: FILE_NAME,
+      set: 'Uebung ' + setNum,
+      score: score,
+      total: total
+    }})
+  }}).catch(function(){{}});
+}}
+
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Negation (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>

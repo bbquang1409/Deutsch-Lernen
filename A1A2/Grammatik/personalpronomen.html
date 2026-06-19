@@ -692,7 +692,7 @@ function upQ(){
   const tot=sq.length;
   document.getElementById('qprog').style.width=Math.round(qi/tot*100)+'%';
   document.getElementById('qctr').textContent=qi<tot?`Frage ${qi+1} / ${tot}`:'Fertig!';
-  document.getElementById('qscdsp').textContent=`✓ ${qs} richtig`;
+  _dlLog('Schnelltest', qs, sq.length); document.getElementById('qscdsp').textContent=`✓ ${qs} richtig`;
 }
 function aQ(chosen){
   if(qan)return; qan=true;
@@ -776,5 +776,25 @@ function rstSie(){
 // init
 document.addEventListener('DOMContentLoaded',()=>{setScene(0,document.querySelector('.scene-tab'));rQ();});
 </script>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Personalpronomen (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>

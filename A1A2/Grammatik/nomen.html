@@ -738,6 +738,7 @@ const TEST = [
 // ═══════════════════════════════════════
 
 function showScore(id, score, total) {
+  _dlLog(id, score, total);
   const el = document.getElementById(id);
   el.classList.add('show');
   document.getElementById(id+'-n').textContent = score+'/'+total;
@@ -1199,5 +1200,25 @@ initKb2();
 initKb3();
 initTest();
 </script>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Nomen (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>

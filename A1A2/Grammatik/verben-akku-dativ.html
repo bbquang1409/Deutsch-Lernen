@@ -607,7 +607,7 @@ document.getElementById('ck1').addEventListener('click',()=>{
   s1data.forEach(({v,c})=>{tot++;if(s1placed[v]===c)ok++;});
   const fb=document.getElementById('fb1');
   const miss=s1data.filter(({v})=>!s1placed[v]).length;
-  if(ok===tot){fb.className='fb show ok';fb.innerHTML='✅ Perfekt! Alle 13 richtig!';}
+  _dlLog('Uebung 1',ok,tot); if(ok===tot){fb.className='fb show ok';fb.innerHTML='✅ Perfekt! Alle 13 richtig!';}
   else{fb.className='fb show no';fb.innerHTML=`❌ ${ok}/${tot} richtig.${miss?' Noch '+miss+' nicht platziert.':''}`;}
 });
 document.getElementById('rs1').addEventListener('click',()=>{s1placed={};s1sel=null;s1Build();document.getElementById('fb1').classList.remove('show');});
@@ -646,7 +646,7 @@ document.getElementById('ck2').addEventListener('click',()=>{
     if(v===ans.toLowerCase()){inp.classList.add('ok');ok++;}else inp.classList.add('no');
   });
   const fb=document.getElementById('fb2');
-  if(ok===u2data.length){fb.className='fb show ok';fb.innerHTML='✅ Alle 13 Artikel richtig!';}
+  _dlLog('Uebung 2',ok,u2data.length); if(ok===u2data.length){fb.className='fb show ok';fb.innerHTML='✅ Alle 13 Artikel richtig!';}
   else{
     let h='';
     u2data.forEach(({ans,hint},i)=>{
@@ -711,7 +711,7 @@ function u3Build(){
       const ti2=+this.dataset.ti;
       const ans=u3ans[ti2].map(a=>a.w).join(' ');
       const fb=document.getElementById('bf'+ti2);
-      if(ans===u3data[ti2].sol){fb.className='fb show ok';fb.innerHTML='✅ Richtig!';}
+      _dlLog('Uebung 3',1,1); if(ans===u3data[ti2].sol){fb.className='fb show ok';fb.innerHTML='✅ Richtig!';}
       else{fb.className='fb show no';fb.innerHTML='❌ Noch nicht richtig. Tipp: <em>'+u3data[ti2].sol+'</em>';}
     });
     box.appendChild(ckb);
@@ -838,5 +838,25 @@ document.getElementById('retryAll').addEventListener('click',()=>{
   document.getElementById('scoreBar').classList.remove('show');
 });
 </script>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Verben mit Akk/Dat (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>

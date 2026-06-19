@@ -662,6 +662,7 @@ function checkGroup(prefix, count) {
     }
   }
   const total = Array.from({length:count},(_,i)=>document.getElementById(prefix+'_'+(i+1))).filter(e=>e).length;
+  _dlLog('Uebung ' + prefix, correct, total);
   document.getElementById('score_'+prefix).innerHTML = `Ergebnis: <span>${correct} / ${total}</span> richtig`;
 }
 
@@ -731,5 +732,25 @@ function showQuizResult() {
 
 initQuiz();
 </script>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Possessivartikel (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>

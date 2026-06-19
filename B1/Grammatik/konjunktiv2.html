@@ -1015,6 +1015,7 @@ function checkAll(prefix) {
     }
   });
 
+  _dlLog(prefix, correct, data.length);
   const score = document.getElementById(`score-${prefix}`);
   if (score) {
     score.style.display = 'block';
@@ -1033,6 +1034,7 @@ function resetSub(prefix) {
   const dataMap = {ue1:ue1Data,ue2:ue2Data,ue3:ue3Data,ue4:ue4Data,ue5:ue5Data,ue6:ue6Data,ue7:ue7Data,kt:ktData};
   const containerMap = {ue1:'ue1-questions',ue2:'ue2-questions',ue3:'ue3-questions',ue4:'ue4-questions',ue5:'ue5-questions',ue6:'ue6-questions',ue7:'ue7-questions',kt:'kt-questions'};
   renderExercises(containerMap[prefix], dataMap[prefix], prefix);
+  _dlLog(prefix, correct, data.length);
   const score = document.getElementById(`score-${prefix}`);
   if (score) score.style.display = 'none';
 }
@@ -1060,5 +1062,27 @@ renderExercises('kt-questions', ktData, 'kt');
 #zuruck-btn:active{opacity:0.85;transform:translateX(-50%) scale(0.97);}
 </style>
 <a id="zuruck-btn" href="index.html">&#8592; Grammatik-&#220;bersicht</a>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+const _DL_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE = "Konjunktiv II (B1)";
+let _dlUser = null;
+function _dlGetUser() {
+  if (_dlUser) return _dlUser;
+  try { const s = localStorage.getItem('dl_user'); if (s) { _dlUser = JSON.parse(s); return _dlUser; } } catch(e) {}
+  return null;
+}
+function _dlLog(setName, score, total) {
+  const u = _dlGetUser();
+  if (!u) return;
+  fetch(_DL_SHEET_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: JSON.stringify({ name: u.name, email: u.email, file: _DL_FILE, set: setName, score: score, total: total })
+  }).catch(function(){});
+}
+
 </body>
 </html>
