@@ -13,6 +13,7 @@
   --amber:#b45309;--amber-l:#fef3c7;
   --rose:#be185d;--rose-l:#fdf2f8;
   --ok:#15803d;--ok-bg:#f0fdf4;--ok-bd:#86efac;
+  --err:#b91c1c;--err-bg:#fef2f2;--err-bd:#fca5a5;
   --tx:#111827;--tx2:#4b5563;--mu:#9ca3af;
   --shadow:0 1px 3px rgba(30,60,200,.06),0 4px 16px rgba(30,60,200,.05);
   --r:13px;
@@ -88,6 +89,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-si
 .copy{text-align:center;padding:24px 16px 48px;opacity:.3}
 .copy-main{font-family:'Playfair Display',serif;font-size:18px}
 .copy-sub{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+
+/* UEBUNGEN VIEW */
+.ue-sec{display:none}.ue-sec.on{display:block}
+.ue-intro{background:var(--teal-l);border:1px solid var(--teal-m);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--teal);margin-bottom:14px;line-height:1.6}
+.ue-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.ue-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.ue-num{font-family:'Playfair Display',serif;font-size:16px;color:var(--teal)}
+.ue-diff{font-size:11px;color:var(--mu);font-weight:600}
+.ue-title{font-weight:700;font-size:13.5px;color:var(--tx2);margin-bottom:12px}
+.ue-sent{font-size:13.5px;line-height:2.3;margin-bottom:4px}
+.ue-select{border:1.5px solid var(--bd);border-radius:8px;padding:4px 9px;font-size:13px;font-family:inherit;background:#fff;color:var(--tx);cursor:pointer;outline:none}
+.ue-select:focus{border-color:var(--teal)}
+.ue-select.correct{border-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok)}
+.ue-select.wrong{border-color:var(--err-bd);background:var(--err-bg);color:var(--err)}
+.ue-btn{margin-top:10px;padding:9px 22px;border-radius:99px;border:none;background:var(--teal);color:#fff;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.02em}
+.ue-btn:active{opacity:.85}
+.ue-score{display:none;margin-top:10px;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:700;border:1.5px solid}
+.ue-score.show{display:block}
+.ue-text-block{background:var(--bg);border-radius:10px;padding:14px;font-size:13.5px;line-height:2.4}
 </style>
 </head>
 <body>
@@ -101,6 +121,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-si
   <div class="view-tabs">
     <button class="vtab on" onclick="setView('list')">☰ Liste</button>
     <button class="vtab" onclick="setView('flash')">🃏 Flashcard</button>
+    <button class="vtab" onclick="setView('ue')">✏️ Übungen</button>
   </div>
   <button class="vi-toggle" id="viBtn" onclick="toggleVI()">
     <span class="vi-dot"></span> DE↔VI
@@ -309,6 +330,159 @@ function renderList(){
   });
 }
 
+// ── ÜBUNGEN (Exercises) ──
+var UE_EXERCISES = [
+  { title:"Adjektiv + Präposition", diff:"⭐⭐ Mittel", mode:"items", items:[
+    {sentence:"Der Erfolg des Projekts ist stark {{b}} der Vorbereitung abhängig.", options:["von","für","über"], answer:"von"},
+    {sentence:"Bei diesem Umzug sind wir ganz {{b}} die Hilfe unserer Freunde angewiesen.", options:["auf","an","über"], answer:"auf"},
+    {sentence:"Ich bin jederzeit {{b}} einem offenen Gespräch bereit.", options:["zu","für","mit"], answer:"zu"},
+    {sentence:"Im Moment ist sie intensiv {{b}} einem neuen Projekt beschäftigt.", options:["mit","bei","für"], answer:"mit"},
+    {sentence:"Mein Bruder ist schon seit der Schulzeit {{b}} Geschichte interessiert.", options:["an","für","über"], answer:"an"},
+    {sentence:"Die Eltern sind unglaublich {{b}} die Leistung ihrer Tochter stolz.", options:["auf","über","an"], answer:"auf"},
+    {sentence:"Als Projektleiterin bin ich {{b}} die Qualität der Ergebnisse verantwortlich.", options:["für","von","über"], answer:"für"},
+    {sentence:"Der Kunde war am Ende {{b}} dem Service zufrieden.", options:["mit","bei","für"], answer:"mit"},
+    {sentence:"Wir waren alle sehr {{b}} das tolle Ergebnis erfreut.", options:["über","von","auf"], answer:"über"},
+    {sentence:"Niemand ist {{b}} jeder Aufgabe gleich fähig.", options:["zu","für","bei"], answer:"zu"}
+  ]},
+  { title:"Nomen + Präposition", diff:"⭐⭐ Mittel", mode:"items", items:[
+    {sentence:"Der Bedarf {{b}} qualifizierten Fachkräften steigt stetig.", options:["an","für","von"], answer:"an"},
+    {sentence:"Ihre Begeisterung {{b}} Musik ist wirklich ansteckend.", options:["für","von","an"], answer:"für"},
+    {sentence:"Sein Beitrag {{b}} der Lösung war entscheidend.", options:["zu","für","an"], answer:"zu"},
+    {sentence:"Die sozialen Medien haben großen Einfluss {{b}} die öffentliche Meinung.", options:["auf","für","über"], answer:"auf"},
+    {sentence:"Was genau ist der Grund {{b}} deine plötzliche Entscheidung?", options:["für","von","an"], answer:"für"},
+    {sentence:"Wir setzen unsere ganze Hoffnung {{b}} eine schnelle Verbesserung.", options:["auf","für","an"], answer:"auf"},
+    {sentence:"Der Vorstand übte deutliche Kritik {{b}} der neuen Regelung.", options:["an","über","für"], answer:"an"},
+    {sentence:"Wir brauchen dringend eine Lösung {{b}} dieses Problem.", options:["für","von","an"], answer:"für"},
+    {sentence:"Die Nachfrage {{b}} erneuerbaren Energien wächst jedes Jahr.", options:["nach","für","von"], answer:"nach"},
+    {sentence:"Es gibt starken Widerstand {{b}} die geplante Reform.", options:["gegen","für","über"], answer:"gegen"}
+  ]},
+  { title:"Verb + Präposition", diff:"⭐⭐⭐ Schwer", mode:"items", items:[
+    {sentence:"Das Endergebnis hängt stark {{b}} der Vorbereitung ab.", options:["von","für","über"], answer:"von"},
+    {sentence:"Bitte achten Sie genau {{b}} die Anweisungen.", options:["auf","an","über"], answer:"auf"},
+    {sentence:"Man gewöhnt sich erstaunlich schnell {{b}} das neue Klima.", options:["an","auf","über"], answer:"an"},
+    {sentence:"Schon als Kind hat sie sich sehr {{b}} Naturwissenschaften interessiert.", options:["für","an","von"], answer:"für"},
+    {sentence:"Bitte konzentriere dich {{b}} die wichtigsten Punkte.", options:["auf","an","über"], answer:"auf"},
+    {sentence:"Bei dieser Entscheidung denke ich vor allem {{b}} die Zukunft meiner Familie.", options:["an","über","von"], answer:"an"},
+    {sentence:"Dieses Thema gehört eindeutig nicht {{b}} unserer heutigen Tagesordnung.", options:["zu","an","für"], answer:"zu"},
+    {sentence:"Viele Unternehmen profitieren {{b}} den neuen Steuervorteilen.", options:["von","für","über"], answer:"von"},
+    {sentence:"Über 200 Personen haben {{b}} der Konferenz teilgenommen.", options:["an","bei","mit"], answer:"an"},
+    {sentence:"Man sollte die eigenen Ergebnisse nicht ständig {{b}} anderen vergleichen.", options:["mit","bei","an"], answer:"mit"}
+  ]},
+  { title:"Kasus-Training: Akkusativ oder Dativ?", diff:"⭐⭐⭐⭐ Sehr schwer", mode:"items", items:[
+    {sentence:"Er wartet schon seit Stunden auf {{b}}.", options:["den Bus","dem Bus","der Bus"], answer:"den Bus"},
+    {sentence:"Sie interessiert sich sehr für {{b}}.", options:["das Thema","dem Thema","des Thema"], answer:"das Thema"},
+    {sentence:"Sie hat seit der Kindheit große Angst vor {{b}}.", options:["der Prüfung","die Prüfung","des Prüfung"], answer:"der Prüfung"},
+    {sentence:"Der Anwalt beschäftigt sich intensiv mit {{b}}.", options:["dem Fall","den Fall","der Fall"], answer:"dem Fall"},
+    {sentence:"Alle Mitarbeiter nehmen an {{b}} teil.", options:["der Versammlung","die Versammlung","dem Versammlung"], answer:"der Versammlung"},
+    {sentence:"Man sollte immer an {{b}} denken.", options:["die Folgen","den Folgen","der Folgen"], answer:"die Folgen"},
+    {sentence:"Der Ausflug hängt ganz von {{b}} ab.", options:["dem Wetter","das Wetter","des Wetter"], answer:"dem Wetter"},
+    {sentence:"Die Kinder freuen sich riesig über {{b}}.", options:["das Geschenk","dem Geschenk","des Geschenk"], answer:"das Geschenk"},
+    {sentence:"Niemand zweifelt an {{b}}.", options:["der Aussage","die Aussage","dem Aussage"], answer:"der Aussage"},
+    {sentence:"Wir bedanken uns herzlich für {{b}}.", options:["die Einladung","der Einladung","des Einladung"], answer:"die Einladung"}
+  ]},
+  { title:"Rundtext: Im Berufsalltag", diff:"⭐⭐⭐⭐ Sehr schwer", mode:"paragraph",
+    text:"Frau Nguyen ist seit zwei Jahren bei einer großen Firma beschäftigt und sehr zufrieden {{b}} ihrer Stelle. Sie interessiert sich besonders {{b}} internationale Projekte und nimmt regelmäßig {{b}} Fortbildungen teil. Ihr Chef ist sehr stolz {{b}} ihre Leistungen und verlässt sich völlig {{b}} ihre Zuverlässigkeit. Neulich hat sie sich erfolgreich {{b}} eine höhere Position beworben. Die endgültige Entscheidung hängt allerdings noch {{b}} der Zustimmung der Geschäftsführung ab. Ihre Kollegen gratulieren ihr schon jetzt {{b}} der bevorstehenden Beförderung, und sie freut sich sehr {{b}} diese Anerkennung. Trotzdem bleibt sie bescheiden und denkt vor allem {{b}} die Zusammenarbeit im Team.",
+    blanks:[
+      {options:["mit","bei","für"], answer:"mit"},
+      {options:["für","an","von"], answer:"für"},
+      {options:["an","bei","mit"], answer:"an"},
+      {options:["auf","über","an"], answer:"auf"},
+      {options:["auf","für","mit"], answer:"auf"},
+      {options:["um","für","nach"], answer:"um"},
+      {options:["von","an","für"], answer:"von"},
+      {options:["zu","für","mit"], answer:"zu"},
+      {options:["über","auf","von"], answer:"über"},
+      {options:["an","über","von"], answer:"an"}
+    ]
+  }
+];
+
+function shuffleArr(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+  }
+  return a;
+}
+
+function buildSelect(id, options, answer){
+  var opts = shuffleArr(options);
+  var html = '<select class="ue-select" id="'+id+'" data-answer="'+answer.replace(/"/g,'&quot;')+'"><option value="">–</option>';
+  opts.forEach(function(o){ html += '<option>'+o+'</option>'; });
+  html += '</select>';
+  return html;
+}
+
+function renderUebungen(){
+  var area = document.getElementById('mainArea');
+  area.innerHTML = '';
+  var intro = document.createElement('div'); intro.className='ue-intro';
+  intro.innerHTML = '📝 5 Übungen für B2–C1. Wähle die richtige Präposition (bzw. den richtigen Kasus) und klicke auf "Auswerten".';
+  area.appendChild(intro);
+
+  UE_EXERCISES.forEach(function(ex, exIdx){
+    var card = document.createElement('div'); card.className='ue-card';
+    var head = document.createElement('div'); head.className='ue-head';
+    head.innerHTML = '<span class="ue-num">Übung '+(exIdx+1)+'</span><span class="ue-diff">'+ex.diff+'</span>';
+    card.appendChild(head);
+    var title = document.createElement('div'); title.className='ue-title'; title.textContent = ex.title;
+    card.appendChild(title);
+
+    if(ex.mode === 'items'){
+      ex.items.forEach(function(item, i){
+        var id = 'ue'+exIdx+'_'+i;
+        var sentHtml = item.sentence.replace('{{b}}', buildSelect(id, item.options, item.answer));
+        var sent = document.createElement('div'); sent.className='ue-sent';
+        sent.innerHTML = (i+1)+'. '+sentHtml;
+        card.appendChild(sent);
+      });
+    } else if(ex.mode === 'paragraph'){
+      var block = document.createElement('div'); block.className='ue-text-block';
+      var n = 0;
+      var html = ex.text.replace(/\{\{b\}\}/g, function(){
+        var id = 'ue'+exIdx+'_'+n;
+        var bl = ex.blanks[n];
+        n++;
+        return buildSelect(id, bl.options, bl.answer);
+      });
+      block.innerHTML = html;
+      card.appendChild(block);
+    }
+
+    var btn = document.createElement('button'); btn.className='ue-btn'; btn.textContent='Auswerten';
+    btn.onclick = (function(idx){ return function(){ checkUe(idx); }; })(exIdx);
+    card.appendChild(btn);
+    var score = document.createElement('div'); score.className='ue-score'; score.id='ue-score-'+exIdx;
+    card.appendChild(score);
+
+    area.appendChild(card);
+  });
+}
+
+function checkUe(exIdx){
+  var card = document.querySelectorAll('.ue-card')[exIdx];
+  var selects = card.querySelectorAll('.ue-select');
+  var correct = 0;
+  selects.forEach(function(s){
+    var ans = s.getAttribute('data-answer');
+    if(s.value === ans){
+      s.classList.remove('wrong'); s.classList.add('correct'); correct++;
+    } else {
+      s.classList.remove('correct'); s.classList.add('wrong');
+    }
+  });
+  var total = selects.length;
+  var pct = Math.round(correct/total*100);
+  var box = document.getElementById('ue-score-'+exIdx);
+  box.classList.add('show');
+  var emoji = pct>=90?'🏆':pct>=70?'👍':pct>=50?'💪':'📚';
+  var col = pct>=90?'var(--ok)':pct>=70?'var(--amber)':'var(--err)';
+  var bg = pct>=90?'var(--ok-bg)':pct>=70?'var(--amber-l)':'var(--err-bg)';
+  box.style.color = col; box.style.background = bg; box.style.borderColor = col;
+  box.innerHTML = emoji+' Ergebnis: '+correct+' / '+total+' ('+pct+'%)';
+}
+
 // ── FLASH VIEW ──
 function buildFlashItems(){
   if(currentCat===-1){ flashItems=allItems.slice(); }
@@ -383,9 +557,19 @@ function renderFlash(){
 // ── VIEW SWITCH ──
 function setView(v){
   currentView=v;
-  document.querySelectorAll('.vtab').forEach(function(b,i){ b.classList.toggle('on',(v==='list'&&i===0)||(v==='flash'&&i===1)); });
-  if(v==='list') renderList();
-  else{ buildFlashItems(); renderFlash(); }
+  document.querySelectorAll('.vtab').forEach(function(b,i){ b.classList.toggle('on',(v==='list'&&i===0)||(v==='flash'&&i===1)||(v==='ue'&&i===2)); });
+  var catWrap=document.getElementById('catWrap');
+  var viBtn=document.getElementById('viBtn');
+  if(v==='ue'){
+    catWrap.style.display='none';
+    viBtn.style.display='none';
+    renderUebungen();
+  } else {
+    catWrap.style.display='';
+    viBtn.style.display='';
+    if(v==='list') renderList();
+    else{ buildFlashItems(); renderFlash(); }
+  }
 }
 
 // ── VI TOGGLE ──
@@ -394,7 +578,7 @@ function toggleVI(){
   var btn=document.getElementById('viBtn');
   btn.classList.toggle('show',showVI);
   if(currentView==='list') renderList();
-  else renderFlash();
+  else if(currentView==='flash') renderFlash();
 }
 
 init();
