@@ -767,7 +767,10 @@ function updateUbScore(n) {
   var pct = correct / total * 100;
   document.getElementById('sb' + n).style.width = pct + '%';
   document.getElementById('st' + n).textContent = correct + ' / ' + total + ' richtig';
-  if (correct === total) document.getElementById('ut' + n).classList.add('done');
+  if (correct === total) {
+    document.getElementById('ut' + n).classList.add('done');
+    dlLogResult(n, correct, total);
+  }
 }
 
 function resetUb(n) {
@@ -786,8 +789,38 @@ function showUbung(n) {
 }
 
 // ═══════════════════════════════════════
-//  INIT
+//  GOOGLE AUTH + SHEETS LOGGING
 // ═══════════════════════════════════════
+const GOOGLE_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const FILE_NAME = "Artikel (A1–A2)";
+
+let dlUser = null;
+
+function dlGetUser() {
+  if (dlUser) return dlUser;
+  const s = localStorage.getItem('dl_user');
+  if (s) { dlUser = JSON.parse(s); return dlUser; }
+  return null;
+}
+
+function dlLogResult(setNum, score, total) {
+  const user = dlGetUser();
+  if (!user) return;
+  fetch(SHEET_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      name: user.name,
+      email: user.email,
+      file: FILE_NAME,
+      set: 'Übung ' + setNum,
+      score: score,
+      total: total
+    })
+  }).catch(()=>{});
+}
+
+
 window.addEventListener('DOMContentLoaded', function() {
   ['fc1','fc2','fc3','fc4','fc5'].forEach(function(id) { buildFC(id); });
   [1,2,3,4,5].forEach(function(n) { buildUbung(n); });
