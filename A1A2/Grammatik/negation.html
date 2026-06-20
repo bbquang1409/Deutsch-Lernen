@@ -154,6 +154,27 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 .sc-txt{font-size:12px;color:var(--sub);font-weight:700;}
 .rst-btn{background:var(--neg);color:#fff;border:none;border-radius:9px;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;display:block;width:100%;}
 </style>
+<script>
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Negation (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
+</script>
 </head>
 <body>
 
@@ -928,25 +949,6 @@ function dlLogResult(setNum, score, total) {{
   }}).catch(function(){{}});
 }}
 
-
-// ===========================================
-//  DEUTSCH-LERNEN LOGGING
-// ===========================================
-const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
-const _DL_FILE  = "Negation (A1-A2)";
-let _dlU = null;
-function _dlUser() {
-  if (_dlU) return _dlU;
-  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
-  return _dlU;
-}
-function _dlLog(setName, score, total) {
-  var u = _dlUser(); if (!u) return;
-  fetch(_DL_SHEET, {
-    method:'POST', mode:'no-cors',
-    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
-  }).catch(function(){});
-}
 
 </body>
 </html>

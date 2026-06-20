@@ -267,6 +267,27 @@
   }
   .footer-sig { text-align: center; color: var(--text-light); font-size: 0.8rem; margin-top: 30px; padding: 10px; }
 </style>
+<script>
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Nomen-Verb-Verbindungen (B1)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
+</script>
 </head>
 <body>
 
@@ -1107,25 +1128,6 @@ renderBlock('testBlock', testBlock, 1);
 #zuruck-btn:active{opacity:0.85;transform:translateX(-50%) scale(0.97);}
 </style>
 <a id="zuruck-btn" href="index.html">&#8592; Grammatik-&#220;bersicht</a>
-
-// ===========================================
-//  DEUTSCH-LERNEN LOGGING
-// ===========================================
-const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
-const _DL_FILE  = "Nomen-Verb-Verbindungen (B1)";
-let _dlU = null;
-function _dlUser() {
-  if (_dlU) return _dlU;
-  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
-  return _dlU;
-}
-function _dlLog(setName, score, total) {
-  var u = _dlUser(); if (!u) return;
-  fetch(_DL_SHEET, {
-    method:'POST', mode:'no-cors',
-    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
-  }).catch(function(){});
-}
 
 </body>
 </html>

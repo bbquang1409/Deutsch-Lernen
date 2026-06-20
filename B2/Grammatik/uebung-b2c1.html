@@ -143,6 +143,27 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-si
 .copy-main{font-family:'Playfair Display',serif;font-size:17px}
 .copy-sub{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
 </style>
+<script>
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Uebung B2/C1";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
+</script>
 </head>
 <body>
 
@@ -655,25 +676,6 @@ function init(){
 
 init();
 </script>
-
-// ===========================================
-//  DEUTSCH-LERNEN LOGGING
-// ===========================================
-const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
-const _DL_FILE  = "Uebung B2/C1";
-let _dlU = null;
-function _dlUser() {
-  if (_dlU) return _dlU;
-  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
-  return _dlU;
-}
-function _dlLog(setName, score, total) {
-  var u = _dlUser(); if (!u) return;
-  fetch(_DL_SHEET, {
-    method:'POST', mode:'no-cors',
-    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
-  }).catch(function(){});
-}
 
 </body>
 </html>

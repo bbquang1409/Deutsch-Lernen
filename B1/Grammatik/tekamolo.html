@@ -275,6 +275,27 @@ textarea.state-warn{border-color:var(--warn);background:var(--warn-lt);}
 .retry-btn{width:100%;padding:12px;border:none;border-radius:10px;color:#fff;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:900;cursor:pointer;}
 .back-res-btn{width:100%;padding:12px;border:2px solid var(--border);background:var(--card);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:800;color:var(--muted);cursor:pointer;}
 </style>
+<script>
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "TEKAMOLO (B1)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
+</script>
 </head>
 <body>
 
@@ -1497,25 +1518,6 @@ buildCards1();
 buildCards2();
 buildCards3();
 </script>
-
-// ===========================================
-//  DEUTSCH-LERNEN LOGGING
-// ===========================================
-const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
-const _DL_FILE  = "TEKAMOLO (B1)";
-let _dlU = null;
-function _dlUser() {
-  if (_dlU) return _dlU;
-  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
-  return _dlU;
-}
-function _dlLog(setName, score, total) {
-  var u = _dlUser(); if (!u) return;
-  fetch(_DL_SHEET, {
-    method:'POST', mode:'no-cors',
-    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
-  }).catch(function(){});
-}
 
 </body>
 </html>

@@ -109,6 +109,27 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-si
 .ue-score.show{display:block}
 .ue-text-block{background:var(--bg);border-radius:10px;padding:14px;font-size:13.5px;line-height:2.4}
 </style>
+<script>
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Praepositionen (B2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
+</script>
 </head>
 <body>
 <div class="hdr">
@@ -584,25 +605,6 @@ function toggleVI(){
 
 init();
 </script>
-
-// ===========================================
-//  DEUTSCH-LERNEN LOGGING
-// ===========================================
-const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
-const _DL_FILE  = "Praepositionen (B2)";
-let _dlU = null;
-function _dlUser() {
-  if (_dlU) return _dlU;
-  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
-  return _dlU;
-}
-function _dlLog(setName, score, total) {
-  var u = _dlUser(); if (!u) return;
-  fetch(_DL_SHEET, {
-    method:'POST', mode:'no-cors',
-    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
-  }).catch(function(){});
-}
 
 </body>
 </html>
