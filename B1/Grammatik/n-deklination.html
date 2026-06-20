@@ -1018,6 +1018,7 @@ function checkUe(n) {
   const result = document.getElementById(`ue${n}-result`);
   const pct = Math.round(correct/total*100);
   result.className = `result-bar show ${pct>=80?'good':pct>=50?'ok':'bad'}`;
+  _dlLog('Uebung', correct, total);
   result.innerHTML = `${pct>=80?'🎉':pct>=50?'👍':'💪'} Ergebnis: <strong>${correct}/${total}</strong> richtig (${pct}%) ${pct<100?'— Rote Felder: falsche Antworten. Korrigiere sie!':'— Perfekt!'}`;
 }
 
@@ -1067,5 +1068,25 @@ for (let i=1;i<=5;i++) renderUe(i);
 #zuruck-btn:active{opacity:0.85;transform:translateX(-50%) scale(0.97);}
 </style>
 <a id="zuruck-btn" href="index.html">&#8592; Grammatik-&#220;bersicht</a>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "N-Deklination (B1)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>

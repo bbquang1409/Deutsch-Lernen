@@ -966,6 +966,7 @@ function updateScore(tab) {
     var total=24; // 12x2 steps
     var doneSteps=0;
     for(var j=0;j<12;j++){if(s.checked1[j])doneSteps++;if(s.checked2[j])doneSteps++;}
+    _dlLog('Uebung', sc, 12);
     document.getElementById('scorePill').textContent=sc+' / 12';
     document.getElementById('progFill').style.width=Math.round(doneSteps/total*100)+'%';
     var note4=doneSteps<total?('Schritt '+doneSteps+' von '+total+' abgeschlossen.'):'Alle Schritte erledigt! Jetzt abgeben.';
@@ -1496,5 +1497,25 @@ buildCards1();
 buildCards2();
 buildCards3();
 </script>
+
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "TEKAMOLO (B1)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+
 </body>
 </html>
