@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · Deutsch-Lernen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0f2644;--bg:#eaeff8;--card:#fff;
+  --blue:#2563eb;--teal:#0d9488;--purple:#7c3aed;
+  --red:#e53e3e;--green:#16a34a;--amber:#d97706;
+  --border:#dde3ea;--muted:#7a8fa8;
+  --shadow:0 2px 12px rgba(15,38,68,.07);
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--ink);
+  padding:32px 24px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+}
+.hdr-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;color:#fff;line-height:1.2;}
+.hdr-left p{font-size:0.75rem;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.btn-refresh{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:700;
+  padding:8px 16px;border-radius:99px;cursor:pointer;transition:background .2s;
+}
+.btn-refresh:hover{background:rgba(255,255,255,.2);}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;display:inline-block;}
+
+/* ── FILTERS ── */
+.filters{
+  max-width:1100px;margin:24px auto 0;padding:0 20px;
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.filter-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px;}
+.filter-group label{font-size:0.68rem;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.filter-group select,.filter-group input{
+  padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;
+  font-family:'Outfit',sans-serif;font-size:0.85rem;color:var(--ink);
+  background:#fff;outline:none;transition:border-color .2s;
+}
+.filter-group select:focus,.filter-group input:focus{border-color:var(--blue);}
+.btn-clear{
+  align-self:flex-end;padding:9px 16px;border-radius:10px;
+  border:1.5px solid var(--border);background:#fff;
+  font-family:'Outfit',sans-serif;font-size:0.82rem;font-weight:700;color:var(--muted);
+  cursor:pointer;white-space:nowrap;
+}
+.btn-clear:hover{border-color:var(--blue);color:var(--blue);}
+
+/* ── STATS CARDS ── */
+.stats{
+  max-width:1100px;margin:20px auto 0;padding:0 20px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;
+}
+.stat-card{
+  background:var(--card);border-radius:16px;padding:18px 20px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);
+}
+.stat-label{font-size:0.68rem;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.stat-val{font-size:2rem;font-weight:900;line-height:1;}
+.stat-sub{font-size:0.72rem;color:var(--muted);margin-top:4px;}
+
+/* ── TABLE ── */
+.table-wrap{
+  max-width:1100px;margin:20px auto 40px;padding:0 20px;
+}
+.table-card{
+  background:var(--card);border-radius:20px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);
+  overflow:hidden;
+}
+.table-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.table-head h2{font-size:0.9rem;font-weight:800;}
+.table-count{font-size:0.75rem;color:var(--muted);font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+thead th{
+  text-align:left;padding:10px 16px;
+  font-size:0.65rem;font-weight:800;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;
+  background:#f8fafc;border-bottom:1px solid var(--border);
+}
+tbody tr{border-bottom:1px solid #f0f4f8;transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#f8fafc;}
+tbody td{padding:11px 16px;font-size:0.83rem;}
+.td-name{font-weight:700;}
+.td-email{color:var(--muted);font-size:0.75rem;}
+.pct-bar{
+  display:flex;align-items:center;gap:8px;
+}
+.bar-track{height:6px;width:60px;background:#e8edf2;border-radius:99px;overflow:hidden;flex:none;}
+.bar-fill{height:100%;border-radius:99px;transition:width .4s;}
+.pct-text{font-size:0.8rem;font-weight:700;min-width:36px;}
+.badge-level{
+  display:inline-block;font-size:0.62rem;font-weight:800;
+  padding:2px 8px;border-radius:99px;letter-spacing:.04em;
+}
+.lv-a1a2{background:#e0f2fe;color:#0369a1;}
+.lv-b1{background:#dcfce7;color:#15803d;}
+.lv-b2{background:#ede9fe;color:#6d28d9;}
+.td-time{color:var(--muted);font-size:0.75rem;}
+
+/* ── EMPTY / LOADING ── */
+.state-box{
+  text-align:center;padding:60px 20px;color:var(--muted);
+}
+.state-box .icon{font-size:2.5rem;margin-bottom:12px;}
+.state-box p{font-size:0.9rem;font-weight:600;}
+.state-box small{font-size:0.75rem;display:block;margin-top:6px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hdr{padding:20px 16px;}
+  .filters,.stats,.table-wrap{padding:0 12px;}
+  thead th:nth-child(4),tbody td:nth-child(4),
+  thead th:nth-child(5),tbody td:nth-child(5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>📊 Lehrer-Dashboard</h1>
+    <p>Deutsch-Lernen · Ergebnisübersicht</p>
+  </div>
+  <div class="hdr-right">
+    <span class="status-dot" id="statusDot"></span>
+    <button class="btn-refresh" onclick="loadData()">⟳ Aktualisieren</button>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>Schüler</label>
+    <input type="text" id="filterName" placeholder="Name suchen..." oninput="render()">
+  </div>
+  <div class="filter-group">
+    <label>Datei / Thema</label>
+    <select id="filterFile" onchange="render()"><option value="">Alle</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Niveau</label>
+    <select id="filterLevel" onchange="render()">
+      <option value="">Alle</option>
+      <option value="A1-A2">A1–A2</option>
+      <option value="B1">B1</option>
+      <option value="B2">B2</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Datum von</label>
+    <input type="date" id="filterFrom" onchange="render()">
+  </div>
+  <div class="filter-group">
+    <label>Datum bis</label>
+    <input type="date" id="filterTo" onchange="render()">
+  </div>
+  <button class="btn-clear" onclick="clearFilters()">✕ Zurücksetzen</button>
+</div>
+
+<div class="stats" id="stats">
+  <div class="stat-card"><div class="stat-label">Einträge gesamt</div><div class="stat-val" id="s-total">—</div></div>
+  <div class="stat-card"><div class="stat-label">Schüler</div><div class="stat-val" id="s-students">—</div></div>
+  <div class="stat-card"><div class="stat-label">Ø Ergebnis</div><div class="stat-val" id="s-avg">—</div><div class="stat-sub">Durchschnitt</div></div>
+  <div class="stat-card"><div class="stat-label">Beste Note</div><div class="stat-val" id="s-best">—</div></div>
+  <div class="stat-card"><div class="stat-label">Heute</div><div class="stat-val" id="s-today">—</div><div class="stat-sub">Einträge</div></div>
+</div>
+
+<div class="table-wrap">
+  <div class="table-card">
+    <div class="table-head">
+      <h2>Alle Ergebnisse</h2>
+      <span class="table-count" id="tableCount"></span>
+    </div>
+    <div id="tableBody">
+      <div class="state-box"><div class="icon">⏳</div><p>Daten werden geladen...</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+let allData = [];
+
+function getLevel(file) {
+  if (!file) return '';
+  if (file.includes('A1') || file.includes('A2')) return 'A1-A2';
+  if (file.includes('B1')) return 'B1';
+  if (file.includes('B2') || file.includes('C1')) return 'B2';
+  return '';
+}
+
+function getLevelClass(lvl) {
+  if (lvl === 'A1-A2') return 'lv-a1a2';
+  if (lvl === 'B1') return 'lv-b1';
+  return 'lv-b2';
+}
+
+function getPct(row) {
+  const s = parseInt(row['Điểm']) || 0;
+  const t = parseInt(row['Tổng câu']) || 1;
+  return Math.round(s / t * 100);
+}
+
+function getBarColor(pct) {
+  if (pct >= 80) return '#16a34a';
+  if (pct >= 50) return '#d97706';
+  return '#e53e3e';
+}
+
+function formatDate(val) {
+  if (!val) return '—';
+  const d = new Date(val);
+  if (isNaN(d)) return val;
+  return d.toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'});
+}
+
+function loadData() {
+  document.getElementById('statusDot').style.background = '#d97706';
+  document.getElementById('tableBody').innerHTML = '<div class="state-box"><div class="icon">⏳</div><p>Daten werden geladen...</p></div>';
+
+  fetch(SHEET_URL)
+    .then(r => r.json())
+    .then(res => {
+      if (res.status !== 'ok') throw new Error(res.msg);
+      allData = res.data || [];
+      document.getElementById('statusDot').style.background = '#16a34a';
+      populateFileFilter();
+      render();
+    })
+    .catch(err => {
+      document.getElementById('statusDot').style.background = '#e53e3e';
+      document.getElementById('tableBody').innerHTML =
+        `<div class="state-box"><div class="icon">❌</div><p>Fehler beim Laden</p><small>${err.message}</small></div>`;
+    });
+}
+
+function populateFileFilter() {
+  const files = [...new Set(allData.map(r => r['File bài tập']).filter(Boolean))].sort();
+  const sel = document.getElementById('filterFile');
+  sel.innerHTML = '<option value="">Alle</option>' +
+    files.map(f => `<option value="${f}">${f}</option>`).join('');
+}
+
+function getFiltered() {
+  const name  = document.getElementById('filterName').value.toLowerCase().trim();
+  const file  = document.getElementById('filterFile').value;
+  const level = document.getElementById('filterLevel').value;
+  const from  = document.getElementById('filterFrom').value;
+  const to    = document.getElementById('filterTo').value;
+
+  return allData.filter(row => {
+    const rowName = (row['Tên học sinh'] || '').toLowerCase();
+    const rowFile = row['File bài tập'] || '';
+    const rowDate = new Date(row['Thời gian']);
+    const rowLevel = getLevel(rowFile);
+
+    if (name && !rowName.includes(name)) return false;
+    if (file && rowFile !== file) return false;
+    if (level && rowLevel !== level) return false;
+    if (from && rowDate < new Date(from)) return false;
+    if (to   && rowDate > new Date(to + 'T23:59:59')) return false;
+    return true;
+  });
+}
+
+function render() {
+  const data = getFiltered();
+
+  // Stats
+  const total = data.length;
+  const students = new Set(data.map(r => r['Email'])).size;
+  const pcts = data.map(r => getPct(r));
+  const avg = pcts.length ? Math.round(pcts.reduce((a,b) => a+b, 0) / pcts.length) : 0;
+  const best = pcts.length ? Math.max(...pcts) : 0;
+  const today = data.filter(r => {
+    const d = new Date(r['Thời gian']);
+    const t = new Date();
+    return d.toDateString() === t.toDateString();
+  }).length;
+
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-students').textContent = students;
+  document.getElementById('s-avg').textContent = avg + '%';
+  document.getElementById('s-best').textContent = best + '%';
+  document.getElementById('s-today').textContent = today;
+  document.getElementById('tableCount').textContent = total + ' Einträge';
+
+  if (!total) {
+    document.getElementById('tableBody').innerHTML =
+      '<div class="state-box"><div class="icon">📭</div><p>Keine Ergebnisse gefunden</p><small>Filter anpassen oder warten bis Schüler Übungen machen</small></div>';
+    return;
+  }
+
+  // Sort newest first
+  const sorted = [...data].sort((a,b) => new Date(b['Thời gian']) - new Date(a['Thời gian']));
+
+  const rows = sorted.map(row => {
+    const pct = getPct(row);
+    const color = getBarColor(pct);
+    const level = getLevel(row['File bài tập'] || '');
+    const lvClass = getLevelClass(level);
+    return `<tr>
+      <td>
+        <div class="td-name">${row['Tên học sinh'] || '—'}</div>
+        <div class="td-email">${row['Email'] || ''}</div>
+      </td>
+      <td>
+        ${row['File bài tập'] || '—'}
+        ${level ? `<span class="badge-level ${lvClass}">${level}</span>` : ''}
+      </td>
+      <td>${row['Bộ câu hỏi'] || '—'}</td>
+      <td>
+        <div class="pct-bar">
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+          <span class="pct-text" style="color:${color}">${pct}%</span>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${row['Điểm'] || 0} / ${row['Tổng câu'] || 0} richtig</div>
+      </td>
+      <td class="td-time">${formatDate(row['Thời gian'])}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tableBody').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Schüler</th>
+        <th>Datei / Thema</th>
+        <th>Übung</th>
+        <th>Ergebnis</th>
+        <th>Zeitpunkt</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function clearFilters() {
+  document.getElementById('filterName').value = '';
+  document.getElementById('filterFile').value = '';
+  document.getElementById('filterLevel').value = '';
+  document.getElementById('filterFrom').value = '';
+  document.getElementById('filterTo').value = '';
+  render();
+}
+
+loadData();
+</script>
+</body>
+</html>
