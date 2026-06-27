@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konjunktiv II – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#2D5BE3;--cobalt-light:#E8EEFB;--cobalt-dark:#1A3BAA;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E2E6EF;
+  --text:#1A1D2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --green:#059669;--green-bg:#ECFDF5;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --teal:#0D7A6E;--teal-bg:#F0FAFA;
+  --indigo:#4338CA;--indigo-bg:#EEF2FF;
+  --slate-bg:#F1F5F9;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --cobalt:#5B8AF7;--cobalt-light:#1A2540;--cobalt-dark:#7BA3FF;
+    --bg:#0F1117;--surface:#1A1D2A;--border:#2D3148;
+    --text:#E8EAF0;--text-muted:#9DA3B4;--text-light:#6B7280;
+    --green:#34D399;--green-bg:#0A2918;
+    --red:#F87171;--red-bg:#2D1010;
+    --amber:#FCD34D;--amber-bg:#2D1F08;
+    --teal:#2DD4BF;--teal-bg:#0A2420;
+    --indigo:#818CF8;--indigo-bg:#1E1B4B;
+    --slate-bg:#1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.schema-box{background:var(--slate-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin:.75rem 0;line-height:2;}
+.schema-box .part{color:var(--cobalt);font-weight:500;}
+.schema-box .gray{color:var(--text-muted);}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+.beispiel-section{background:var(--teal-bg);border:1px solid var(--teal);border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.25rem 0;}
+.beispiel-section h3{font-size:13px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.vi-toggle{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--teal);background:transparent;border:1px solid var(--teal);border-radius:var(--radius-sm);padding:3px 9px;cursor:pointer;}
+.vi-toggle:hover{background:var(--teal);color:#fff;}
+.bsp-list{display:flex;flex-direction:column;gap:8px;}
+.bsp-item{background:var(--surface);border-radius:var(--radius-sm);padding:10px 14px;border-left:3px solid var(--cobalt);}
+.bsp-item.warn{border-left-color:var(--red);}
+.bsp-de{font-size:13px;font-weight:500;color:var(--text);line-height:1.6;}
+.bsp-de .hl{color:var(--cobalt);}
+.bsp-vi{font-size:12px;color:var(--text-muted);font-style:italic;display:none;margin-top:3px;}
+.bsp-vi.show{display:block;}
+.bsp-note{font-size:11px;color:var(--text-light);margin-top:2px;}
+.k2-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.k2-table th{background:var(--cobalt-light);color:var(--cobalt);padding:8px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.k2-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.k2-table tr:last-child td{border-bottom:none;}
+.k2-table .mono{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-weight:500;font-size:12px;}
+.k2-table .muted{color:var(--text-muted);font-size:12px;}
+/* Konjugationstabelle */
+.konj-wrap{overflow-x:auto;margin:.75rem 0;}
+.konj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:.75rem 0;}
+.konj-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+.konj-head{background:var(--cobalt-light);color:var(--cobalt);font-size:12px;font-weight:600;padding:6px 12px;letter-spacing:.5px;}
+.konj-body{padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;color:var(--text);}
+.konj-body span{color:var(--text-muted);}
+/* exercise */
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.fill-input{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;max-width:420px;outline:none;transition:border-color .2s;}
+.fill-input:focus{border-color:var(--cobalt);}
+.fill-input.correct{border-color:var(--green);background:var(--green-bg);}
+.fill-input.wrong{border-color:var(--red);background:var(--red-bg);}
+.check-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:background .15s;}
+.check-btn:hover{background:var(--cobalt-dark);}
+.check-btn:disabled{background:var(--border);color:var(--text-muted);cursor:default;}
+.ex-feedback{margin-top:10px;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none;line-height:1.5;}
+.ex-feedback.show{display:block;}
+.ex-feedback.correct{background:var(--green-bg);color:var(--green);}
+.ex-feedback.wrong{background:var(--red-bg);color:var(--red);}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;}.header{padding:0 1rem;}.tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 10px;font-size:12px;}.name-input{width:110px;}
+  .konj-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Konjunktiv II · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Überblick C1</button>
+  <button class="tab-btn" data-tab="tab2">Irrealis Vergangenheit</button>
+  <button class="tab-btn" data-tab="tab3">Irreale Vergleiche</button>
+  <button class="tab-btn" data-tab="tab4">Subjektive Modalverben K2</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1 -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Konjunktiv II auf C1-Niveau</h2>
+    <p>Den Konjunktiv II kennst du bereits aus B1/B2 für Wünsche, Bitten und irreale Bedingungen. Auf C1-Niveau kommen drei wichtige Erweiterungen dazu:</p>
+    <ul style="padding-left:1.2rem;margin:.5rem 0;">
+      <li style="font-size:14px;color:var(--text-muted);margin-bottom:5px"><strong>Irrealis der Vergangenheit</strong> — hätte/wäre + Partizip II</li>
+      <li style="font-size:14px;color:var(--text-muted);margin-bottom:5px"><strong>Irreale Vergleichssätze</strong> — als ob / als wenn / als + K2</li>
+      <li style="font-size:14px;color:var(--text-muted);margin-bottom:5px"><strong>Konjunktiv II der Modalverben</strong> — dürfte, müsste, könnte subjektiv</li>
+    </ul>
+  </div>
+  <div class="info-box"><strong>📖 C1-Prüfungsrelevanz:</strong> Im Goethe/OSD C1 erscheint K2 im Schreiben (Stellungnahme mit Bedingungen), im Lesen (komplexe Satzstrukturen) und im Sprechen (Empfehlungen, Hypothesen). Der Irrealis der Vergangenheit ist besonders prüfungsrelevant.</div>
+
+  <div class="expl-card">
+    <h2>📊 Konjunktiv II — Formen im Überblick</h2>
+    <div class="konj-grid">
+      <div class="konj-box">
+        <div class="konj-head">Gegenwart / Zukunft</div>
+        <div class="konj-body">
+          ich <strong>wäre</strong> / <strong>hätte</strong><br>
+          du <strong>wärst</strong> / <strong>hättest</strong><br>
+          er <strong>wäre</strong> / <strong>hätte</strong><br>
+          wir <strong>wären</strong> / <strong>hätten</strong><br>
+          ihr <strong>wärt</strong> / <strong>hättet</strong><br>
+          sie <strong>wären</strong> / <strong>hätten</strong>
+        </div>
+      </div>
+      <div class="konj-box">
+        <div class="konj-head">Vergangenheit</div>
+        <div class="konj-body">
+          ich <strong>wäre</strong> gegangen<br>
+          ich <strong>hätte</strong> gemacht<br>
+          du <strong>wärst</strong> gekommen<br>
+          du <strong>hättest</strong> gesagt<br>
+          er <strong>wäre</strong> geblieben<br>
+          er <strong>hätte</strong> gewusst
+        </div>
+      </div>
+      <div class="konj-box">
+        <div class="konj-head">würde-Form</div>
+        <div class="konj-body">
+          ich <strong>würde</strong> gehen<br>
+          du <strong>würdest</strong> sagen<br>
+          er <strong>würde</strong> kommen<br>
+          wir <strong>würden</strong> bleiben<br>
+          ihr <strong>würdet</strong> machen<br>
+          sie <strong>würden</strong> arbeiten
+        </div>
+      </div>
+      <div class="konj-box">
+        <div class="konj-head">Modalverben K2</div>
+        <div class="konj-body">
+          <strong>könnte</strong> (können)<br>
+          <strong>müsste</strong> (müssen)<br>
+          <strong>dürfte</strong> (dürfen)<br>
+          <strong>sollte</strong> (sollen)<br>
+          <strong>möchte</strong> (mögen)<br>
+          <strong>wollte</strong> (wollen)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 würde-Form vs. Konjunktiv II:</strong> Bei schwachen Verben klingt der synthetische K2 (<em>lernte → wie Präteritum</em>) oft wie Präteritum. Dann bevorzugt man <em>würde + Infinitiv</em>. Starke Verben: immer synthetisch (<em>wäre, hätte, käme, ginge</em>).</div>
+
+  <div class="beispiel-section">
+    <h3>K2-Strukturen im Vergleich <button class="vi-toggle" onclick="toggleVI('vi1')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Wenn ich Zeit <span class="hl">hätte</span>, <span class="hl">würde</span> ich reisen. <em style="color:var(--text-light);font-size:11px">(Gegenwart/Zukunft)</em></div>
+        <div class="bsp-vi vi1">Nếu tôi có thời gian, tôi sẽ đi du lịch. (hiện tại/tương lai không thực)</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Wenn ich Zeit <span class="hl">gehabt hätte</span>, <span class="hl">wäre</span> ich gereist. <em style="color:var(--text-light);font-size:11px">(Vergangenheit)</em></div>
+        <div class="bsp-vi vi1">Nếu tôi đã có thời gian, tôi đã đi du lịch rồi. (quá khứ không thực)</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Er tut so, als ob er alles <span class="hl">wüsste</span>. <em style="color:var(--text-light);font-size:11px">(irrealer Vergleich)</em></div>
+        <div class="bsp-vi vi1">Anh ấy cư xử như thể biết tất cả mọi thứ. (so sánh giả định)</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das <span class="hl">dürfte</span> schwierig sein. <em style="color:var(--text-light);font-size:11px">(subjektiv = wahrscheinlich)</em></div>
+        <div class="bsp-vi vi1">Điều đó có lẽ sẽ khó khăn. (suy đoán có cơ sở)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 2 -->
+<section class="tab-panel" id="tab2">
+  <div class="expl-card">
+    <h2>⏮ Irrealis der Vergangenheit — C1-Schwerpunkt</h2>
+    <p>Der Irrealis der Vergangenheit drückt aus, dass etwas in der Vergangenheit <strong>nicht so war</strong>, wie es hätte sein können. Es ist eine der häufigsten Fehlerquellen auf C1-Niveau.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Wenn-Satz (Bedingung):</span><br>
+    Wenn ich mehr Zeit <span class="part">gehabt hätte</span>, …<br>
+    Wenn er früher <span class="part">gekommen wäre</span>, …<br>
+    Wenn sie das <span class="part">gewusst hätte</span>, …<br><br>
+    <span class="gray">Hauptsatz (Folge):</span><br>
+    … <span class="part">hätte</span> ich das Projekt <span class="part">abgeschlossen</span>.<br>
+    … <span class="part">wäre</span> er pünktlich <span class="part">gewesen</span>.<br>
+    … <span class="part">wären</span> wir früher <span class="part">gegangen</span>.
+  </div>
+
+  <div class="expl-card">
+    <h2>📊 Formen: haben vs. sein als Hilfsverb</h2>
+    <table class="k2-table">
+      <thead><tr><th>Hilfsverb</th><th>Wann?</th><th>Beispiel K2 Vergangenheit</th></tr></thead>
+      <tbody>
+        <tr><td><strong>hätte + Ptz. II</strong></td><td class="muted">Verben mit haben</td><td class="mono">ich hätte gemacht / gesagt / gearbeitet</td></tr>
+        <tr><td><strong>wäre + Ptz. II</strong></td><td class="muted">Verben mit sein (Bewegung, Zustand)</td><td class="mono">ich wäre gegangen / gekommen / geblieben</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="expl-card">
+    <h2>📋 Mit Modalverben in der Vergangenheit</h2>
+    <p>Bei Modalverben im Irrealis der Vergangenheit: <strong>hätte + Infinitiv + Modalinfinitiv</strong></p>
+    <div class="schema-box">
+      Ich <span class="part">hätte</span> früher gehen <span class="part">können</span>.<br>
+      Er <span class="part">hätte</span> das nicht tun <span class="part">sollen</span>.<br>
+      Sie <span class="part">hätte</span> mehr lernen <span class="part">müssen</span>.<br>
+      Wir <span class="part">hätten</span> früher damit anfangen <span class="part">dürfen</span>.
+    </div>
+  </div>
+
+  <div class="beispiel-section">
+    <h3>Irrealis Vergangenheit — C1-Kontexte <button class="vi-toggle" onclick="toggleVI('vi2')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Wenn die Regierung früher gehandelt <span class="hl">hätte</span>, <span class="hl">wäre</span> die Krise vermieden worden.</div>
+        <div class="bsp-vi vi2">Nếu chính phủ đã hành động sớm hơn, cuộc khủng hoảng đã được tránh khỏi.</div>
+        <div class="bsp-note">Passiv + K2 Vergangenheit: wäre … worden</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Hätte er mehr investiert, <span class="hl">hätte</span> das Unternehmen überleben <span class="hl">können</span>.</div>
+        <div class="bsp-vi vi2">Nếu anh ấy đầu tư nhiều hơn, công ty đã có thể tồn tại được.</div>
+        <div class="bsp-note">Ohne „wenn": Inversion — Verb an erste Stelle</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Sie <span class="hl">hätte</span> das nicht sagen <span class="hl">sollen</span> — jetzt ist die Stimmung schlecht.</div>
+        <div class="bsp-vi vi2">Cô ấy đáng lẽ không nên nói điều đó — bây giờ bầu không khí rất tệ.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Wenn ich das <span class="hl">gewusst hätte</span>, <span class="hl">wäre</span> ich nicht <span class="hl">gegangen</span>.</div>
+        <div class="bsp-vi vi2">Nếu tôi đã biết điều đó, tôi đã không đi rồi.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 Inversion ohne „wenn":</strong> Wenn kein <em>wenn</em> steht, kommt das finite Verb an den Satzanfang:<br>
+  <em>Wenn ich das gewusst hätte</em> → <em>Hätte ich das gewusst, …</em><br>
+  Das klingt formeller und ist typisch für C1-Schreiben.</div>
+</section>
+
+<!-- TAB 3 -->
+<section class="tab-panel" id="tab3">
+  <div class="expl-card">
+    <h2>🔍 Irreale Vergleichssätze: als ob / als wenn / als</h2>
+    <p>Irreale Vergleichssätze beschreiben, wie etwas <em>scheint</em> oder <em>wirkt</em> — aber in Wirklichkeit ist es anders. Sie stehen immer mit <strong>Konjunktiv II</strong>.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Drei Varianten:</span><br>
+    Er tut so, <span class="part">als ob</span> er krank <span class="part">wäre</span>. <span class="gray">(Verb am Ende)</span><br>
+    Er tut so, <span class="part">als wenn</span> er krank <span class="part">wäre</span>. <span class="gray">(Verb am Ende)</span><br>
+    Er tut so, <span class="part">als</span> <span class="part">wäre</span> er krank. <span class="gray">(Inversion! Verb nach als)</span><br><br>
+    <span class="gray">Vergangenheitsbezug:</span><br>
+    Er tat so, als ob er es nicht <span class="part">gewusst hätte</span>.<br>
+    Sie sprach, als <span class="part">hätte</span> sie das schon erlebt.
+  </div>
+
+  <div class="expl-card">
+    <h2>📊 als ob / als wenn / als — Unterschiede</h2>
+    <table class="k2-table">
+      <thead><tr><th>Form</th><th>Wortstellung im Nebensatz</th><th>Register</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">als ob + K2</td><td>Verb am Ende (Nebensatz)</td><td class="muted">neutral, häufig</td></tr>
+        <tr><td class="mono">als wenn + K2</td><td>Verb am Ende (Nebensatz)</td><td class="muted">umgangssprachlich</td></tr>
+        <tr><td class="mono">als + K2 (Inversion)</td><td>Verb direkt nach „als"</td><td class="muted">formal, C1-typisch</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="beispiel-section">
+    <h3>Irreale Vergleiche — C1-Beispiele <button class="vi-toggle" onclick="toggleVI('vi3')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Die Daten sehen aus, <span class="hl">als ob</span> sie manipuliert <span class="hl">worden wären</span>.</div>
+        <div class="bsp-vi vi3">Dữ liệu trông như thể đã bị thao túng.</div>
+        <div class="bsp-note">Passiv K2 Vergangenheit: wären … worden</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Er redete, <span class="hl">als</span> <span class="hl">wäre</span> er der einzige Experte.</div>
+        <div class="bsp-vi vi3">Anh ấy nói chuyện như thể anh ấy là chuyên gia duy nhất.</div>
+        <div class="bsp-note">als + Inversion: formeller Stil</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Sie benahm sich, als ob sie nichts davon <span class="hl">gewusst hätte</span>.</div>
+        <div class="bsp-vi vi3">Cô ấy cư xử như thể không hề biết gì về điều đó.</div>
+        <div class="bsp-note">Vergangenheitsbezug: K2 Perfekt im Vergleichssatz</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das Projekt wirkt, <span class="hl">als hätte</span> man es hastig geplant.</div>
+        <div class="bsp-vi vi3">Dự án trông như thể đã được lên kế hoạch vội vàng.</div>
+        <div class="bsp-note">als + Inversion + Vergangenheit</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 Gegenwart vs. Vergangenheit im Vergleich:</strong><br>
+  Gegenwart: <em>Er tut so, als ob er krank <strong>wäre</strong>.</em> (jetzt)<br>
+  Vergangenheit: <em>Er tat so, als ob er krank <strong>gewesen wäre</strong>.</em> (damals)</div>
+</section>
+
+<!-- TAB 4 -->
+<section class="tab-panel" id="tab4">
+  <div class="expl-card">
+    <h2>💡 Konjunktiv II der Modalverben — subjektive Verwendung</h2>
+    <p>Die K2-Formen der Modalverben (<em>dürfte, müsste, könnte, sollte</em>) haben auf C1-Niveau eine besondere subjektive Bedeutung — sie drücken eine <strong>Einschätzung oder Wahrscheinlichkeit</strong> des Sprechers aus, nicht eine irreale Bedingung.</p>
+  </div>
+  <div class="expl-card">
+    <h2>📊 Subjektive Bedeutungen im Überblick</h2>
+    <table class="k2-table">
+      <thead><tr><th>K2-Form</th><th>Subjektive Bedeutung</th><th>Beispiel</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">dürfte</td>
+          <td>wahrscheinlich (begründete Annahme)</td>
+          <td>Das <em>dürfte</em> stimmen. ≈ Das ist wahrscheinlich richtig.</td>
+        </tr>
+        <tr>
+          <td class="mono">müsste</td>
+          <td>eigentlich sollte / logischerweise</td>
+          <td>Er <em>müsste</em> schon da sein. ≈ Er sollte eigentlich schon da sein.</td>
+        </tr>
+        <tr>
+          <td class="mono">könnte</td>
+          <td>Möglichkeit (schwächer als kann)</td>
+          <td>Das <em>könnte</em> funktionieren. ≈ Vielleicht geht das.</td>
+        </tr>
+        <tr>
+          <td class="mono">sollte</td>
+          <td>Erwartung / Norm (nicht erfüllt)</td>
+          <td>Das <em>sollte</em> eigentlich klappen. ≈ Normalerweise klappt das.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="expl-card">
+    <h2>⚠️ K2 Modalverb objektiv vs. subjektiv</h2>
+    <table class="k2-table">
+      <thead><tr><th>Kontext</th><th>Satz</th><th>Funktion</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Irreale Bedingung</td>
+          <td>Wenn er Zeit <em>hätte</em>, <em>könnte</em> er helfen.</td>
+          <td class="muted">K2 objektiv — hypothetische Fähigkeit</td>
+        </tr>
+        <tr>
+          <td>Subjektive Einschätzung</td>
+          <td>Er <em>könnte</em> Recht haben.</td>
+          <td class="muted">K2 subjektiv — Vermutung (vielleicht)</td>
+        </tr>
+        <tr>
+          <td>Erwartung</td>
+          <td>Das <em>müsste</em> reichen.</td>
+          <td class="muted">K2 subjektiv — logische Erwartung</td>
+        </tr>
+        <tr>
+          <td>Wahrscheinlichkeit</td>
+          <td>Das <em>dürfte</em> kein Problem sein.</td>
+          <td class="muted">K2 subjektiv — sehr wahrscheinlich</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="beispiel-section">
+    <h3>Subjektive Modalverben K2 im C1-Text <button class="vi-toggle" onclick="toggleVI('vi4')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Die Maßnahmen <span class="hl">dürften</span> ausreichend sein, um die Lage zu stabilisieren.</div>
+        <div class="bsp-vi vi4">Các biện pháp có lẽ đủ để ổn định tình hình. (dự đoán có cơ sở)</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das Ergebnis <span class="hl">müsste</span> eigentlich besser sein — die Bedingungen waren ideal.</div>
+        <div class="bsp-vi vi4">Kết quả đáng lẽ phải tốt hơn — điều kiện hoàn hảo mà. (kỳ vọng không được đáp ứng)</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Es <span class="hl">könnte</span> sein, dass die Daten fehlerhaft sind.</div>
+        <div class="bsp-vi vi4">Có thể là dữ liệu bị sai. (khả năng yếu, không chắc)</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Lösung <span class="hl">sollte</span> eigentlich funktionieren — ich verstehe das Problem nicht.</div>
+        <div class="bsp-vi vi4">Giải pháp lẽ ra phải hoạt động được — tôi không hiểu vấn đề. (kỳ vọng bị vi phạm)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 5 -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Formen erkennen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Irrealis Verg.</button>
+    <button class="level-tab" data-level="3">Stufe 3 — als ob / als</button>
+    <button class="level-tab" data-level="4">Stufe 4 — Subj. Modalverben</button>
+    <button class="level-tab" data-level="5">Stufe 5 — C1-Niveau</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl=document.getElementById('studentName');
+var sv=localStorage.getItem('studentName');if(sv)nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+window.toggleVI=function(cls){document.querySelectorAll('.'+cls).forEach(function(el){el.classList.toggle('show');});};
+
+var DATA={
+1:[
+  {type:'mc',prompt:'Welcher Satz steht im Konjunktiv II Vergangenheit?',task:'',
+   options:['Wenn ich Zeit hätte, würde ich helfen.','Wenn ich Zeit gehabt hätte, hätte ich geholfen.','Er tut so, als ob er krank wäre.','Das dürfte stimmen.'],answer:1},
+  {type:'mc',prompt:'"Wenn er früher gekommen wäre, hätten wir das geschafft."',task:'Was drückt dieser Satz aus?',
+   options:['Eine zukünftige Möglichkeit','Eine irreale Bedingung in der Vergangenheit','Eine reale vergangene Handlung','Eine Erwartung für die Gegenwart'],answer:1},
+  {type:'mc',prompt:'Welche Form ist der Konjunktiv II von "kommen" in der Vergangenheit?',task:'',
+   options:['käme','wäre gekommen','ist gekommen','wurde gekommen'],answer:1},
+  {type:'mc',prompt:'"Das dürfte kein Problem sein." — Welche Funktion hat "dürfte"?',task:'',
+   options:['Erlaubnis (objektiv)','Wahrscheinlichkeit / Einschätzung (subjektiv)','Irreale Bedingung','Vergangenheitsbezug'],answer:1},
+  {type:'mc',prompt:'Welcher Satz enthält einen irrealen Vergleich?',task:'',
+   options:['Wenn er das gewusst hätte, wäre er gegangen.','Er spricht, als wäre er Experte.','Das müsste eigentlich klappen.','Hätte sie mehr gelernt, hätte sie bestanden.'],answer:1},
+  {type:'mc',prompt:'"Hätte er investiert, wäre das Projekt erfolgreich gewesen." — Was ist ungewöhnlich an diesem Satz?',task:'',
+   options:['Es steht kein Subjekt.','Es steht kein "wenn" — Inversion ersetzt es.','Es ist kein Konjunktiv II.','Der Satz hat keinen Hauptsatz.'],answer:1},
+  {type:'mc',prompt:'Welche K2-Form passt: "Er hätte früher ___ (kommen) sollen."',task:'',
+   options:['kommen','gekommen','kommt','kam'],answer:0},
+  {type:'mc',prompt:'"Sie benahm sich, als ob sie nichts gewusst hätte." — Zeitbezug des Vergleichs?',task:'',
+   options:['Gegenwart','Zukunft','Vergangenheit','Gleichzeitig mit der Haupthandlung in der Zukunft'],answer:2},
+  {type:'mc',prompt:'Was ist der Unterschied zwischen "als ob + K2" und "als + K2 (Inversion)"?',task:'',
+   options:['Keine — beide sind identisch','Bedeutung gleich, aber bei "als" steht das Verb direkt nach "als" (Inversion)','als ob = formeller; als = umgangssprachlich','als ob = Vergangenheit; als = Gegenwart'],answer:1},
+  {type:'mc',prompt:'"Das könnte funktionieren." — Ist "könnte" hier objektiv oder subjektiv?',task:'',
+   options:['Objektiv — irreale Bedingung','Subjektiv — Vermutung / Möglichkeit','Weder noch','Imperativ'],answer:1},
+  {type:'mc',prompt:'Welcher Satz ist grammatisch FALSCH?',task:'',
+   options:['Wenn sie das gewusst hätte, wäre sie geblieben.','Er tat so, als ob er krank gewesen wäre.','Hätte er mehr Zeit gehabt, hätte er geholfen.','Wenn er wäre gekommen, hätte ich ihn gesehen.'],answer:3},
+  {type:'mc',prompt:'"Das müsste eigentlich besser sein." Was impliziert "müsste"?',task:'',
+   options:['Es ist eine Pflicht.','Es ist eine Erwartung, die (noch) nicht erfüllt ist.','Es ist fast unmöglich.','Es ist eine Warnung.'],answer:1},
+  {type:'mc',prompt:'Welche Form ist korrekt für K2 Vergangenheit von "machen" (3. Person Singular)?',task:'',
+   options:['würde machen','machte','hätte gemacht','hat gemacht'],answer:2}
+],
+2:[
+  {type:'fill',prompt:'Wenn er mehr geschlafen ___, wäre er nicht so müde gewesen.',task:'Ergänze den K2 Vergangenheit:',answer:'hätte',hint:'schlafen → hat geschlafen → hätte geschlafen'},
+  {type:'fill',prompt:'Wenn sie das Angebot angenommen ___, wäre sie jetzt Managerin.',task:'Ergänze:',answer:'hätte',hint:'annehmen → hat angenommen → hätte angenommen'},
+  {type:'fill',prompt:'Wenn er früher gestartet wäre, ___ er das Ziel erreicht.',task:'Ergänze den Hauptsatz:',answer:'hätte',hint:'erreichen → hat erreicht → hätte erreicht'},
+  {type:'fill',prompt:'___ sie mehr geübt, hätte sie die Prüfung bestanden.',task:'Ergänze (Inversion ohne wenn):',answer:'Hätte',hint:'Inversion: Hätte sie mehr geübt, … (Großschreibung!)'},
+  {type:'fill',prompt:'Das Projekt ___ erfolgreich gewesen sein, wenn mehr investiert worden wäre.',task:'Ergänze:',answer:'wäre',hint:'sein → wäre → wäre … gewesen'},
+  {type:'fill',prompt:'Er hätte früher kommen ___ — dann hätten wir alles erklärt.',task:'Ergänze (Modalverb):',answer:'können',hint:'K2 Verg. mit Modal: hätte + Inf. + können/müssen'},
+  {type:'fill',prompt:'Sie ___ das nicht sagen sollen — jetzt ist alles kompliziert.',task:'Ergänze:',answer:'hätte',hint:'hätte + Inf. + sollen'},
+  {type:'fill',prompt:'Wenn die Daten korrekt ___ ___, wäre das Ergebnis anders.',task:'Ergänze K2 Vergangenheit (sein):',answer:'gewesen wären',hint:'sein → wäre gewesen → im Wenn-Satz: gewesen wären'},
+  {type:'fill',prompt:'___ er früher informiert worden, hätte er reagieren können.',task:'Ergänze (Passiv + Inversion):',answer:'Wäre',hint:'werden → wäre … worden; Inversion ohne wenn'},
+  {type:'fill',prompt:'Wenn wir mehr Budget gehabt ___, ___ wir die besten Experten eingestellt.',task:'Ergänze beide Lücken:',answer:'hätten hätten',hint:'hätten + Inf. im Hauptsatz; hätten im Wenn-Satz'},
+  {type:'fill',prompt:'Das ___ vermieden werden können, wenn man früher eingegriffen hätte.',task:'Ergänze:',answer:'hätte',hint:'hätte … können (K2 Verg. mit Modalverb)'},
+  {type:'fill',prompt:'Sie hätten das Angebot annehmen ___ — jetzt ist es zu spät.',task:'Ergänze das Modalverb:',answer:'sollen',hint:'hätten + Inf. + sollen = hätten sollen'},
+  {type:'fill',prompt:'___ ich das früher gewusst, hätte ich anders entschieden.',task:'Ergänze (Inversion):',answer:'Hätte',hint:'Inversion: Hätte + Subjekt + Partizip II (Großschreibung!)'}
+],
+3:[
+  {type:'mc',prompt:'"Er spricht, als ob er alles wüsste."',task:'Welche Variante ist grammatisch FALSCH?',
+   options:['Er spricht, als ob er alles wüsste.','Er spricht, als wenn er alles wüsste.','Er spricht, als wüsste er alles.','Er spricht, als ob er alles wissen würde.'],answer:3},
+  {type:'mc',prompt:'"Sie verhält sich, ___ sie die Chefin ___."',task:'Welche Lückenfüllung ist korrekt (als + Inversion)?',
+   options:['als ob / wäre','als / wäre','als wenn / ist','als / ist'],answer:1},
+  {type:'fill',prompt:'Das Unternehmen wirkt, als ob es kurz vor dem Zusammenbruch ___ ___ ___.',task:'K2 Vergangenheit: als ob + wäre + gewesen:',answer:'gewesen wäre',hint:'sein → K2 Verg.: wäre gewesen → im Nebensatz: gewesen wäre'},
+  {type:'mc',prompt:'"Er tat so, als hätte er es nicht gehört."',task:'Wie lautet die Variante mit "als ob"?',
+   options:['Er tat so, als ob er es nicht gehört hat.','Er tat so, als ob er es nicht gehört hätte.','Er tat so, als ob er es nicht hören würde.','Er tat so, als ob er nicht hörte.'],answer:1},
+  {type:'fill',prompt:'Sie diskutierte, als ___ sie die einzige Expertin im Raum.',task:'Ergänze (als + Inversion, Gegenwart):',answer:'wäre',hint:'als + wäre + Subjekt (Inversion nach als)'},
+  {type:'mc',prompt:'Welcher Satz drückt einen irrealen Vergleich in der VERGANGENHEIT aus?',task:'',
+   options:['Er tut so, als wäre er krank.','Er tat so, als hätte er nichts gewusst.','Das könnte stimmen.','Wenn er käme, wäre ich froh.'],answer:1},
+  {type:'fill',prompt:'Das Ergebnis sieht aus, als ___ die Daten manipuliert worden ___.',task:'Passiv K2 Vergangenheit + als ob:',answer:'wären worden',hint:'als ob … worden wären → als + wären … worden (Inversion)'},
+  {type:'mc',prompt:'"Als wäre nichts gewesen" — Was bedeutet dieser Ausdruck?',task:'',
+   options:['Als ob etwas Schlimmes passiert wäre','Als ob nichts Ungewöhnliches passiert wäre — normal weitermachen','Als ob alles vorbei wäre','Als ob es nicht existiert hätte'],answer:1},
+  {type:'mc',prompt:'Welche Form ist korrekt?',task:'"Die Studie wirkt, als ob sie ___ gründlich durchgeführt worden ___."',
+   options:['nicht / wäre','nicht / hätte','nicht / ist','nicht / wurde'],answer:0},
+  {type:'fill',prompt:'Er sprach, als ___ er der Direktor des Unternehmens.',task:'als + Inversion, Gegenwart (sein):',answer:'wäre',hint:'als wäre er … (Inversion nach als)'},
+  {type:'mc',prompt:'Was ist der stilistische Unterschied zwischen "als ob" und "als" (Inversion)?',task:'',
+   options:['"als ob" ist formeller','kein Unterschied in der Bedeutung; "als" mit Inversion klingt formeller','als ob = Vergangenheit; als = Gegenwart','als wenn = formeller als als ob'],answer:1},
+  {type:'fill',prompt:'Das Projekt verlief, als ___ niemand die Risiken ___ ___ ___.',task:'als ob + K2 Vergangenheit (berücksichtigen → hätte berücksichtigt):',answer:'ob niemand die Risiken berücksichtigt hätte',hint:'als ob + Verb ans Ende: … berücksichtigt hätte'},
+  {type:'mc',prompt:'Welcher Satz ist C1-typisch formell?',task:'',
+   options:['Er tat so, als wenn er alles wüsste.','Er verhielt sich, als wäre er der einzige Verantwortliche.','Er machte so, als ob er es gewusst hätte vielleicht.','Er tat, als ob alles gut wäre gewesen.'],answer:1}
+],
+4:[
+  {type:'mc',prompt:'"Das dürfte ausreichen." — Was bedeutet "dürfte" hier?',task:'',
+   options:['Es ist erlaubt zu reichen.','Es ist wahrscheinlich ausreichend (begründete Einschätzung).','Es muss reichen.','Es soll reichen.'],answer:1},
+  {type:'mc',prompt:'"Er müsste eigentlich schon angekommen sein." — Was drückt "müsste" aus?',task:'',
+   options:['Eine Pflicht in der Vergangenheit','Eine Erwartung, die (noch) nicht bestätigt ist','Eine irreale Bedingung','Eine Warnung'],answer:1},
+  {type:'mc',prompt:'Welcher Satz verwendet "könnte" subjektiv (= Vermutung)?',task:'',
+   options:['Wenn er mehr Zeit hätte, könnte er helfen.','Er könnte Recht haben.','Könntest du mir helfen?','Sie könnte früher kommen, wenn sie wollte.'],answer:1},
+  {type:'mc',prompt:'"Das sollte eigentlich klappen." — Was impliziert der Sprecher?',task:'',
+   options:['Er ist sicher, dass es klappt.','Er erwartet es — aber es klappt vielleicht nicht.','Er befiehlt, dass es klappt.','Er zweifelt vollständig daran.'],answer:1},
+  {type:'mc',prompt:'Welche Form ist richtig: "Die Ergebnisse ___ besser sein — die Bedingungen waren ideal."',task:'subjektive Erwartung (nicht erfüllt)',
+   options:['müssen','sollten','müssten','dürfen'],answer:2},
+  {type:'mc',prompt:'"Das dürfte wohl stimmen." — Welche Nuance hat diese Kombination?',task:'',
+   options:['Sehr unsicher','Sehr starke Vermutung mit hoher Wahrscheinlichkeit','Warnung','Irreale Bedingung'],answer:1},
+  {type:'mc',prompt:'Welcher Satz verwendet "dürfte" NICHT subjektiv?',task:'',
+   options:['Das dürfte ein Fehler sein.','Die Lösung dürfte komplex sein.','Er dürfte nicht rauchen — er ist krank.','Das dürfte ausreichen.'],answer:2},
+  {type:'mc',prompt:'"Es könnte sein, dass er krank ist." — Wie stark ist diese Vermutung?',task:'',
+   options:['Fast sicher (~90%)','Möglich, aber unsicher (~40-50%)','Ausgeschlossen','Sehr wahrscheinlich (~80%)'],answer:1},
+  {type:'fill',prompt:'Die Maßnahmen ___ ausreichend sein, um die Krise zu überwinden.',task:'Subjektive Einschätzung (wahrscheinlich):',answer:'dürften',hint:'dürften = wahrscheinlich (Plural: dürften)'},
+  {type:'fill',prompt:'Das Ergebnis ___ eigentlich besser sein — die Bedingungen waren perfekt.',task:'Erwartung, nicht erfüllt:',answer:'müsste',hint:'müsste = eigentlich sollte (logische Erwartung)'},
+  {type:'fill',prompt:'Es ___ sein, dass die Daten fehlerhaft sind — ich bin nicht sicher.',task:'Schwache Vermutung:',answer:'könnte',hint:'könnte = vielleicht (unsichere Vermutung)'},
+  {type:'mc',prompt:'"Das sollte eigentlich nicht passieren." — Was drückt "sollte" aus?',task:'',
+   options:['Befehl / Auftrag','Eine Norm oder Erwartung, die verletzt wurde','Wahrscheinlichkeit','Irreale Bedingung'],answer:1},
+  {type:'mc',prompt:'Welcher Satz ist C1-typisch für einen wissenschaftlichen Bericht?',task:'',
+   options:['Die Ergebnisse sind vielleicht richtig.','Die Ergebnisse dürften die Hypothese bestätigen.','Die Ergebnisse könnten vielleicht sein richtig.','Die Ergebnisse sollten richtig sein vielleicht.'],answer:1}
+],
+5:[
+  {type:'mc',prompt:'Welcher Satz enthält einen FEHLER im K2 Vergangenheit?',task:'',
+   options:['Wenn sie mehr geübt hätte, hätte sie bestanden.','Hätte er investiert, wäre das Projekt erfolgreich gewesen.','Wenn er wäre früher gegangen, hätten wir ihn gesehen.','Sie hätte das nicht sagen sollen.'],answer:2},
+  {type:'fill',prompt:'C1-Schreiben: "Wenn die Reformen früher eingeleitet worden ___, ___ die Probleme vermieden werden können."',task:'Ergänze K2 Vergangenheit (Passiv):',answer:'wären hätten',hint:'wären … worden + hätten … können (Passiv K2 Verg.)'},
+  {type:'mc',prompt:'Welche Formulierung klingt am formalsten für eine C1-Stellungnahme?',task:'',
+   options:['Wenn man das früher gewusst hätte, wäre alles besser.','Das dürfte die effektivste Lösung sein.','Ich glaube, das ist wahrscheinlich richtig.','Das ist vielleicht richtig.'],answer:1},
+  {type:'fill',prompt:'"Das Unternehmen verhielt sich in der Krise, ___ ___ die Insolvenz keine Option ___."',task:'Irrealer Vergleich + K2 Verg. (als wäre … gewesen):',answer:'als wäre die Insolvenz keine Option gewesen',hint:'als + Inversion + K2 Vergangenheit: als wäre … gewesen'},
+  {type:'mc',prompt:'Welcher Satz verwendet K2 Vergangenheit mit Modalverb korrekt?',task:'',
+   options:['Er hätte früher kommen gesollt.','Er hätte früher kommen sollen.','Er sollte früher gekommen haben.','Er wäre früher kommen sollen.'],answer:1},
+  {type:'mc',prompt:'In einer C1-Analyse: Welche Formulierung ist am präzisesten?',task:'"Vielleicht reichen die Maßnahmen."',
+   options:['Die Maßnahmen könnten reichen.','Die Maßnahmen dürften ausreichen.','Die Maßnahmen sollten reichen vielleicht.','Die Maßnahmen wären ausreichend.'],answer:1},
+  {type:'fill',prompt:'C1-Text: "Die Entscheidung wirkt, ___ sie ohne ausreichende Datenlage ___ worden ___."',task:'Irrealer Vergleich + Passiv K2 Verg.:',answer:'als wäre sie ohne ausreichende Datenlage getroffen worden',hint:'als + wäre + Passiv K2 Verg.: … getroffen worden'},
+  {type:'mc',prompt:'Welcher Satz kombiniert K2 Vergangenheit mit Passiv korrekt?',task:'',
+   options:['Das Projekt wäre besser geplant worden, wenn mehr Budget vorhanden gewesen wäre.','Das Projekt hätte besser geplant sein, wenn Budget wäre da gewesen.','Das Projekt wäre besser geplant haben, wenn Budget da wäre.','Das Projekt hätte geplant werden besser, wenn Budget da gewesen hätte.'],answer:0},
+  {type:'fill',prompt:'___ die Warnsignale früher erkannt worden, ___ man rechtzeitig handeln können.',task:'Inversion + Passiv K2 Verg.:',answer:'Wären hätte',hint:'Wären … worden (Passiv, Inversion); hätte … können (K2 Verg. Modal)'},
+  {type:'mc',prompt:'Was ist der Unterschied zwischen "müsste" und "hätte müssen"?',task:'',
+   options:['kein Unterschied','müsste = Erwartung/Einschätzung jetzt; hätte müssen = Erwartung/Pflicht in der Vergangenheit','müsste = Vergangenheit; hätte müssen = Gegenwart','müsste = formell; hätte müssen = informell'],answer:1},
+  {type:'mc',prompt:'Welcher Satz enthält "als" mit korrekter Inversion?',task:'',
+   options:['Das sah aus, als ob hätte man keine Zeit.','Das sah aus, als hätte man keine Zeit.','Das sah aus, als man hätte keine Zeit.','Das sah aus, als wenn man hätte keine Zeit.'],answer:1},
+  {type:'fill',prompt:'Das ___ eigentlich nicht passieren ___ — die Sicherheitsmaßnahmen waren ausreichend.',task:'Erwartung verletzt + K2 Verg. mit Modal:',answer:'hätte dürfen',hint:'hätte + Inf. + dürfen = hätte nicht passieren dürfen'},
+  {type:'mc',prompt:'Welche Aussage über K2 auf C1-Niveau ist FALSCH?',task:'',
+   options:['Der Irrealis der Vergangenheit: hätte/wäre + Partizip II','Modalverben im K2 können subjektive Bedeutung haben','Als + Inversion klingt formeller als als ob','würde + Infinitiv ist immer falscher als synthetischer K2'],answer:3}
+]
+};
+
+var currentLevel=1,answers={},checked={};
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');card.className='exercise-card';card.id='ex-'+i;
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+    if(ex.type==='mc'){
+      var opts=document.createElement('div');opts.className='options';
+      ex.options.forEach(function(opt,j){
+        var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+        btn.addEventListener('click',function(){
+          if(checked[i])return;answers[i]=j;
+          opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+          if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+          else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+          checked[i]=true;updateScore();updateProg();
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    } else {
+      var wrap=document.createElement('div');
+      if(ex.hint){var h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--text-muted);margin-bottom:6px;';h.textContent='Hinweis: '+ex.hint;wrap.appendChild(h);}
+      var inp=document.createElement('input');inp.type='text';inp.className='fill-input';
+      inp.placeholder='Antwort eingeben …';inp.autocomplete='off';inp.autocapitalize='none';
+      wrap.appendChild(inp);
+      var fb=document.createElement('div');fb.className='ex-feedback';
+      var cb=document.createElement('button');cb.className='check-btn';cb.textContent='Prüfen';
+      cb.addEventListener('click',function(){
+        if(checked[i])return;
+        var v=inp.value.trim(),ok=v.toLowerCase()===ex.answer.trim().toLowerCase();
+        inp.classList.add(ok?'correct':'wrong');
+        fb.textContent=ok?'Richtig!':'Nicht ganz. Richtig: '+ex.answer;
+        fb.className='ex-feedback show '+(ok?'correct':'wrong');
+        card.classList.add(ok?'correct':'wrong');
+        checked[i]=true;answers[i]=v;cb.disabled=true;inp.disabled=true;
+        updateScore();updateProg();
+      });
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')cb.click();});
+      wrap.appendChild(cb);wrap.appendChild(fb);card.appendChild(wrap);
+    }
+    c.appendChild(card);
+  });
+  updateProg();
+}
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(ex.type==='mc'){if(answers[i]===ex.answer)correct++;}
+    else{if(answers[i]&&answers[i].toLowerCase()===ex.answer.trim().toLowerCase())correct++;}
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=ex.type==='mc'?-1:'';
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    if(ex.type==='mc'){
+      var opts=card.querySelectorAll('.option-btn');
+      if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+    } else {
+      var inp=card.querySelector('.fill-input'),fb=card.querySelector('.ex-feedback'),cb=card.querySelector('.check-btn');
+      if(inp)inp.disabled=true;if(cb)cb.disabled=true;
+      if(fb){fb.textContent='Richtig: '+ex.answer;fb.className='ex-feedback show wrong';}
+    }
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Sehr gut! Setze K2-Strukturen gezielt in deinen C1-Texten ein.':'Wiederhole die Erklärungen in Tab 2–4 und übe die Formen systematisch.';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+renderEx();
+})();
+</script>
+</body>
+</html>

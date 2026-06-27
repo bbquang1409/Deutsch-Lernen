@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modales Partizip – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cobalt: #2D5BE3; --cobalt-light: #E8EEFB; --cobalt-dark: #1A3BAA;
+  --bg: #F7F8FA; --surface: #FFFFFF; --border: #E2E6EF;
+  --text: #1A1D2E; --text-muted: #6B7280; --text-light: #9CA3AF;
+  --green: #059669; --green-bg: #ECFDF5;
+  --red: #DC2626; --red-bg: #FEF2F2;
+  --amber: #D97706; --amber-bg: #FFFBEB;
+  --teal: #0D7A6E; --teal-bg: #F0FAFA;
+  --indigo: #4338CA; --indigo-bg: #EEF2FF;
+  --slate-bg: #F1F5F9;
+  --radius: 10px; --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cobalt: #5B8AF7; --cobalt-light: #1A2540; --cobalt-dark: #7BA3FF;
+    --bg: #0F1117; --surface: #1A1D2A; --border: #2D3148;
+    --text: #E8EAF0; --text-muted: #9DA3B4; --text-light: #6B7280;
+    --green: #34D399; --green-bg: #0A2918;
+    --red: #F87171; --red-bg: #2D1010;
+    --amber: #FCD34D; --amber-bg: #2D1F08;
+    --teal: #2DD4BF; --teal-bg: #0A2420;
+    --indigo: #818CF8; --indigo-bg: #1E1B4B;
+    --slate-bg: #1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.expl-card ul{padding-left:1.25rem;margin:.5rem 0;}
+.expl-card li{font-size:14px;color:var(--text-muted);margin-bottom:5px;line-height:1.6;}
+.schema-box{background:var(--slate-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin:.75rem 0;line-height:2;}
+.schema-box .part{color:var(--cobalt);font-weight:500;}
+.schema-box .gray{color:var(--text-muted);}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+.beispiel-section{background:var(--teal-bg);border:1px solid var(--teal);border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.25rem 0;}
+.beispiel-section h3{font-size:13px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.vi-toggle{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--teal);background:transparent;border:1px solid var(--teal);border-radius:var(--radius-sm);padding:3px 9px;cursor:pointer;}
+.vi-toggle:hover{background:var(--teal);color:#fff;}
+.bsp-list{display:flex;flex-direction:column;gap:10px;}
+.bsp-item{background:var(--surface);border-radius:var(--radius-sm);padding:10px 14px;border-left:3px solid var(--cobalt);}
+.bsp-de{font-size:13px;font-weight:500;color:var(--text);line-height:1.6;}
+.bsp-de .mp{color:var(--cobalt);}
+.bsp-vi{font-size:12px;color:var(--text-muted);font-style:italic;display:none;margin-top:3px;}
+.bsp-vi.show{display:block;}
+.bsp-note{font-size:11px;color:var(--text-light);margin-top:2px;}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin:1rem 0;}
+.compare-table th{background:var(--cobalt-light);color:var(--cobalt);padding:8px 12px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.compare-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table .mono{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-weight:500;font-size:12px;}
+.compare-table .muted{color:var(--text-muted);}
+.transform-demo{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:1.25rem 0;box-shadow:var(--shadow);}
+.demo-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px;}
+.demo-row:last-child{border-bottom:none;}
+.demo-label{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-light);margin-bottom:4px;}
+.demo-left .de{font-size:13px;color:var(--text-muted);line-height:1.5;}
+.demo-right .de{font-size:13px;color:var(--text);font-weight:500;line-height:1.5;}
+.demo-right .de .hl{color:var(--cobalt);font-weight:600;}
+.arrow{font-size:18px;color:var(--cobalt);flex-shrink:0;}
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.fill-input{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;max-width:420px;outline:none;transition:border-color .2s;}
+.fill-input:focus{border-color:var(--cobalt);}
+.fill-input.correct{border-color:var(--green);background:var(--green-bg);}
+.fill-input.wrong{border-color:var(--red);background:var(--red-bg);}
+.check-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:background .15s;}
+.check-btn:hover{background:var(--cobalt-dark);}
+.check-btn:disabled{background:var(--border);color:var(--text-muted);cursor:default;}
+.ex-feedback{margin-top:10px;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none;line-height:1.5;}
+.ex-feedback.show{display:block;}
+.ex-feedback.correct{background:var(--green-bg);color:var(--green);}
+.ex-feedback.wrong{background:var(--red-bg);color:var(--red);}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;} .header{padding:0 1rem;} .tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 11px;font-size:12px;} .name-input{width:110px;}
+  .demo-row{grid-template-columns:1fr;} .arrow{display:none;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Modales Partizip · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Einführung</button>
+  <button class="tab-btn" data-tab="tab2">Bildung</button>
+  <button class="tab-btn" data-tab="tab3">Erweiterung</button>
+  <button class="tab-btn" data-tab="tab4">Umformung</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1 -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Was ist das modale Partizip?</h2>
+    <p>Das <strong>modale Partizip</strong> (auch: <em>Partizip I mit zu</em>) ist eine Konstruktion aus <em>zu + Partizip I</em>, die als Adjektivattribut verwendet wird. Es hat gleichzeitig <strong>passive</strong> und <strong>modale Bedeutung</strong> — meistens Notwendigkeit oder Möglichkeit.</p>
+    <p>Diese Konstruktion ist typisch für <strong>akademische Texte, Nachrichten und Amtsdeutsch</strong> auf C1/C2-Niveau. Im Alltag klingt sie sehr formell.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Grundstruktur:</span><br>
+    <span class="part">zu</span> + <span class="part">Verbstamm</span> + <span class="part">-end</span> + <span class="gray">Adjektivendung</span><br><br>
+    lösen → <span class="part">zu lösend</span> → das <span class="part">zu lösende</span> Problem<br>
+    beachten → <span class="part">zu beachtend</span> → die <span class="part">zu beachtenden</span> Regeln<br>
+    berücksichtigen → die <span class="part">zu berücksichtigenden</span> Faktoren
+  </div>
+  <div class="expl-card">
+    <h2>🔄 Zwei Bedeutungen</h2>
+    <table class="compare-table">
+      <thead><tr><th>Bedeutung</th><th>Beispiel</th><th>Paraphrase</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Notwendigkeit</strong><br><span class="muted">(müssen + Passiv)</span></td><td>das <em>zu lösende</em> Problem</td><td class="muted">das Problem, das gelöst werden muss</td></tr>
+        <tr><td><strong>Möglichkeit</strong><br><span class="muted">(können + Passiv)</span></td><td>der <em>zu erwartende</em> Anstieg</td><td class="muted">der Anstieg, der erwartet werden kann</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:.75rem">Der Kontext entscheidet. Meistens geht es um Notwendigkeit.</p>
+  </div>
+  <div class="info-box"><strong>📖 C1-Relevanz:</strong> Im Goethe C1-Lesen begegnet dir das modale Partizip häufig — besonders in Wirtschaft, Wissenschaft, Recht und Politik. Im C1-Schreiben zeigst du damit einen formellen, präzisen Stil.</div>
+  <div class="beispiel-section">
+    <h3>Beispiele aus C1-Texten <button class="vi-toggle" onclick="toggleVI('vi1')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Die <span class="mp">zu bewältigenden</span> Herausforderungen sind enorm.</div>
+        <div class="bsp-vi vi1">Những thách thức cần vượt qua là rất lớn.</div>
+        <div class="bsp-note">Notwendigkeit: Herausforderungen, die bewältigt werden müssen</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Der <span class="mp">zu erwartende</span> Rückgang der Nachfrage bereitet Sorgen.</div>
+        <div class="bsp-vi vi1">Sự sụt giảm nhu cầu được dự báo đang gây lo ngại.</div>
+        <div class="bsp-note">Möglichkeit/Prognose: der Rückgang, der erwartet werden kann</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die <span class="mp">zu prüfenden</span> Unterlagen wurden eingereicht.</div>
+        <div class="bsp-vi vi1">Các hồ sơ cần được kiểm tra đã được nộp.</div>
+        <div class="bsp-note">Notwendigkeit — typisches Amtsdeutsch</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das ist ein <span class="mp">nicht zu unterschätzender</span> Faktor.</div>
+        <div class="bsp-vi vi1">Đây là một yếu tố không thể đánh giá thấp.</div>
+        <div class="bsp-note">Negation: nicht + zu + Partizip I</div>
+      </div>
+    </div>
+  </div>
+  <div class="tip-box"><strong>💡 Negation:</strong> Mit <code>nicht zu + Partizip I</code> drückt man aus, dass etwas nicht möglich oder nicht erlaubt ist.<br><em>ein nicht zu unterschätzender Fehler</em> = ein Fehler, der nicht unterschätzt werden darf</div>
+</section>
+
+<!-- TAB 2 -->
+<section class="tab-panel" id="tab2">
+  <div class="expl-card">
+    <h2>🔧 Bildung: zu + Partizip I</h2>
+    <p>Man setzt <strong>zu</strong> vor den Infinitiv (bei einfachen Verben) oder zwischen Präfix und Stamm (bei trennbaren Verben), dann hängt man <strong>-end</strong> an. Danach wird das Partizip wie ein Adjektiv dekliniert.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Einfache Verben:</span><br>
+    lösen → <span class="part">zu lösend</span><br>
+    prüfen → <span class="part">zu prüfend</span><br>
+    beachten → <span class="part">zu beachtend</span><br><br>
+    <span class="gray">Trennbare Verben (zu zwischen Präfix und Stamm!):</span><br>
+    vorlegen → <span class="part">vor·zu·legend</span><br>
+    durchführen → <span class="part">durch·zu·führend</span><br>
+    einreichen → <span class="part">ein·zu·reichend</span><br>
+    einleiten → <span class="part">ein·zu·leitend</span>
+  </div>
+  <div class="tip-box"><strong>💡 Häufigster Fehler bei trennbaren Verben:</strong> <code>zu vorlegend</code> ❌ → <code>vorzulegend</code> ✅ — das <em>zu</em> steht immer zwischen Präfix und Verbstamm!</div>
+  <div class="expl-card">
+    <h2>📐 Adjektivdeklination</h2>
+    <p>Das modale Partizip wird wie ein normales Adjektiv dekliniert — nach Genus, Kasus und Artikeltyp.</p>
+    <table class="compare-table">
+      <thead><tr><th>Kasus</th><th>Mask.</th><th>Fem.</th><th>Neutr.</th><th>Plural</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nom.</strong></td><td class="mono">der zu lösende Fall</td><td class="mono">die zu lösende Frage</td><td class="mono">das zu lösende Problem</td><td class="mono">die zu lösenden Fragen</td></tr>
+        <tr><td><strong>Akk.</strong></td><td class="mono">den zu lösenden Fall</td><td class="mono">die zu lösende Frage</td><td class="mono">das zu lösende Problem</td><td class="mono">die zu lösenden Fragen</td></tr>
+        <tr><td><strong>Dat.</strong></td><td class="mono">dem zu lösenden Fall</td><td class="mono">der zu lösenden Frage</td><td class="mono">dem zu lösenden Problem</td><td class="mono">den zu lösenden Fragen</td></tr>
+        <tr><td><strong>Gen.</strong></td><td class="mono">des zu lösenden Falls</td><td class="mono">der zu lösenden Frage</td><td class="mono">des zu lösenden Problems</td><td class="mono">der zu lösenden Fragen</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="beispiel-section">
+    <h3>Deklination im Kontext <button class="vi-toggle" onclick="toggleVI('vi2')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Das ist die <span class="mp">zu beantwortende</span> Frage. <em style="font-size:11px;color:var(--text-light)">(Nom. Fem.)</em></div>
+        <div class="bsp-vi vi2">Đây là câu hỏi cần được trả lời.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Wir diskutieren den <span class="mp">zu lösenden</span> Konflikt. <em style="font-size:11px;color:var(--text-light)">(Akk. Mask.)</em></div>
+        <div class="bsp-vi vi2">Chúng tôi thảo luận về cuộc xung đột cần được giải quyết.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Mit den <span class="mp">vorzulegenden</span> Dokumenten wird der Antrag bearbeitet. <em style="font-size:11px;color:var(--text-light)">(Dat. Pl.)</em></div>
+        <div class="bsp-vi vi2">Với các tài liệu cần nộp, đơn xin sẽ được xử lý.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Kosten des <span class="mp">durchzuführenden</span> Projekts sind hoch. <em style="font-size:11px;color:var(--text-light)">(Gen. Neutr.)</em></div>
+        <div class="bsp-vi vi2">Chi phí của dự án cần thực hiện là rất cao.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 3 -->
+<section class="tab-panel" id="tab3">
+  <div class="expl-card">
+    <h2>📖 Erweitertes Partizipialattribut</h2>
+    <p>In formellen C1-Texten wird das modale Partizip oft <strong>erweitert</strong> — Adverbien oder Präpositionalphrasen stehen dann nach dem Artikel, <em>vor</em> dem Partizip.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Artikel → [Erweiterung] → zu + Partizip I + Endung → Nomen</span><br><br>
+    das <span class="part">[dringend]</span> <span class="part">zu lösende</span> Problem<br>
+    die <span class="part">[sofort]</span> <span class="part">einzuleitenden</span> Maßnahmen<br>
+    ein <span class="part">[gesellschaftlich]</span> <span class="part">zu diskutierendes</span> Thema<br>
+    die <span class="part">[noch]</span> <span class="part">zu klärenden</span> Fragen
+  </div>
+  <div class="expl-card">
+    <h2>📊 Häufige Erweiterungen</h2>
+    <table class="compare-table">
+      <thead><tr><th>Erweiterung</th><th>Beispiel</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">noch</td><td>die <em>noch zu bewältigenden</em> Aufgaben</td></tr>
+        <tr><td class="mono">dringend</td><td>ein <em>dringend zu lösendes</em> Problem</td></tr>
+        <tr><td class="mono">sofort</td><td>die <em>sofort einzuleitenden</em> Maßnahmen</td></tr>
+        <tr><td class="mono">nicht</td><td>ein <em>nicht zu unterschätzender</em> Faktor</td></tr>
+        <tr><td class="mono">kritisch</td><td>ein <em>kritisch zu hinterfragender</em> Ansatz</td></tr>
+        <tr><td class="mono">gesellschaftlich</td><td>ein <em>gesellschaftlich zu diskutierendes</em> Thema</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="beispiel-section">
+    <h3>Erweiterte Beispiele (C1) <button class="vi-toggle" onclick="toggleVI('vi3')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Die <span class="mp">noch zu lösenden</span> strukturellen Probleme erfordern langfristige Strategien.</div>
+        <div class="bsp-vi vi3">Những vấn đề cơ cấu vẫn chưa được giải quyết đòi hỏi chiến lược dài hạn.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das <span class="mp">nicht zu ignorierende</span> Risiko muss in die Planung einbezogen werden.</div>
+        <div class="bsp-vi vi3">Rủi ro không thể bỏ qua này cần được tính vào kế hoạch.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die <span class="mp">dringend einzuleitenden</span> Reformen stoßen auf politischen Widerstand.</div>
+        <div class="bsp-vi vi3">Các cải cách cần được thực hiện khẩn cấp vấp phải sự phản đối chính trị.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Ein <span class="mp">gesellschaftlich zu diskutierendes</span> Thema ist die Digitalisierung des Bildungssystems.</div>
+        <div class="bsp-vi vi3">Số hóa hệ thống giáo dục là chủ đề cần được thảo luận ở cấp độ xã hội.</div>
+      </div>
+    </div>
+  </div>
+  <div class="tip-box"><strong>💡 Lesestrategie C1:</strong> Wenn du eine lange Nominalphrase siehst, suche nach <code>zu + -end</code> in der Mitte. Dann paraphrasiere mental: <em>„… der/die/das … werden muss/kann"</em>.</div>
+</section>
+
+<!-- TAB 4 -->
+<section class="tab-panel" id="tab4">
+  <div class="expl-card">
+    <h2>↔️ Relativsatz ↔ Modales Partizip</h2>
+    <p>Im C1-Schreiben kannst du zwischen Relativsatz (neutral) und modalem Partizip (formell) wählen. Das Partizip ist kompakter und stilistisch höherwertiger.</p>
+  </div>
+  <div class="transform-demo">
+    <div class="demo-row">
+      <div class="demo-left"><div class="demo-label">Relativsatz</div><div class="de">das Problem, <em>das gelöst werden muss</em></div></div>
+      <div class="arrow">→</div>
+      <div class="demo-right"><div class="demo-label">Modales Partizip</div><div class="de">das <span class="hl">zu lösende</span> Problem</div></div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-left"><div class="demo-label">Relativsatz</div><div class="de">die Unterlagen, <em>die eingereicht werden müssen</em></div></div>
+      <div class="arrow">→</div>
+      <div class="demo-right"><div class="demo-label">Modales Partizip</div><div class="de">die <span class="hl">einzureichenden</span> Unterlagen</div></div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-left"><div class="demo-label">Relativsatz</div><div class="de">ein Fehler, <em>der nicht unterschätzt werden darf</em></div></div>
+      <div class="arrow">→</div>
+      <div class="demo-right"><div class="demo-label">Mit Negation</div><div class="de">ein <span class="hl">nicht zu unterschätzender</span> Fehler</div></div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-left"><div class="demo-label">Relativsatz</div><div class="de">Maßnahmen, <em>die sofort durchgeführt werden müssen</em></div></div>
+      <div class="arrow">→</div>
+      <div class="demo-right"><div class="demo-label">Erweitertes Partizip</div><div class="de">die <span class="hl">sofort durchzuführenden</span> Maßnahmen</div></div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-left"><div class="demo-label">Relativsatz</div><div class="de">ein Thema, <em>das gesellschaftlich diskutiert werden muss</em></div></div>
+      <div class="arrow">→</div>
+      <div class="demo-right"><div class="demo-label">Erweitertes Partizip</div><div class="de">ein <span class="hl">gesellschaftlich zu diskutierendes</span> Thema</div></div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-left"><div class="demo-label">Relativsatz</div><div class="de">Fragen, <em>die noch geklärt werden müssen</em></div></div>
+      <div class="arrow">→</div>
+      <div class="demo-right"><div class="demo-label">Erweitertes Partizip</div><div class="de">die <span class="hl">noch zu klärenden</span> Fragen</div></div>
+    </div>
+  </div>
+  <div class="info-box"><strong>📝 Schreibtipp C1:</strong> Verwende in formellen Texten 2–3 modale Partizipien. Übersetze dabei nicht wörtlich aus dem Vietnamesischen — denke direkt auf Deutsch in dieser Struktur.</div>
+  <div class="expl-card">
+    <h2>⚠️ Nicht möglich mit modalem Partizip</h2>
+    <ul>
+      <li>Nur bei Passiv-Relativsätzen mit Modalverb (müssen/können + werden)</li>
+      <li>Nicht bei aktivischen Relativsätzen: <em>der Mann, der arbeitet</em> → kein modales Partizip möglich</li>
+      <li>Nicht bei Relativsätzen mit Dativsubjekt: <em>das Buch, das mir gefällt</em> → nicht möglich</li>
+    </ul>
+  </div>
+</section>
+
+<!-- TAB 5 -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Erkennen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Bilden</button>
+    <button class="level-tab" data-level="3">Stufe 3 — Umformen</button>
+    <button class="level-tab" data-level="4">Stufe 4 — Deklination</button>
+    <button class="level-tab" data-level="5">Stufe 5 — C1-Stil</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl = document.getElementById('studentName');
+var sv = localStorage.getItem('studentName'); if(sv) nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+
+window.toggleVI=function(cls){
+  document.querySelectorAll('.'+cls).forEach(function(el){el.classList.toggle('show');});
+};
+
+var DATA={
+  1:[
+    {type:'mc',prompt:'Die zu lösenden Aufgaben sind komplex.',task:'Was bedeutet das modale Partizip?',
+     options:['die Aufgaben, die gerade gelöst werden','die Aufgaben, die gelöst werden müssen','die Aufgaben, die bereits gelöst wurden','die Aufgaben, die jemand lösen wollte'],answer:1},
+    {type:'mc',prompt:'Das ist ein nicht zu unterschätzender Fehler.',task:'Paraphrasiere das modale Partizip:',
+     options:['ein Fehler, der nicht unterschätzt wurde','ein Fehler, der nicht unterschätzt werden darf','ein Fehler, der unterschätzt werden kann','ein Fehler, der nicht beachtet werden sollte'],answer:1},
+    {type:'mc',prompt:'Die einzureichenden Unterlagen müssen bis Freitag vorliegen.',task:'Langform des modalen Partizips?',
+     options:['die Unterlagen, die eingereicht werden können','die Unterlagen, die eingereicht werden müssen','die Unterlagen, die einzureichen versucht wurden','die Unterlagen, die noch nicht eingereicht sind'],answer:1},
+    {type:'mc',prompt:'Der zu erwartende Anstieg der Kosten beunruhigt die Investoren.',task:'Relativsatz-Paraphrase?',
+     options:['der Anstieg, der bereits erwartet wurde','der Anstieg, der erwartet werden kann','der Anstieg, der nicht erwartet wird','der Anstieg, der erwartet werden sollte'],answer:1},
+    {type:'mc',prompt:'die sofort durchzuführenden Maßnahmen',task:'Welches Verb liegt zugrunde?',
+     options:['führen','durchführen','einführen','zuführen'],answer:1},
+    {type:'mc',prompt:'Welcher Satz enthält ein modales Partizip?',task:'',
+     options:['Die arbeitenden Menschen sind müde.','Das gelöste Problem ist bekannt.','Das zu lösende Problem ist bekannt.','Das Problem, das gelöst ist, ist bekannt.'],answer:2},
+    {type:'mc',prompt:'die vorzulegenden Beweise',task:'Was bedeutet „vorzulegend"? Es kommt von:',
+     options:['verlegen','vorlegen','auflegen','belegen'],answer:1},
+    {type:'mc',prompt:'Das noch zu klärende Detail verzögert die Entscheidung.',task:'Was bedeutet „noch" hier?',
+     options:['Das Detail wurde noch nicht geklärt.','Das Detail ist noch sehr unklar.','Das Detail kann noch geklärt werden.','Das Detail ist bereits geklärt.'],answer:0},
+    {type:'mc',prompt:'Welche Konstruktion ist grammatisch FALSCH?',task:'',
+     options:['das zu lösende Problem','die einzureichenden Unterlagen','ein nicht zu übersehendes Detail','das zu gelöstes Problem'],answer:3},
+    {type:'mc',prompt:'In welchem Register wird das modale Partizip typischerweise verwendet?',task:'',
+     options:['Im informellen Alltagsgespräch','In SMS und sozialen Medien','In formellen und akademischen Texten','In der gesprochenen Umgangssprache'],answer:2},
+    {type:'mc',prompt:'Das nicht zu ignorierende Risiko wurde unterschätzt.',task:'Was drückt „nicht zu ignorierend" aus?',
+     options:['Das Risiko kann ignoriert werden.','Das Risiko wurde nicht ignoriert.','Das Risiko darf nicht ignoriert werden.','Das Risiko soll nicht ignoriert werden.'],answer:2},
+    {type:'mc',prompt:'Bei trennbaren Verben steht „zu" …',task:'Welche Regel gilt?',
+     options:['immer vor dem gesamten Verb','nach dem Partizip-Suffix','zwischen Verbpräfix und Verbstamm','am Satzende'],answer:2},
+    {type:'mc',prompt:'die dringend einzuleitenden Reformen',task:'Vollständige Paraphrase?',
+     options:['die Reformen, die dringend eingeleitet worden sind','die Reformen, die dringend eingeleitet werden müssen','die Reformen, die dringend eingeleitet werden wollten','die Reformen, die dringend eingeleitet wurden'],answer:1}
+  ],
+  2:[
+    {type:'fill',prompt:'das Problem, das diskutiert werden muss',task:'Bilde das modale Partizip (Neutr. Nom.):',answer:'das zu diskutierende Problem',hint:'diskutieren → zu diskutierend → -e (Neutr. Nom.)'},
+    {type:'fill',prompt:'die Regeln, die beachtet werden müssen',task:'Bilde das modale Partizip (Plural):',answer:'die zu beachtenden Regeln',hint:'beachten → zu beachtend → -en (Plural)'},
+    {type:'fill',prompt:'ein Fehler, der nicht unterschätzt werden darf',task:'Bilde das modale Partizip mit Negation:',answer:'ein nicht zu unterschätzender Fehler',hint:'nicht + zu + unterschätz- + -end + -er (Mask. Nom.)'},
+    {type:'fill',prompt:'die Unterlagen, die vorgelegt werden müssen',task:'Bilde das modale Partizip (trennbares Verb!):',answer:'die vorzulegenden Unterlagen',hint:'vorlegen → vor·zu·legend → -en (Plural)'},
+    {type:'fill',prompt:'das Projekt, das durchgeführt werden muss',task:'Bilde das modale Partizip:',answer:'das durchzuführende Projekt',hint:'durchführen → durch·zu·führend → -e (Neutr. Nom.)'},
+    {type:'fill',prompt:'Faktoren, die berücksichtigt werden müssen (kein Artikel, Plural)',task:'Bilde das modale Partizip:',answer:'zu berücksichtigende Faktoren',hint:'Kein Artikel → starke Endung: -e (Pl. Nom./Akk.)'},
+    {type:'fill',prompt:'ein Thema, das gesellschaftlich diskutiert werden muss',task:'Bilde das erweiterte modale Partizip:',answer:'ein gesellschaftlich zu diskutierendes Thema',hint:'Adverb vor zu + Partizip: gesellschaftlich zu diskutierend + -es (Neutr.)'},
+    {type:'fill',prompt:'Maßnahmen, die sofort eingeleitet werden müssen',task:'Bilde das erweiterte modale Partizip (Plural):',answer:'die sofort einzuleitenden Maßnahmen',hint:'sofort + einleiten (trennbar: ein·zu·leitend) → -en'},
+    {type:'fill',prompt:'die Fragen, die noch geklärt werden müssen',task:'Bilde das modale Partizip mit Erweiterung:',answer:'die noch zu klärenden Fragen',hint:'noch + zu klärend → -en (Plural)'},
+    {type:'fill',prompt:'der Rückgang, der erwartet werden kann',task:'Bilde das modale Partizip (Mask. Nom.):',answer:'der zu erwartende Rückgang',hint:'erwarten → zu erwartend → -e (Mask. Nom.)'},
+    {type:'fill',prompt:'ein Risiko, das nicht ignoriert werden darf',task:'Bilde das modale Partizip mit Negation:',answer:'ein nicht zu ignorierendes Risiko',hint:'nicht + zu ignorierend + -es (Neutr. Nom.)'},
+    {type:'fill',prompt:'die Aufgaben, die noch bewältigt werden müssen',task:'Bilde das modale Partizip mit Erweiterung:',answer:'die noch zu bewältigenden Aufgaben',hint:'noch + zu bewältigend → -en (Plural)'},
+    {type:'fill',prompt:'ein Aspekt, der kritisch hinterfragt werden muss',task:'Bilde das erweiterte modale Partizip:',answer:'ein kritisch zu hinterfragender Aspekt',hint:'kritisch + zu hinterfragend + -er (Mask. Nom.)'}
+  ],
+  3:[
+    {type:'mc',prompt:'das zu lösende Problem',task:'Relativsatz-Paraphrase?',
+     options:['das Problem, das gelöst wird','das Problem, das gelöst werden muss','das Problem, das gelöst wurde','das Problem, das gelöst werden soll'],answer:1},
+    {type:'mc',prompt:'die Unterlagen, die bis Montag eingereicht werden müssen',task:'Welche Version mit modalem Partizip ist korrekt?',
+     options:['die bis Montag einzureichenden Unterlagen','die bis Montag zu einreichenden Unterlagen','die bis Montag einreichenden Unterlagen','die zu bis Montag einreichenden Unterlagen'],answer:0},
+    {type:'mc',prompt:'die sofort einzuleitenden Maßnahmen',task:'Welche Relativsatz-Version ist korrekt?',
+     options:['die Maßnahmen, die sofort eingeleitet werden können','die Maßnahmen, die sofort eingeleitet werden müssen','die Maßnahmen, die sofort eingeleitet wurden','die Maßnahmen, die sofort einzuleiten sind'],answer:1},
+    {type:'mc',prompt:'Faktoren, die in der Analyse berücksichtigt werden sollten',task:'Welche Version mit modalem Partizip ist korrekt?',
+     options:['zu berücksichtigende Faktoren in der Analyse','in der Analyse zu berücksichtigende Faktoren','Faktoren in der Analyse zu berücksichtigend','berücksichtigende Faktoren in der Analyse'],answer:1},
+    {type:'mc',prompt:'Welchen Satz kann man NICHT durch ein modales Partizip ersetzen?',task:'',
+     options:['das Buch, das gelesen werden muss','der Plan, der umgesetzt werden soll','der Mann, der jeden Tag joggt','die Aufgabe, die erledigt werden muss'],answer:2},
+    {type:'mc',prompt:'ein nicht zu unterschätzender Faktor',task:'Welche Relativsatz-Version passt?',
+     options:['ein Faktor, der nicht unterschätzt wurde','ein Faktor, der nicht unterschätzt werden darf','ein Faktor, der unterschätzt werden kann','ein Faktor, der nicht bewertet werden soll'],answer:1},
+    {type:'mc',prompt:'das Problem, das dringend gelöst werden muss',task:'Welche Version ist korrekt?',
+     options:['das dringend gelöste Problem','das dringend lösende Problem','das dringend zu lösende Problem','das zu dringend lösende Problem'],answer:2},
+    {type:'mc',prompt:'die noch zu klärenden Fragen',task:'Welche Paraphrase ist vollständig korrekt?',
+     options:['die Fragen, die noch unklar sind','die Fragen, die noch geklärt werden müssen','die Fragen, die noch nicht beantwortet wurden','die Fragen, die noch gestellt werden müssen'],answer:1},
+    {type:'mc',prompt:'der zu erwartende Rückgang',task:'Was bedeutet das?',
+     options:['der Rückgang, der erwartet werden muss','der Rückgang, der erwartet werden kann / wird','der Rückgang, der schon erwartet wurde','der Rückgang, der nicht erwartet wird'],answer:1},
+    {type:'mc',prompt:'Welche Version klingt am formalsten für C1-Schreiben?',task:'',
+     options:['Wir müssen die Probleme lösen, die noch offen sind.','Die noch offenen Probleme müssen gelöst werden.','Die noch zu lösenden Probleme erfordern sofortige Maßnahmen.','Es gibt noch Probleme, die man lösen muss.'],answer:2},
+    {type:'mc',prompt:'die Dokumente, die vom Antragsteller vorgelegt werden müssen',task:'Korrekte Version mit modalem Partizip?',
+     options:['die vom Antragsteller zu vorlegenden Dokumente','die vom Antragsteller vorzulegenden Dokumente','die vom Antragsteller vorlegenden Dokumente','die zu vorlegenden Dokumente vom Antragsteller'],answer:1},
+    {type:'mc',prompt:'Welcher Ausdruck ist ein ERWEITERTES modales Partizipialattribut?',task:'',
+     options:['das lösende Team','das gelöste Problem','das gesellschaftlich zu diskutierende Thema','das diskutierte Thema'],answer:2},
+    {type:'mc',prompt:'die vom Ausschuss zu prüfenden Anträge',task:'Welche Paraphrase ist korrekt?',
+     options:['die Anträge, die der Ausschuss geprüft hat','die Anträge, die vom Ausschuss geprüft werden müssen','die Anträge, die vom Ausschuss geprüft werden können','die Anträge, die der Ausschuss prüft'],answer:1}
+  ],
+  4:[
+    {type:'fill',prompt:'Wir diskutieren ___ Problem. (lösen, Akk. Neutr.)',task:'Adjektivendung korrekt einsetzen:',answer:'das zu lösende',hint:'Akk. Neutrum nach bestimmtem Artikel → -e'},
+    {type:'fill',prompt:'Mit ___ Unterlagen kann der Antrag gestellt werden. (einreichen, Dat. Pl.)',task:'',answer:'den einzureichenden',hint:'Dat. Plural nach bestimmtem Artikel → -en'},
+    {type:'fill',prompt:'Die Kosten ___ Projekts sind gestiegen. (durchführen, Gen. Neutr.)',task:'',answer:'des durchzuführenden',hint:'Gen. Neutrum nach bestimmtem Artikel → -en'},
+    {type:'fill',prompt:'Es gibt ___ Faktoren. (berücksichtigen, Akk. Pl., kein Artikel)',task:'',answer:'zu berücksichtigende',hint:'Kein Artikel, Pl. Akk. → starke Endung: -e'},
+    {type:'fill',prompt:'___ Anstieg bereitet Sorgen. (erwarten, Nom. Mask., kein Artikel)',task:'Großschreibung beachten!',answer:'Zu erwartender',hint:'Kein Artikel, Mask. Nom. → starke Endung: -er'},
+    {type:'fill',prompt:'Die Analyse befasst sich mit ___ Risiken. (nicht ignorieren, Dat. Pl.)',task:'',answer:'den nicht zu ignorierenden',hint:'Dat. Pl. nach bestimmtem Artikel → -en; nicht vor zu'},
+    {type:'fill',prompt:'Das ist ___ Fehler. (nicht unterschätzen, Nom. Mask.)',task:'Mit unbestimmtem Artikel:',answer:'ein nicht zu unterschätzender',hint:'Indef. Artikel, Mask. Nom. → -er'},
+    {type:'fill',prompt:'Die Reform gibt ___ Gruppen mehr Unterstützung. (benachteiligen, Dat. Pl.)',task:'',answer:'den zu benachteiligenden',hint:'Dat. Pl. → -en; benachteiligen ist nicht trennbar'}
+  ],
+  5:[
+    {type:'mc',prompt:'Du schreibst einen C1-Kommentar über Klimaschutz. Welcher Satz klingt formeller?',task:'',
+     options:['Die Probleme, die wir lösen müssen, sind sehr komplex.','Die zu lösenden Probleme sind von enormer Komplexität.','Es gibt Probleme, die man lösen muss.','Wir müssen die Probleme lösen.'],answer:1},
+    {type:'mc',prompt:'In einem Wirtschaftsbericht: Maßnahmen müssen sofort umgesetzt werden. C1-gerechte Formulierung?',task:'',
+     options:['Die Maßnahmen, die man sofort umsetzen muss, sind bekannt.','Man muss die Maßnahmen sofort umsetzen.','Die sofort umzusetzenden Maßnahmen sind bereits beschlossen.','Es ist wichtig, die Maßnahmen sofort umzusetzen.'],answer:2},
+    {type:'mc',prompt:'Welcher Satz enthält einen grammatischen Fehler im modalen Partizip?',task:'',
+     options:['die noch zu klärenden Fragen','das dringend zu lösende Problem','die zu vorlegenden Unterlagen','ein nicht zu unterschätzender Faktor'],answer:2},
+    {type:'fill',prompt:'Umformung: „Es gibt Risiken, die nicht ignoriert werden dürfen."',task:'Formuliere mit modalem Partizip (kein Artikel, Pl.):',answer:'nicht zu ignorierende Risiken',hint:'Kein Artikel, Pl. Nom. → starke Endung: -e'},
+    {type:'fill',prompt:'Umformung: „Die Fragen, die im Seminar noch diskutiert werden müssen, sind zahlreich."',task:'Mit erweitertem modalem Partizip:',answer:'Die im Seminar noch zu diskutierenden Fragen sind zahlreich.',hint:'Erweiterung vor zu + Partizip; Pl. Nom.'},
+    {type:'mc',prompt:'Welche Aussage über das modale Partizip ist FALSCH?',task:'',
+     options:['Es hat immer eine passive Bedeutung.','Es kann Notwendigkeit oder Möglichkeit ausdrücken.','Bei trennbaren Verben steht „zu" vor dem Präfix.','Es wird wie ein Adjektiv dekliniert.'],answer:2},
+    {type:'mc',prompt:'In welchem Text würde „die zu erwartende Rezession" NICHT vorkommen?',task:'',
+     options:['Ein Wirtschaftsartikel in der FAZ','Ein wissenschaftlicher Bericht über Konjunktur','Eine WhatsApp-Nachricht an einen Freund','Ein offizieller Regierungsbericht'],answer:2},
+    {type:'fill',prompt:'Ergänze: Die ___ (vorlegen) Dokumente wurden vom Amt angefordert. (Pl., bestimmter Artikel)',task:'',answer:'vorzulegenden',hint:'vorlegen (trennbar) → vor·zu·legend → -en (Pl.)'},
+    {type:'mc',prompt:'Welche Umformung ist vollständig richtig?',task:'„die Aufgabe, die bis morgen erledigt werden muss" →',
+     options:['die bis morgen erledigend Aufgabe','die bis morgen zu erledigende Aufgabe','die zu bis morgen erledigende Aufgabe','die bis morgen erledigt zu werdende Aufgabe'],answer:1},
+    {type:'mc',prompt:'Was macht diesen Satz C1-typisch: „Das gesellschaftlich zu diskutierende Problem der sozialen Ungleichheit erfordert politisches Engagement."',task:'',
+     options:['Er ist sehr lang.','Er verwendet ein erweitertes modales Partizipialattribut.','Er verwendet viele Fremdwörter.','Er ist im Passiv formuliert.'],answer:1},
+    {type:'fill',prompt:'Schreibe um: „Es gibt noch viele Probleme, die dringend gelöst werden müssen."',task:'Mit erweitertem modalem Partizip (Pl. Akk. nach „viele"):',answer:'Es gibt noch viele dringend zu lösende Probleme.',hint:'dringend + zu lösend + -e (Pl. Akk. ohne Artikel nach viele)'},
+    {type:'mc',prompt:'Welcher Satz ist sprachlich korrekt und C1-geeignet?',task:'',
+     options:['Die zu beachtenden Regeln sind streng.','Die zu beachtet Regeln sind streng.','Die beachtend Regeln sind streng.','Die beachtende Regeln sind streng.'],answer:0},
+    {type:'fill',prompt:'Ergänze: Die ___ (einleiten, dringend, Pl.) Reformen stoßen auf Widerstand.',task:'Erweitertes modales Partizip:',answer:'dringend einzuleitenden',hint:'dringend + einleiten (trennbar: ein·zu·leitend) → -en (Pl.)'}
+  ]
+};
+
+var currentLevel=1, answers={}, checked={};
+
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');
+  c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');
+    card.className='exercise-card';card.id='ex-'+i;
+
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+
+    if(ex.type==='mc'){
+      var opts=document.createElement('div');opts.className='options';
+      ex.options.forEach(function(opt,j){
+        var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+        btn.addEventListener('click',function(){
+          if(checked[i])return;
+          answers[i]=j;
+          opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+          if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+          else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+          checked[i]=true;updateScore();updateProg();
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    } else {
+      var wrap=document.createElement('div');
+      if(ex.hint){var h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--text-muted);margin-bottom:6px;';h.textContent='Hinweis: '+ex.hint;wrap.appendChild(h);}
+      var inp=document.createElement('input');inp.type='text';inp.className='fill-input';
+      inp.placeholder='Antwort eingeben …';inp.autocomplete='off';inp.autocapitalize='none';
+      wrap.appendChild(inp);
+      var fb=document.createElement('div');fb.className='ex-feedback';
+      var cb=document.createElement('button');cb.className='check-btn';cb.textContent='Prüfen';
+      cb.addEventListener('click',function(){
+        if(checked[i])return;
+        var v=inp.value.trim(),ok=v.toLowerCase()===ex.answer.trim().toLowerCase();
+        inp.classList.add(ok?'correct':'wrong');
+        fb.textContent=ok?'Richtig!':'Nicht ganz. Richtig: '+ex.answer;
+        fb.className='ex-feedback show '+(ok?'correct':'wrong');
+        card.classList.add(ok?'correct':'wrong');
+        checked[i]=true;answers[i]=v;cb.disabled=true;inp.disabled=true;
+        updateScore();updateProg();
+      });
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')cb.click();});
+      wrap.appendChild(cb);wrap.appendChild(fb);card.appendChild(wrap);
+    }
+    c.appendChild(card);
+  });
+  updateProg();
+}
+
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(ex.type==='mc'){if(answers[i]===ex.answer)correct++;}
+    else{if(answers[i]&&answers[i].toLowerCase()===ex.answer.trim().toLowerCase())correct++;}
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=ex.type==='mc'?-1:'';
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    if(ex.type==='mc'){
+      var opts=card.querySelectorAll('.option-btn');
+      if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+    } else {
+      var inp=card.querySelector('.fill-input'),fb=card.querySelector('.ex-feedback'),cb=card.querySelector('.check-btn');
+      if(inp)inp.disabled=true;if(cb)cb.disabled=true;
+      if(fb){fb.textContent='Richtig: '+ex.answer;fb.className='ex-feedback show wrong';}
+    }
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Das modale Partizip sitzt gut. Setze es aktiv im C1-Schreiben ein!':'Lies nochmal Tab 2 (Bildung) und Tab 4 (Umformung) durch.';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+
+renderEx();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modalpartikeln – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#2D5BE3;--cobalt-light:#E8EEFB;--cobalt-dark:#1A3BAA;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E2E6EF;
+  --text:#1A1D2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --green:#059669;--green-bg:#ECFDF5;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --teal:#0D7A6E;--teal-bg:#F0FAFA;
+  --indigo:#4338CA;--indigo-bg:#EEF2FF;
+  --slate-bg:#F1F5F9;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --cobalt:#5B8AF7;--cobalt-light:#1A2540;--cobalt-dark:#7BA3FF;
+    --bg:#0F1117;--surface:#1A1D2A;--border:#2D3148;
+    --text:#E8EAF0;--text-muted:#9DA3B4;--text-light:#6B7280;
+    --green:#34D399;--green-bg:#0A2918;
+    --red:#F87171;--red-bg:#2D1010;
+    --amber:#FCD34D;--amber-bg:#2D1F08;
+    --teal:#2DD4BF;--teal-bg:#0A2420;
+    --indigo:#818CF8;--indigo-bg:#1E1B4B;
+    --slate-bg:#1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+/* partikel card */
+.partikel-list{display:flex;flex-direction:column;gap:1.25rem;margin:1rem 0;}
+.pk-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;box-shadow:var(--shadow);}
+.pk-word{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--cobalt);margin-bottom:2px;}
+.pk-functions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.pk-fn{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--cobalt-light);color:var(--cobalt);}
+.pk-fn.teal{background:var(--teal-bg);color:var(--teal);}
+.pk-fn.amber{background:var(--amber-bg);color:var(--amber);}
+.pk-fn.indigo{background:var(--indigo-bg);color:var(--indigo);}
+.pk-examples{display:flex;flex-direction:column;gap:8px;}
+.pk-ex{background:var(--bg);border-radius:var(--radius-sm);padding:9px 12px;border-left:3px solid var(--cobalt);}
+.pk-ex .de{font-size:13px;font-weight:500;color:var(--text);line-height:1.6;}
+.pk-ex .de .mp{color:var(--cobalt);font-style:italic;}
+.pk-ex .meaning{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.pk-ex .vi{font-size:12px;color:var(--text-muted);font-style:italic;display:none;margin-top:2px;}
+.pk-ex .vi.show{display:block;}
+/* context table */
+.ctx-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.ctx-table th{background:var(--cobalt-light);color:var(--cobalt);padding:8px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.ctx-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.ctx-table tr:last-child td{border-bottom:none;}
+.ctx-table .mono{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-weight:500;font-size:12px;}
+.ctx-table .muted{color:var(--text-muted);font-size:12px;}
+.vi-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:.75rem;}
+.vi-toggle-btn{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--teal);background:transparent;border:1px solid var(--teal);border-radius:var(--radius-sm);padding:4px 12px;cursor:pointer;}
+.vi-toggle-btn:hover{background:var(--teal);color:#fff;}
+/* exercise */
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;}.header{padding:0 1rem;}.tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 10px;font-size:12px;}.name-input{width:110px;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Modalpartikeln · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Einführung</button>
+  <button class="tab-btn" data-tab="tab2">doch · ja · wohl</button>
+  <button class="tab-btn" data-tab="tab3">eigentlich · halt · eben</button>
+  <button class="tab-btn" data-tab="tab4">denn · mal · bloß / nur</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1 -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Was sind Modalpartikeln?</h2>
+    <p><strong>Modalpartikeln</strong> (auch: Abtönungspartikeln) sind kleine, unbetonte Wörter, die die <em>Haltung des Sprechers</em> zum Gesagten ausdrücken — Überraschung, Erwartung, Ungeduld, Selbstverständlichkeit, Unglaube. Sie verändern den Satzinhalt nicht, aber die <em>Stimmung</em> und <em>Implikation</em>.</p>
+    <p>Modalpartikeln kommen fast ausschließlich in der <strong>gesprochenen Sprache und informellen Texten</strong> vor. Im C1-Hören und C1-Sprechen spielen sie eine wichtige Rolle.</p>
+  </div>
+  <div class="info-box"><strong>📖 C1-Relevanz:</strong> Im Goethe C1 erscheinen Modalpartikeln hauptsächlich im <em>Hören</em> (du musst die Nuance verstehen) und im <em>Sprechen</em> (du kannst sie einsetzen, um natürlicher zu klingen). Sie kommen kaum in formellen Schreibaufgaben vor.</div>
+  <div class="expl-card">
+    <h2>🔑 Wichtige Eigenschaften</h2>
+    <p><strong>1. Unbetont:</strong> Modalpartikeln tragen keinen Satzakzent. Wenn betont, haben sie eine andere Funktion (z.B. <em>doch</em> als Adverb: „Doch, das stimmt.")</p>
+    <p><strong>2. Nicht weglassbar ohne Bedeutungsverlust:</strong> Sie verändern die Nuance, nicht den Wahrheitswert.</p>
+    <p><strong>3. Stellung:</strong> Meist im Mittelfeld des Satzes, nach dem finiten Verb.</p>
+    <p><strong>4. Satztyp-abhängig:</strong> Nicht alle Partikeln passen in jeden Satztyp.</p>
+  </div>
+  <div class="expl-card">
+    <h2>📊 Überblick — alle C1-Modalpartikeln</h2>
+    <table class="ctx-table">
+      <thead><tr><th>Partikel</th><th>Kernbedeutung</th><th>Satztyp</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">doch</td><td>Widerspruch, Erinnerung, Überraschung, Aufforderung</td><td>Aussage, Imperativ, Frage</td></tr>
+        <tr><td class="mono">ja</td><td>Selbstverständlichkeit, gemeinsames Wissen, Warnung</td><td>Aussage, Imperativ</td></tr>
+        <tr><td class="mono">wohl</td><td>Vermutung, Wahrscheinlichkeit</td><td>Aussage</td></tr>
+        <tr><td class="mono">eigentlich</td><td>Relativierung, Neugier, Einschränkung</td><td>Aussage, Frage</td></tr>
+        <tr><td class="mono">halt / eben</td><td>Unvermeidbarkeit, Resignation, Logik</td><td>Aussage</td></tr>
+        <tr><td class="mono">denn</td><td>Neugier, Interesse (in Fragen)</td><td>nur Fragen</td></tr>
+        <tr><td class="mono">mal</td><td>Mildheit, Bitte, Einladung</td><td>Imperativ, Frage</td></tr>
+        <tr><td class="mono">bloß / nur</td><td>Warnung, Drohung, Wunsch</td><td>Imperativ, Wunschsatz</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tip-box"><strong>💡 Strategie:</strong> Wenn du eine Modalpartikel hörst, frage dich: Was will der Sprecher zusätzlich ausdrücken? Überraschung? Ungeduld? Beruhigung? Das hilft dir, die Nuance richtig zu verstehen.</div>
+</section>
+
+<!-- TAB 2: doch / ja / wohl -->
+<section class="tab-panel" id="tab2">
+  <div class="vi-toggle-bar"><button class="vi-toggle-btn" onclick="toggleVI('vi2')">🇻🇳 Vietnamesisch ein/aus</button></div>
+  <div class="partikel-list">
+
+    <div class="pk-card">
+      <div class="pk-word">doch</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Widerspruch</span>
+        <span class="pk-fn teal">Erinnerung</span>
+        <span class="pk-fn amber">Überraschung</span>
+        <span class="pk-fn indigo">Aufforderung (Imperativ)</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Das ist <span class="mp">doch</span> unglaublich!</div>
+          <div class="meaning">Überraschung/Empörung — der Sprecher ist schockiert</div>
+          <div class="vi vi2">Điều đó thật không thể tin được! (ngạc nhiên, bức xúc)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Du weißt <span class="mp">doch</span>, dass das verboten ist.</div>
+          <div class="meaning">Erinnerung — der Sprecher erinnert ans Bekannte</div>
+          <div class="vi vi2">Anh biết mà, điều đó bị cấm. (nhắc nhở điều đã biết)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Komm <span class="mp">doch</span> rein!</div>
+          <div class="meaning">Milde Aufforderung — freundlich, einladend</div>
+          <div class="vi vi2">Vào đi mà! (lời mời nhẹ nhàng, thân thiện)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Das stimmt <span class="mp">doch</span> nicht!</div>
+          <div class="meaning">Widerspruch — der Sprecher widerspricht dem Gesagten</div>
+          <div class="vi vi2">Điều đó không đúng mà! (phản bác)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-card">
+      <div class="pk-word">ja</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Selbstverständlichkeit</span>
+        <span class="pk-fn teal">gemeinsames Wissen</span>
+        <span class="pk-fn amber">Warnung / Verstärkung</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Das ist <span class="mp">ja</span> interessant!</div>
+          <div class="meaning">Überraschung (positiv) — der Sprecher staunt</div>
+          <div class="vi vi2">Ồ, điều đó thú vị đấy! (ngạc nhiên nhẹ, thích thú)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Er ist <span class="mp">ja</span> bekannt dafür.</div>
+          <div class="meaning">Selbstverständlichkeit — das ist allen bekannt</div>
+          <div class="vi vi2">Anh ấy nổi tiếng vì điều đó mà. (điều hiển nhiên, ai cũng biết)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Mach das <span class="mp">ja</span> nicht!</div>
+          <div class="meaning">Warnung / Drohung — dringende Aufforderung</div>
+          <div class="vi vi2">Đừng có làm vậy đấy! (cảnh báo mạnh, đe dọa nhẹ)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Das weißt du <span class="mp">ja</span> selbst.</div>
+          <div class="meaning">Gemeinsames Wissen — du weißt das schon</div>
+          <div class="vi vi2">Bản thân bạn cũng biết điều đó mà. (cả hai đều biết)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-card">
+      <div class="pk-word">wohl</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Vermutung</span>
+        <span class="pk-fn teal">Wahrscheinlichkeit</span>
+        <span class="pk-fn amber">Unsicherheit</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Er ist <span class="mp">wohl</span> krank.</div>
+          <div class="meaning">Vermutung — der Sprecher ist nicht sicher</div>
+          <div class="vi vi2">Có lẽ anh ấy bị ốm. (suy đoán, không chắc chắn)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Das dürfte <span class="mp">wohl</span> stimmen.</div>
+          <div class="meaning">Wahrscheinlich zutreffend — mit subjektivem Modalverb</div>
+          <div class="vi vi2">Điều đó có lẽ đúng. (suy đoán có cơ sở)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Du weißt <span class="mp">wohl</span> nicht, was du tust.</div>
+          <div class="meaning">Vorwurf / Überraschung über das Verhalten</div>
+          <div class="vi vi2">Hẳn là bạn không biết mình đang làm gì. (ngạc nhiên, phê phán nhẹ)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="tip-box"><strong>💡 doch vs. ja:</strong> <em>ja</em> bezieht sich auf gemeinsam Bekanntes — alle wissen es. <em>doch</em> betont einen Widerspruch oder erinnert daran. In Imperativen: <em>Komm doch!</em> (einladend) vs. <em>Mach ja nicht!</em> (Warnung).</div>
+</section>
+
+<!-- TAB 3: eigentlich / halt / eben -->
+<section class="tab-panel" id="tab3">
+  <div class="vi-toggle-bar"><button class="vi-toggle-btn" onclick="toggleVI('vi3')">🇻🇳 Vietnamesisch ein/aus</button></div>
+  <div class="partikel-list">
+
+    <div class="pk-card">
+      <div class="pk-word">eigentlich</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Relativierung</span>
+        <span class="pk-fn teal">Neugier (in Fragen)</span>
+        <span class="pk-fn amber">Einschränkung</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Das ist <span class="mp">eigentlich</span> nicht so schlimm.</div>
+          <div class="meaning">Relativierung — relativiert eine Aussage, mildert sie ab</div>
+          <div class="vi vi2">Thực ra điều đó không tệ đến vậy. (giảm nhẹ, tương đối hóa)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Was machst du <span class="mp">eigentlich</span> beruflich?</div>
+          <div class="meaning">Neugier — beiläufige Frage, echtes Interesse</div>
+          <div class="vi vi2">Thật ra bạn làm nghề gì? (hỏi thăm tự nhiên, tò mò)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Ich wollte <span class="mp">eigentlich</span> früher gehen.</div>
+          <div class="meaning">Einschränkung — aber etwas hat sich geändert</div>
+          <div class="vi vi2">Thật ra tôi định đi sớm hơn. (nhưng có gì đó thay đổi)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Wärst du <span class="mp">eigentlich</span> dabei?</div>
+          <div class="meaning">Nachfrage — der Sprecher erkundigt sich beiläufig</div>
+          <div class="vi vi2">Thật ra bạn có ở đó không? (hỏi thêm, bình thường)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-card">
+      <div class="pk-word">halt</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Unvermeidbarkeit</span>
+        <span class="pk-fn teal">Resignation</span>
+        <span class="pk-fn amber">süddeutsch / österreichisch</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Das ist <span class="mp">halt</span> so.</div>
+          <div class="meaning">So ist das eben — man kann nichts ändern</div>
+          <div class="vi vi2">Đó là thực tế thôi. (không làm được gì, chấp nhận)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Dann musst du <span class="mp">halt</span> früher aufstehen.</div>
+          <div class="meaning">Logische Konsequenz — es gibt keine andere Möglichkeit</div>
+          <div class="vi vi2">Vậy thì bạn phải dậy sớm hơn thôi. (hệ quả tất yếu)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Er ist <span class="mp">halt</span> kein Profi.</div>
+          <div class="meaning">Erklärung — das ist der Grund, man kann es nicht ändern</div>
+          <div class="vi vi2">Anh ấy không phải dân chuyên nghiệp mà. (giải thích, bình thường)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-card">
+      <div class="pk-word">eben</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Unvermeidbarkeit</span>
+        <span class="pk-fn teal">Bestätigung</span>
+        <span class="pk-fn amber">norddeutsch = halt</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Das ist <span class="mp">eben</span> das Problem.</div>
+          <div class="meaning">Genau das ist der Kern — Bestätigung einer Schlussfolgerung</div>
+          <div class="vi vi2">Đó chính xác là vấn đề. (khẳng định, nhấn mạnh điểm cốt lõi)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Dann geh <span class="mp">eben</span> nicht.</div>
+          <div class="meaning">Resignation / gleichgültig — macht dir nichts</div>
+          <div class="vi vi2">Thì đừng đi. (thờ ơ, không quan tâm)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">So ist das <span class="mp">eben</span>.</div>
+          <div class="meaning">So ist das nun mal — unvermeidlich, man akzeptiert es</div>
+          <div class="vi vi2">Cuộc đời là vậy thôi. (chấp nhận thực tế)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="tip-box"><strong>💡 halt vs. eben:</strong> Beide drücken Unvermeidbarkeit aus. <em>halt</em> ist typisch süddeutsch/österreichisch, <em>eben</em> ist norddeutsch. Im Standard-Deutschen sind beide akzeptiert. <em>eben</em> klingt oft etwas bestimmter/logischer.</div>
+</section>
+
+<!-- TAB 4: denn / mal / bloß/nur -->
+<section class="tab-panel" id="tab4">
+  <div class="vi-toggle-bar"><button class="vi-toggle-btn" onclick="toggleVI('vi4')">🇻🇳 Vietnamesisch ein/aus</button></div>
+  <div class="partikel-list">
+
+    <div class="pk-card">
+      <div class="pk-word">denn</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Neugier in Fragen</span>
+        <span class="pk-fn teal">Interesse / Freundlichkeit</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Was machst du <span class="mp">denn</span> hier?</div>
+          <div class="meaning">Neugier — der Sprecher ist interessiert, nicht vorwurfsvoll</div>
+          <div class="vi vi2">Bạn đang làm gì ở đây vậy? (tò mò thân thiện, không có ý phán xét)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Wie heißt du <span class="mp">denn</span>?</div>
+          <div class="meaning">Freundliche Frage — lockerer, angenehmer Ton</div>
+          <div class="vi vi2">Bạn tên gì vậy? (câu hỏi thân thiện, tự nhiên)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Warum bist du <span class="mp">denn</span> so traurig?</div>
+          <div class="meaning">Empathie / Mitgefühl — Sorge um den anderen</div>
+          <div class="vi vi2">Sao bạn buồn vậy? (quan tâm, hỏi thăm với lòng đồng cảm)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-card">
+      <div class="pk-word">mal</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Milde Bitte</span>
+        <span class="pk-fn teal">Einladung</span>
+        <span class="pk-fn amber">Abschwächung im Imperativ</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Komm <span class="mp">mal</span> her!</div>
+          <div class="meaning">Milde Aufforderung — freundlich, ohne Druck</div>
+          <div class="vi vi2">Lại đây một chút! (yêu cầu nhẹ nhàng, thân thiện)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Kannst du <span class="mp">mal</span> kurz helfen?</div>
+          <div class="meaning">Bitte — abschwächend, höflicher als ohne mal</div>
+          <div class="vi vi2">Bạn có thể giúp một chút không? (nhờ nhẹ nhàng, lịch sự hơn)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Schau <span class="mp">mal</span>!</div>
+          <div class="meaning">Einladung / Aufmerksamkeit lenken</div>
+          <div class="vi vi2">Nhìn xem này! (thu hút sự chú ý, thân thiện)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pk-card">
+      <div class="pk-word">bloß / nur</div>
+      <div class="pk-functions">
+        <span class="pk-fn">Warnung</span>
+        <span class="pk-fn teal">Wunsch / Bedauern</span>
+        <span class="pk-fn amber">Drohung (Imperativ)</span>
+      </div>
+      <div class="pk-examples">
+        <div class="pk-ex">
+          <div class="de">Komm <span class="mp">bloß</span> nicht zu spät!</div>
+          <div class="meaning">Warnung / Drohung — stärker als doch</div>
+          <div class="vi vi2">Đừng đến muộn đấy! (cảnh báo mạnh)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Wenn das <span class="mp">nur</span> gut geht!</div>
+          <div class="meaning">Wunsch / Sorge — der Sprecher hofft und ist besorgt</div>
+          <div class="vi vi2">Nếu mà điều đó ổn thôi! (mong muốn pha lo lắng)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Tu das <span class="mp">bloß</span> nicht!</div>
+          <div class="meaning">Ernste Warnung — drohender Ton</div>
+          <div class="vi vi2">Đừng có làm thế đó! (cảnh báo nghiêm túc)</div>
+        </div>
+        <div class="pk-ex">
+          <div class="de">Wenn ich <span class="mp">nur</span> mehr Zeit hätte!</div>
+          <div class="meaning">Irrealer Wunsch — mit Konjunktiv II</div>
+          <div class="vi vi2">Giá mà tôi có thêm thời gian! (ước muốn không thực)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="tip-box"><strong>💡 mal vs. doch (Imperativ):</strong> <em>mal</em> macht eine Aufforderung sanfter und freundlicher: <em>Komm mal her!</em> (einladend). <em>doch</em> drückt leichte Ungeduld aus: <em>Komm doch endlich!</em> (ungeduldig). Beide mildern jedoch den Imperativ ab.</div>
+</section>
+
+<!-- TAB 5: ÜBUNGEN -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Bedeutung erkennen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Nuance verstehen</button>
+    <button class="level-tab" data-level="3">Stufe 3 — Kontext & Satztyp</button>
+    <button class="level-tab" data-level="4">Stufe 4 — doch / ja / wohl</button>
+    <button class="level-tab" data-level="5">Stufe 5 — C1-Niveau</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl=document.getElementById('studentName');
+var sv=localStorage.getItem('studentName');if(sv)nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+window.toggleVI=function(cls){document.querySelectorAll('.'+cls).forEach(function(el){el.classList.toggle('show');});};
+
+var DATA={
+1:[
+  {type:'mc',prompt:'"Das ist ja interessant!"',task:'Was drückt "ja" hier aus?',
+   options:['Warnung','Überraschung / positives Staunen','Widerspruch','Vermutung'],answer:1},
+  {type:'mc',prompt:'"Er ist wohl krank."',task:'Was drückt "wohl" aus?',
+   options:['Sicherheit','Warnung','Vermutung / Unsicherheit des Sprechers','Resignation'],answer:2},
+  {type:'mc',prompt:'"Das ist halt so."',task:'Was bedeutet "halt" hier?',
+   options:['Stopp / Befehl','Es ist so — man kann es nicht ändern (Unvermeidbarkeit)','Überraschung','Widerspruch'],answer:1},
+  {type:'mc',prompt:'"Komm doch rein!"',task:'Was drückt "doch" im Imperativ aus?',
+   options:['Widerspruch / Ablehnung','Drohung','Milde freundliche Einladung / Aufforderung','Resignation'],answer:2},
+  {type:'mc',prompt:'"Was machst du denn hier?"',task:'Welche Nuance hat "denn" in dieser Frage?',
+   options:['Vorwurf und Ärger','Freundliche Neugier / Interesse','Warnton','Drohung'],answer:1},
+  {type:'mc',prompt:'"Mach das ja nicht!"',task:'Was bedeutet "ja" im Imperativ?',
+   options:['Selbstverständlichkeit','Überraschung','Ernste Warnung / Drohung','Einladung'],answer:2},
+  {type:'mc',prompt:'"Kannst du mal kurz helfen?"',task:'Was bewirkt "mal" hier?',
+   options:['Machtdemonstration','Abschwächung — macht die Bitte höflicher und freundlicher','Drohung','Resignation'],answer:1},
+  {type:'mc',prompt:'"Ich wollte eigentlich früher gehen."',task:'Was drückt "eigentlich" aus?',
+   options:['Überraschung','Einschränkung — aber etwas kam dazwischen','Widerspruch','Warnung'],answer:1},
+  {type:'mc',prompt:'"Tu das bloß nicht!"',task:'Was bedeutet "bloß" im Imperativ?',
+   options:['Einladung','Milde Bitte','Ernste Warnung / Drohung','Resignation'],answer:2},
+  {type:'mc',prompt:'"Das ist eben das Problem."',task:'Was drückt "eben" aus?',
+   options:['Überraschung','Genau das ist der Kern — Bestätigung / Konsequenz','Freundliche Neugier','Milde Aufforderung'],answer:1},
+  {type:'mc',prompt:'"Du weißt doch, dass das verboten ist."',task:'Was bedeutet "doch" hier?',
+   options:['Widerspruch','Erinnerung an etwas Bekanntes','Vermutung','Resignation'],answer:1},
+  {type:'mc',prompt:'"Wenn das nur gut geht!"',task:'Was drückt "nur" aus?',
+   options:['Warnung','Bedingung','Wunsch / Sorge des Sprechers','Freundliche Frage'],answer:2},
+  {type:'mc',prompt:'"Was machst du eigentlich beruflich?"',task:'Welche Nuance hat "eigentlich" in dieser Frage?',
+   options:['Vorwurf','Beiläufige, neugierige Nachfrage','Widerspruch','Resignation'],answer:1}
+],
+2:[
+  {type:'mc',prompt:'Jemand sagt etwas Falsches über dich. Du antwortest empört:',task:'Welche Partikel passt?',
+   options:['"Das ist wohl nicht wahr!"','"Das stimmt doch nicht!"','"Das ist mal nicht wahr!"','"Das ist denn falsch!"'],answer:1},
+  {type:'mc',prompt:'Dein Freund kommt zu spät. Du sagst genervt:',task:'',
+   options:['"Komm doch endlich!"','"Komm wohl!"','"Komm mal nicht!"','"Komm denn her!"'],answer:0},
+  {type:'mc',prompt:'Du siehst jemanden, den du nicht erwartet hast. Du sagst:',task:'',
+   options:['"Das ist halt überraschend."','"Was machst du denn hier?"','"Du bist wohl hier."','"Du bist ja hier!"'],answer:1},
+  {type:'mc',prompt:'Du vermutest, dass dein Kollege krank ist (aber bist nicht sicher):',task:'',
+   options:['"Er ist doch krank."','"Er ist ja krank."','"Er ist wohl krank."','"Er ist halt krank."'],answer:2},
+  {type:'mc',prompt:'Du bittest jemanden höflich, etwas zu reichen:',task:'',
+   options:['"Gib mir das ja!"','"Gib mir das bloß!"','"Reich mir das mal!"','"Reich mir das doch wohl."'],answer:2},
+  {type:'mc',prompt:'Du erinnerst jemanden an eine bekannte Information:',task:'',
+   options:['"Du weißt wohl, dass …"','"Du weißt doch, dass …"','"Du weißt denn, dass …"','"Du weißt mal, dass …"'],answer:1},
+  {type:'mc',prompt:'Jemand beschwert sich über etwas Unvermeidbares. Du antwortest resigniert:',task:'',
+   options:['"Das ist doch so."','"Das ist ja so."','"Das ist halt so."','"Das ist denn so."'],answer:2},
+  {type:'mc',prompt:'Du bist besorgt, ob etwas gut ausgeht:',task:'',
+   options:['"Wenn das doch gut geht!"','"Wenn das nur gut geht!"','"Wenn das eben gut geht!"','"Wenn das mal gut geht!"'],answer:1},
+  {type:'mc',prompt:'Jemand fragt dich beiläufig nach deinem Job. Welche Partikel klingt am natürlichsten?',task:'"Was machst du ___ beruflich?"',
+   options:['ja','doch','eigentlich','wohl'],answer:2},
+  {type:'mc',prompt:'Du siehst etwas Erstaunliches und reagierst positiv überrascht:',task:'"Das ist ___ toll!"',
+   options:['doch','wohl','halt','ja'],answer:3},
+  {type:'mc',prompt:'Du warnst jemanden sehr ernst:',task:'"Komm ___ nicht zu spät!"',
+   options:['denn','wohl','bloß','mal'],answer:2},
+  {type:'mc',prompt:'Du erklärst eine Situation als logische Konsequenz:',task:'"Das ist ___ das Ergebnis der Entscheidung."',
+   options:['mal','denn','eben','bloß'],answer:2},
+  {type:'mc',prompt:'Du drückst aus, dass etwas selbstverständlich und allen bekannt ist:',task:'"Er ist ___ bekannt für seine Arbeit."',
+   options:['wohl','ja','halt','denn'],answer:1}
+],
+3:[
+  {type:'mc',prompt:'"Wenn ich nur mehr Zeit hätte!"',task:'In welchem Satzmodus steht "nur" hier?',
+   options:['Imperativsatz','Wunschsatz mit Konjunktiv II','Fragesatz','Aussagesatz'],answer:1},
+  {type:'mc',prompt:'Welche Partikel passt NUR in Fragesätze?',task:'',
+   options:['ja','wohl','denn','eben'],answer:2},
+  {type:'mc',prompt:'Welcher Satz ist FALSCH (Partikel im falschen Satztyp)?',task:'',
+   options:['Das ist doch merkwürdig.','Er ist wohl müde.','Komm denn her!','Was machst du denn?'],answer:2},
+  {type:'mc',prompt:'"Mach ja keine Fehler!"',task:'In welchem Satzmodus steht "ja" hier?',
+   options:['Aussagesatz','Fragesatz','Imperativsatz','Wunschsatz'],answer:2},
+  {type:'mc',prompt:'"Das ist ja das Problem!" vs. "Das ist eben das Problem!"',task:'Was ist der Unterschied?',
+   options:['ja = Überraschung/Staunen; eben = logische Bestätigung/Schlussfolgerung','beide sind identisch','ja = Resignation; eben = Warnung','ja = Frage; eben = Aussage'],answer:0},
+  {type:'mc',prompt:'Welche Partikel kann sowohl in Aussage- als auch in Imperativsätzen stehen?',task:'',
+   options:['denn','doch','bloß allein','wohl allein'],answer:1},
+  {type:'mc',prompt:'"Du bist ja verrückt!" — Ist "ja" hier betont oder unbetont?',task:'',
+   options:['Betont — dann bedeutet es Zustimmung','Unbetont — Modalpartikel (Staunen/Überraschung)','Beide Varianten möglich','Betont — dann bedeutet es Widerspruch'],answer:1},
+  {type:'mc',prompt:'In welchem Kontext klingt "wohl" am natürlichsten?',task:'',
+   options:['Du bist dir 100% sicher.','Du spekulierst oder schätzt etwas ein.','Du gibst einen Befehl.','Du erinnerst an etwas Bekanntes.'],answer:1},
+  {type:'mc',prompt:'"Dann musst du halt früher kommen."',task:'Was signalisiert "halt" an den Gesprächspartner?',
+   options:['Der Sprecher ist wütend.','Es ist eine logische Konsequenz — keine andere Wahl.','Der Sprecher zweifelt.','Der Sprecher warnt.'],answer:1},
+  {type:'mc',prompt:'Welche Partikel passt am besten: "Das ___ überraschend gut!"',task:'',
+   options:['denn','halt','wohl','ist ja'],answer:3},
+  {type:'mc',prompt:'"Schau mal!" — Was ist die Funktion von "mal"?',task:'',
+   options:['Warnung','Aufmerksamkeit lenken / einladen','Drohung','Resignation'],answer:1},
+  {type:'mc',prompt:'Modalpartikeln stehen meistens…',task:'',
+   options:['am Satzanfang','am Satzende','im Mittelfeld, nach dem finiten Verb','direkt vor dem Subjekt'],answer:2},
+  {type:'mc',prompt:'Welche Aussage über Modalpartikeln ist FALSCH?',task:'',
+   options:['Sie sind meist unbetont.','Sie kommen häufig in formellen Schreibtexten vor.','Sie drücken die Haltung des Sprechers aus.','Sie sind satztyp-abhängig.'],answer:1}
+],
+4:[
+  {type:'mc',prompt:'Welche Partikel passt am besten?',task:'"Du weißt ___, dass wir morgen eine Prüfung haben!"',
+   options:['wohl','mal','doch','denn'],answer:2},
+  {type:'mc',prompt:'Welche Partikel passt?',task:'"Er ist ___ krank — er sieht blass aus."',
+   options:['ja','doch','wohl','halt'],answer:2},
+  {type:'mc',prompt:'Welche Partikel passt?',task:'"Das ist ___ eine gute Idee!" (positiv überrascht)',
+   options:['wohl','bloß','ja','halt'],answer:2},
+  {type:'mc',prompt:'Welche Partikel passt?',task:'"Das ___ nicht wahr sein!" (empört, widerspricht)',
+   options:['kann ja','kann doch','kann mal','kann denn'],answer:1},
+  {type:'mc',prompt:'Zwei Sätze — welcher hat "doch" als Widerspruch (nicht als Erinnerung)?',task:'',
+   options:['Du weißt doch, dass das teuer ist.','Das stimmt doch nicht!','Komm doch mit!','Du hast das doch schon gesehen.'],answer:1},
+  {type:'mc',prompt:'Welche Partikel passt am besten?',task:'"___ machst du eigentlich so den ganzen Tag?" (neugierig)',
+   options:['Doch','Wohl','Was denn','Mal'],answer:2},
+  {type:'mc',prompt:'"Er hat ___ schon angerufen." — Was bedeutet "ja" hier?',task:'',
+   options:['Überraschung','Das ist bereits bekannt — Selbstverständlichkeit','Warnung','Vermutung'],answer:1},
+  {type:'mc',prompt:'"Das dürfte ___ stimmen." — Welche Partikel verstärkt die Vermutung?',task:'',
+   options:['ja','doch','wohl','mal'],answer:2},
+  {type:'mc',prompt:'Welcher Satz klingt am natürlichsten im Deutschen?',task:'Kontext: Du lädst jemanden freundlich ins Zimmer ein.',
+   options:['Komm wohl rein!','Komm doch rein!','Komm bloß rein!','Komm denn rein!'],answer:1},
+  {type:'mc',prompt:'"Das ist ___ bekannt." — Welche Partikel signalisiert, dass es allen bekannt ist?',task:'',
+   options:['wohl','doch','ja','halt'],answer:2},
+  {type:'mc',prompt:'"Er ist ___ nicht dumm — er lernt nur nicht." — Welche Partikel relativiert?',task:'',
+   options:['wohl','ja','eigentlich','denn'],answer:2},
+  {type:'mc',prompt:'Welcher Satz enthält "doch" als milde Aufforderung (nicht Widerspruch)?',task:'',
+   options:['Das stimmt doch nicht!','Du weißt doch, dass …','Ruf doch mal an!','Das ist doch unglaublich!'],answer:2},
+  {type:'mc',prompt:'"___ kommt er nicht?" — Welche Partikel drückt freundliche Neugier aus?',task:'',
+   options:['Wohl','Ja','Warum denn','Halt'],answer:2}
+],
+5:[
+  {type:'mc',prompt:'Du hörst im C1-Hörtext: "Das ist ja wirklich bemerkenswert!" — Welche Haltung hat der Sprecher?',task:'',
+   options:['Er ist skeptisch.','Er ist positiv überrascht und beeindruckt.','Er warnt jemanden.','Er widerspricht.'],answer:1},
+  {type:'mc',prompt:'Im Dialog: A: "Ich schaffe das nie." B: "Das ist doch nicht so schwer!"',task:'Was drückt "doch" in Bs Antwort aus?',
+   options:['B stimmt zu.','B widerspricht A und relativiert die Aussage.','B ist resigniert.','B warnt A.'],answer:1},
+  {type:'mc',prompt:'Im Hörtext sagt jemand: "Er kommt wohl zu spät." Was schlussfolgert der Sprecher?',task:'',
+   options:['Er ist sicher, dass er zu spät kommt.','Er vermutet es, ist aber nicht sicher.','Er hofft, dass er zu spät kommt.','Er warnt vor Zuspätkommen.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz klingt im gesprochenen Deutsch am natürlichsten?',task:'Kontext: Du bittest einen Freund, dir zu helfen.',
+   options:['Hilf mir!','Hilf mir wohl!','Hilf mir doch mal!','Hilf mir bloß!'],answer:2},
+  {type:'mc',prompt:'Im Gespräch: A erklärt ein Problem. B sagt: "Das ist eben so." Was meint B?',task:'',
+   options:['B ist überrascht.','B akzeptiert das als unvermeidliche Tatsache.','B widerspricht A.','B warnt A.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz klingt am unnatürlichsten im gesprochenen Deutsch?',task:'',
+   options:['Komm doch rein!','Das ist ja merkwürdig.','Ich bin denn müde.','Er kommt wohl später.'],answer:2},
+  {type:'mc',prompt:'Im C1-Hören: "Mach das bloß nicht!" — Welche Emotion steckt dahinter?',task:'',
+   options:['Freundliche Einladung','Ernste Warnung / Besorgnis','Neugier','Überraschung'],answer:1},
+  {type:'mc',prompt:'Was ist der Unterschied zwischen "Komm mal!" und "Komm doch!"?',task:'',
+   options:['kein Unterschied','mal = sanfte Einladung; doch = leichte Ungeduld/Drängen','mal = Warnung; doch = Einladung','mal = formell; doch = informell'],answer:1},
+  {type:'mc',prompt:'Im Hörtext: Zwei Kollegen sprechen. A: "Warum ist er denn so nervös?" — Was signalisiert "denn"?',task:'',
+   options:['A ist wütend auf ihn.','A ist neugierig und zeigt Mitgefühl.','A warnt B.','A widerspricht B.'],answer:1},
+  {type:'mc',prompt:'Welche Kombination von Partikeln klingt natürlich auf Deutsch?',task:'',
+   options:['Das ist doch wohl mal so.','Das ist ja doch wirklich interessant!','Das ist mal denn so.','Das ist wohl ja bloß so.'],answer:1},
+  {type:'mc',prompt:'Im Dialog: A berichtet etwas Schlechtes. B sagt: "Das kann doch nicht sein!"',task:'Was drückt "doch" hier aus?',
+   options:['B erinnert A an etwas.','B ist empört und widerspricht der Aussage.','B ist neugierig.','B resigniert.'],answer:1},
+  {type:'mc',prompt:'Welche Aussage über Modalpartikeln in C1 ist korrekt?',task:'',
+   options:['Sie kommen häufig in formellen Schreibaufgaben vor.','Sie sind nur in Fragesätzen möglich.','Sie sind wichtig fürs C1-Hören und C1-Sprechen, weniger für formelles Schreiben.','Sie verändern den Wahrheitsgehalt eines Satzes.'],answer:2},
+  {type:'mc',prompt:'Im C1-Hören sagt jemand: "Das wäre eigentlich nicht nötig gewesen." Was meint der Sprecher?',task:'',
+   options:['Es war absolut nötig.','Es wäre nötig gewesen, wenn etwas anders gewesen wäre.','Es war in Wirklichkeit nicht nötig — eine relativierende Einschätzung.','Es war überraschend nötig.'],answer:2}
+]
+};
+
+var currentLevel=1,answers={},checked={};
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');card.className='exercise-card';card.id='ex-'+i;
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+    var opts=document.createElement('div');opts.className='options';
+    ex.options.forEach(function(opt,j){
+      var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+      btn.addEventListener('click',function(){
+        if(checked[i])return;answers[i]=j;
+        opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+        if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+        else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+        checked[i]=true;updateScore();updateProg();
+      });
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    c.appendChild(card);
+  });
+  updateProg();
+}
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(answers[i]===ex.answer)correct++;
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=-1;
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    var opts=card.querySelectorAll('.option-btn');
+    if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Gut! Achte auf Modalpartikeln beim C1-Hören — sie geben wichtige Hinweise zur Sprechereinstellung.':'Lies nochmal Tab 2–4 durch und höre aktiv auf Modalpartikeln in deutschen Podcasts/Filmen.';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+renderEx();
+})();
+</script>
+</body>
+</html>

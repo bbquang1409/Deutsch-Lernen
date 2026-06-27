@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funktionsverbgefüge – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#2D5BE3;--cobalt-light:#E8EEFB;--cobalt-dark:#1A3BAA;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E2E6EF;
+  --text:#1A1D2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --green:#059669;--green-bg:#ECFDF5;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --teal:#0D7A6E;--teal-bg:#F0FAFA;
+  --indigo:#4338CA;--indigo-bg:#EEF2FF;
+  --slate-bg:#F1F5F9;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --cobalt:#5B8AF7;--cobalt-light:#1A2540;--cobalt-dark:#7BA3FF;
+    --bg:#0F1117;--surface:#1A1D2A;--border:#2D3148;
+    --text:#E8EAF0;--text-muted:#9DA3B4;--text-light:#6B7280;
+    --green:#34D399;--green-bg:#0A2918;
+    --red:#F87171;--red-bg:#2D1010;
+    --amber:#FCD34D;--amber-bg:#2D1F08;
+    --teal:#2DD4BF;--teal-bg:#0A2420;
+    --indigo:#818CF8;--indigo-bg:#1E1B4B;
+    --slate-bg:#1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.schema-box{background:var(--slate-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin:.75rem 0;line-height:2;}
+.schema-box .part{color:var(--cobalt);font-weight:500;}
+.schema-box .gray{color:var(--text-muted);}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+.beispiel-section{background:var(--teal-bg);border:1px solid var(--teal);border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.25rem 0;}
+.beispiel-section h3{font-size:13px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.vi-toggle{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--teal);background:transparent;border:1px solid var(--teal);border-radius:var(--radius-sm);padding:3px 9px;cursor:pointer;}
+.vi-toggle:hover{background:var(--teal);color:#fff;}
+.bsp-list{display:flex;flex-direction:column;gap:8px;}
+.bsp-item{background:var(--surface);border-radius:var(--radius-sm);padding:10px 14px;border-left:3px solid var(--cobalt);}
+.bsp-de{font-size:13px;font-weight:500;color:var(--text);line-height:1.6;}
+.bsp-de .fv{color:var(--cobalt);}
+.bsp-vi{font-size:12px;color:var(--text-muted);font-style:italic;display:none;margin-top:3px;}
+.bsp-vi.show{display:block;}
+.bsp-note{font-size:11px;color:var(--text-light);margin-top:2px;}
+.fvg-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.fvg-table th{background:var(--cobalt-light);color:var(--cobalt);padding:8px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.fvg-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;}
+.fvg-table tr:last-child td{border-bottom:none;}
+.fvg-table tr:hover td{background:var(--slate-bg);}
+.fvg-table .fvg{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-weight:500;font-size:12px;}
+.fvg-table .verb{color:var(--text-muted);font-size:12px;}
+.fvg-table .ex{color:var(--text);font-size:13px;}
+.verb-section{margin-bottom:1.5rem;}
+.verb-heading{font-size:15px;font-weight:600;color:var(--text);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cobalt-light);display:flex;align-items:center;gap:8px;}
+.verb-heading .vb{font-family:'JetBrains Mono',monospace;color:var(--cobalt);}
+.transform-demo{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:1.25rem 0;box-shadow:var(--shadow);}
+.demo-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;}
+.demo-row:last-child{border-bottom:none;}
+.demo-label{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text-light);margin-bottom:3px;}
+.demo-left .de{font-size:13px;color:var(--text-muted);}
+.demo-right .de{font-size:13px;color:var(--text);font-weight:500;}
+.demo-right .de .hl{color:var(--cobalt);}
+.arrow{font-size:18px;color:var(--cobalt);flex-shrink:0;}
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.fill-input{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;max-width:420px;outline:none;transition:border-color .2s;}
+.fill-input:focus{border-color:var(--cobalt);}
+.fill-input.correct{border-color:var(--green);background:var(--green-bg);}
+.fill-input.wrong{border-color:var(--red);background:var(--red-bg);}
+.check-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:background .15s;}
+.check-btn:hover{background:var(--cobalt-dark);}
+.check-btn:disabled{background:var(--border);color:var(--text-muted);cursor:default;}
+.ex-feedback{margin-top:10px;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none;line-height:1.5;}
+.ex-feedback.show{display:block;}
+.ex-feedback.correct{background:var(--green-bg);color:var(--green);}
+.ex-feedback.wrong{background:var(--red-bg);color:var(--red);}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;}.header{padding:0 1rem;}.tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 10px;font-size:12px;}.name-input{width:110px;}
+  .demo-row{grid-template-columns:1fr;}.arrow{display:none;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Funktionsverbgefüge · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Einführung</button>
+  <button class="tab-btn" data-tab="tab2">FVG mit bringen / stellen</button>
+  <button class="tab-btn" data-tab="tab3">FVG mit kommen / geraten</button>
+  <button class="tab-btn" data-tab="tab4">FVG mit nehmen / setzen / stehen</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1: EINFÜHRUNG -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Was sind Funktionsverbgefüge?</h2>
+    <p>Ein <strong>Funktionsverbgefüge (FVG)</strong> ist eine feste Verbindung aus einem <em>bedeutungsarmen Verb</em> (Funktionsverb) und einem <em>Nomen</em> (meist mit Präposition). Das Funktionsverb trägt nur die grammatische Information (Tempus, Person), während das Nomen den eigentlichen Inhalt trägt.</p>
+    <p>FVG sind typisch für <strong>formelle, geschriebene Sprache</strong> — Wissenschaft, Wirtschaft, Recht, Medien. Im C1-Schreiben und C1-Lesen begegnest du ihnen sehr häufig.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Struktur:</span><br>
+    <span class="part">Nomen (Verbalsubstantiv)</span> + <span class="part">Funktionsverb</span><br>
+    <span class="gray">oder</span><br>
+    <span class="part">Präposition</span> + <span class="part">Nomen</span> + <span class="part">Funktionsverb</span><br><br>
+    eine Entscheidung <span class="part">treffen</span> = entscheiden<br>
+    in Frage <span class="part">stellen</span> = anzweifeln<br>
+    zur Verfügung <span class="part">stellen</span> = bereitstellen<br>
+    unter Beweis <span class="part">stellen</span> = beweisen
+  </div>
+  <div class="info-box"><strong>📖 C1-Relevanz:</strong> Im Goethe C1 und OSD C1 erscheinen FVG in der Lückentext-Aufgabe (Lesen), in formellen Schreibaufgaben (Stellungnahme, E-Mail) und in Hörtexten. Ein sicherer Umgang zeigt C1-Sprachniveau.</div>
+  <div class="expl-card">
+    <h2>🔄 FVG vs. einfaches Verb</h2>
+    <table class="fvg-table">
+      <thead><tr><th>Einfaches Verb</th><th>Funktionsverbgefüge</th><th>Register</th></tr></thead>
+      <tbody>
+        <tr><td>entscheiden</td><td class="fvg">eine Entscheidung treffen</td><td style="color:var(--text-muted);font-size:12px">formell</td></tr>
+        <tr><td>beginnen / anfangen</td><td class="fvg">in Gang setzen / kommen</td><td style="color:var(--text-muted);font-size:12px">formell</td></tr>
+        <tr><td>beweisen</td><td class="fvg">unter Beweis stellen</td><td style="color:var(--text-muted);font-size:12px">formell</td></tr>
+        <tr><td>bereitstellen</td><td class="fvg">zur Verfügung stellen</td><td style="color:var(--text-muted);font-size:12px">neutral–formell</td></tr>
+        <tr><td>bezweifeln / anzweifeln</td><td class="fvg">in Frage stellen</td><td style="color:var(--text-muted);font-size:12px">formell</td></tr>
+        <tr><td>versprechen</td><td class="fvg">ein Versprechen abgeben / geben</td><td style="color:var(--text-muted);font-size:12px">formell</td></tr>
+        <tr><td>fördern</td><td class="fvg">Förderung erhalten / gewähren</td><td style="color:var(--text-muted);font-size:12px">Amtsdeutsch</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tip-box"><strong>💡 Wichtig:</strong> FVG lassen sich mit Modalverben, Passiv und im Konjunktiv verwenden — genau wie normale Verben. Das macht sie sehr flexibel im C1-Schreiben.<br>
+  <em>Die Entscheidung muss getroffen werden.</em> (Passiv + Modalverb mit FVG)</div>
+  <div class="beispiel-section">
+    <h3>FVG in C1-Texten <button class="vi-toggle" onclick="toggleVI('vi1')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Die Regierung hat <span class="fv">Maßnahmen ergriffen</span>, um die Krise zu bewältigen.</div>
+        <div class="bsp-vi vi1">Chính phủ đã tiến hành các biện pháp để vượt qua cuộc khủng hoảng.</div>
+        <div class="bsp-note">FVG: Maßnahmen ergreifen = Maßnahmen durchführen</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das Projekt <span class="fv">steht zur Verfügung</span> — alle Daten sind abrufbar.</div>
+        <div class="bsp-vi vi1">Dự án có sẵn — tất cả dữ liệu đều có thể truy cập.</div>
+        <div class="bsp-note">FVG: zur Verfügung stehen = verfügbar sein</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die neue Technologie <span class="fv">stellt die bisherigen Methoden in Frage</span>.</div>
+        <div class="bsp-vi vi1">Công nghệ mới đặt ra câu hỏi về các phương pháp hiện tại.</div>
+        <div class="bsp-note">FVG: in Frage stellen = anzweifeln, hinterfragen</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Verhandlungen <span class="fv">kommen in Gang</span> — erste Einigungen sind erzielt worden.</div>
+        <div class="bsp-vi vi1">Các cuộc đàm phán đang bắt đầu tiến triển — đã đạt được những thỏa thuận đầu tiên.</div>
+        <div class="bsp-note">FVG: in Gang kommen = beginnen, anlaufen</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 2: bringen / stellen -->
+<section class="tab-panel" id="tab2">
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">bringen</span> — FVG im Überblick</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung (einfaches Verb)</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">zum Ausdruck bringen</td><td class="verb">ausdrücken, zeigen</td><td class="ex">Er <em>brachte seine Enttäuschung zum Ausdruck</em>.</td></tr>
+        <tr><td class="fvg">zum Einsatz bringen</td><td class="verb">einsetzen, verwenden</td><td class="ex">Neue Technologien <em>werden zum Einsatz gebracht</em>.</td></tr>
+        <tr><td class="fvg">in Gang bringen</td><td class="verb">starten, initiieren</td><td class="ex">Der Minister <em>brachte die Reformen in Gang</em>.</td></tr>
+        <tr><td class="fvg">zum Scheitern bringen</td><td class="verb">scheitern lassen</td><td class="ex">Die Opposition <em>brachte den Plan zum Scheitern</em>.</td></tr>
+        <tr><td class="fvg">in Verbindung bringen</td><td class="verb">verbinden, assoziieren</td><td class="ex">Man <em>brachte ihn mit dem Skandal in Verbindung</em>.</td></tr>
+        <tr><td class="fvg">zum Abschluss bringen</td><td class="verb">abschließen, beenden</td><td class="ex">Das Projekt wurde <em>zum Abschluss gebracht</em>.</td></tr>
+        <tr><td class="fvg">zum Vorschein bringen</td><td class="verb">enthüllen, zeigen</td><td class="ex">Die Untersuchung <em>brachte neue Fakten zum Vorschein</em>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">stellen</span> — FVG im Überblick</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">in Frage stellen</td><td class="verb">anzweifeln, hinterfragen</td><td class="ex">Der Bericht <em>stellt die Ergebnisse in Frage</em>.</td></tr>
+        <tr><td class="fvg">zur Verfügung stellen</td><td class="verb">bereitstellen, anbieten</td><td class="ex">Die EU <em>stellt Fördermittel zur Verfügung</em>.</td></tr>
+        <tr><td class="fvg">unter Beweis stellen</td><td class="verb">beweisen, zeigen</td><td class="ex">Sie <em>stellte ihr Können unter Beweis</em>.</td></tr>
+        <tr><td class="fvg">in den Vordergrund stellen</td><td class="verb">betonen, hervorheben</td><td class="ex">Der Redner <em>stellte soziale Gerechtigkeit in den Vordergrund</em>.</td></tr>
+        <tr><td class="fvg">unter Schutz stellen</td><td class="verb">schützen, absichern</td><td class="ex">Das Gebäude wurde <em>unter Denkmalschutz gestellt</em>.</td></tr>
+        <tr><td class="fvg">eine Forderung stellen</td><td class="verb">fordern, verlangen</td><td class="ex">Die Gewerkschaft <em>stellte eine Forderung nach mehr Lohn</em>.</td></tr>
+        <tr><td class="fvg">einen Antrag stellen</td><td class="verb">beantragen</td><td class="ex">Er <em>stellte einen Antrag auf Unterstützung</em>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="beispiel-section">
+    <h3>bringen / stellen im Kontext <button class="vi-toggle" onclick="toggleVI('vi2')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Die neuen Erkenntnisse <span class="fv">stellen die bisherige Theorie in Frage</span>.</div>
+        <div class="bsp-vi vi2">Những phát hiện mới đặt ra câu hỏi về lý thuyết hiện tại.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das Ministerium <span class="fv">stellt Ressourcen zur Verfügung</span>, um die Forschung zu fördern.</div>
+        <div class="bsp-vi vi2">Bộ cung cấp nguồn lực để thúc đẩy nghiên cứu.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Der Skandal <span class="fv">brachte verborgene Probleme zum Vorschein</span>.</div>
+        <div class="bsp-vi vi2">Vụ bê bối đã đưa những vấn đề tiềm ẩn ra ánh sáng.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 3: kommen / geraten -->
+<section class="tab-panel" id="tab3">
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">kommen</span> — FVG im Überblick</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">in Gang kommen</td><td class="verb">beginnen, anlaufen</td><td class="ex">Die Verhandlungen <em>kommen langsam in Gang</em>.</td></tr>
+        <tr><td class="fvg">zum Einsatz kommen</td><td class="verb">eingesetzt werden</td><td class="ex">Neue Methoden <em>kommen zum Einsatz</em>.</td></tr>
+        <tr><td class="fvg">zum Ausdruck kommen</td><td class="verb">sich zeigen, sichtbar werden</td><td class="ex">Seine Frustration <em>kam deutlich zum Ausdruck</em>.</td></tr>
+        <tr><td class="fvg">zu einer Einigung kommen</td><td class="verb">sich einigen</td><td class="ex">Die Parteien <em>kamen zu einer Einigung</em>.</td></tr>
+        <tr><td class="fvg">zu dem Schluss kommen</td><td class="verb">schlussfolgern</td><td class="ex">Die Experten <em>kamen zu dem Schluss</em>, dass …</td></tr>
+        <tr><td class="fvg">zum Tragen kommen</td><td class="verb">wirksam werden, sich auswirken</td><td class="ex">Die Maßnahmen <em>kommen jetzt zum Tragen</em>.</td></tr>
+        <tr><td class="fvg">in Kontakt kommen</td><td class="verb">Kontakt aufnehmen</td><td class="ex">Er <em>kam mit der Szene in Kontakt</em>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">geraten</span> — FVG im Überblick</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">in Gefahr geraten</td><td class="verb">gefährdet werden</td><td class="ex">Das Projekt <em>geriet in Gefahr</em>.</td></tr>
+        <tr><td class="fvg">in Vergessenheit geraten</td><td class="verb">vergessen werden</td><td class="ex">Die alten Traditionen <em>geraten in Vergessenheit</em>.</td></tr>
+        <tr><td class="fvg">in Konflikt geraten</td><td class="verb">in Konflikt kommen</td><td class="ex">Die Interessen <em>gerieten in Konflikt</em>.</td></tr>
+        <tr><td class="fvg">in Schwierigkeiten geraten</td><td class="verb">Probleme bekommen</td><td class="ex">Das Unternehmen <em>geriet in Schwierigkeiten</em>.</td></tr>
+        <tr><td class="fvg">unter Druck geraten</td><td class="verb">unter Druck kommen</td><td class="ex">Die Regierung <em>geriet unter Druck</em>.</td></tr>
+        <tr><td class="fvg">in Bewegung geraten</td><td class="verb">sich in Bewegung setzen</td><td class="ex">Die politische Situation <em>geriet in Bewegung</em>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tip-box"><strong>💡 kommen vs. geraten:</strong> <em>kommen</em>-FVG sind oft neutral oder positiv (<em>in Gang kommen, zu einer Einigung kommen</em>). <em>geraten</em>-FVG haben oft eine negative Konnotation (<em>in Schwierigkeiten geraten, in Gefahr geraten</em>).</div>
+  <div class="beispiel-section">
+    <h3>kommen / geraten im Kontext <button class="vi-toggle" onclick="toggleVI('vi3')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Nach langen Verhandlungen <span class="fv">kamen die Parteien zu einer Einigung</span>.</div>
+        <div class="bsp-vi vi3">Sau những cuộc đàm phán dài, các bên đã đạt được thỏa thuận.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Expertenkommission <span class="fv">kam zu dem Schluss</span>, dass weitere Reformen notwendig sind.</div>
+        <div class="bsp-vi vi3">Ủy ban chuyên gia kết luận rằng cần có thêm cải cách.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Durch die Wirtschaftskrise <span class="fv">gerieten viele Betriebe in Schwierigkeiten</span>.</div>
+        <div class="bsp-vi vi3">Do khủng hoảng kinh tế, nhiều doanh nghiệp rơi vào khó khăn.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Traditionelle Handwerkskünste <span class="fv">geraten immer mehr in Vergessenheit</span>.</div>
+        <div class="bsp-vi vi3">Nghề thủ công truyền thống ngày càng bị lãng quên.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 4: nehmen / setzen / stehen -->
+<section class="tab-panel" id="tab4">
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">nehmen</span> — FVG</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">in Anspruch nehmen</td><td class="verb">nutzen, beanspruchen</td><td class="ex">Viele Bürger <em>nehmen staatliche Hilfe in Anspruch</em>.</td></tr>
+        <tr><td class="fvg">Rücksicht nehmen auf</td><td class="verb">berücksichtigen, beachten</td><td class="ex">Die Planung <em>nimmt Rücksicht auf</em> Umweltbelange.</td></tr>
+        <tr><td class="fvg">Einfluss nehmen auf</td><td class="verb">beeinflussen</td><td class="ex">Lobbygruppen <em>nehmen Einfluss auf</em> die Politik.</td></tr>
+        <tr><td class="fvg">Abstand nehmen von</td><td class="verb">verzichten auf, ablehnen</td><td class="ex">Die Firma <em>nahm Abstand von</em> dem Vorhaben.</td></tr>
+        <tr><td class="fvg">Bezug nehmen auf</td><td class="verb">sich beziehen auf</td><td class="ex">Der Redner <em>nahm Bezug auf</em> frühere Studien.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">setzen</span> — FVG</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">in Kraft setzen</td><td class="verb">einführen, aktivieren (Gesetz)</td><td class="ex">Das neue Gesetz wurde <em>in Kraft gesetzt</em>.</td></tr>
+        <tr><td class="fvg">in Gang setzen</td><td class="verb">starten, initiieren</td><td class="ex">Die Regierung <em>setzte den Reformprozess in Gang</em>.</td></tr>
+        <tr><td class="fvg">in Szene setzen</td><td class="verb">inszenieren, darstellen</td><td class="ex">Der Regisseur <em>setzte das Stück eindrucksvoll in Szene</em>.</td></tr>
+        <tr><td class="fvg">unter Druck setzen</td><td class="verb">Druck ausüben auf</td><td class="ex">Die Partei <em>wurde unter Druck gesetzt</em>.</td></tr>
+        <tr><td class="fvg">Prioritäten setzen</td><td class="verb">priorisieren</td><td class="ex">Die Unternehmensführung muss <em>Prioritäten setzen</em>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="verb-section">
+    <div class="verb-heading"><span class="vb">stehen</span> — FVG</div>
+    <table class="fvg-table">
+      <thead><tr><th>FVG</th><th>Bedeutung</th><th>Beispielsatz</th></tr></thead>
+      <tbody>
+        <tr><td class="fvg">zur Verfügung stehen</td><td class="verb">verfügbar sein</td><td class="ex">Die Informationen <em>stehen zur Verfügung</em>.</td></tr>
+        <tr><td class="fvg">unter Druck stehen</td><td class="verb">Druck haben / erfahren</td><td class="ex">Das Team <em>steht unter enormem Druck</em>.</td></tr>
+        <tr><td class="fvg">in Zusammenhang stehen mit</td><td class="verb">zusammenhängen mit</td><td class="ex">Die Symptome <em>stehen im Zusammenhang mit</em> dem Stress.</td></tr>
+        <tr><td class="fvg">im Vordergrund stehen</td><td class="verb">wichtig sein, im Mittelpunkt sein</td><td class="ex">Nachhaltigkeit <em>steht im Vordergrund</em> des Projekts.</td></tr>
+        <tr><td class="fvg">in Frage stehen</td><td class="verb">fraglich / unsicher sein</td><td class="ex">Die Finanzierung <em>steht in Frage</em>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="beispiel-section">
+    <h3>nehmen / setzen / stehen im Kontext <button class="vi-toggle" onclick="toggleVI('vi4')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Immer mehr Menschen <span class="fv">nehmen professionelle Beratung in Anspruch</span>.</div>
+        <div class="bsp-vi vi4">Ngày càng nhiều người sử dụng dịch vụ tư vấn chuyên nghiệp.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Das neue Gesetz tritt in Kraft — es wurde gestern offiziell <span class="fv">in Kraft gesetzt</span>.</div>
+        <div class="bsp-vi vi4">Luật mới có hiệu lực — nó đã chính thức được ban hành hôm qua.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Unterlagen <span class="fv">stehen ab sofort zur Verfügung</span>.</div>
+        <div class="bsp-vi vi4">Các tài liệu có thể sử dụng ngay từ bây giờ.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Löhne <span class="fv">stehen im Zusammenhang mit</span> der allgemeinen wirtschaftlichen Lage.</div>
+        <div class="bsp-vi vi4">Mức lương có liên quan đến tình hình kinh tế chung.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 5: ÜBUNGEN -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Erkennen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Bedeutung</button>
+    <button class="level-tab" data-level="3">Stufe 3 — Ergänzen</button>
+    <button class="level-tab" data-level="4">Stufe 4 — Umformen</button>
+    <button class="level-tab" data-level="5">Stufe 5 — C1-Kontext</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl=document.getElementById('studentName');
+var sv=localStorage.getItem('studentName');if(sv)nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+window.toggleVI=function(cls){document.querySelectorAll('.'+cls).forEach(function(el){el.classList.toggle('show');});};
+
+var DATA={
+1:[
+  {type:'mc',prompt:'Die EU stellt Fördermittel zur Verfügung.',task:'Was bedeutet dieses FVG?',
+   options:['Die EU fordert Geld.','Die EU stellt eine Frage.','Die EU stellt Mittel bereit.','Die EU hat Mittel beantragt.'],answer:2},
+  {type:'mc',prompt:'Das Unternehmen geriet in Schwierigkeiten.',task:'Bedeutung des FVG?',
+   options:['Das Unternehmen macht Schwierigkeiten.','Das Unternehmen bekam Probleme.','Das Unternehmen löste Schwierigkeiten.','Das Unternehmen ignorierte Schwierigkeiten.'],answer:1},
+  {type:'mc',prompt:'Der Bericht stellt die bisherigen Ergebnisse in Frage.',task:'Was bedeutet das?',
+   options:['Der Bericht beantwortet Fragen.','Der Bericht zweifelt die Ergebnisse an.','Der Bericht stellt Fragen zum Thema.','Der Bericht bestätigt die Ergebnisse.'],answer:1},
+  {type:'mc',prompt:'Die Expertengruppe kam zu dem Schluss, dass weitere Investitionen nötig sind.',task:'Bedeutung?',
+   options:['Sie beendete den Schluss.','Sie schlussfolgerte, dass Investitionen nötig sind.','Sie lehnte Investitionen ab.','Sie kam an.'],answer:1},
+  {type:'mc',prompt:'Das neue Gesetz wurde gestern in Kraft gesetzt.',task:'Was bedeutet das FVG?',
+   options:['Das Gesetz wurde diskutiert.','Das Gesetz trat in Kraft / wurde eingeführt.','Das Gesetz wurde abgeschafft.','Das Gesetz wurde geändert.'],answer:1},
+  {type:'mc',prompt:'Viele Studenten nehmen staatliche Förderung in Anspruch.',task:'Bedeutung?',
+   options:['Sie beantragen Förderung.','Sie lehnen Förderung ab.','Sie nutzen staatliche Förderung.','Sie zahlen für Förderung.'],answer:2},
+  {type:'mc',prompt:'Die Innovationen kommen in vielen Bereichen zum Einsatz.',task:'Was bedeutet das?',
+   options:['Die Innovationen beginnen.','Die Innovationen werden eingesetzt.','Die Innovationen werden diskutiert.','Die Innovationen kommen an.'],answer:1},
+  {type:'mc',prompt:'Seine Begeisterung kam deutlich zum Ausdruck.',task:'Bedeutung?',
+   options:['Er drückte etwas aus.','Er war begeistert sichtbar.','Seine Begeisterung zeigte sich deutlich.','Er sprach sehr deutlich.'],answer:2},
+  {type:'mc',prompt:'Die Parteien kamen nach wochenlangen Verhandlungen zu einer Einigung.',task:'FVG-Bedeutung?',
+   options:['Sie begannen zu verhandeln.','Sie einigten sich.','Sie beendeten die Verhandlungen ohne Ergebnis.','Sie kamen zu einem Treffen.'],answer:1},
+  {type:'mc',prompt:'Traditionelle Handwerksberufe geraten immer mehr in Vergessenheit.',task:'Was bedeutet das?',
+   options:['Traditionelle Berufe werden erinnert.','Traditionelle Berufe werden wichtiger.','Traditionelle Berufe werden mehr und mehr vergessen.','Traditionelle Berufe erinnern an die Vergangenheit.'],answer:2},
+  {type:'mc',prompt:'Der Konzern nahm Abstand von seinen ursprünglichen Plänen.',task:'Bedeutung?',
+   options:['Der Konzern bestand auf seinen Plänen.','Der Konzern hielt großen Abstand.','Der Konzern verzichtete auf seine ursprünglichen Pläne.','Der Konzern veröffentlichte seine Pläne.'],answer:2},
+  {type:'mc',prompt:'Die Unterlagen stehen ab sofort zur Verfügung.',task:'FVG-Bedeutung?',
+   options:['Die Unterlagen stehen auf dem Tisch.','Die Unterlagen sind sofort verfügbar.','Die Unterlagen werden morgen verfügbar.','Die Unterlagen wurden eingereicht.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz enthält ein Funktionsverbgefüge?',task:'',
+   options:['Er arbeitet täglich an seinem Projekt.','Die Reform setzt neue Standards.','Die Regierung setzt die Reform in Gang.','Das Ergebnis überrascht alle.'],answer:2}
+],
+2:[
+  {type:'mc',prompt:'in Gang setzen / bringen / kommen',task:'Was bedeuten diese drei FVG gemeinsam?',
+   options:['beenden, abschließen','beginnen, starten, anlaufen','beschleunigen, intensivieren','aufhalten, stoppen'],answer:1},
+  {type:'mc',prompt:'Welches FVG bedeutet „beantragen"?',task:'',
+   options:['einen Antrag stellen','eine Forderung stellen','in Frage stellen','unter Beweis stellen'],answer:0},
+  {type:'mc',prompt:'zum Ausdruck bringen / kommen',task:'Der Unterschied zwischen diesen beiden FVG?',
+   options:['bringen = aktiv zeigen; kommen = passiv sichtbar werden','bringen = passiv; kommen = aktiv','beide bedeuten dasselbe','bringen = sprechen; kommen = schreiben'],answer:0},
+  {type:'mc',prompt:'Was bedeutet „unter Druck geraten/stehen/setzen"?',task:'Welche Aussage ist FALSCH?',
+   options:['geraten = Druck bekommen (plötzlich)','stehen = Druck haben (dauerhaft)','setzen = jemandem Druck machen (aktiv)','setzen = Druck verlieren'],answer:3},
+  {type:'mc',prompt:'Welches FVG passt zu „berücksichtigen"?',task:'',
+   options:['in Anspruch nehmen','Rücksicht nehmen auf','Abstand nehmen von','Bezug nehmen auf'],answer:1},
+  {type:'mc',prompt:'zur Verfügung stellen vs. zur Verfügung stehen',task:'Was ist der Unterschied?',
+   options:['stellen = aktiv bereitstellen; stehen = verfügbar sein (Zustand)','stellen = verfügbar sein; stehen = aktiv bereitstellen','beide sind identisch','stellen = formal; stehen = informal'],answer:0},
+  {type:'mc',prompt:'in Vergessenheit geraten',task:'In welchem Kontext passt dieses FVG am besten?',
+   options:['Neue Technologie wird entwickelt.','Alte Traditionen werden nicht mehr gepflegt.','Jemand vergisst seinen Termin.','Ein Problem wird nicht gelöst.'],answer:1},
+  {type:'mc',prompt:'Welches FVG bedeutet „sich beziehen auf"?',task:'',
+   options:['Rücksicht nehmen auf','Bezug nehmen auf','Einfluss nehmen auf','Abstand nehmen von'],answer:1},
+  {type:'mc',prompt:'zum Tragen kommen',task:'Was bedeutet dieses FVG?',
+   options:['etwas tragen müssen','wirksam werden, Auswirkung haben','zum Schluss kommen','sich um etwas kümmern'],answer:1},
+  {type:'mc',prompt:'einen Beitrag leisten',task:'Das FVG bedeutet:',
+   options:['zahlen','beitragen, helfen, mitwirken','antreten','einreichen'],answer:1},
+  {type:'mc',prompt:'Welches FVG bedeutet „beweisen, zeigen"?',task:'',
+   options:['in Gang setzen','in Frage stellen','unter Beweis stellen','in Kraft setzen'],answer:2},
+  {type:'mc',prompt:'Welches FVG gehört NICHT zur Gruppe mit „Beginn/Start"?',task:'',
+   options:['in Gang kommen','in Gang bringen','in Gang setzen','in Vergessenheit geraten'],answer:3},
+  {type:'mc',prompt:'im Vordergrund stehen',task:'Was bedeutet das?',
+   options:['vor jemandem stehen','wichtig/zentral sein','am Anfang stehen','sichtbar sein'],answer:1}
+],
+3:[
+  {type:'fill',prompt:'Die Regierung hat wichtige ___ ergriffen, um die Krise zu bewältigen.',task:'Ergänze das fehlende Nomen:',answer:'Maßnahmen',hint:'Maßnahmen ergreifen = handeln, etwas tun'},
+  {type:'fill',prompt:'Der neue Vorsitzende nahm ___ auf die Interessen der Minderheiten.',task:'Ergänze das Nomen (+ Präposition):',answer:'Rücksicht',hint:'Rücksicht nehmen auf = berücksichtigen'},
+  {type:'fill',prompt:'Die Parteien kamen nach langen Gesprächen zu einer ___.',task:'Ergänze das Nomen:',answer:'Einigung',hint:'zu einer Einigung kommen = sich einigen'},
+  {type:'fill',prompt:'Das Projekt geriet durch fehlende Mittel in ___.',task:'Ergänze das Nomen:',answer:'Schwierigkeiten',hint:'in Schwierigkeiten geraten = Probleme bekommen'},
+  {type:'fill',prompt:'Die EU stellt den Mitgliedsstaaten Fördermittel zur ___.',task:'Ergänze das Nomen:',answer:'Verfügung',hint:'zur Verfügung stellen = bereitstellen'},
+  {type:'fill',prompt:'Das neue Gesetz tritt in ___ — ab nächsten Monat gilt es.',task:'Ergänze das Nomen:',answer:'Kraft',hint:'in Kraft treten/setzen = rechtsgültig werden'},
+  {type:'fill',prompt:'Die Studie stellte die Ergebnisse der Vorgängerstudie in ___.',task:'Ergänze das Nomen:',answer:'Frage',hint:'in Frage stellen = anzweifeln'},
+  {type:'fill',prompt:'Viele Bürger nehmen Sozialleistungen in ___.',task:'Ergänze das Nomen:',answer:'Anspruch',hint:'in Anspruch nehmen = nutzen, beanspruchen'},
+  {type:'fill',prompt:'Die Expertenkommission kam zu dem ___, dass sofortiges Handeln nötig ist.',task:'Ergänze das Nomen:',answer:'Schluss',hint:'zu dem Schluss kommen = schlussfolgern'},
+  {type:'fill',prompt:'Die neuen Technologien kommen in immer mehr Bereichen zum ___.',task:'Ergänze das Nomen:',answer:'Einsatz',hint:'zum Einsatz kommen = eingesetzt werden'},
+  {type:'fill',prompt:'Die Politikerin nahm in ihrer Rede ___ auf die aktuellen Ereignisse.',task:'Ergänze das Nomen:',answer:'Bezug',hint:'Bezug nehmen auf = sich beziehen auf'},
+  {type:'fill',prompt:'Viele alte Handwerkstechniken geraten allmählich in ___.',task:'Ergänze das Nomen:',answer:'Vergessenheit',hint:'in Vergessenheit geraten = vergessen werden'},
+  {type:'fill',prompt:'Die Firma nahm ___ von ihren ursprünglichen Expansionsplänen.',task:'Ergänze das Nomen:',answer:'Abstand',hint:'Abstand nehmen von = verzichten auf, aufgeben'}
+],
+4:[
+  {type:'mc',prompt:'entscheiden → ___',task:'Welches FVG entspricht dem einfachen Verb?',
+   options:['eine Einigung treffen','eine Entscheidung treffen','einen Beschluss fassen','eine Forderung stellen'],answer:1},
+  {type:'mc',prompt:'bezweifeln → ___',task:'',
+   options:['in Frage stellen','unter Beweis stellen','in Kraft setzen','in Gang bringen'],answer:0},
+  {type:'mc',prompt:'„Die Behörde hat die neuen Vorschriften eingeführt." Umformung mit FVG?',task:'',
+   options:['Die Behörde hat die Vorschriften in Kraft gesetzt.','Die Behörde hat die Vorschriften in Gang gebracht.','Die Behörde hat die Vorschriften in Frage gestellt.','Die Behörde hat die Vorschriften zur Verfügung gestellt.'],answer:0},
+  {type:'mc',prompt:'„Viele Berufe werden vergessen." → FVG?',task:'',
+   options:['Viele Berufe kommen in Vergessenheit.','Viele Berufe geraten in Vergessenheit.','Viele Berufe bringen sich in Vergessenheit.','Viele Berufe setzen sich in Vergessenheit.'],answer:1},
+  {type:'mc',prompt:'„Die Wissenschaftler schlussfolgerten, dass …" → FVG?',task:'',
+   options:['Die Wissenschaftler kamen zu einer Einigung, dass …','Die Wissenschaftler kamen zu dem Schluss, dass …','Die Wissenschaftler brachten zum Ausdruck, dass …','Die Wissenschaftler setzten voraus, dass …'],answer:1},
+  {type:'mc',prompt:'„Das Team wird unter Druck gesetzt." → Aktiv?',task:'',
+   options:['Jemand drückt das Team.','Jemand setzt das Team unter Druck.','Das Team setzt Druck.','Jemand bringt das Team unter Druck.'],answer:1},
+  {type:'mc',prompt:'bereitstellen → ___',task:'FVG-Entsprechung:',
+   options:['zur Verfügung stehen','zur Verfügung stellen','zur Verfügung kommen','zur Verfügung bringen'],answer:1},
+  {type:'mc',prompt:'„Die neuen Methoden werden jetzt angewendet." → FVG (passiv)?',task:'',
+   options:['Die Methoden kommen jetzt zum Einsatz.','Die Methoden bringen sich zum Einsatz.','Die Methoden setzen sich in Gang.','Die Methoden stellen sich zur Verfügung.'],answer:0},
+  {type:'mc',prompt:'„Wir nutzen staatliche Unterstützung." → FVG?',task:'',
+   options:['Wir nehmen staatliche Unterstützung in Anspruch.','Wir nehmen Rücksicht auf staatliche Unterstützung.','Wir nehmen Abstand von staatlicher Unterstützung.','Wir nehmen Bezug auf staatliche Unterstützung.'],answer:0},
+  {type:'mc',prompt:'„Seine Traurigkeit zeigte sich in seiner Stimme." → FVG?',task:'',
+   options:['Seine Traurigkeit geriet in seiner Stimme zum Ausdruck.','Seine Traurigkeit kam in seiner Stimme zum Ausdruck.','Seine Traurigkeit brachte sich in seiner Stimme zum Ausdruck.','Seine Traurigkeit setzte in seiner Stimme ein.'],answer:1},
+  {type:'mc',prompt:'anfangen / starten → ___',task:'Welches FVG passt NICHT?',
+   options:['in Gang kommen','in Gang setzen','in Gang bringen','in Frage stellen'],answer:3},
+  {type:'mc',prompt:'„Das Unternehmen beeinflusst die Medienlandschaft." → FVG?',task:'',
+   options:['Das Unternehmen nimmt Einfluss auf die Medienlandschaft.','Das Unternehmen nimmt Rücksicht auf die Medienlandschaft.','Das Unternehmen nimmt Bezug auf die Medienlandschaft.','Das Unternehmen nimmt Abstand von der Medienlandschaft.'],answer:0},
+  {type:'mc',prompt:'„Der Stress wirkt sich aus auf das Ergebnis." → FVG?',task:'',
+   options:['Der Stress kommt in Verbindung.','Der Stress kommt mit dem Ergebnis in Gang.','Der Stress kommt beim Ergebnis zum Tragen.','Der Stress gerät in Verbindung.'],answer:2}
+],
+5:[
+  {type:'mc',prompt:'Welcher Satz klingt am formalsten für eine C1-Stellungnahme?',task:'Thema: neue Technologien',
+   options:['Wir fangen an, neue Technologien zu nutzen.','Neue Technologien werden immer wichtiger.','Neue Technologien kommen in immer mehr Bereichen zum Einsatz.','Man benutzt heutzutage viele neue Technologien.'],answer:2},
+  {type:'fill',prompt:'Vervollständige den C1-Satz: „Die Forschungsergebnisse stellen die gängige Theorie ___."',task:'FVG mit „in Frage":',answer:'in Frage',hint:'in Frage stellen = anzweifeln'},
+  {type:'mc',prompt:'Welcher Satz enthält ein FALSCH verwendetes FVG?',task:'',
+   options:['Das Gesetz wurde in Kraft gesetzt.','Die Experten kamen zu einer Einigung.','Das Unternehmen geriet in Vergessenheit die Strategie.','Der Redner nahm Bezug auf frühere Studien.'],answer:2},
+  {type:'fill',prompt:'C1-Schreiben: „Beide Unternehmen ___ nach langen Verhandlungen zu einer Einigung."',task:'Setze das richtige Verb ein:',answer:'kamen',hint:'zu einer Einigung kommen — Verb im Präteritum: kamen'},
+  {type:'mc',prompt:'In welchem Kontext würde man „unter Druck geraten" verwenden?',task:'',
+   options:['Eine Firma beschleunigt ihre Produktion.','Eine Regierung verliert an Stabilität durch Krisen.','Ein Team erzielt einen großen Erfolg.','Ein Projekt wird erfolgreich abgeschlossen.'],answer:1},
+  {type:'fill',prompt:'C1-Bericht: „Viele regionale Dialekte ___ zunehmend in ___."',task:'Ergänze FVG (zwei Wörter):',answer:'geraten in Vergessenheit',hint:'in Vergessenheit geraten — Präsens: geraten'},
+  {type:'mc',prompt:'Welcher Satz verwendet ein FVG im Passiv korrekt?',task:'',
+   options:['Die Reform wird in Gang gestellt.','Die Reform wurde in Kraft gesetzt.','Die Reform ist in Frage gebracht worden von alleine.','Die Reform kommt unter Beweis gestellt.'],answer:1},
+  {type:'mc',prompt:'Wähle das FVG, das in einem Bewerbungsschreiben am besten passt:',task:'„Ich ___ meine Kompetenz bereits in mehreren Projekten ___ ."',
+   options:['brachte … zum Einsatz','stellte … unter Beweis','geriet … in Gang','kam … in Frage'],answer:1},
+  {type:'fill',prompt:'Ergänze sinnvoll: „Der neue Direktor ___ sofort wichtige Reformen ___ Gang."',task:'FVG mit „in Gang bringen" (Präteritum):',answer:'brachte in',hint:'in Gang bringen → brachte … in Gang (Verb am Ende)'},
+  {type:'mc',prompt:'In welchem Satz wird das FVG KORREKT und C1-angemessen verwendet?',task:'',
+   options:['Das Projekt steht zur Verfügung, weil es verfügbar ist.','Die Daten stehen für alle Forscher zur Verfügung.','Wir stellen die Ressourcen in die Verfügung.','Die Materialien zur Verfügung kommen von der EU.'],answer:1},
+  {type:'fill',prompt:'In der Analyse: „Die wirtschaftliche Entwicklung ___ in engem Zusammenhang ___ politischen Reformen."',task:'FVG mit stehen + Präposition:',answer:'steht im Zusammenhang mit',hint:'im Zusammenhang stehen mit (Präsens: steht)'},
+  {type:'mc',prompt:'Welcher Satz enthält das passende FVG für den Kontext: „Die Stadtverwaltung veröffentlicht neue Pläne — jeder kann sie einsehen"?',task:'',
+   options:['Die Pläne stehen zur Verfügung.','Die Pläne kommen in Gang.','Die Pläne stehen in Frage.','Die Pläne bringen sich zum Ausdruck.'],answer:0},
+  {type:'mc',prompt:'Formuliere den formellsten Satz für: „Die Regierung zweifelt an den offiziellen Daten."',task:'',
+   options:['Die Regierung fragt nach den Daten.','Die Regierung stellt die offiziellen Daten in Frage.','Die Regierung kommt zu einem Schluss über die Daten.','Die Regierung bringt die Daten zum Vorschein.'],answer:1}
+]
+};
+
+var currentLevel=1, answers={}, checked={};
+
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');card.className='exercise-card';card.id='ex-'+i;
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+    if(ex.type==='mc'){
+      var opts=document.createElement('div');opts.className='options';
+      ex.options.forEach(function(opt,j){
+        var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+        btn.addEventListener('click',function(){
+          if(checked[i])return;answers[i]=j;
+          opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+          if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+          else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+          checked[i]=true;updateScore();updateProg();
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    } else {
+      var wrap=document.createElement('div');
+      if(ex.hint){var h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--text-muted);margin-bottom:6px;';h.textContent='Hinweis: '+ex.hint;wrap.appendChild(h);}
+      var inp=document.createElement('input');inp.type='text';inp.className='fill-input';
+      inp.placeholder='Antwort eingeben …';inp.autocomplete='off';inp.autocapitalize='none';
+      wrap.appendChild(inp);
+      var fb=document.createElement('div');fb.className='ex-feedback';
+      var cb=document.createElement('button');cb.className='check-btn';cb.textContent='Prüfen';
+      cb.addEventListener('click',function(){
+        if(checked[i])return;
+        var v=inp.value.trim(),ok=v.toLowerCase()===ex.answer.trim().toLowerCase();
+        inp.classList.add(ok?'correct':'wrong');
+        fb.textContent=ok?'Richtig!':'Nicht ganz. Richtig: '+ex.answer;
+        fb.className='ex-feedback show '+(ok?'correct':'wrong');
+        card.classList.add(ok?'correct':'wrong');
+        checked[i]=true;answers[i]=v;cb.disabled=true;inp.disabled=true;
+        updateScore();updateProg();
+      });
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')cb.click();});
+      wrap.appendChild(cb);wrap.appendChild(fb);card.appendChild(wrap);
+    }
+    c.appendChild(card);
+  });
+  updateProg();
+}
+
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(ex.type==='mc'){if(answers[i]===ex.answer)correct++;}
+    else{if(answers[i]&&answers[i].toLowerCase()===ex.answer.trim().toLowerCase())correct++;}
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=ex.type==='mc'?-1:'';
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    if(ex.type==='mc'){
+      var opts=card.querySelectorAll('.option-btn');
+      if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+    } else {
+      var inp=card.querySelector('.fill-input'),fb=card.querySelector('.ex-feedback'),cb=card.querySelector('.check-btn');
+      if(inp)inp.disabled=true;if(cb)cb.disabled=true;
+      if(fb){fb.textContent='Richtig: '+ex.answer;fb.className='ex-feedback show wrong';}
+    }
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Sehr gut! Setze FVG aktiv in deinen C1-Texten ein!':'Wiederhole die FVG-Listen in Tab 2–4 und übe dann erneut.';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+renderEx();
+})();
+</script>
+</body>
+</html>

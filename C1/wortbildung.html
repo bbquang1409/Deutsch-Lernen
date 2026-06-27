@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wortbildung – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#2D5BE3;--cobalt-light:#E8EEFB;--cobalt-dark:#1A3BAA;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E2E6EF;
+  --text:#1A1D2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --green:#059669;--green-bg:#ECFDF5;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --teal:#0D7A6E;--teal-bg:#F0FAFA;
+  --indigo:#4338CA;--indigo-bg:#EEF2FF;
+  --slate-bg:#F1F5F9;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --cobalt:#5B8AF7;--cobalt-light:#1A2540;--cobalt-dark:#7BA3FF;
+    --bg:#0F1117;--surface:#1A1D2A;--border:#2D3148;
+    --text:#E8EAF0;--text-muted:#9DA3B4;--text-light:#6B7280;
+    --green:#34D399;--green-bg:#0A2918;
+    --red:#F87171;--red-bg:#2D1010;
+    --amber:#FCD34D;--amber-bg:#2D1F08;
+    --teal:#2DD4BF;--teal-bg:#0A2420;
+    --indigo:#818CF8;--indigo-bg:#1E1B4B;
+    --slate-bg:#1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+/* Affix grid */
+.affix-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:1rem 0;}
+.affix-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;box-shadow:var(--shadow);}
+.affix-tag{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--cobalt);margin-bottom:4px;}
+.affix-mean{font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+.affix-examples{display:flex;flex-direction:column;gap:4px;}
+.affix-ex{font-size:13px;color:var(--text);display:flex;align-items:baseline;gap:6px;}
+.affix-ex .base{color:var(--text-muted);font-size:12px;}
+.affix-label{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:10px;margin-bottom:.5rem;display:inline-block;}
+.label-nomen{background:var(--teal-bg);color:var(--teal);}
+.label-verb{background:var(--cobalt-light);color:var(--cobalt);}
+.label-adj{background:var(--amber-bg);color:var(--amber);}
+/* Wortfamilie */
+.wf-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow);}
+.wf-root{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:.75rem;}
+.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+.wf-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;}
+.wf-word{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--cobalt);}
+.wf-type{font-size:10px;color:var(--text-light);margin-bottom:2px;}
+.wf-mean{font-size:12px;color:var(--text-muted);}
+/* Komposita */
+.komposita-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.komposita-table th{background:var(--cobalt-light);color:var(--cobalt);padding:8px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.komposita-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+.komposita-table tr:last-child td{border-bottom:none;}
+.komposita-table .mono{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-weight:500;font-size:12px;}
+.komposita-table .muted{color:var(--text-muted);font-size:12px;}
+/* Exercise */
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.fill-input{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;max-width:380px;outline:none;transition:border-color .2s;}
+.fill-input:focus{border-color:var(--cobalt);}
+.fill-input.correct{border-color:var(--green);background:var(--green-bg);}
+.fill-input.wrong{border-color:var(--red);background:var(--red-bg);}
+.check-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:background .15s;}
+.check-btn:hover{background:var(--cobalt-dark);}
+.check-btn:disabled{background:var(--border);color:var(--text-muted);cursor:default;}
+.ex-feedback{margin-top:10px;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none;line-height:1.5;}
+.ex-feedback.show{display:block;}
+.ex-feedback.correct{background:var(--green-bg);color:var(--green);}
+.ex-feedback.wrong{background:var(--red-bg);color:var(--red);}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;}.header{padding:0 1rem;}.tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 10px;font-size:12px;}.name-input{width:110px;}
+  .affix-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Wortbildung · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Einführung</button>
+  <button class="tab-btn" data-tab="tab2">Nomen-Suffixe</button>
+  <button class="tab-btn" data-tab="tab3">Verb-Präfixe</button>
+  <button class="tab-btn" data-tab="tab4">Adjektiv-Affixe</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1 -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Wortbildung auf C1-Niveau</h2>
+    <p>Im Deutschen können aus einem Wortstamm viele neue Wörter gebildet werden — durch <strong>Präfixe</strong> (vor dem Stamm), <strong>Suffixe</strong> (nach dem Stamm) und <strong>Komposition</strong> (zwei Wörter zusammen). Dieses System nennt man <em>Wortbildung</em>.</p>
+    <p>Im Goethe/OSD C1 wird Wortbildung besonders in der <strong>Lückentext-Aufgabe</strong> (Lesen, Teil 2) geprüft: Du musst die richtige Wortform aus einem gegebenen Grundwort ableiten.</p>
+  </div>
+  <div class="info-box"><strong>📖 Prüfungsformat C1 — Lückentext:</strong> Du siehst einen Satz wie: „Die ___ (entwickeln) neuer Energiequellen ist entscheidend." → Antwort: <em>Entwicklung</em>. Du musst also aus dem Infinitiv das richtige Nomen, Adjektiv oder Verb bilden.</div>
+
+  <div class="expl-card">
+    <h2>🗂 Überblick: Wortbildungsarten</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:.5rem;">
+      <div style="background:var(--teal-bg);border:1px solid var(--teal);border-radius:var(--radius-sm);padding:1rem;">
+        <div style="font-weight:600;color:var(--teal);margin-bottom:.5rem;">Suffixe — Nomen</div>
+        <div style="font-size:13px;color:var(--text-muted);">-ung, -heit, -keit, -schaft, -tion, -nis, -tum, -ling</div>
+      </div>
+      <div style="background:var(--cobalt-light);border:1px solid var(--cobalt);border-radius:var(--radius-sm);padding:1rem;">
+        <div style="font-weight:600;color:var(--cobalt);margin-bottom:.5rem;">Präfixe — Verben</div>
+        <div style="font-size:13px;color:var(--text-muted);">ver-, be-, ent-, er-, zer-, miss-, über-, unter-</div>
+      </div>
+      <div style="background:var(--amber-bg);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:1rem;">
+        <div style="font-weight:600;color:var(--amber);margin-bottom:.5rem;">Affixe — Adjektive</div>
+        <div style="font-size:13px;color:var(--text-muted);">-lich, -ig, -bar, -sam, -los, -haft, un-, -isch</div>
+      </div>
+      <div style="background:var(--indigo-bg);border:1px solid var(--indigo);border-radius:var(--radius-sm);padding:1rem;">
+        <div style="font-weight:600;color:var(--indigo);margin-bottom:.5rem;">Komposition</div>
+        <div style="font-size:13px;color:var(--text-muted);">Nomen+Nomen, Adj+Nomen, Verb+Nomen</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 Strategie für Lückentexte:</strong> Erkenne zuerst, welche <em>Wortart</em> im Satz gebraucht wird (Nomen? Adjektiv? Verb?). Dann wähle das passende Suffix oder Präfix. Nomen nach Artikel → Suffix -ung, -heit, -keit usw. Adjektiv vor Nomen → Suffix -lich, -ig, -bar usw.</div>
+</section>
+
+<!-- TAB 2: NOMEN-SUFFIXE -->
+<section class="tab-panel" id="tab2">
+  <div class="expl-card">
+    <h2>📝 Nomen-Suffixe</h2>
+    <p>Mit Suffixen werden aus Verben oder Adjektiven Nomen gebildet. Das Genus ist durch das Suffix festgelegt.</p>
+  </div>
+
+  <div style="margin-bottom:.5rem;"><span class="affix-label label-nomen">Femininum (die)</span></div>
+  <div class="affix-grid">
+    <div class="affix-card">
+      <div class="affix-tag">-ung</div>
+      <div class="affix-mean">Verb → Nomen (Prozess/Ergebnis)</div>
+      <div class="affix-examples">
+        <div class="affix-ex">entwickeln → <strong>Entwicklung</strong></div>
+        <div class="affix-ex">lösen → <strong>Lösung</strong></div>
+        <div class="affix-ex">entscheiden → <strong>Entscheidung</strong></div>
+        <div class="affix-ex">vorbereiten → <strong>Vorbereitung</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-heit / -keit</div>
+      <div class="affix-mean">Adj → Nomen (Eigenschaft/Zustand)</div>
+      <div class="affix-examples">
+        <div class="affix-ex">frei → <strong>Freiheit</strong></div>
+        <div class="affix-ex">krank → <strong>Krankheit</strong></div>
+        <div class="affix-ex">möglich → <strong>Möglichkeit</strong></div>
+        <div class="affix-ex">fähig → <strong>Fähigkeit</strong></div>
+        <div class="affix-ex">selbstständig → <strong>Selbstständigkeit</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-schaft</div>
+      <div class="affix-mean">Kollektiv, Zustand, Beziehung</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Gesellschaft, Wissenschaft</div>
+        <div class="affix-ex">Bereitschaft, Freundschaft</div>
+        <div class="affix-ex">Mannschaft, Partnerschaft</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-tion / -ion / -ität</div>
+      <div class="affix-mean">Fremdwort-Basis → Nomen</div>
+      <div class="affix-examples">
+        <div class="affix-ex">kommunizieren → <strong>Kommunikation</strong></div>
+        <div class="affix-ex">integrieren → <strong>Integration</strong></div>
+        <div class="affix-ex">produktiv → <strong>Produktivität</strong></div>
+        <div class="affix-ex">kreativ → <strong>Kreativität</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin:.75rem 0 .5rem;"><span class="affix-label label-nomen" style="background:var(--indigo-bg);color:var(--indigo);">Neutrum (das)</span></div>
+  <div class="affix-grid">
+    <div class="affix-card">
+      <div class="affix-tag">-tum</div>
+      <div class="affix-mean">Zustand, System, Eigenschaft</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Eigentum, Reichtum, Wachstum</div>
+        <div class="affix-ex">Bürgertum, Christentum</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-nis</div>
+      <div class="affix-mean">Ergebnis eines Vorgangs</div>
+      <div class="affix-examples">
+        <div class="affix-ex">erkennen → <strong>Erkenntnis</strong></div>
+        <div class="affix-ex">erleben → <strong>Erlebnis</strong></div>
+        <div class="affix-ex">versäumen → <strong>Versäumnis</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">Ge- + -e</div>
+      <div class="affix-mean">kollektiv / wiederholend</div>
+      <div class="affix-examples">
+        <div class="affix-ex">sprechen → <strong>Gespräch</strong></div>
+        <div class="affix-ex">schreiben → <strong>Geschriebene</strong></div>
+        <div class="affix-ex">bauen → <strong>Gebäude</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin:.75rem 0 .5rem;"><span class="affix-label label-nomen" style="background:var(--slate-bg);color:var(--slate, #475569);">Maskulinum (der)</span></div>
+  <div class="affix-grid">
+    <div class="affix-card">
+      <div class="affix-tag">-er / -ler / -ner</div>
+      <div class="affix-mean">Person / Gerät</div>
+      <div class="affix-examples">
+        <div class="affix-ex">arbeiten → <strong>Arbeiter</strong></div>
+        <div class="affix-ex">wissenschaftlich → <strong>Wissenschaftler</strong></div>
+        <div class="affix-ex">Politik → <strong>Politiker</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-ling</div>
+      <div class="affix-mean">Person in Zustand/Prozess</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Lehrling, Prüfling, Flüchtling</div>
+        <div class="affix-ex">Einling, Zwilling, Findling</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 Genus-Regel:</strong> -ung, -heit, -keit, -schaft, -tion → immer <strong>die</strong> (Femininum). -tum, -nis → meistens <strong>das</strong>. -er, -ling → <strong>der</strong>. Das hilft dir bei Lückentexten mit Artikel!</div>
+</section>
+
+<!-- TAB 3: VERB-PRÄFIXE -->
+<section class="tab-panel" id="tab3">
+  <div class="expl-card">
+    <h2>🔧 Verb-Präfixe</h2>
+    <p>Verbpräfixe verändern die Bedeutung eines Grundverbs oft stark. Auf C1-Niveau musst du diese Nuancen kennen — besonders bei Lückentexten und beim aktiven Schreiben.</p>
+  </div>
+
+  <div class="affix-grid">
+    <div class="affix-card">
+      <div class="affix-tag">ver-</div>
+      <div class="affix-mean">Veränderung, Fehler, Verbrauch, Abschluss</div>
+      <div class="affix-examples">
+        <div class="affix-ex">kaufen → <strong>verkaufen</strong></div>
+        <div class="affix-ex">schreiben → <strong>verschreiben</strong> (falsch schreiben)</div>
+        <div class="affix-ex">bessern → <strong>verbessern</strong></div>
+        <div class="affix-ex">suchen → <strong>versuchen</strong></div>
+        <div class="affix-ex">brauchen → <strong>verbrauchen</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">be-</div>
+      <div class="affix-mean">macht intransitiv → transitiv; betont Zielobjekt</div>
+      <div class="affix-examples">
+        <div class="affix-ex">arbeiten → <strong>bearbeiten</strong></div>
+        <div class="affix-ex">achten → <strong>beachten</strong></div>
+        <div class="affix-ex">sprechen → <strong>besprechen</strong></div>
+        <div class="affix-ex">kommen → <strong>bekommen</strong></div>
+        <div class="affix-ex">wohnen → <strong>bewohnen</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">ent-</div>
+      <div class="affix-mean">Entfernung, Beginn, Gegenteil</div>
+      <div class="affix-examples">
+        <div class="affix-ex">deckeln → <strong>entdecken</strong></div>
+        <div class="affix-ex">lassen → <strong>entlassen</strong></div>
+        <div class="affix-ex">wickeln → <strong>entwickeln</strong></div>
+        <div class="affix-ex">scheiden → <strong>entscheiden</strong></div>
+        <div class="affix-ex">stehen → <strong>entstehen</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">er-</div>
+      <div class="affix-mean">Ergebnis erreichen, Anfang, Tod</div>
+      <div class="affix-examples">
+        <div class="affix-ex">reichen → <strong>erreichen</strong></div>
+        <div class="affix-ex">kennen → <strong>erkennen</strong></div>
+        <div class="affix-ex">leben → <strong>erleben</strong></div>
+        <div class="affix-ex">öffnen → <strong>eröffnen</strong></div>
+        <div class="affix-ex">bauen → <strong>erbauen</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">zer-</div>
+      <div class="affix-mean">Zerstörung, Auflösung</div>
+      <div class="affix-examples">
+        <div class="affix-ex">brechen → <strong>zerbrechen</strong></div>
+        <div class="affix-ex">stören → <strong>zerstören</strong></div>
+        <div class="affix-ex">fallen → <strong>zerfallen</strong></div>
+        <div class="affix-ex">schneiden → <strong>zerschneiden</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">miss-</div>
+      <div class="affix-mean">Negation, Fehler</div>
+      <div class="affix-examples">
+        <div class="affix-ex">verstehen → <strong>missverstehen</strong></div>
+        <div class="affix-ex">trauen → <strong>misstrauen</strong></div>
+        <div class="affix-ex">glücken → <strong>missglücken</strong></div>
+        <div class="affix-ex">brauchen → <strong>missbrauchen</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">über-</div>
+      <div class="affix-mean">über etwas hinaus, zu viel, höher</div>
+      <div class="affix-examples">
+        <div class="affix-ex">setzen → <strong>übersetzen</strong></div>
+        <div class="affix-ex">fordern → <strong>überfordern</strong></div>
+        <div class="affix-ex">zeugen → <strong>überzeugen</strong></div>
+        <div class="affix-ex">nehmen → <strong>übernehmen</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">unter-</div>
+      <div class="affix-mean">unter etwas, zu wenig</div>
+      <div class="affix-examples">
+        <div class="affix-ex">stützen → <strong>unterstützen</strong></div>
+        <div class="affix-ex">schätzen → <strong>unterschätzen</strong></div>
+        <div class="affix-ex">nehmen → <strong>unternehmen</strong></div>
+        <div class="affix-ex">richten → <strong>unterrichten</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 ver- vs. be-:</strong> <em>ver-</em> signalisiert oft einen Fehler oder eine Veränderung (<em>verschreiben, verbrennen</em>). <em>be-</em> macht ein Verb transitiv — es braucht dann ein direktes Objekt (<em>bearbeiten, bewohnen</em>).</div>
+</section>
+
+<!-- TAB 4: ADJEKTIV-AFFIXE -->
+<section class="tab-panel" id="tab4">
+  <div class="expl-card">
+    <h2>🎨 Adjektiv-Affixe</h2>
+    <p>Adjektive werden aus Nomen oder Verben gebildet. Auf C1-Niveau sind besonders die Suffixe <em>-bar, -lich, -ig, -sam, -los, -haft</em> und das Präfix <em>un-</em> wichtig.</p>
+  </div>
+
+  <div class="affix-grid">
+    <div class="affix-card">
+      <div class="affix-tag">-bar</div>
+      <div class="affix-mean">Möglichkeit (kann getan werden)</div>
+      <div class="affix-examples">
+        <div class="affix-ex">lösen → <strong>lösbar</strong></div>
+        <div class="affix-ex">verstehen → <strong>verständlich/verstehbar</strong></div>
+        <div class="affix-ex">machen → <strong>machbar</strong></div>
+        <div class="affix-ex">bezahlen → <strong>bezahlbar</strong></div>
+        <div class="affix-ex">nutzen → <strong>nutzbar</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-lich</div>
+      <div class="affix-mean">Eigenschaft, ähnlich wie, periodisch</div>
+      <div class="affix-examples">
+        <div class="affix-ex">freund → <strong>freundlich</strong></div>
+        <div class="affix-ex">Monat → <strong>monatlich</strong></div>
+        <div class="affix-ex">persönlich, staatlich, sachlich</div>
+        <div class="affix-ex">verständlich, mündlich, schriftlich</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-ig</div>
+      <div class="affix-mean">hat Eigenschaft X</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Erfolg → <strong>erfolgreich → erfolgig</strong></div>
+        <div class="affix-ex">Kraft → <strong>kräftig</strong></div>
+        <div class="affix-ex">selbstständig, tätig, abhängig</div>
+        <div class="affix-ex">günstig, wichtig, nötig</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-sam</div>
+      <div class="affix-mean">Neigung, langsam/behutsam, gemeinsam</div>
+      <div class="affix-examples">
+        <div class="affix-ex">sparen → <strong>sparsam</strong></div>
+        <div class="affix-ex">arbeiten → <strong>arbeitsam</strong></div>
+        <div class="affix-ex">aufmerksam, gemeinsam, einsam</div>
+        <div class="affix-ex">langsam, wirksam, bedeutsam</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-los</div>
+      <div class="affix-mean">ohne X (Gegenteil)</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Arbeit → <strong>arbeitslos</strong></div>
+        <div class="affix-ex">Hoffnung → <strong>hoffnungslos</strong></div>
+        <div class="affix-ex">kostenlos, sinnlos, hilflos</div>
+        <div class="affix-ex">schlaflos, sprachlos, mühelos</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-haft</div>
+      <div class="affix-mean">ähnelt X, hat Charakter von X</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Fehler → <strong>fehlerhaft</strong></div>
+        <div class="affix-ex">Mangel → <strong>mangelhaft</strong></div>
+        <div class="affix-ex">lebhaft, ernsthaft, zweifelhaft</div>
+        <div class="affix-ex">traumhaft, beispielhaft</div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">un-</div>
+      <div class="affix-mean">Negation / Gegenteil</div>
+      <div class="affix-examples">
+        <div class="affix-ex">möglich → <strong>unmöglich</strong></div>
+        <div class="affix-ex">klar → <strong>unklar</strong></div>
+        <div class="affix-ex">verantwortlich → <strong>unverantwortlich</strong></div>
+        <div class="affix-ex">realistisch → <strong>unrealistisch</strong></div>
+      </div>
+    </div>
+    <div class="affix-card">
+      <div class="affix-tag">-isch</div>
+      <div class="affix-mean">zugehörig zu, typisch für</div>
+      <div class="affix-examples">
+        <div class="affix-ex">Europa → <strong>europäisch</strong></div>
+        <div class="affix-ex">Technik → <strong>technisch</strong></div>
+        <div class="affix-ex">politisch, wirtschaftlich, sozial</div>
+        <div class="affix-ex">typisch, kritisch, praktisch</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 -bar vs. -lich:</strong> <em>-bar</em> = Passivmöglichkeit (kann gemacht werden): <em>lösbar, machbar</em>. <em>-lich</em> = allgemeine Eigenschaft: <em>freundlich, monatlich</em>. Beide können mit <em>un-</em> negiert werden: <em>unlösbar, unfreundlich</em>.</div>
+
+  <div class="expl-card">
+    <h2>🧩 Komposita bilden (C1)</h2>
+    <p>Komposita sind zusammengesetzte Wörter. Das Genus richtet sich immer nach dem <strong>letzten Teil</strong> (Grundwort).</p>
+    <table class="komposita-table">
+      <thead><tr><th>Typ</th><th>Beispiel</th><th>Genus</th></tr></thead>
+      <tbody>
+        <tr><td>Nomen + Nomen</td><td class="mono">Arbeits<strong>markt</strong>, Berufs<strong>ausbildung</strong>, Wirtschafts<strong>wachstum</strong></td><td class="muted">nach letztem Teil</td></tr>
+        <tr><td>Adj + Nomen</td><td class="mono">Hoch<strong>schule</strong>, Klein<strong>unternehmen</strong>, Fach<strong>kräftemangel</strong></td><td class="muted">nach letztem Teil</td></tr>
+        <tr><td>Verb + Nomen</td><td class="mono">Lehr<strong>stelle</strong>, Forschungs<strong>ergebnis</strong>, Entwicklungs<strong>land</strong></td><td class="muted">nach letztem Teil</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- TAB 5: ÜBUNGEN -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Suffixe erkennen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Nomen ableiten</button>
+    <button class="level-tab" data-level="3">Stufe 3 — Adjektive ableiten</button>
+    <button class="level-tab" data-level="4">Stufe 4 — Verb-Präfixe</button>
+    <button class="level-tab" data-level="5">Stufe 5 — Lückentext C1</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl=document.getElementById('studentName');
+var sv=localStorage.getItem('studentName');if(sv)nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+
+var DATA={
+1:[
+  {type:'mc',prompt:'Welches Suffix bildet immer ein Femininum (die)?',task:'',
+   options:['-ling','-tum','-ung','-er'],answer:2},
+  {type:'mc',prompt:'Freiheit, Gesundheit, Sicherheit',task:'Welches Suffix steckt in diesen Wörtern?',
+   options:['-keit','-heit','-schaft','-tum'],answer:1},
+  {type:'mc',prompt:'Möglichkeit, Fähigkeit, Selbstständigkeit',task:'Welches Suffix?',
+   options:['-heit','-schaft','-keit','-ung'],answer:2},
+  {type:'mc',prompt:'Welches Genus hat ein Wort mit dem Suffix -schaft?',task:'',
+   options:['das (Neutrum)','der (Maskulinum)','die (Femininum)','variiert'],answer:2},
+  {type:'mc',prompt:'Erlebnis, Erkenntnis, Versäumnis',task:'Welches Suffix und welches Genus?',
+   options:['-nis, die','-nis, das','-nis, der','-tum, das'],answer:1},
+  {type:'mc',prompt:'Wissenschaftler, Politiker, Forscher',task:'Welches Suffix und welches Genus?',
+   options:['-er, der','-er, die','-ling, der','-ler, das'],answer:0},
+  {type:'mc',prompt:'Lehrling, Prüfling, Flüchtling',task:'Welches Suffix und welches Genus?',
+   options:['-ling, die','-ling, der','-ling, das','-ung, der'],answer:1},
+  {type:'mc',prompt:'Welches Suffix macht aus einem Adjektiv ein Nomen (Eigenschaft)?',task:'z.B. schnell → Schnelligkeit',
+   options:['-heit / -keit','-schaft','-tum','-ling'],answer:0},
+  {type:'mc',prompt:'Integration, Kommunikation, Motivation',task:'Welches Suffix?',
+   options:['-tion / -ion','-heit','-schaft','-ung'],answer:0},
+  {type:'mc',prompt:'Produktivität, Kreativität, Flexibilität',task:'Welches Suffix und Genus?',
+   options:['-ität, die','-ität, das','-heit, die','-keit, die'],answer:0},
+  {type:'mc',prompt:'Welches Wort passt NICHT zur Gruppe (falsches Suffix/Genus)?',task:'',
+   options:['die Entwicklung','die Entscheidung','das Entscheidung','die Vorbereitung'],answer:2},
+  {type:'mc',prompt:'aus welchem Verb kommt „die Entlassung"?',task:'',
+   options:['entlassen','lassen','zulassen','verlassen'],answer:0},
+  {type:'mc',prompt:'Welches Wort hat das Suffix -sam?',task:'',
+   options:['mühsam','mühelos','mühevoll','mühig'],answer:0}
+],
+2:[
+  {type:'fill',prompt:'entwickeln → die ___',task:'Bilde das Nomen mit -ung:',answer:'Entwicklung',hint:'Verb + -ung → Femininum'},
+  {type:'fill',prompt:'entscheiden → die ___',task:'Bilde das Nomen mit -ung:',answer:'Entscheidung',hint:'entscheid- + -ung'},
+  {type:'fill',prompt:'möglich → die ___',task:'Bilde das Nomen mit -keit:',answer:'Möglichkeit',hint:'-lich → -lichkeit'},
+  {type:'fill',prompt:'fähig → die ___',task:'Bilde das Nomen mit -keit:',answer:'Fähigkeit',hint:'fähig + -keit'},
+  {type:'fill',prompt:'frei → die ___',task:'Bilde das Nomen mit -heit:',answer:'Freiheit',hint:'frei + -heit'},
+  {type:'fill',prompt:'erkennen → die ___',task:'Bilde das Nomen mit -nis:',answer:'Erkenntnis',hint:'erkenn- + -tnis (Umlaut!)'},
+  {type:'fill',prompt:'erleben → das ___',task:'Bilde das Nomen mit -nis:',answer:'Erlebnis',hint:'erleb- + -nis'},
+  {type:'fill',prompt:'selbstständig → die ___',task:'Bilde das Nomen mit -keit:',answer:'Selbstständigkeit',hint:'selbstständig + -keit'},
+  {type:'fill',prompt:'vorbereiten → die ___',task:'Bilde das Nomen mit -ung:',answer:'Vorbereitung',hint:'vorbereiten → Vorbereitung'},
+  {type:'fill',prompt:'kommunizieren → die ___',task:'Bilde das Nomen mit -tion:',answer:'Kommunikation',hint:'kommunizier- → Kommunikation (Fremdwort)'},
+  {type:'fill',prompt:'kreativ → die ___',task:'Bilde das Nomen mit -ität:',answer:'Kreativität',hint:'kreativ + -ität'},
+  {type:'fill',prompt:'wachsen → das ___',task:'Bilde das Nomen mit -tum:',answer:'Wachstum',hint:'wachs- + -tum → Neutrum'},
+  {type:'fill',prompt:'wissenschaftlich → der ___',task:'Bilde das Personennomen mit -ler:',answer:'Wissenschaftler',hint:'Wissenschaft + -ler → Maskulinum'}
+],
+3:[
+  {type:'fill',prompt:'lösen → das Problem ist ___',task:'Bilde das Adjektiv mit -bar:',answer:'lösbar',hint:'lös- + -bar = kann gelöst werden'},
+  {type:'fill',prompt:'bezahlen → die Wohnung ist ___',task:'Bilde das Adjektiv mit -bar:',answer:'bezahlbar',hint:'bezahl- + -bar'},
+  {type:'fill',prompt:'freundlich → das Gegenteil (un-):',task:'',answer:'unfreundlich',hint:'un- + freundlich'},
+  {type:'fill',prompt:'möglich → das Gegenteil:',task:'Bilde das Adjektiv mit un-:',answer:'unmöglich',hint:'un- + möglich'},
+  {type:'fill',prompt:'die Hoffnung → ohne Hoffnung → ___',task:'Bilde das Adjektiv mit -los:',answer:'hoffnungslos',hint:'Hoffnung + s + -los'},
+  {type:'fill',prompt:'die Arbeit → ohne Arbeit → ___',task:'Bilde das Adjektiv mit -los:',answer:'arbeitslos',hint:'Arbeit + s + -los'},
+  {type:'fill',prompt:'der Fehler → voller Fehler → ___',task:'Bilde das Adjektiv mit -haft:',answer:'fehlerhaft',hint:'Fehler + -haft'},
+  {type:'fill',prompt:'sparen → gerne sparen → ___',task:'Bilde das Adjektiv mit -sam:',answer:'sparsam',hint:'spar- + -sam'},
+  {type:'fill',prompt:'der Monat → jeden Monat → ___',task:'Bilde das Adjektiv mit -lich:',answer:'monatlich',hint:'Monat + -lich'},
+  {type:'fill',prompt:'die Technik → zur Technik gehörend → ___',task:'Bilde das Adjektiv mit -isch:',answer:'technisch',hint:'Technik → technisch (-k fällt weg, +isch)'},
+  {type:'fill',prompt:'nutzen → kann genutzt werden → ___',task:'Bilde das Adjektiv mit -bar:',answer:'nutzbar',hint:'nutz- + -bar'},
+  {type:'fill',prompt:'wirken → eine Wirkung haben → ___',task:'Bilde das Adjektiv mit -sam:',answer:'wirksam',hint:'wirk- + -sam'},
+  {type:'fill',prompt:'verantwortlich → das Gegenteil:',task:'',answer:'unverantwortlich',hint:'un- + verantwortlich'}
+],
+4:[
+  {type:'mc',prompt:'kaufen → ___kaufen (verkaufen / etwas für Geld weggeben)',task:'Welches Präfix?',
+   options:['be-','ver-','er-','ent-'],answer:1},
+  {type:'mc',prompt:'stehen → ___stehen (aus etwas entstehen)',task:'Welches Präfix?',
+   options:['be-','ver-','ent-','zer-'],answer:2},
+  {type:'mc',prompt:'brechen → ___brechen (in Stücke gehen)',task:'Welches Präfix?',
+   options:['be-','miss-','zer-','über-'],answer:2},
+  {type:'mc',prompt:'stehen → ___stehen (etwas nicht richtig verstehen)',task:'',
+   options:['ver-','miss-','ent-','be-'],answer:1},
+  {type:'mc',prompt:'reichen → ___reichen (ein Ziel erreichen)',task:'',
+   options:['ver-','be-','er-','ent-'],answer:2},
+  {type:'mc',prompt:'arbeiten → ___arbeiten (an etwas arbeiten, bearbeiten)',task:'',
+   options:['er-','be-','ver-','ent-'],answer:1},
+  {type:'mc',prompt:'schätzen → ___schätzen (zu niedrig einschätzen)',task:'',
+   options:['be-','über-','unter-','ver-'],answer:3},
+  {type:'mc',prompt:'stützen → ___stützen (helfen, fördern)',task:'',
+   options:['unter-','über-','be-','er-'],answer:0},
+  {type:'mc',prompt:'wickeln → ent___wickeln (entstehen lassen)',task:'Was ist das fertige Wort?',
+   options:['entwickeln','bewickeln','erwickeln','verwickeln'],answer:0},
+  {type:'mc',prompt:'Was bedeutet „übernehmen"?',task:'',
+   options:['zu viel nehmen','etwas von jemandem übertragen bekommen','unter etwas nehmen','etwas entfernen'],answer:1},
+  {type:'mc',prompt:'Was ist der Unterschied zwischen „verbessern" und „bessern"?',task:'',
+   options:['kein Unterschied','verbessern = schrittweise; bessern = sofort','verbessern betont den Prozess/Ergebnis; beide bedeuten besser machen','verbessern = falsch machen; bessern = richtig machen'],answer:2},
+  {type:'mc',prompt:'„missbrauchen" bedeutet:',task:'',
+   options:['falsch gebrauchen / für falschen Zweck nutzen','nicht gebrauchen','zu viel gebrauchen','unterhalb gebrauchen'],answer:0},
+  {type:'mc',prompt:'Welches Präfix passt zu „zeugen → ___zeugen" (jemanden überzeugen)?',task:'',
+   options:['be-','unter-','über-','er-'],answer:2}
+],
+5:[
+  {type:'fill',prompt:'Die ___ (entwickeln) erneuerbarer Energien ist eine globale Priorität.',task:'Bilde das Nomen:',answer:'Entwicklung',hint:'entwickeln → die Entwicklung (-ung)'},
+  {type:'fill',prompt:'Der Mangel an ___ (fähig) Arbeitskräften ist ein ernstes Problem.',task:'Bilde das Nomen:',answer:'Fähigkeit',hint:'fähig → die Fähigkeit (-keit)'},
+  {type:'fill',prompt:'Die neue Regelung ist kaum ___ (verstehen).',task:'Bilde das Adjektiv:',answer:'verständlich',hint:'Variante von -bar/-lich: verständlich (nicht verstehbar)'},
+  {type:'fill',prompt:'Viele Jugendliche sind nach dem Schulabschluss ___ (Arbeit, ohne).',task:'Bilde das Adjektiv:',answer:'arbeitslos',hint:'Arbeit + -los'},
+  {type:'fill',prompt:'Die ___ (selbstständig) im Beruf wird immer wichtiger.',task:'Bilde das Nomen:',answer:'Selbstständigkeit',hint:'selbstständig → die Selbstständigkeit'},
+  {type:'fill',prompt:'Das Projekt scheiterte durch ___ (managen) des Teams.',task:'Bilde das Nomen (Verb → Nomen):',answer:'Missmanagement',hint:'miss- + Management (Fremdwort)'},
+  {type:'fill',prompt:'Die Idee ist kreativ, aber leider nicht ___ (machen).',task:'Bilde das Adjektiv:',answer:'machbar',hint:'mach- + -bar = kann gemacht werden'},
+  {type:'fill',prompt:'Es ist ___ (möglich, Negation), diese Aufgabe in einem Tag zu lösen.',task:'Bilde das Adjektiv:',answer:'unmöglich',hint:'un- + möglich'},
+  {type:'fill',prompt:'Die ___ (vorbereiten) auf die Prüfung dauerte mehrere Wochen.',task:'Bilde das Nomen:',answer:'Vorbereitung',hint:'vorbereiten → die Vorbereitung (-ung)'},
+  {type:'fill',prompt:'Seine Vorschläge wurden als ___ (Fehler, voller) bezeichnet.',task:'Bilde das Adjektiv:',answer:'fehlerhaft',hint:'Fehler + -haft = voller Fehler'},
+  {type:'fill',prompt:'Die Maßnahmen erwiesen sich als wenig ___ (wirken).',task:'Bilde das Adjektiv:',answer:'wirksam',hint:'wirk- + -sam = eine Wirkung habend'},
+  {type:'fill',prompt:'Die ___ (integrieren) von Migranten in den Arbeitsmarkt ist wichtig.',task:'Bilde das Nomen:',answer:'Integration',hint:'integrieren → die Integration (-tion)'},
+  {type:'fill',prompt:'Die Daten stehen ___ (kostenlos/frei) zur Verfügung.',task:'Bilde das Adjektiv:',answer:'kostenlos',hint:'Kosten + -los = ohne Kosten'}
+]
+};
+
+var currentLevel=1, answers={}, checked={};
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');card.className='exercise-card';card.id='ex-'+i;
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+    if(ex.type==='mc'){
+      var opts=document.createElement('div');opts.className='options';
+      ex.options.forEach(function(opt,j){
+        var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+        btn.addEventListener('click',function(){
+          if(checked[i])return;answers[i]=j;
+          opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+          if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+          else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+          checked[i]=true;updateScore();updateProg();
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    } else {
+      var wrap=document.createElement('div');
+      if(ex.hint){var h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--text-muted);margin-bottom:6px;';h.textContent='Hinweis: '+ex.hint;wrap.appendChild(h);}
+      var inp=document.createElement('input');inp.type='text';inp.className='fill-input';
+      inp.placeholder='Wortform eingeben …';inp.autocomplete='off';inp.autocapitalize='none';
+      wrap.appendChild(inp);
+      var fb=document.createElement('div');fb.className='ex-feedback';
+      var cb=document.createElement('button');cb.className='check-btn';cb.textContent='Prüfen';
+      cb.addEventListener('click',function(){
+        if(checked[i])return;
+        var v=inp.value.trim(),ok=v.toLowerCase()===ex.answer.trim().toLowerCase();
+        inp.classList.add(ok?'correct':'wrong');
+        fb.textContent=ok?'Richtig!':'Nicht ganz. Richtig: '+ex.answer;
+        fb.className='ex-feedback show '+(ok?'correct':'wrong');
+        card.classList.add(ok?'correct':'wrong');
+        checked[i]=true;answers[i]=v;cb.disabled=true;inp.disabled=true;
+        updateScore();updateProg();
+      });
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')cb.click();});
+      wrap.appendChild(cb);wrap.appendChild(fb);card.appendChild(wrap);
+    }
+    c.appendChild(card);
+  });
+  updateProg();
+}
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(ex.type==='mc'){if(answers[i]===ex.answer)correct++;}
+    else{if(answers[i]&&answers[i].toLowerCase()===ex.answer.trim().toLowerCase())correct++;}
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=ex.type==='mc'?-1:'';
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    if(ex.type==='mc'){
+      var opts=card.querySelectorAll('.option-btn');
+      if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+    } else {
+      var inp=card.querySelector('.fill-input'),fb=card.querySelector('.ex-feedback'),cb=card.querySelector('.check-btn');
+      if(inp)inp.disabled=true;if(cb)cb.disabled=true;
+      if(fb){fb.textContent='Richtig: '+ex.answer;fb.className='ex-feedback show wrong';}
+    }
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Wortbildung sitzt! Wende die Regeln aktiv in Lückentexten an.':'Schau nochmal in Tab 2–4 nach und wiederhole die Suffix-Regeln.';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+renderEx();
+})();
+</script>
+</body>
+</html>

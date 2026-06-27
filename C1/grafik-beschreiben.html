@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafik beschreiben – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#2D5BE3;--cobalt-light:#E8EEFB;--cobalt-dark:#1A3BAA;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E2E6EF;
+  --text:#1A1D2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --green:#059669;--green-bg:#ECFDF5;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --teal:#0D7A6E;--teal-bg:#F0FAFA;
+  --indigo:#4338CA;--indigo-bg:#EEF2FF;
+  --slate-bg:#F1F5F9;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --cobalt:#5B8AF7;--cobalt-light:#1A2540;--cobalt-dark:#7BA3FF;
+    --bg:#0F1117;--surface:#1A1D2A;--border:#2D3148;
+    --text:#E8EAF0;--text-muted:#9DA3B4;--text-light:#6B7280;
+    --green:#34D399;--green-bg:#0A2918;
+    --red:#F87171;--red-bg:#2D1010;
+    --amber:#FCD34D;--amber-bg:#2D1F08;
+    --teal:#2DD4BF;--teal-bg:#0A2420;
+    --indigo:#818CF8;--indigo-bg:#1E1B4B;
+    --slate-bg:#1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+/* Redemittel cards */
+.rm-section{margin-bottom:1.5rem;}
+.rm-heading{font-size:14px;font-weight:600;color:var(--text);margin-bottom:.75rem;padding:.5rem 1rem;background:var(--cobalt-light);border-radius:var(--radius-sm);color:var(--cobalt);}
+.rm-grid{display:flex;flex-direction:column;gap:6px;}
+.rm-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 14px;font-size:13px;color:var(--text);line-height:1.6;box-shadow:var(--shadow);}
+.rm-item .phrase{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-weight:500;}
+.rm-item .fill{color:var(--text-muted);font-style:italic;}
+/* Aufbau steps */
+.steps{display:flex;flex-direction:column;gap:10px;margin:1rem 0;}
+.step{display:flex;gap:12px;align-items:flex-start;}
+.step-num{width:28px;height:28px;background:var(--cobalt);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.step-content{flex:1;}
+.step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.step-desc{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.step-example{font-size:12px;color:var(--cobalt);font-family:'JetBrains Mono',monospace;margin-top:4px;background:var(--cobalt-light);padding:4px 8px;border-radius:4px;display:inline-block;}
+/* Trend words */
+.trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:.75rem 0;}
+.trend-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;box-shadow:var(--shadow);}
+.trend-dir{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px;}
+.trend-up .trend-dir{color:var(--green);}
+.trend-down .trend-dir{color:var(--red);}
+.trend-flat .trend-dir{color:var(--amber);}
+.trend-words{font-size:12px;color:var(--text-muted);line-height:1.8;}
+.trend-words .w{font-family:'JetBrains Mono',monospace;color:var(--text);font-size:12px;}
+/* Musterschreiben */
+.muster-card{background:var(--surface);border:2px solid var(--cobalt-light);border-radius:var(--radius);padding:1.5rem;margin:1.25rem 0;box-shadow:var(--shadow);}
+.muster-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--cobalt);margin-bottom:1rem;}
+.muster-section{margin-bottom:1rem;}
+.muster-section-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+.muster-text{font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap;}
+.muster-text .hl{color:var(--cobalt);font-weight:500;}
+/* exercise */
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.fill-input{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;max-width:480px;outline:none;transition:border-color .2s;}
+.fill-input:focus{border-color:var(--cobalt);}
+.fill-input.correct{border-color:var(--green);background:var(--green-bg);}
+.fill-input.wrong{border-color:var(--red);background:var(--red-bg);}
+.check-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:background .15s;}
+.check-btn:hover{background:var(--cobalt-dark);}
+.check-btn:disabled{background:var(--border);color:var(--text-muted);cursor:default;}
+.ex-feedback{margin-top:10px;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none;line-height:1.5;}
+.ex-feedback.show{display:block;}
+.ex-feedback.correct{background:var(--green-bg);color:var(--green);}
+.ex-feedback.wrong{background:var(--red-bg);color:var(--red);}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;}.header{padding:0 1rem;}.tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 10px;font-size:12px;}.name-input{width:110px;}
+  .trend-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Grafik beschreiben · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Aufbau & Struktur</button>
+  <button class="tab-btn" data-tab="tab2">Einleitung & Überblick</button>
+  <button class="tab-btn" data-tab="tab3">Trends & Entwicklungen</button>
+  <button class="tab-btn" data-tab="tab4">Mustertext C1</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1 -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Grafikbeschreibung im C1-Schreiben</h2>
+    <p>Im Goethe/OSD C1-Schreiben (Aufgabe 1 oder 2) musst du häufig eine <strong>Grafik, ein Diagramm oder eine Statistik</strong> beschreiben und kommentieren. Das erfordert einen klaren Aufbau, präzise Sprache und formellen Stil.</p>
+    <p>Eine vollständige Grafikbeschreibung hat vier Teile: Einleitung → Überblick → Detailbeschreibung → Kommentar/Schluss.</p>
+  </div>
+  <div class="info-box"><strong>📖 C1-Prüfungsformat:</strong> Du bekommst eine Grafik mit einer Aufgabenstellung. Du sollst ca. 200 Wörter schreiben. Die Bewertung achtet auf: Vollständigkeit, Korrektheit der Daten, Sprachkompetenz (Redemittel, Grammatik), Struktur.</div>
+
+  <div class="expl-card">
+    <h2>📋 4-Schritte-Aufbau</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Einleitung — Was zeigt die Grafik?</div>
+          <div class="step-desc">Thema, Quelle, Zeitraum, Art der Grafik kurz vorstellen. Keine Zahlen hier!</div>
+          <div class="step-example">Die Grafik zeigt die Entwicklung der Arbeitslosenquote in Deutschland zwischen 2010 und 2023.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Überblick — Auffälliger Gesamttrend</div>
+          <div class="step-desc">Den wichtigsten Trend oder Unterschied in einem Satz zusammenfassen. Noch keine Details.</div>
+          <div class="step-example">Insgesamt ist ein deutlicher Rückgang der Arbeitslosigkeit über den genannten Zeitraum zu erkennen.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Detailbeschreibung — Wichtige Zahlen & Trends</div>
+          <div class="step-desc">Die markantesten Daten präzise beschreiben — Höchst-/Tiefstwerte, Wendepunkte, Vergleiche.</div>
+          <div class="step-example">Im Jahr 2010 lag die Quote bei 7,7 %, fiel bis 2019 auf einen Tiefstand von 5,0 % und stieg 2020 krisenbedingt leicht auf 5,9 % an.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Kommentar / Schluss — Einordnung</div>
+          <div class="step-desc">Kurze eigene Einschätzung, mögliche Gründe oder Ausblick. Nicht zu lang!</div>
+          <div class="step-example">Dieser Trend dürfte auf die positive wirtschaftliche Entwicklung und verstärkte Qualifizierungsmaßnahmen zurückzuführen sein.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 Häufige Fehler:</strong> Zu viele Zahlen ohne Struktur · Keine Einleitung · Zu viel eigene Meinung · Alltagssprache statt formellen Redemitteln · Falsche Verbform (Grafiken → Präsens!)</div>
+</section>
+
+<!-- TAB 2 -->
+<section class="tab-panel" id="tab2">
+  <div class="expl-card">
+    <h2>📝 Einleitung & Überblick — Redemittel</h2>
+    <p>Die Einleitung stellt die Grafik vor. Verwende immer <strong>Präsens</strong>, auch wenn die Daten aus der Vergangenheit stammen.</p>
+  </div>
+
+  <div class="rm-section">
+    <div class="rm-heading">Einleitung — Art der Grafik vorstellen</div>
+    <div class="rm-grid">
+      <div class="rm-item"><span class="phrase">Die Grafik / Das Diagramm / Das Schaubild zeigt</span> <span class="fill">+ Thema + Zeitraum</span>.</div>
+      <div class="rm-item"><span class="phrase">Der Grafik ist zu entnehmen, dass</span> <span class="fill">+ Nebensatz</span>.</div>
+      <div class="rm-item"><span class="phrase">Die vorliegende Statistik informiert über</span> <span class="fill">+ Thema</span>.</div>
+      <div class="rm-item"><span class="phrase">Das Balkendiagramm / Kreisdiagramm / Liniendiagramm stellt</span> <span class="fill">+ Thema</span> <span class="phrase">dar</span>.</div>
+      <div class="rm-item"><span class="phrase">Laut der Grafik (Quelle: </span><span class="fill">___</span><span class="phrase">, Jahr: </span><span class="fill">___</span><span class="phrase">)</span> <span class="fill">+ Hauptaussage</span>.</div>
+    </div>
+  </div>
+
+  <div class="rm-section">
+    <div class="rm-heading">Überblick — Gesamttrend</div>
+    <div class="rm-grid">
+      <div class="rm-item"><span class="phrase">Insgesamt lässt sich erkennen, dass</span> <span class="fill">+ Gesamttrend</span>.</div>
+      <div class="rm-item"><span class="phrase">Auffällig ist, dass</span> <span class="fill">+ markantester Punkt</span>.</div>
+      <div class="rm-item"><span class="phrase">Im Großen und Ganzen zeigt die Grafik</span> <span class="fill">+ Trend</span>.</div>
+      <div class="rm-item"><span class="phrase">Auf den ersten Blick fällt auf, dass</span> <span class="fill">+ Hauptmerkmal</span>.</div>
+      <div class="rm-item"><span class="phrase">Generell ist ein</span> <span class="fill">starker / leichter / stetiger</span> <span class="phrase">Anstieg / Rückgang zu verzeichnen.</span></div>
+    </div>
+  </div>
+
+  <div class="rm-section">
+    <div class="rm-heading">Grafiktypen benennen</div>
+    <div class="rm-grid">
+      <div class="rm-item">das <span class="phrase">Balkendiagramm</span> — Vergleiche zwischen Kategorien</div>
+      <div class="rm-item">das <span class="phrase">Liniendiagramm</span> — Entwicklung über Zeit</div>
+      <div class="rm-item">das <span class="phrase">Kreisdiagramm / Tortendiagramm</span> — Anteile in %</div>
+      <div class="rm-item">das <span class="phrase">Säulendiagramm</span> — ähnlich wie Balken, vertikal</div>
+      <div class="rm-item">die <span class="phrase">Tabelle</span> — strukturierte Daten</div>
+      <div class="rm-item">das <span class="phrase">Infografik / Schaubild</span> — gemischte Darstellung</div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 3 -->
+<section class="tab-panel" id="tab3">
+  <div class="expl-card">
+    <h2>📈 Trends & Entwicklungen beschreiben</h2>
+    <p>Für die Detailbeschreibung brauchst du präzise Vokabular für Anstiege, Rückgänge, Plateaus und Vergleiche.</p>
+  </div>
+
+  <div class="trend-grid">
+    <div class="trend-box trend-up">
+      <div class="trend-dir">↑ Anstieg / Zunahme</div>
+      <div class="trend-words">
+        <span class="w">steigen / ansteigen</span><br>
+        <span class="w">zunehmen</span><br>
+        <span class="w">wachsen</span><br>
+        <span class="w">sich erhöhen</span><br>
+        <span class="w">klettert auf</span><br>
+        <span class="w">verzeichnet einen Anstieg</span>
+      </div>
+    </div>
+    <div class="trend-box trend-down">
+      <div class="trend-dir">↓ Rückgang / Abnahme</div>
+      <div class="trend-words">
+        <span class="w">sinken / fallen</span><br>
+        <span class="w">abnehmen</span><br>
+        <span class="w">zurückgehen</span><br>
+        <span class="w">sich verringern</span><br>
+        <span class="w">einbrechen</span><br>
+        <span class="w">verzeichnet einen Rückgang</span>
+      </div>
+    </div>
+    <div class="trend-box trend-flat">
+      <div class="trend-dir">→ Stagnation / Plateau</div>
+      <div class="trend-words">
+        <span class="w">stagnieren</span><br>
+        <span class="w">gleich bleiben</span><br>
+        <span class="w">auf dem gleichen Niveau verbleiben</span><br>
+        <span class="w">sich kaum verändern</span><br>
+        <span class="w">konstant bleiben</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rm-section" style="margin-top:1.25rem">
+    <div class="rm-heading">Intensität & Geschwindigkeit</div>
+    <div class="rm-grid">
+      <div class="rm-item"><span class="phrase">stark / deutlich / drastisch / erheblich</span> — starke Veränderung</div>
+      <div class="rm-item"><span class="phrase">leicht / geringfügig / minimal</span> — kleine Veränderung</div>
+      <div class="rm-item"><span class="phrase">stetig / kontinuierlich / gleichmäßig</span> — regelmäßige Veränderung</div>
+      <div class="rm-item"><span class="phrase">rapide / sprunghaft</span> — sehr schnelle Veränderung</div>
+      <div class="rm-item"><span class="phrase">vorübergehend / kurzfristig</span> — zeitlich begrenzt</div>
+      <div class="rm-item"><span class="phrase">langfristig / nachhaltig</span> — dauerhaft</div>
+    </div>
+  </div>
+
+  <div class="rm-section">
+    <div class="rm-heading">Zahlen & Vergleiche ausdrücken</div>
+    <div class="rm-grid">
+      <div class="rm-item"><span class="phrase">von … auf … steigen/fallen</span> — Ausgangswert → Endwert</div>
+      <div class="rm-item"><span class="phrase">um … Prozentpunkte / Prozent zunehmen</span></div>
+      <div class="rm-item"><span class="phrase">einen Höchst-/Tiefstwert von … erreichen</span></div>
+      <div class="rm-item"><span class="phrase">im Vergleich zu … / gegenüber …</span> — Vergleich</div>
+      <div class="rm-item"><span class="phrase">während … , stieg/fiel …</span> — Kontrast zweier Trends</div>
+      <div class="rm-item"><span class="phrase">im Gegensatz dazu / hingegen</span> — Gegensatz</div>
+      <div class="rm-item"><span class="phrase">mit einem Anteil von … %</span> — Kreisdiagramm</div>
+      <div class="rm-item"><span class="phrase">an erster / zweiter / letzter Stelle steht</span> — Rangfolge</div>
+    </div>
+  </div>
+
+  <div class="rm-section">
+    <div class="rm-heading">Kommentar / Schluss — Einordnung</div>
+    <div class="rm-grid">
+      <div class="rm-item"><span class="phrase">Dies dürfte auf … zurückzuführen sein.</span> — Ursache (vorsichtig)</div>
+      <div class="rm-item"><span class="phrase">Ein möglicher Grund hierfür könnte … sein.</span></div>
+      <div class="rm-item"><span class="phrase">Zusammenfassend lässt sich sagen, dass …</span></div>
+      <div class="rm-item"><span class="phrase">Es bleibt abzuwarten, ob …</span> — Ausblick</div>
+      <div class="rm-item"><span class="phrase">Auffällig ist, dass … , was darauf hindeutet, dass …</span></div>
+      <div class="rm-item"><span class="phrase">Insgesamt vermittelt die Grafik den Eindruck, dass …</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 4 -->
+<section class="tab-panel" id="tab4">
+  <div class="expl-card">
+    <h2>📄 Mustertext — Grafikbeschreibung C1</h2>
+    <p style="font-size:13px;color:var(--text-muted)">Fiktive Grafik: Liniendiagramm — Anteil der Hochschulabsolventen in Deutschland 2000–2020 (in %)</p>
+  </div>
+
+  <div class="muster-card">
+    <div class="muster-label">Mustertext C1 — ca. 200 Wörter</div>
+
+    <div class="muster-section">
+      <div class="muster-section-label">Einleitung</div>
+      <div class="muster-text">Das vorliegende Liniendiagramm <span class="hl">zeigt die Entwicklung</span> des Anteils der Hochschulabsolventen an der Bevölkerung in Deutschland im Zeitraum von 2000 bis 2020.</div>
+    </div>
+
+    <div class="muster-section">
+      <div class="muster-section-label">Überblick</div>
+      <div class="muster-text"><span class="hl">Insgesamt lässt sich erkennen</span>, dass der Anteil der Hochschulabsolventen über den gesamten Betrachtungszeitraum <span class="hl">kontinuierlich gestiegen</span> ist.</div>
+    </div>
+
+    <div class="muster-section">
+      <div class="muster-section-label">Detailbeschreibung</div>
+      <div class="muster-text">Im Jahr 2000 <span class="hl">lag</span> der Anteil bei 17 %. In den folgenden zehn Jahren <span class="hl">stieg</span> er <span class="hl">stetig</span> an und <span class="hl">erreichte</span> 2010 einen Wert von 24 %. Besonders <span class="hl">auffällig</span> ist der <span class="hl">deutliche Anstieg</span> zwischen 2015 und 2020: <span class="hl">von</span> 28 % <span class="hl">auf</span> 34 %, was einem Zuwachs <span class="hl">von</span> sechs Prozentpunkten entspricht. <span class="hl">Im Vergleich</span> zum Jahr 2000 hat sich der Anteil damit fast <span class="hl">verdoppelt</span>.</div>
+    </div>
+
+    <div class="muster-section">
+      <div class="muster-section-label">Kommentar / Schluss</div>
+      <div class="muster-text"><span class="hl">Zusammenfassend lässt sich sagen</span>, dass der Bildungsgrad in Deutschland erheblich gestiegen ist. <span class="hl">Dies dürfte auf</span> den Ausbau des Hochschulsystems sowie auf veränderte Anforderungen des Arbeitsmarkts <span class="hl">zurückzuführen sein</span>. <span class="hl">Es bleibt abzuwarten</span>, ob sich dieser Trend auch in den kommenden Jahren fortsetzen wird.</div>
+    </div>
+  </div>
+
+  <div class="tip-box"><strong>💡 Sprachwerkzeuge im Mustertext:</strong> Hervorgehobene Phrasen zeigen C1-Redemittel. Achte auf: Präsens für Grafiken · vorsichtige Sprache (<em>dürfte, könnte</em>) für Kommentare · Variationsreichtum (nicht immer „steigen" verwenden).</div>
+
+  <div class="expl-card">
+    <h2>⚠️ Häufige Fehler bei der Grafikbeschreibung</h2>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:.5rem;">
+      <div style="background:var(--red-bg);border-left:3px solid var(--red);padding:8px 12px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;">❌ „Die Grafik ist über Bildung." → ✅ „Die Grafik zeigt die Entwicklung des Bildungsniveaus …"</div>
+      <div style="background:var(--red-bg);border-left:3px solid var(--red);padding:8px 12px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;">❌ „Es war 17% in 2000." → ✅ „Im Jahr 2000 lag der Wert bei 17 %."</div>
+      <div style="background:var(--red-bg);border-left:3px solid var(--red);padding:8px 12px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;">❌ „Die Zahlen gehen hoch und dann runter." → ✅ „Der Wert stieg zunächst an, um dann leicht zurückzugehen."</div>
+      <div style="background:var(--red-bg);border-left:3px solid var(--red);padding:8px 12px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;">❌ Alle Zahlen nennen ohne Struktur → ✅ Nur markanteste Werte: Höchst-, Tiefstpunkt, Wendepunkt</div>
+      <div style="background:var(--red-bg);border-left:3px solid var(--red);padding:8px 12px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;">❌ „Ich glaube, das ist wegen …" → ✅ „Dies dürfte auf … zurückzuführen sein."</div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 5 -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Redemittel zuordnen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Vokabular Trends</button>
+    <button class="level-tab" data-level="3">Stufe 3 — Sätze formulieren</button>
+    <button class="level-tab" data-level="4">Stufe 4 — Aufbau & Struktur</button>
+    <button class="level-tab" data-level="5">Stufe 5 — C1-Register</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl=document.getElementById('studentName');
+var sv=localStorage.getItem('studentName');if(sv)nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+
+var DATA={
+1:[
+  {type:'mc',prompt:'Womit beginnt man eine Grafikbeschreibung?',task:'',
+   options:['Mit den genauen Zahlen und Daten','Mit einer Einleitung: Thema, Grafiktyp, Zeitraum — ohne Zahlen','Mit dem eigenen Kommentar','Mit dem auffälligsten Datenpunkt'],answer:1},
+  {type:'mc',prompt:'"Die Grafik zeigt die Entwicklung der Beschäftigungsquote zwischen 2010 und 2023."',task:'Zu welchem Teil der Grafikbeschreibung gehört dieser Satz?',
+   options:['Überblick','Detailbeschreibung','Einleitung','Kommentar'],answer:2},
+  {type:'mc',prompt:'"Insgesamt lässt sich erkennen, dass die Zahlen über den gesamten Zeitraum gestiegen sind."',task:'Zu welchem Teil gehört dieser Satz?',
+   options:['Einleitung','Überblick / Gesamttrend','Detailbeschreibung','Schluss'],answer:1},
+  {type:'mc',prompt:'"Auffällig ist der starke Rückgang zwischen 2019 und 2020, von 5,0 % auf 5,9 %."',task:'Zu welchem Teil gehört das?',
+   options:['Einleitung','Überblick','Detailbeschreibung','Kommentar'],answer:2},
+  {type:'mc',prompt:'"Dies dürfte auf die wirtschaftliche Krise zurückzuführen sein."',task:'Zu welchem Teil gehört dieser Satz?',
+   options:['Einleitung','Überblick','Detailbeschreibung','Kommentar / Schluss'],answer:3},
+  {type:'mc',prompt:'Welches Redemittel passt für die EINLEITUNG?',task:'',
+   options:['Insgesamt lässt sich erkennen, dass …','Die Grafik zeigt die Entwicklung … im Zeitraum von … bis …','Im Jahr 2010 lag der Wert bei …','Dies dürfte auf … zurückzuführen sein.'],answer:1},
+  {type:'mc',prompt:'Welches Redemittel passt für den KOMMENTAR?',task:'',
+   options:['Die Grafik zeigt …','Von 2010 bis 2020 stieg der Anteil von … auf … %','Es bleibt abzuwarten, ob sich dieser Trend fortsetzt.','Im Vergleich zu … ist ein Rückgang zu verzeichnen.'],answer:2},
+  {type:'mc',prompt:'Welche Verbform benutzt man beim Beschreiben einer Grafik?',task:'',
+   options:['Präteritum (Vergangenheit)','Futur II','Präsens (Gegenwart)','Plusquamperfekt'],answer:2},
+  {type:'mc',prompt:'Was gehört in den ÜBERBLICK (Schritt 2)?',task:'',
+   options:['Alle genauen Zahlen','Der auffälligste Gesamttrend in 1-2 Sätzen','Die Quelle der Grafik','Die eigene Meinung'],answer:1},
+  {type:'mc',prompt:'Welcher Fehler ist typisch bei Anfängern?',task:'',
+   options:['Zu wenig Details','Zu formelle Sprache','Alle Zahlen nennen ohne Struktur und Priorität','Die Einleitung zu lang machen'],answer:2},
+  {type:'mc',prompt:'Was ist KEIN Teil einer Grafikbeschreibung?',task:'',
+   options:['Einleitung','Überblick','Detailbeschreibung','Zusammenfassung des eigenen Lebens'],answer:3},
+  {type:'mc',prompt:'Wie viele Wörter soll eine C1-Grafikbeschreibung ungefähr haben?',task:'',
+   options:['50–80 Wörter','100–150 Wörter','200 Wörter (ca.)','400+ Wörter'],answer:2},
+  {type:'mc',prompt:'"Der Grafik ist zu entnehmen, dass der Anteil gestiegen ist."',task:'Wo steht dieser Satz am besten?',
+   options:['Detailbeschreibung','Kommentar','Einleitung oder Überblick','Schluss'],answer:2}
+],
+2:[
+  {type:'mc',prompt:'Der Wert ist von 10 % auf 25 % gestiegen. Welches Wort beschreibt die Intensität am besten?',task:'',
+   options:['leicht','geringfügig','stark / deutlich','gleichmäßig'],answer:2},
+  {type:'mc',prompt:'Der Anteil bleibt zwischen 2015 und 2018 konstant bei 30 %. Welches Verb passt?',task:'',
+   options:['steigt','sinkt','stagniert / bleibt konstant','bricht ein'],answer:2},
+  {type:'fill',prompt:'Der Wert ist von 15 % auf 8 % gesunken. → Der Wert ___ um 7 Prozentpunkte ___.',task:'Ergänze Verb + Richtungswort:',answer:'sank zurück',hint:'sinken + zurückgehen → sank zurück / ging zurück'},
+  {type:'mc',prompt:'Welches Wort beschreibt einen sehr schnellen, plötzlichen Anstieg?',task:'',
+   options:['stetig','kontinuierlich','rapide / sprunghaft','geringfügig'],answer:2},
+  {type:'fill',prompt:'Im Jahr 2010 betrug der Anteil 20 %, 2020 waren es 35 %. → Der Wert ___ von 20 % ___ 35 %.',task:'Ergänze Präpositionen:',answer:'stieg von auf',hint:'steigen + von … auf … (Ausgangswert → Endwert)'},
+  {type:'mc',prompt:'Welcher Ausdruck passt für ein Kreisdiagramm mit Prozentwerten?',task:'"Deutschland hat den größten Anteil ___ 35 %."',
+   options:['von','mit einem Anteil von','aus','bei'],answer:1},
+  {type:'mc',prompt:'Welches Redemittel beschreibt einen Kontrast zwischen zwei Gruppen?',task:'',
+   options:['stetig','während … stieg, sank …','im Großen und Ganzen','stagniert'],answer:1},
+  {type:'fill',prompt:'Der höchste Wert wurde 2015 mit 42 % gemessen. → Der Wert ___ 2015 einen ___ von 42 %.',task:'Ergänze Verb + Nomen:',answer:'erreichte Höchstwert',hint:'erreichen + Höchstwert / Tiefstwert'},
+  {type:'mc',prompt:'Was bedeutet "verzeichnet einen starken Rückgang"?',task:'',
+   options:['Es steigt stark an.','Es sinkt stark.','Es bleibt konstant.','Es schwankt stark.'],answer:1},
+  {type:'mc',prompt:'Welches Adverb passt für eine gleichmäßige, regelmäßige Steigerung?',task:'',
+   options:['rapide','sprunghaft','kontinuierlich / stetig','drastisch'],answer:2},
+  {type:'fill',prompt:'Group A: 45 %. Group B: 30 %. → ___ zu Gruppe B liegt Gruppe A um 15 Prozentpunkte ___.',task:'Ergänze Präposition + Adverb:',answer:'Im Vergleich vorne',hint:'Im Vergleich zu … liegt … vorne / höher / niedriger'},
+  {type:'mc',prompt:'Welcher Satz beschreibt einen Trend in der VERGANGENHEIT korrekt (Grafikpräsens)?',task:'',
+   options:['Die Zahlen waren gestiegen.','Die Zahlen stiegen zwischen 2010 und 2020.','Die Zahlen steigen zwischen 2010 und 2020.','Die Zahlen sind gestigen.'],answer:2},
+  {type:'mc',prompt:'"Im Gegensatz dazu" leitet welche Art von Information ein?',task:'',
+   options:['Eine Erklärung / Ursache','Einen Kontrast oder Gegensatz','Eine Zusammenfassung','Eine Prognose'],answer:1}
+],
+3:[
+  {type:'fill',prompt:'Die Grafik zeigt den Anteil erneuerbarer Energien 2005–2022.',task:'Schreibe eine Einleitung (1 Satz):',answer:'Das vorliegende Diagramm zeigt die Entwicklung des Anteils erneuerbarer Energien im Zeitraum von 2005 bis 2022.',hint:'Grafiktyp + zeigt + Thema + Zeitraum'},
+  {type:'mc',prompt:'Wähle die beste Formulierung für einen Überblick:',task:'Thema: Arbeitslosenquote ist insgesamt gesunken.',
+   options:['Insgesamt sank die Arbeitslosenquote deutlich über den Betrachtungszeitraum.','Die Arbeitslosenquote war 7 % in 2010 und 5 % in 2020.','Die Grafik ist sehr interessant und informativ.','Es gibt viele Zahlen in der Grafik.'],answer:0},
+  {type:'fill',prompt:'2010: 8 %. 2015: 14 %. 2020: 22 %. — Beschreibe die Entwicklung in einem Satz.',task:'',answer:'Der Anteil stieg von 8 % im Jahr 2010 auf 22 % im Jahr 2020 kontinuierlich an.',hint:'von … auf … + kontinuierlich + ansteigen'},
+  {type:'mc',prompt:'Welche Kommentarformulierung klingt am C1-gerechsten?',task:'',
+   options:['Ich denke, das kommt vom Wirtschaftswachstum.','Das ist wegen der Wirtschaft so.','Dies dürfte auf das Wirtschaftswachstum zurückzuführen sein.','Die Wirtschaft hat das verursacht, glaube ich.'],answer:2},
+  {type:'fill',prompt:'Formuliere einen Schlusssatz mit Ausblick.',task:'Thema: Digitalisierung nimmt zu.',answer:'Es bleibt abzuwarten, ob dieser Trend zur Digitalisierung auch in den kommenden Jahren anhalten wird.',hint:'Es bleibt abzuwarten, ob … (Konjunktiv / Zukunft)'},
+  {type:'mc',prompt:'Welcher Satz beschreibt am präzisesten einen Höchstwert?',task:'',
+   options:['Die Zahl war sehr hoch 2015.','2015 gab es viele Zahlen.','Im Jahr 2015 erreichte der Wert mit 38 % seinen Höchststand.','In 2015 war das Maximum.'],answer:2},
+  {type:'fill',prompt:'Gruppe A: 55 %. Gruppe B: 30 %. — Beschreibe den Unterschied.',task:'',answer:'Mit einem Anteil von 55 % liegt Gruppe A deutlich vor Gruppe B mit 30 %.',hint:'Mit einem Anteil von … liegt … deutlich vor/über …'},
+  {type:'mc',prompt:'Welches Redemittel leitet einen Kontrast zwischen zwei Trends ein?',task:'"Während die Exportzahlen stiegen, ___ die Importe zurück."',
+   options:['hingegen','gingen','wohingegen','aber'],answer:1},
+  {type:'fill',prompt:'Der Wert sank 2020 plötzlich stark. — Beschreibe dies mit einem C1-Ausdruck.',task:'',answer:'Im Jahr 2020 verzeichnet der Wert einen drastischen / rapiden Rückgang.',hint:'verzeichnet + Adjektiv + Rückgang / Anstieg'},
+  {type:'mc',prompt:'Welcher Satz formuliert vorsichtig eine mögliche Ursache?',task:'',
+   options:['Die Ursache ist die Digitalisierung.','Ein möglicher Grund hierfür könnte die zunehmende Digitalisierung sein.','Das kommt von der Digitalisierung.','Wegen Digitalisierung ist das so.'],answer:1},
+  {type:'fill',prompt:'Formuliere einen Überblick-Satz für: Anteil von Frauen in Führungspositionen steigt leicht.',task:'',answer:'Insgesamt lässt sich ein leichter Anstieg des Anteils von Frauen in Führungspositionen erkennen.',hint:'Insgesamt lässt sich + Trend + erkennen'},
+  {type:'mc',prompt:'Welcher Satz vergleicht zwei Werte korrekt?',task:'',
+   options:['2010 war kleiner als 2020.','Im Vergleich zu 2010 ist der Wert in 2020 um 10 Prozentpunkte gestiegen.','2020 ist mehr als 2010.','Die Zahlen sind verschieden in 2010 und 2020.'],answer:1},
+  {type:'fill',prompt:'Beende den Satz: "Auffällig ist, dass der Anteil zwischen 2018 und 2020 um 8 Prozentpunkte gestiegen ist, ___ darauf hindeutet, ___ die Nachfrage erheblich zugenommen hat."',task:'Ergänze die Konnektoren:',answer:'was dass',hint:'was darauf hindeutet, dass … (Relativsatz + dass-Satz)'}
+],
+4:[
+  {type:'mc',prompt:'In welcher Reihenfolge soll eine Grafikbeschreibung aufgebaut sein?',task:'',
+   options:['Kommentar → Überblick → Einleitung → Details','Einleitung → Details → Überblick → Kommentar','Einleitung → Überblick → Details → Kommentar','Details → Einleitung → Kommentar → Überblick'],answer:2},
+  {type:'mc',prompt:'Wann nennt man die genauen Zahlen?',task:'',
+   options:['In der Einleitung','Im Überblick','In der Detailbeschreibung','Nur im Kommentar'],answer:2},
+  {type:'mc',prompt:'Was soll die Einleitung NICHT enthalten?',task:'',
+   options:['Den Grafiktyp','Das Thema','Den Zeitraum','Die genauen Zahlen'],answer:3},
+  {type:'mc',prompt:'Welche Daten sollte man in der Detailbeschreibung besonders erwähnen?',task:'',
+   options:['Alle vorhandenen Zahlen','Nur Zahlen aus der Einleitung','Markanteste Werte: Höchst-/Tiefstpunkt, Wendepunkte, auffällige Veränderungen','Nur den Trend, keine Zahlen'],answer:2},
+  {type:'mc',prompt:'Wie lang sollte der Kommentar/Schluss im Verhältnis zum Gesamttext sein?',task:'',
+   options:['Mindestens die Hälfte des Textes','2–4 Sätze — kurz und präzise','Gar kein Kommentar nötig','So lang wie die Detailbeschreibung'],answer:1},
+  {type:'mc',prompt:'Welcher Satz gehört in die Einleitung?',task:'',
+   options:['Der Höchstwert von 45 % wurde 2018 erreicht.','Dies dürfte auf politische Maßnahmen zurückzuführen sein.','Das Balkendiagramm stellt den Anteil der Studierenden je Bundesland dar.','Von 2015 auf 2020 sank der Anteil um 5 %.'],answer:2},
+  {type:'mc',prompt:'Welcher Satz gehört in den ÜBERBLICK?',task:'',
+   options:['Im Jahr 2010 lag der Anteil bei 15 %.','Generell ist über den Betrachtungszeitraum ein deutlicher Anstieg zu verzeichnen.','Dies könnte auf wirtschaftliche Faktoren zurückzuführen sein.','Das Diagramm zeigt die Entwicklung 2010–2020.'],answer:1},
+  {type:'mc',prompt:'Was ist der Zweck des Überblicks (Schritt 2)?',task:'',
+   options:['Alle Zahlen auflisten','Den wichtigsten Gesamttrend in 1-2 Sätzen zusammenfassen','Die Grafik erklären','Den Leser mit Details informieren'],answer:1},
+  {type:'mc',prompt:'Welche Aussage über Grafikpräsens ist korrekt?',task:'',
+   options:['Man benutzt immer Vergangenheit, weil die Daten alt sind.','Man benutzt Präsens, weil die Grafik jetzt beschrieben wird.','Man benutzt Futur, weil es Prognosen gibt.','Man kann beides verwenden — es ist egal.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz ist C1-sprachlich am schwächsten?',task:'',
+   options:['Auffällig ist der starke Rückgang zwischen 2019 und 2020.','Im Vergleich zu 2015 ist ein deutlicher Anstieg zu verzeichnen.','Die Zahl geht hoch und dann runter.','Dies dürfte auf strukturelle Veränderungen zurückzuführen sein.'],answer:2},
+  {type:'mc',prompt:'Welches Redemittel LEITET einen Vergleich zwischen zwei Kategorien ein?',task:'',
+   options:['Insgesamt …','Während Gruppe A stieg, sank Gruppe B.','Es bleibt abzuwarten, ob …','Im Jahr 2015 …'],answer:1},
+  {type:'mc',prompt:'Wie viele der wichtigsten Datenpunkte sollte man erwähnen?',task:'',
+   options:['Alle — sonst verliert man Punkte','Nur die auffälligsten 3–5 Werte','Nur den Anfangs- und Endwert','Nur den Höchstwert'],answer:1},
+  {type:'mc',prompt:'Welches Stilmittel zeigt C1-Niveau im Kommentar?',task:'',
+   options:['"Ich glaube, das ist wegen …"','"Das kommt von …"','"Dies dürfte auf … zurückzuführen sein."','"Das ist so, weil …"'],answer:2}
+],
+5:[
+  {type:'mc',prompt:'Welcher Einstieg klingt am formalsten für eine C1-Grafikbeschreibung?',task:'',
+   options:['Diese Grafik ist über Arbeitslose in Deutschland.','Das ist ein Diagramm über Arbeit.','Das vorliegende Liniendiagramm zeigt die Entwicklung der Arbeitslosenquote in Deutschland im Zeitraum von 2010 bis 2023.','Die Grafik informiert uns über Arbeitslosigkeit.'],answer:2},
+  {type:'mc',prompt:'Welcher Kommentarsatz ist C1-gerecht und vorsichtig formuliert?',task:'',
+   options:['Der Grund ist die Corona-Krise.','Dies muss an der Corona-Krise liegen.','Ein möglicher Grund für den Anstieg 2020 könnte die Corona-Pandemie darstellen.','Corona hat die Zahlen hochgetrieben.'],answer:2},
+  {type:'fill',prompt:'C1-Detailbeschreibung: "Im Jahr 2010 betrug der Anteil 12 %. Bis 2020 ___ er auf 28 % ___."',task:'Ergänze Verb + Richtung:',answer:'stieg an',hint:'ansteigen → stieg … an (trennbar, Präteritum)'},
+  {type:'mc',prompt:'Welcher Satz enthält einen FEHLER?',task:'',
+   options:['Die Grafik zeigt den Anteil der Studierenden.','Im Jahr 2015 erreichte der Wert seinen Höchststand.','Der Wert sinkte von 30 % auf 25 % zwischen 2018 und 2020.','Die Zahlen sind von 2010 bis 2020 gestiegen worden.'],answer:3},
+  {type:'fill',prompt:'Schreibe einen Überblick-Satz: Kreisdiagramm — Deutschland hat den größten Anteil (38 %), gefolgt von Frankreich (25 %).',task:'',answer:'An erster Stelle steht Deutschland mit einem Anteil von 38 %, gefolgt von Frankreich mit 25 %.',hint:'An erster Stelle steht … mit … %, gefolgt von … mit … %'},
+  {type:'mc',prompt:'Welcher Schlusssatz klingt am C1-gerechsten?',task:'',
+   options:['Alles in allem ist es interessant.','Man kann nicht wissen, was passiert.','Zusammenfassend lässt sich sagen, dass die Digitalisierung langfristig den Arbeitsmarkt tiefgreifend verändern dürfte.','Das ist sehr gut für die Wirtschaft.'],answer:2},
+  {type:'fill',prompt:'Formuliere: Der Anteil von Frauen in Führungspositionen ist von 2015 bis 2022 von 18 % auf 28 % gestiegen.',task:'C1-Version mit Redemitteln:',answer:'Der Anteil von Frauen in Führungspositionen stieg im Zeitraum von 2015 bis 2022 von 18 % auf 28 % an.',hint:'stieg … an + von … auf … + im Zeitraum von … bis …'},
+  {type:'mc',prompt:'Welche Kombination von Redemitteln ist für eine C1-Grafikbeschreibung ideal?',task:'',
+   options:['viele; immer; sehr; gut','deutlich; kontinuierlich; auffällig; zurückzuführen sein','schnell; groß; wichtig; zeigen','hoch; niedrig; viel; wenig'],answer:1},
+  {type:'mc',prompt:'Was ist der Unterschied zwischen "Prozent" und "Prozentpunkte"?',task:'',
+   options:['kein Unterschied','Prozent = relativer Anteil; Prozentpunkte = absolute Differenz zwischen zwei Prozentwerten','Prozentpunkte = höher als Prozent','Prozent = für Grafiken; Prozentpunkte = für Tabellen'],answer:1},
+  {type:'fill',prompt:'Auffällig ist, dass der Wert zwischen 2019 und 2020 um 5 Prozentpunkte sank, ___ ___ hinweist, ___ die Pandemie erhebliche Auswirkungen hatte.',task:'Ergänze: was darauf / dass',answer:'was darauf dass',hint:'was darauf hinweist, dass … (Relativsatz + dass-Satz)'},
+  {type:'mc',prompt:'Welcher Satz beschreibt einen Rückgang C1-sprachlich korrekt?',task:'',
+   options:['Die Zahl ist kleiner geworden.','Es gab einen Rückgang.','Zwischen 2018 und 2020 verzeichnet die Arbeitslosenquote einen deutlichen Rückgang von 5,7 % auf 3,2 %.','Die Zahlen gingen down von 5,7 auf 3,2.'],answer:2},
+  {type:'mc',prompt:'Welche Aussage über die Länge der Grafikbeschreibung ist richtig?',task:'',
+   options:['Je länger desto besser — immer alle Zahlen nennen','Ca. 200 Wörter: präzise Auswahl der wichtigsten Daten, strukturiert in 4 Teile','Kurz und knapp: 50 Wörter reichen','Kommentar weglassen, um kürzer zu sein'],answer:1},
+  {type:'mc',prompt:'Welche Formulierung ist NICHT geeignet für eine C1-Grafikbeschreibung?',task:'',
+   options:['Insgesamt lässt sich ein deutlicher Anstieg erkennen.','Der Grafik ist zu entnehmen, dass …','Ich finde, die Grafik zeigt etwas sehr Wichtiges.','Auffällig ist, dass der Wert 2020 seinen Tiefststand erreichte.'],answer:2}
+]
+};
+
+var currentLevel=1,answers={},checked={};
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');card.className='exercise-card';card.id='ex-'+i;
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+    if(ex.type==='mc'){
+      var opts=document.createElement('div');opts.className='options';
+      ex.options.forEach(function(opt,j){
+        var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+        btn.addEventListener('click',function(){
+          if(checked[i])return;answers[i]=j;
+          opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+          if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+          else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+          checked[i]=true;updateScore();updateProg();
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    } else {
+      var wrap=document.createElement('div');
+      if(ex.hint){var h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--text-muted);margin-bottom:6px;';h.textContent='Hinweis: '+ex.hint;wrap.appendChild(h);}
+      var inp=document.createElement('input');inp.type='text';inp.className='fill-input';
+      inp.placeholder='Antwort eingeben …';inp.autocomplete='off';inp.autocapitalize='none';
+      wrap.appendChild(inp);
+      var fb=document.createElement('div');fb.className='ex-feedback';
+      var cb=document.createElement('button');cb.className='check-btn';cb.textContent='Prüfen';
+      cb.addEventListener('click',function(){
+        if(checked[i])return;
+        var v=inp.value.trim(),ok=v.toLowerCase()===ex.answer.trim().toLowerCase();
+        inp.classList.add(ok?'correct':'wrong');
+        fb.textContent=ok?'Richtig!':'Nicht ganz. Richtig: '+ex.answer;
+        fb.className='ex-feedback show '+(ok?'correct':'wrong');
+        card.classList.add(ok?'correct':'wrong');
+        checked[i]=true;answers[i]=v;cb.disabled=true;inp.disabled=true;
+        updateScore();updateProg();
+      });
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')cb.click();});
+      wrap.appendChild(cb);wrap.appendChild(fb);card.appendChild(wrap);
+    }
+    c.appendChild(card);
+  });
+  updateProg();
+}
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(ex.type==='mc'){if(answers[i]===ex.answer)correct++;}
+    else{if(answers[i]&&answers[i].toLowerCase()===ex.answer.trim().toLowerCase())correct++;}
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=ex.type==='mc'?-1:'';
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    if(ex.type==='mc'){
+      var opts=card.querySelectorAll('.option-btn');
+      if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+    } else {
+      var inp=card.querySelector('.fill-input'),fb=card.querySelector('.ex-feedback'),cb=card.querySelector('.check-btn');
+      if(inp)inp.disabled=true;if(cb)cb.disabled=true;
+      if(fb){fb.textContent='Richtig: '+ex.answer;fb.className='ex-feedback show wrong';}
+    }
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Super! Wende diese Redemittel in echten Grafikbeschreibungen an.':'Lies nochmal den Mustertext in Tab 4 und die Redemittel in Tab 2-3 durch.';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+renderEx();
+})();
+</script>
+</body>
+</html>

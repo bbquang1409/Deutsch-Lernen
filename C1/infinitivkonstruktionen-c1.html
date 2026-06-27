@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinitivkonstruktionen – C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#2D5BE3;--cobalt-light:#E8EEFB;--cobalt-dark:#1A3BAA;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E2E6EF;
+  --text:#1A1D2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --green:#059669;--green-bg:#ECFDF5;
+  --red:#DC2626;--red-bg:#FEF2F2;
+  --amber:#D97706;--amber-bg:#FFFBEB;
+  --teal:#0D7A6E;--teal-bg:#F0FAFA;
+  --indigo:#4338CA;--indigo-bg:#EEF2FF;
+  --slate-bg:#F1F5F9;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --cobalt:#5B8AF7;--cobalt-light:#1A2540;--cobalt-dark:#7BA3FF;
+    --bg:#0F1117;--surface:#1A1D2A;--border:#2D3148;
+    --text:#E8EAF0;--text-muted:#9DA3B4;--text-light:#6B7280;
+    --green:#34D399;--green-bg:#0A2918;
+    --red:#F87171;--red-bg:#2D1010;
+    --amber:#FCD34D;--amber-bg:#2D1F08;
+    --teal:#2DD4BF;--teal-bg:#0A2420;
+    --indigo:#818CF8;--indigo-bg:#1E1B4B;
+    --slate-bg:#1E2435;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1rem;height:56px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-muted);text-decoration:none;padding:5px 10px;border-radius:var(--radius-sm);}
+.back-btn:hover{background:var(--bg);color:var(--text);}
+.header-title{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.level-badge{background:var(--cobalt-light);color:var(--cobalt);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.name-input{font-family:'Space Grotesk',sans-serif;font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:150px;outline:none;}
+.name-input:focus{border-color:var(--cobalt);}
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:12px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.content{max-width:820px;margin:0 auto;padding:2rem 1.5rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.expl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.expl-card h2{font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:.75rem;}
+.expl-card p{color:var(--text-muted);font-size:14px;margin-bottom:.75rem;line-height:1.7;}
+.expl-card p:last-child{margin-bottom:0;}
+.expl-card ul{padding-left:1.2rem;margin:.5rem 0;}
+.expl-card li{font-size:14px;color:var(--text-muted);margin-bottom:4px;line-height:1.6;}
+.schema-box{background:var(--slate-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin:.75rem 0;line-height:2;}
+.schema-box .part{color:var(--cobalt);font-weight:500;}
+.schema-box .gray{color:var(--text-muted);}
+.tip-box{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.tip-box strong{color:var(--amber);}
+.info-box{background:var(--indigo-bg);border-left:3px solid var(--indigo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.75rem 1rem;font-size:13px;color:var(--text);margin:1rem 0;line-height:1.6;}
+.info-box strong{color:var(--indigo);}
+.beispiel-section{background:var(--teal-bg);border:1px solid var(--teal);border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.25rem 0;}
+.beispiel-section h3{font-size:13px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.vi-toggle{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--teal);background:transparent;border:1px solid var(--teal);border-radius:var(--radius-sm);padding:3px 9px;cursor:pointer;}
+.vi-toggle:hover{background:var(--teal);color:#fff;}
+.bsp-list{display:flex;flex-direction:column;gap:8px;}
+.bsp-item{background:var(--surface);border-radius:var(--radius-sm);padding:10px 14px;border-left:3px solid var(--cobalt);}
+.bsp-item.warn{border-left-color:var(--amber);}
+.bsp-de{font-size:13px;font-weight:500;color:var(--text);line-height:1.6;}
+.bsp-de .hl{color:var(--cobalt);}
+.bsp-vi{font-size:12px;color:var(--text-muted);font-style:italic;display:none;margin-top:3px;}
+.bsp-vi.show{display:block;}
+.bsp-note{font-size:11px;color:var(--text-light);margin-top:2px;}
+/* transform table */
+.transform-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.transform-table th{background:var(--cobalt-light);color:var(--cobalt);padding:8px 12px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.transform-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+.transform-table tr:last-child td{border-bottom:none;}
+.transform-table .mono{font-family:'JetBrains Mono',monospace;color:var(--cobalt);font-size:12px;}
+.transform-table .muted{color:var(--text-muted);font-size:12px;}
+/* konj card */
+.konj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:1rem 0;}
+.konj-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow);}
+.konj-tag{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--cobalt);margin-bottom:4px;}
+.konj-mean{font-size:12px;color:var(--text-muted);margin-bottom:10px;}
+.konj-schema{font-size:12px;color:var(--text);background:var(--slate-bg);border-radius:var(--radius-sm);padding:6px 10px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;line-height:1.6;}
+.konj-ex{font-size:13px;color:var(--text);line-height:1.5;}
+/* Übung */
+.uebungen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.uebungen-header h2{font-size:18px;font-weight:600;}
+.score-display{font-size:13px;color:var(--text-muted);background:var(--slate-bg);padding:5px 12px;border-radius:20px;}
+.level-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.level-tab{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.level-tab.active{border-color:var(--cobalt);background:var(--cobalt-light);color:var(--cobalt);}
+.level-tab:hover:not(.active){border-color:var(--text-muted);color:var(--text);}
+.progress-wrap{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;}
+.progress-fill{background:var(--cobalt);height:4px;border-radius:4px;transition:width .4s;}
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);transition:border-color .2s;}
+.exercise-card.correct{border-color:var(--green);}
+.exercise-card.wrong{border-color:var(--red);}
+.ex-number{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ex-prompt{font-size:15px;color:var(--text);margin-bottom:.75rem;line-height:1.7;}
+.ex-task{font-size:13px;color:var(--text-muted);margin-bottom:1rem;font-style:italic;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;}
+.option-btn:hover:not(:disabled){border-color:var(--cobalt);background:var(--cobalt-light);}
+.option-btn.selected-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn.selected-wrong{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.option-btn.reveal-correct{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.option-btn:disabled{cursor:default;}
+.fill-input{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;max-width:500px;outline:none;transition:border-color .2s;}
+.fill-input:focus{border-color:var(--cobalt);}
+.fill-input.correct{border-color:var(--green);background:var(--green-bg);}
+.fill-input.wrong{border-color:var(--red);background:var(--red-bg);}
+.check-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 18px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:background .15s;}
+.check-btn:hover{background:var(--cobalt-dark);}
+.check-btn:disabled{background:var(--border);color:var(--text-muted);cursor:default;}
+.ex-feedback{margin-top:10px;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none;line-height:1.5;}
+.ex-feedback.show{display:block;}
+.ex-feedback.correct{background:var(--green-bg);color:var(--green);}
+.ex-feedback.wrong{background:var(--red-bg);color:var(--red);}
+.action-bar{display:flex;gap:10px;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.reset-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.reset-btn:hover{border-color:var(--cobalt);color:var(--cobalt);}
+.submit-btn{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:10px 28px;background:var(--cobalt);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.submit-btn:hover{background:var(--cobalt-dark);}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;display:none;box-shadow:var(--shadow);}
+.result-card.show{display:block;}
+.result-score{font-size:48px;font-weight:600;color:var(--cobalt);margin-bottom:6px;}
+.result-label{font-size:15px;color:var(--text-muted);margin-bottom:.5rem;}
+.result-msg{font-size:14px;color:var(--text);}
+@media(max-width:600px){
+  .content{padding:1.25rem 1rem;}.header{padding:0 1rem;}.tabs-bar{padding:0 1rem;}
+  .tab-btn{padding:12px 10px;font-size:12px;}.name-input{width:110px;}
+  .konj-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="../grammatik.html" class="back-btn">← Übersicht</a>
+  <span class="header-title">Infinitivkonstruktionen · C1</span>
+  <span class="level-badge">C1</span>
+  <input class="name-input" type="text" id="studentName" placeholder="Dein Name" autocomplete="off">
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" data-tab="tab1">Einführung</button>
+  <button class="tab-btn" data-tab="tab2">um … zu</button>
+  <button class="tab-btn" data-tab="tab3">ohne … zu / anstatt … zu</button>
+  <button class="tab-btn" data-tab="tab4">Nebensatz ↔ Infinitiv</button>
+  <button class="tab-btn" data-tab="tab5">Übungen</button>
+</nav>
+<main class="content">
+
+<!-- TAB 1 -->
+<section class="tab-panel active" id="tab1">
+  <div class="expl-card">
+    <h2>📌 Infinitivkonstruktionen auf C1-Niveau</h2>
+    <p>Infinitivkonstruktionen ersetzen Nebensätze — sie machen Texte kompakter und formeller. Auf C1-Niveau musst du zwischen Infinitivkonstruktion und Nebensatz wechseln können und komplexe Fälle beherrschen.</p>
+    <p>Die drei wichtigsten Konstruktionen auf C1-Niveau sind:</p>
+    <ul>
+      <li><strong>um … zu + Infinitiv</strong> — Zweck/Ziel (damit)</li>
+      <li><strong>ohne … zu + Infinitiv</strong> — fehlende Begleithandlung (ohne dass)</li>
+      <li><strong>anstatt … zu + Infinitiv</strong> — Alternative (anstatt dass)</li>
+    </ul>
+  </div>
+  <div class="info-box"><strong>📖 C1-Relevanz:</strong> Im C1-Schreiben (Stellungnahme, formelle E-Mail) zeigt die korrekte Verwendung dieser Strukturen sprachliche Kompetenz. Im Lesen musst du sie schnell erkennen und verstehen können.</div>
+  <div class="konj-grid">
+    <div class="konj-card">
+      <div class="konj-tag">um … zu</div>
+      <div class="konj-mean">Zweck / Absicht — „damit"</div>
+      <div class="konj-schema">Hauptsatz, um + [Obj.] + zu + Inf.</div>
+      <div class="konj-ex">Er lernt Deutsch, <em>um in Deutschland zu arbeiten</em>.</div>
+    </div>
+    <div class="konj-card">
+      <div class="konj-tag">ohne … zu</div>
+      <div class="konj-mean">fehlende Begleithandlung — „ohne dass"</div>
+      <div class="konj-schema">Hauptsatz, ohne + [Obj.] + zu + Inf.</div>
+      <div class="konj-ex">Er ging, <em>ohne sich zu verabschieden</em>.</div>
+    </div>
+    <div class="konj-card">
+      <div class="konj-tag">anstatt … zu</div>
+      <div class="konj-mean">Alternative / Ersatz — „anstatt dass"</div>
+      <div class="konj-schema">Hauptsatz, anstatt + [Obj.] + zu + Inf.</div>
+      <div class="konj-ex">Sie schreibt, <em>anstatt anzurufen</em>.</div>
+    </div>
+  </div>
+  <div class="tip-box"><strong>💡 Wann Infinitiv, wann Nebensatz?</strong> Wenn <strong>Subjekt identisch</strong> ist → Infinitiv möglich und bevorzugt. Wenn <strong>Subjekte verschieden</strong> sind → Nebensatz obligatorisch (damit/ohne dass/anstatt dass).</div>
+  <div class="beispiel-section">
+    <h3>Überblick: Subjekte gleich vs. verschieden <button class="vi-toggle" onclick="toggleVI('vi1')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">✅ <span class="hl">Er</span> lernt, um <span class="hl">zu</span> bestehen. <em style="color:var(--text-light);font-size:11px">(gleich: er … er)</em></div>
+        <div class="bsp-vi vi1">Anh ấy học để thi đỗ. (cùng chủ ngữ → dùng Infinitiv)</div>
+      </div>
+      <div class="bsp-item warn">
+        <div class="bsp-de">⚠️ <span class="hl">Er</span> lernt, damit <span class="hl">sie</span> stolz ist. <em style="color:var(--text-light);font-size:11px">(verschieden → Nebensatz!)</em></div>
+        <div class="bsp-vi vi1">Anh ấy học để cô ấy tự hào. (chủ ngữ khác → phải dùng damit)</div>
+        <div class="bsp-note">❌ FALSCH: Er lernt, um sie stolz zu sein.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">✅ <span class="hl">Sie</span> ging, ohne <span class="hl">sich</span> zu bedanken. <em style="color:var(--text-light);font-size:11px">(gleich)</em></div>
+        <div class="bsp-vi vi1">Cô ấy đi mà không cảm ơn. (cùng chủ ngữ → Infinitiv)</div>
+      </div>
+      <div class="bsp-item warn">
+        <div class="bsp-de">⚠️ <span class="hl">Sie</span> ging, ohne dass <span class="hl">er</span> es merkte. <em style="color:var(--text-light);font-size:11px">(verschieden)</em></div>
+        <div class="bsp-vi vi1">Cô ấy đi mà anh ấy không hay biết. (chủ ngữ khác → ohne dass)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 2 -->
+<section class="tab-panel" id="tab2">
+  <div class="expl-card">
+    <h2>🎯 um … zu + Infinitiv — Zweck</h2>
+    <p>Drückt den <strong>Zweck oder das Ziel</strong> einer Handlung aus. Entspricht dem Nebensatz mit <em>damit</em> (bei gleichem Subjekt).</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Gleiche Subjekte → Infinitiv:</span><br>
+    Hauptsatz + <span class="part">, um</span> [Objekte] <span class="part">zu</span> + Infinitiv<br><br>
+    <span class="gray">Trennbare Verben:</span><br>
+    , um das Projekt <span class="part">abzuschließen</span> <span class="gray">(ab·zu·schließen)</span><br>
+    , um die Ergebnisse <span class="part">vorzustellen</span> <span class="gray">(vor·zu·stellen)</span><br><br>
+    <span class="gray">Verschiedene Subjekte → damit-Satz!</span><br>
+    , <span class="part">damit</span> + Subjekt 2 + Verb
+  </div>
+  <div class="expl-card">
+    <h2>📊 um … zu auf C1-Niveau</h2>
+    <table class="transform-table">
+      <thead><tr><th>Damit-Satz</th><th>um … zu (nur bei gl. Subj.)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Er trainiert, damit er gesünder wird.</td>
+          <td class="mono">Er trainiert, um gesünder zu werden.</td>
+        </tr>
+        <tr>
+          <td>Sie spart, damit sie reisen kann.</td>
+          <td class="mono">Sie spart, um reisen zu können.</td>
+        </tr>
+        <tr>
+          <td>Wir lesen viel, damit wir den Wortschatz verbessern.</td>
+          <td class="mono">Wir lesen viel, um den Wortschatz zu verbessern.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--red)">Er arbeitet hart, damit sie Urlaub machen kann. ❌</td>
+          <td class="muted">Kein Infinitiv möglich! Verschiedene Subjekte.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tip-box"><strong>💡 Mit Modalverb:</strong> Modalverb im damit-Satz → im Infinitiv mit <em>zu + Modalinfinitiv</em>:<br>
+  <em>damit sie reisen kann</em> → <em>um reisen zu können</em><br>
+  <em>damit er kommen darf</em> → <em>um kommen zu dürfen</em></div>
+  <div class="beispiel-section">
+    <h3>um … zu in C1-Texten <button class="vi-toggle" onclick="toggleVI('vi2')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Das Unternehmen investiert in Forschung, <span class="hl">um wettbewerbsfähig zu bleiben</span>.</div>
+        <div class="bsp-vi vi2">Công ty đầu tư vào nghiên cứu để duy trì khả năng cạnh tranh.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Regierung senkt Steuern, <span class="hl">um die Wirtschaft anzukurbeln</span>.</div>
+        <div class="bsp-vi vi2">Chính phủ giảm thuế để thúc đẩy kinh tế.</div>
+        <div class="bsp-note">trennbares Verb: ankurbeln → anzukurbeln</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Sie absolvierte ein Praktikum, <span class="hl">um Berufserfahrung zu sammeln</span>.</div>
+        <div class="bsp-vi vi2">Cô ấy thực tập để tích lũy kinh nghiệm nghề nghiệp.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Fachkräfte werden ausgebildet, <span class="hl">um den Bedarf der Industrie zu decken</span>.</div>
+        <div class="bsp-vi vi2">Nhân lực chuyên môn được đào tạo để đáp ứng nhu cầu của ngành công nghiệp.</div>
+        <div class="bsp-note">Passiv + um … zu: möglich, wenn logisches Subjekt identisch ist</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 3 -->
+<section class="tab-panel" id="tab3">
+  <div class="expl-card">
+    <h2>🚫 ohne … zu + Infinitiv</h2>
+    <p>Drückt aus, dass eine <strong>erwartete oder mögliche Begleithandlung fehlt</strong>. Entspricht dem Nebensatz mit <em>ohne dass</em>.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Gleiche Subjekte:</span><br>
+    Hauptsatz + <span class="part">, ohne</span> [Obj.] <span class="part">zu</span> + Infinitiv<br><br>
+    Er verließ das Büro, <span class="part">ohne sich zu verabschieden</span>.<br>
+    Sie bestand, <span class="part">ohne viel gelernt zu haben</span>. <span class="gray">(Perf.!)</span><br><br>
+    <span class="gray">Verschiedene Subjekte → ohne dass:</span><br>
+    Er ging, <span class="part">ohne dass</span> jemand es bemerkte.
+  </div>
+  <div class="expl-card">
+    <h2>🔄 anstatt … zu + Infinitiv</h2>
+    <p>Drückt aus, dass <strong>statt der erwarteten Handlung eine andere gemacht wird</strong>. Entspricht <em>anstatt dass / statt dass</em>.</p>
+  </div>
+  <div class="schema-box">
+    <span class="gray">Gleiche Subjekte:</span><br>
+    Hauptsatz + <span class="part">, anstatt</span> [Obj.] <span class="part">zu</span> + Infinitiv<br><br>
+    Er surfte im Internet, <span class="part">anstatt zu arbeiten</span>.<br>
+    Sie schickte eine E-Mail, <span class="part">anstatt persönlich zu kommen</span>.<br><br>
+    <span class="gray">Verschiedene Subjekte → anstatt dass:</span><br>
+    Er wartete, <span class="part">anstatt dass</span> sie anfing.
+  </div>
+  <div class="expl-card">
+    <h2>📊 Vergleich: ohne / anstatt im Überblick</h2>
+    <table class="transform-table">
+      <thead><tr><th>Nebensatz</th><th>Infinitivkonstruktion</th></tr></thead>
+      <tbody>
+        <tr><td>Er arbeitete, ohne dass er eine Pause machte.</td><td class="mono">Er arbeitete, ohne eine Pause zu machen.</td></tr>
+        <tr><td>Sie half, ohne dass sie etwas dafür verlangte.</td><td class="mono">Sie half, ohne etwas dafür zu verlangen.</td></tr>
+        <tr><td>Er blieb zu Hause, anstatt dass er zum Meeting ging.</td><td class="mono">Er blieb zu Hause, anstatt zum Meeting zu gehen.</td></tr>
+        <tr><td>Sie diskutierte, anstatt dass sie handelte.</td><td class="mono">Sie diskutierte, anstatt zu handeln.</td></tr>
+        <tr><td style="color:var(--red)">Er fehlte, ohne dass er Bescheid gab. (verschieden) ❌ kein Inf.</td><td class="muted">Nebensatz bleibt — verschiedene Subjekte</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tip-box"><strong>💡 Perfektinfinitiv mit ohne:</strong> Wenn die ausgelassene Handlung <em>vor</em> der Haupthandlung liegt, verwendet man <em>ohne + Perf.-Infinitiv</em>:<br>
+  <em>ohne es gewusst zu haben</em> / <em>ohne gelernt zu haben</em></div>
+  <div class="beispiel-section">
+    <h3>ohne/anstatt in C1-Texten <button class="vi-toggle" onclick="toggleVI('vi3')">🇻🇳 Vietnamesisch</button></h3>
+    <div class="bsp-list">
+      <div class="bsp-item">
+        <div class="bsp-de">Das Projekt wurde beendet, <span class="hl">ohne die gesetzten Ziele zu erreichen</span>.</div>
+        <div class="bsp-vi vi3">Dự án đã kết thúc mà không đạt được các mục tiêu đã đề ra.</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Er kritisierte die Maßnahmen, <span class="hl">ohne konstruktive Alternativen vorzuschlagen</span>.</div>
+        <div class="bsp-vi vi3">Anh ta chỉ trích các biện pháp mà không đề xuất giải pháp thay thế mang tính xây dựng.</div>
+        <div class="bsp-note">trennbares Verb: vorschlagen → vorzuschlagen</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Mitarbeiter wurden entlassen, <span class="hl">anstatt umgeschult zu werden</span>.</div>
+        <div class="bsp-vi vi3">Các nhân viên bị sa thải thay vì được đào tạo lại.</div>
+        <div class="bsp-note">Passiv-Infinitiv: anstatt umgeschult zu werden</div>
+      </div>
+      <div class="bsp-item">
+        <div class="bsp-de">Die Führungskraft traf Entscheidungen, <span class="hl">anstatt das Team einzubeziehen</span>.</div>
+        <div class="bsp-vi vi3">Người lãnh đạo đưa ra quyết định thay vì đưa nhóm vào cuộc.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 4 -->
+<section class="tab-panel" id="tab4">
+  <div class="expl-card">
+    <h2>↔️ Nebensatz ↔ Infinitivkonstruktion</h2>
+    <p>Im C1-Schreiben kannst du frei zwischen Nebensatz und Infinitiv wählen. Der Infinitiv ist formeller und kürzer — bevorzugt in Stellungnahmen, Analysen und Fachberichten.</p>
+  </div>
+  <div class="expl-card">
+    <h2>📊 Vollständige Umformungstabelle</h2>
+    <table class="transform-table">
+      <thead><tr><th>Typ</th><th>Nebensatz</th><th>Infinitiv (gl. Subj.)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Zweck</strong></td>
+          <td>Er lernt, <em>damit er besteht</em>.</td>
+          <td class="mono">Er lernt, um zu bestehen.</td>
+        </tr>
+        <tr>
+          <td><strong>Zweck + Modal</strong></td>
+          <td>Sie übt, <em>damit sie teilnehmen kann</em>.</td>
+          <td class="mono">Sie übt, um teilnehmen zu können.</td>
+        </tr>
+        <tr>
+          <td><strong>ohne</strong></td>
+          <td>Er sprach, <em>ohne dass er innehielt</em>.</td>
+          <td class="mono">Er sprach, ohne innezuhalten.</td>
+        </tr>
+        <tr>
+          <td><strong>ohne (Perf.)</strong></td>
+          <td>Er ging, <em>ohne dass er es bemerkt hatte</em>.</td>
+          <td class="mono">Er ging, ohne es bemerkt zu haben.</td>
+        </tr>
+        <tr>
+          <td><strong>anstatt</strong></td>
+          <td>Sie schrieb, <em>anstatt dass sie anrief</em>.</td>
+          <td class="mono">Sie schrieb, anstatt anzurufen.</td>
+        </tr>
+        <tr>
+          <td><strong>anstatt + Passiv</strong></td>
+          <td>Sie wurden versetzt, <em>anstatt dass sie gefördert wurden</em>.</td>
+          <td class="mono">Sie wurden versetzt, anstatt gefördert zu werden.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="expl-card">
+    <h2>⚠️ Häufige Fehler auf C1-Niveau</h2>
+    <table class="transform-table">
+      <thead><tr><th>Fehler</th><th>Richtig</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--red)">Er lernt, um sie stolz zu sein. ❌</td>
+          <td class="mono">Er lernt, damit sie stolz ist. ✅</td>
+        </tr>
+        <tr>
+          <td style="color:var(--red)">ohne zu vorstellen ❌</td>
+          <td class="mono">ohne vorzustellen ✅ (trennbar: vor·zu·stellen)</td>
+        </tr>
+        <tr>
+          <td style="color:var(--red)">anstatt zu arbeiten zu gehen ❌</td>
+          <td class="mono">anstatt zur Arbeit zu gehen ✅</td>
+        </tr>
+        <tr>
+          <td style="color:var(--red)">um das Projekt abschließen ❌</td>
+          <td class="mono">um das Projekt abzuschließen ✅</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="info-box"><strong>📝 C1-Schreibtipp:</strong> Verwende in einer Stellungnahme mindestens 2 Infinitivkonstruktionen. Kombiniere sie mit FVG und modalem Partizip für einen formellen, variationsreichen Stil.</div>
+</section>
+
+<!-- TAB 5 -->
+<section class="tab-panel" id="tab5">
+  <div class="uebungen-header">
+    <h2>Übungen</h2>
+    <div class="score-display" id="scoreDisplay">0 / 0 richtig</div>
+  </div>
+  <div class="level-tabs">
+    <button class="level-tab active" data-level="1">Stufe 1 — Erkennen</button>
+    <button class="level-tab" data-level="2">Stufe 2 — Subjekte prüfen</button>
+    <button class="level-tab" data-level="3">Stufe 3 — Umformen</button>
+    <button class="level-tab" data-level="4">Stufe 4 — Ergänzen</button>
+    <button class="level-tab" data-level="5">Stufe 5 — C1-Schreiben</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="exerciseContainer"></div>
+  <div class="action-bar">
+    <button class="reset-btn" onclick="resetEx()">↺ Neu starten</button>
+    <button class="submit-btn" onclick="submitAll()">Auswerten</button>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var nameEl=document.getElementById('studentName');
+var sv=localStorage.getItem('studentName');if(sv)nameEl.value=sv;
+nameEl.addEventListener('input',function(){localStorage.setItem('studentName',nameEl.value);});
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+window.toggleVI=function(cls){document.querySelectorAll('.'+cls).forEach(function(el){el.classList.toggle('show');});};
+
+var DATA={
+1:[
+  {type:'mc',prompt:'Er lernt Deutsch, um in Deutschland zu arbeiten.',task:'Welche Funktion hat die Infinitivkonstruktion?',
+   options:['Bedingung','Zweck / Ziel','fehlende Handlung','Alternative'],answer:1},
+  {type:'mc',prompt:'Sie verließ das Treffen, ohne sich zu entschuldigen.',task:'Was drückt "ohne ... zu" aus?',
+   options:['eine Alternative','ein Ziel','eine fehlende erwartete Handlung','eine Bedingung'],answer:2},
+  {type:'mc',prompt:'Er surfte im Internet, anstatt die Aufgabe zu erledigen.',task:'Was drückt "anstatt ... zu" aus?',
+   options:['Zweck','fehlende Handlung','eine Handlung, die stattdessen getan wurde','Folge'],answer:2},
+  {type:'mc',prompt:'Welcher Satz enthält eine Infinitivkonstruktion mit "um ... zu"?',task:'',
+   options:['Er arbeitet, ohne Pausen zu machen.','Sie lernt, um die Prüfung zu bestehen.','Er blieb, anstatt zu gehen.','Er las, ohne es zu verstehen.'],answer:1},
+  {type:'mc',prompt:'Das Unternehmen investiert in Schulungen, um die Mitarbeiter zu qualifizieren.',task:'Welcher damit-Satz entspricht dieser Konstruktion?',
+   options:['damit die Mitarbeiter qualifizieren','damit die Mitarbeiter qualifiziert werden','damit qualifiziert werden kann','damit man qualifizieren kann'],answer:1},
+  {type:'mc',prompt:'Er kritisierte den Plan, ohne Alternativen vorzuschlagen.',task:'Warum heißt es "vorzuschlagen" und nicht "zu vorschlagen"?',
+   options:['vorschlagen ist kein trennbares Verb','bei trennbaren Verben steht zu zwischen Präfix und Stamm','zu kommt am Ende','es ist eine Ausnahme'],answer:1},
+  {type:'mc',prompt:'Welche Konstruktion ist grammatisch FALSCH?',task:'',
+   options:['Er geht, um einzukaufen.','Sie blieb, ohne etwas zu sagen.','Er arbeitete, anstatt zu spielen.','Er lernte, um sie zu bestehen.'],answer:3},
+  {type:'mc',prompt:'Sie hat die Aufgabe abgegeben, ohne sie überprüft zu haben.',task:'Was bedeutet der Perfektinfinitiv hier?',
+   options:['Sie wird sie überprüfen.','Die Überprüfung liegt vor der Abgabe — sie hat nicht überprüft.','Sie hat sie überprüft und dann abgegeben.','Sie überprüft sie gerade.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz verwendet "ohne ... zu" korrekt?',task:'',
+   options:['Er schlief, ohne dass er schlief.','Sie sprach, ohne zu unterbrechen.','Er ging, ohne zu er es merkte.','Sie half, ohne zu sie etwas verlangte.'],answer:1},
+  {type:'mc',prompt:'In welchem Satz MUSS ein Nebensatz (damit/ohne dass) verwendet werden?',task:'',
+   options:['Er lernt, um die Prüfung zu bestehen.','Er lernt, damit seine Eltern stolz sind.','Sie übt, um besser zu werden.','Er liest viel, um den Wortschatz zu erweitern.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz klingt C1-typisch formell?',task:'',
+   options:['Er macht das, weil er besser werden will.','Er tut das, um besser zu werden.','Er will besser sein.','Er macht das für Verbesserung.'],answer:1},
+  {type:'mc',prompt:'Sie übernahm mehr Aufgaben, anstatt Hilfe anzufordern.',task:'Welcher Nebensatz entspricht dem?',
+   options:['anstatt dass sie Hilfe hatte','anstatt dass sie Hilfe anforderte','anstatt dass Hilfe angefordert wurde von ihr','anstatt dass man hilft'],answer:1},
+  {type:'mc',prompt:'Was ist die Infinitivkonstruktion von: "damit er sich vorbereiten kann"?',task:'(gleiches Subjekt vorausgesetzt)',
+   options:['um vorbereiten zu können','um sich vorbereiten zu können','um sich zu vorbereiten können','um vorbereiten können zu'],answer:1}
+],
+2:[
+  {type:'mc',prompt:'Er trainiert täglich, (damit er / um zu) die Ausdauer zu verbessern.',task:'Sind die Subjekte gleich? Welche Form ist korrekt?',
+   options:['verschiedene Subjekte → damit er die Ausdauer verbessert','gleiche Subjekte → um die Ausdauer zu verbessern','beides ist möglich','gleiche Subjekte → damit verbessert'],answer:1},
+  {type:'mc',prompt:'Die Lehrerin erklärt langsam, damit die Schüler alles verstehen.',task:'Kann man hier "um ... zu" verwenden?',
+   options:['Ja: um alles zu verstehen','Nein: verschiedene Subjekte → damit bleibt','Ja: um die Schüler zu verstehen','Nein: damit ist immer besser'],answer:1},
+  {type:'mc',prompt:'Sie spart Geld, (ohne auszugeben / ohne dass sie ausgibt).',task:'Gleiche Subjekte → welche Form?',
+   options:['ohne dass sie ausgibt','ohne auszugeben','beide korrekt','keine ist korrekt'],answer:1},
+  {type:'mc',prompt:'Er verließ die Besprechung, ohne dass der Chef es merkte.',task:'Kann man hier "ohne ... zu" verwenden?',
+   options:['Ja: ohne zu merken','Nein: verschiedene Subjekte → ohne dass bleibt','Ja: ohne es zu merken','Ja: ohne der Chef es zu merken'],answer:1},
+  {type:'mc',prompt:'Das Team arbeitete weiter, anstatt eine Pause zu machen.',task:'Wer macht die Pause (nicht)?',
+   options:['jemand anderes','das Team selbst — gleiche Subjekte','unklar','der Chef'],answer:1},
+  {type:'mc',prompt:'Der Manager entschied allein, anstatt dass das Team einbezogen wurde.',task:'Gleiche Subjekte?',
+   options:['Ja → anstatt einzubeziehen','Nein → anstatt dass bleibt (Team ≠ Manager)','Ja → anstatt zu entscheiden','Nein, aber Infinitiv ist trotzdem möglich'],answer:1},
+  {type:'mc',prompt:'Sie kamen pünktlich, ohne dass jemand sie erinnerte.',task:'Gleiche Subjekte?',
+   options:['Ja → ohne sich zu erinnern','Nein → ohne dass bleibt','Ja → ohne erinnert zu werden','Nein → um ... zu verwenden'],answer:1},
+  {type:'mc',prompt:'Er bestand die Prüfung, ohne gelernt zu haben.',task:'Was bedeutet der Perfektinfinitiv hier?',
+   options:['Er wird lernen.','Das Nicht-Lernen liegt zeitlich vor dem Bestehen.','Er hat gleichzeitig gelernt und bestanden.','Er lernt nach der Prüfung.'],answer:1},
+  {type:'mc',prompt:'Fachkräfte werden ausgebildet, damit die Industrie ihren Bedarf decken kann.',task:'Gleiche Subjekte?',
+   options:['Ja, Fachkräfte = Industrie','Nein, Fachkräfte ≠ Industrie → damit bleibt','Ja → um den Bedarf zu decken','Nein, aber Infinitiv wäre grammatisch'],answer:1},
+  {type:'mc',prompt:'Er schreibt E-Mails, anstatt anzurufen.',task:'Wer ruft nicht an?',
+   options:['jemand anderes','der Empfänger der E-Mail','er selbst — gleiche Subjekte','unklar'],answer:2},
+  {type:'mc',prompt:'Die Firma senkte die Preise, damit mehr Kunden kaufen.',task:'Kann man hier "um ... zu" verwenden?',
+   options:['Ja: um mehr zu kaufen','Nein: verschiedene Subjekte','Ja: um kaufen zu können','Nein, der Satz hat keinen Zweck'],answer:1},
+  {type:'mc',prompt:'Sie übersetzte den Text, ohne ein Wörterbuch zu benutzen.',task:'Wer benutzt kein Wörterbuch?',
+   options:['jemand anderes','sie selbst — gleiche Subjekte','der Text','der Leser'],answer:1},
+  {type:'mc',prompt:'Er wurde befördert, anstatt entlassen zu werden.',task:'Welcher Nebensatz entspricht dem?',
+   options:['anstatt dass er entließ','anstatt dass er entlassen wurde','anstatt zu entlassen ihn','anstatt dass entlassen wird'],answer:1}
+],
+3:[
+  {type:'fill',prompt:'Er lernt Deutsch, damit er in Berlin arbeiten kann.',task:'Forme um mit "um ... zu" (gleiche Subjekte):',answer:'Er lernt Deutsch, um in Berlin arbeiten zu können.',hint:'damit + kann → um … zu + können (Modalinfinitiv)'},
+  {type:'fill',prompt:'Sie spart Geld, ohne dass sie etwas ausgibt.',task:'Forme um mit "ohne ... zu":',answer:'Sie spart Geld, ohne etwas auszugeben.',hint:'ausgeben (trennbar): aus·zu·geben'},
+  {type:'fill',prompt:'Er diskutierte stundenlang, anstatt dass er handelte.',task:'Forme um mit "anstatt ... zu":',answer:'Er diskutierte stundenlang, anstatt zu handeln.',hint:'handeln → zu handeln (einfach)'},
+  {type:'fill',prompt:'Sie nahm an der Konferenz teil, um neue Kontakte zu knüpfen.',task:'Forme um mit "damit" (gleiche Subjekte):',answer:'Sie nahm an der Konferenz teil, damit sie neue Kontakte knüpfte.',hint:'um … zu → damit + Subjekt + Verb'},
+  {type:'fill',prompt:'Das Team arbeitete bis Mitternacht, ohne eine Pause einzulegen.',task:'Forme um mit "ohne dass":',answer:'Das Team arbeitete bis Mitternacht, ohne dass es eine Pause einlegte.',hint:'ohne … zu → ohne dass + Subjekt + Verb'},
+  {type:'fill',prompt:'Er verließ die Firma, ohne sich zu verabschieden.',task:'Forme um mit "ohne dass":',answer:'Er verließ die Firma, ohne dass er sich verabschiedete.',hint:'ohne … zu → ohne dass + Subjekt'},
+  {type:'fill',prompt:'Die Regierung senkt Steuern, um die Wirtschaft anzukurbeln.',task:'Forme um mit "damit":',answer:'Die Regierung senkt Steuern, damit die Wirtschaft angekurbelt wird.',hint:'Passiv im damit-Satz, da Wirtschaft ≠ Regierung'},
+  {type:'fill',prompt:'Sie blieb zu Hause, anstatt zur Arbeit zu gehen.',task:'Forme um mit "anstatt dass":',answer:'Sie blieb zu Hause, anstatt dass sie zur Arbeit ging.',hint:'anstatt … zu → anstatt dass + Subjekt + Verb'},
+  {type:'fill',prompt:'Er reiste viel, um andere Kulturen kennenzulernen.',task:'Forme um mit "damit" (gleiche Subjekte):',answer:'Er reiste viel, damit er andere Kulturen kennenlernte.',hint:'um … zu → damit + er + Verb'},
+  {type:'fill',prompt:'Die Mitarbeiter wurden versetzt, anstatt dass man sie beförderte.',task:'Forme um mit "anstatt ... zu" (Passiv-Infinitiv):',answer:'Die Mitarbeiter wurden versetzt, anstatt befördert zu werden.',hint:'anstatt dass → anstatt + Partizip II + zu werden'},
+  {type:'fill',prompt:'Er bestand, ohne sich vorbereitet zu haben.',task:'Forme um mit "ohne dass":',answer:'Er bestand, ohne dass er sich vorbereitet hatte.',hint:'Perfektinfinitiv → Plusquamperfekt im ohne-dass-Satz'},
+  {type:'fill',prompt:'Sie kritisierte, ohne Verbesserungsvorschläge zu machen.',task:'Forme um mit "ohne dass":',answer:'Sie kritisierte, ohne dass sie Verbesserungsvorschläge machte.',hint:'ohne … zu → ohne dass + Subjekt + Verb'},
+  {type:'fill',prompt:'Er wartete stundenlang, anstatt früher zu gehen.',task:'Forme um mit "anstatt dass":',answer:'Er wartete stundenlang, anstatt dass er früher ging.',hint:'anstatt … zu → anstatt dass + Subjekt + Verb (Prät.)'}
+],
+4:[
+  {type:'fill',prompt:'Das Unternehmen investiert in Weiterbildung, ___ die Produktivität ___ steigern.',task:'Ergänze um … zu:',answer:'um die Produktivität zu steigern',hint:'um + Objekt + zu + Infinitiv'},
+  {type:'fill',prompt:'Er verließ das Meeting früher, ___ sich ___ verabschieden.',task:'Ergänze ohne … zu:',answer:'ohne sich zu verabschieden',hint:'ohne + Reflexivpronomen + zu + Infinitiv'},
+  {type:'fill',prompt:'Sie schickte eine Textnachricht, ___ persönlich ___kommen.',task:'Ergänze anstatt … zu (trennbar):',answer:'anstatt persönlich zu kommen',hint:'anstatt + zu + Infinitiv (kommen = nicht trennbar)'},
+  {type:'fill',prompt:'Er trainierte täglich, ___ an den Olympischen Spielen ___ können.',task:'Ergänze um … zu + Modalinfinitiv:',answer:'um teilnehmen zu können',hint:'um + Infinitiv + zu + können'},
+  {type:'fill',prompt:'Die Azubis absolvierten Praktika, ___ Berufserfahrung ___ sammeln.',task:'Ergänze um … zu:',answer:'um Berufserfahrung zu sammeln',hint:'um + Objekt + zu + Infinitiv'},
+  {type:'fill',prompt:'Sie beendete die Arbeit, ___ die Ergebnisse ___ prüfen.',task:'Ergänze ohne … zu:',answer:'ohne die Ergebnisse zu prüfen',hint:'ohne + Objekt + zu + Infinitiv'},
+  {type:'fill',prompt:'Der Manager traf Entscheidungen, ___ das Team ___zubeziehen.',task:'Ergänze ohne … zu (trennbar: einbeziehen):',answer:'ohne das Team einzubeziehen',hint:'einbeziehen (trennbar) → ein·zu·beziehen'},
+  {type:'fill',prompt:'Die Firma expandierte, ___ neue Mitarbeiter ___ stellen.',task:'Ergänze anstatt … zu:',answer:'anstatt neue Mitarbeiter einzustellen',hint:'einstellen (trennbar) → ein·zu·stellen'},
+  {type:'fill',prompt:'Er absolvierte die Ausbildung, ___ wettbewerbsfähig ___ bleiben.',task:'Ergänze um … zu:',answer:'um wettbewerbsfähig zu bleiben',hint:'um + Adjektiv + zu + bleiben'},
+  {type:'fill',prompt:'Sie übernahm Überstunden, ___ befördert ___ werden.',task:'Ergänze um … zu (Passiv-Infinitiv):',answer:'um befördert zu werden',hint:'um + Partizip II + zu + werden'},
+  {type:'fill',prompt:'Er wechselte den Beruf, ___ in seiner Komfortzone ___ bleiben.',task:'Ergänze anstatt … zu:',answer:'anstatt in seiner Komfortzone zu bleiben',hint:'anstatt + Präp.phrase + zu + Infinitiv'},
+  {type:'fill',prompt:'Das Produkt wurde lanciert, ___ ausreichend ___ worden zu sein.',task:'Ergänze ohne (Perfektinfinitiv Passiv):',answer:'ohne ausreichend getestet worden zu sein',hint:'ohne + Part.II + worden + zu + sein'},
+  {type:'fill',prompt:'Die Abteilung reorganisierte sich, ___ externe Berater ___ beizuziehen.',task:'Ergänze ohne … zu (trennbar: beiziehen):',answer:'ohne externe Berater beizuziehen',hint:'beiziehen (trennbar) → bei·zu·ziehen'}
+],
+5:[
+  {type:'mc',prompt:'Wähle die C1-gerechte Formulierung für: "Er arbeitet hart, weil er Karriere machen will."',task:'',
+   options:['Er arbeitet hart, damit Karriere gemacht wird.','Er arbeitet hart, um Karriere zu machen.','Er arbeitet hart, um zu machen Karriere.','Er arbeitet hart, anstatt Karriere zu machen.'],answer:1},
+  {type:'mc',prompt:'Welcher Satz ist in einer formellen Stellungnahme am besten?',task:'Thema: Digitalisierung im Bildungswesen',
+   options:['Man muss digitale Medien nutzen, weil der Unterricht besser wird.','Digitale Medien sollten eingesetzt werden, um den Unterricht zu modernisieren.','Man soll digitale Medien benutzen, damit Unterricht besser ist.','Digitale Medien, anstatt traditionelle Methoden zu verwenden.'],answer:1},
+  {type:'fill',prompt:'C1-Stellungnahme: "Viele Unternehmen investieren in Digitalisierung, ___ (wettbewerbsfähig bleiben)."',task:'Formuliere mit um … zu:',answer:'um wettbewerbsfähig zu bleiben',hint:'um + Adjektiv + zu + Infinitiv'},
+  {type:'mc',prompt:'Welcher Satz enthält einen Fehler?',task:'',
+   options:['Er bewarb sich, um eine Stelle zu bekommen.','Sie lernte, ohne nachzuschlagen.','Er arbeitete, anstatt zu pausieren.','Er lernte, um sie eine gute Note zu bekommen.'],answer:3},
+  {type:'fill',prompt:'C1-Text: "Die Reform wurde durchgeführt, ___ (strukturelle Probleme lösen)."',task:'Formuliere mit um … zu (Passiv-Infinitiv, da Subjekte gleich):',answer:'um strukturelle Probleme zu lösen',hint:'Aktiv-Infinitiv hier möglich, da Reform = strukturelle Probleme lösen (derselbe Rahmen)'},
+  {type:'mc',prompt:'In einer Bewerbung: Welcher Satz klingt am professionellsten?',task:'"Ich mache das Praktikum, weil ich mehr lernen möchte."',
+   options:['Ich mache das Praktikum, damit ich lerne.','Ich absolviere das Praktikum, um praktische Erfahrungen zu sammeln.','Ich mache das Praktikum, anstatt in der Schule zu sein.','Ich mache das Praktikum, ohne zu lernen.'],answer:1},
+  {type:'fill',prompt:'C1: "Er übernahm alle Aufgaben allein, ___ (Kollegen einbeziehen, ohne)."',task:'Formuliere mit ohne … zu:',answer:'ohne Kollegen einzubeziehen',hint:'einbeziehen (trennbar): ein·zu·beziehen'},
+  {type:'mc',prompt:'Welche Umformung ist vollständig korrekt?',task:'"Sie diskutierten, anstatt dass sie Lösungen fanden."',
+   options:['Sie diskutierten, anstatt zu Lösungen finden.','Sie diskutierten, anstatt Lösungen zu finden.','Sie diskutierten, anstatt Lösungen gefunden zu haben.','Sie diskutierten, um Lösungen zu finden.'],answer:1},
+  {type:'fill',prompt:'C1-Analyse: "Die Kosten stiegen, ___ die Qualität zu verbessern." (ohne)',task:'',answer:'ohne die Qualität zu verbessern',hint:'ohne + Objekt + zu + Infinitiv'},
+  {type:'mc',prompt:'Welche Kombination von Infinitivkonstruktionen passt in einen C1-Text?',task:'"Fachkräfte absolvieren Weiterbildungen, ___ ihre Kompetenzen zu erweitern, ___ auf dem neuesten Stand zu bleiben."',
+   options:['damit / ohne','um / und um','anstatt / ohne','um / anstatt'],answer:1},
+  {type:'fill',prompt:'C1-Bericht: "Das Team gab auf, ___ alle Optionen ___ geprüft zu haben." (Perfektinfinitiv)',task:'Ergänze ohne … zu:',answer:'ohne alle Optionen geprüft zu haben',hint:'ohne + Objekt + Partizip II + zu + haben'},
+  {type:'mc',prompt:'Welche Aussage über Infinitivkonstruktionen ist FALSCH?',task:'',
+   options:['Bei gleichen Subjekten bevorzugt man den Infinitiv.','"anstatt ... zu" kann nie mit Passiv verwendet werden.','Trennbare Verben: zu steht zwischen Präfix und Stamm.','Der Perfektinfinitiv zeigt Vorzeitigkeit.'],answer:1},
+  {type:'fill',prompt:'Wandle um: "Die Mitarbeiter wurden entlassen, anstatt dass man sie weiterbildete."',task:'Forme um mit Infinitivkonstruktion:',answer:'Die Mitarbeiter wurden entlassen, anstatt weitergebildet zu werden.',hint:'anstatt dass → anstatt + Partizip II + zu werden (Passiv-Infinitiv)'}
+]
+};
+
+var currentLevel=1,answers={},checked={};
+document.querySelectorAll('.level-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.level-tab').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentLevel=parseInt(btn.getAttribute('data-level'));
+    answers={};checked={};
+    renderEx();updateScore();
+    document.getElementById('resultCard').classList.remove('show');
+  });
+});
+
+function renderEx(){
+  var c=document.getElementById('exerciseContainer');c.innerHTML='';
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    var card=document.createElement('div');card.className='exercise-card';card.id='ex-'+i;
+    var num=document.createElement('div');num.className='ex-number';
+    num.textContent='Aufgabe '+(i+1)+' / '+exs.length;card.appendChild(num);
+    var pr=document.createElement('div');pr.className='ex-prompt';pr.innerHTML=ex.prompt;card.appendChild(pr);
+    if(ex.task){var tk=document.createElement('div');tk.className='ex-task';tk.textContent=ex.task;card.appendChild(tk);}
+    if(ex.type==='mc'){
+      var opts=document.createElement('div');opts.className='options';
+      ex.options.forEach(function(opt,j){
+        var btn=document.createElement('button');btn.className='option-btn';btn.textContent=opt;
+        btn.addEventListener('click',function(){
+          if(checked[i])return;answers[i]=j;
+          opts.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected-correct','selected-wrong','reveal-correct');});
+          if(j===ex.answer){btn.classList.add('selected-correct');card.classList.add('correct');}
+          else{btn.classList.add('selected-wrong');opts.querySelectorAll('.option-btn')[ex.answer].classList.add('reveal-correct');card.classList.add('wrong');}
+          checked[i]=true;updateScore();updateProg();
+        });
+        opts.appendChild(btn);
+      });
+      card.appendChild(opts);
+    } else {
+      var wrap=document.createElement('div');
+      if(ex.hint){var h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--text-muted);margin-bottom:6px;';h.textContent='Hinweis: '+ex.hint;wrap.appendChild(h);}
+      var inp=document.createElement('input');inp.type='text';inp.className='fill-input';
+      inp.placeholder='Antwort eingeben …';inp.autocomplete='off';inp.autocapitalize='none';
+      wrap.appendChild(inp);
+      var fb=document.createElement('div');fb.className='ex-feedback';
+      var cb=document.createElement('button');cb.className='check-btn';cb.textContent='Prüfen';
+      cb.addEventListener('click',function(){
+        if(checked[i])return;
+        var v=inp.value.trim(),ok=v.toLowerCase()===ex.answer.trim().toLowerCase();
+        inp.classList.add(ok?'correct':'wrong');
+        fb.textContent=ok?'Richtig!':'Nicht ganz. Richtig: '+ex.answer;
+        fb.className='ex-feedback show '+(ok?'correct':'wrong');
+        card.classList.add(ok?'correct':'wrong');
+        checked[i]=true;answers[i]=v;cb.disabled=true;inp.disabled=true;
+        updateScore();updateProg();
+      });
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')cb.click();});
+      wrap.appendChild(cb);wrap.appendChild(fb);card.appendChild(wrap);
+    }
+    c.appendChild(card);
+  });
+  updateProg();
+}
+function updateScore(){
+  var exs=DATA[currentLevel],correct=0,done=Object.keys(checked).length;
+  exs.forEach(function(ex,i){
+    if(!checked[i])return;
+    if(ex.type==='mc'){if(answers[i]===ex.answer)correct++;}
+    else{if(answers[i]&&answers[i].toLowerCase()===ex.answer.trim().toLowerCase())correct++;}
+  });
+  document.getElementById('scoreDisplay').textContent=correct+' / '+done+' richtig';
+  return{correct:correct,total:exs.length};
+}
+function updateProg(){
+  var done=Object.keys(checked).length,total=DATA[currentLevel].length;
+  document.getElementById('progressFill').style.width=(done/total*100)+'%';
+}
+window.submitAll=function(){
+  var exs=DATA[currentLevel];
+  exs.forEach(function(ex,i){
+    if(checked[i])return;
+    checked[i]=true;answers[i]=ex.type==='mc'?-1:'';
+    var card=document.getElementById('ex-'+i);card.classList.add('wrong');
+    if(ex.type==='mc'){
+      var opts=card.querySelectorAll('.option-btn');
+      if(opts[ex.answer])opts[ex.answer].classList.add('reveal-correct');
+    } else {
+      var inp=card.querySelector('.fill-input'),fb=card.querySelector('.ex-feedback'),cb=card.querySelector('.check-btn');
+      if(inp)inp.disabled=true;if(cb)cb.disabled=true;
+      if(fb){fb.textContent='Richtig: '+ex.answer;fb.className='ex-feedback show wrong';}
+    }
+  });
+  var res=updateScore();updateProg();
+  var rc=document.getElementById('resultCard');rc.classList.add('show');
+  document.getElementById('resultScore').textContent=res.correct+' / '+res.total;
+  var p=res.correct/res.total;
+  document.getElementById('resultLabel').textContent=p>=0.9?'Ausgezeichnet! 🎉':p>=0.7?'Gut gemacht! 👍':p>=0.5?'Weiter üben!':'Noch mehr Übung nötig.';
+  document.getElementById('resultMsg').textContent=p>=0.7?'Super! Setze Infinitivkonstruktionen aktiv in deinen C1-Texten ein.':'Lies nochmal Tab 2–4 durch und beachte die Subjekt-Regel!';
+  rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.resetEx=function(){
+  answers={};checked={};
+  document.getElementById('resultCard').classList.remove('show');
+  renderEx();updateScore();
+};
+renderEx();
+})();
+</script>
+</body>
+</html>
