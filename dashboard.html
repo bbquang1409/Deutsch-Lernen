@@ -186,7 +186,8 @@ function showTab(tab){
 
 function loadData(){
   document.getElementById('statusDot').style.background='#d97706';
-  fetch(SHEET_URL).then(r=>r.json()).then(res=>{
+  const _u = JSON.parse(localStorage.getItem('dl_user') || '{}');
+  fetch(SHEET_URL + '?email=' + encodeURIComponent(_u.email || '')).then(r=>r.json()).then(res=>{
     if(res.status!=='ok')throw new Error(res.msg);
     allData=(res.data||[]).filter(r=>r['Tên học sinh']);
     document.getElementById('statusDot').style.background='#16a34a';
