@@ -344,14 +344,13 @@ Aufgabe: ${prompts[type]}
 Schreibe auf Deutsch, freundlich und konstruktiv. Verwende die Namen der Schüler. Maximal 300 Wörter.`;
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch(SHEET_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({action:'analyze',prompt:prompt})
     });
     const json=await res.json();
     resultEl.className='ai-result';
-    resultEl.textContent=json.content?.[0]?.text||'Keine Antwort.';
+    resultEl.textContent=json.text||'Keine Antwort.';
   }catch(err){
     resultEl.className='ai-result';
     resultEl.textContent='Fehler: '+err.message;
