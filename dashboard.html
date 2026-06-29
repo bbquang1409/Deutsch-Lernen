@@ -344,12 +344,7 @@ Aufgabe: ${prompts[type]}
 Schreibe auf Deutsch, freundlich und konstruktiv. Verwende die Namen der Schüler. Maximal 300 Wörter.`;
 
   try{
-    // Gemini được gọi qua Apps Script proxy — key nằm server-side, không lộ trong HTML
-    const res=await fetch(SHEET_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'analyze',prompt:prompt})
-    });
+    const res=await fetch(SHEET_URL+'?action=analyze&prompt='+encodeURIComponent(prompt));
     const json=await res.json();
     const text=json.text||json.msg||'Keine Antwort.';
     resultEl.className='ai-result';
