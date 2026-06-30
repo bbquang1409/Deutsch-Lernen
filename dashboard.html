@@ -321,27 +321,31 @@ async function runAnalysis(){
 
   const summary=Object.values(by).map(s=>{
     const avg=Math.round(s.entries.reduce((a,e)=>a+e.pct,0)/s.entries.length);
-    const weak=s.entries.filter(e=>e.pct<60).map(e=>e.file).filter((v,i,a)=>a.indexOf(v)===i);
-    const strong=s.entries.filter(e=>e.pct>=80).map(e=>e.file).filter((v,i,a)=>a.indexOf(v)===i);
-    return `Schüler: ${s.name}\n  Ø: ${avg}% | Anzahl: ${s.entries.length}\n  Schwach (<60%): ${weak.join(', ')||'–'}\n  Stark (≥80%): ${strong.join(', ')||'–'}\n  Details: ${s.entries.map(e=>`${e.file} ${e.set}: ${e.pct}%`).join('; ')}`;
-  }).join('\n\n');
+    const details=s.entries.map(e=>`${e.file}:${e.pct}%`).join(' ');
+    return `${s.name} Ø${avg}% | ${details}`;
+  }).join('\n').slice(0,3000);
 
   const prompts={
-    overall:'Gib eine ausgewogene Gesamtauswertung. Wie haben die Schüler abgeschnitten? Was fällt auf?',
-    weak:'Identifiziere Schwächen und Problembereiche. Was muss verbessert werden und wie?',
-    strong:'Hebe Stärken und gute Leistungen hervor. Lobe konkret, was gut gemacht wurde.',
-    recommend:'Gib konkrete Empfehlungen für die nächste Unterrichtsstunde. Was wiederholen? Was vertiefen?',
-    compare:'Vergleiche die Schüler untereinander. Wer ist stark/schwach in welchen Bereichen?'
+    overall:'Gesamtauswertung',
+    weak:'Schwächen & Problembereiche',
+    strong:'Stärken & gute Leistungen',
+    recommend:'Empfehlungen für nächste Stunde',
+    compare:'Vergleich der Schüler'
   };
 
-  const prompt=`Du bist ein erfahrener Deutschlehrer und analysierst Lernergebnisse deiner Schüler.
+  const prompt=`Du bist Datenanalyst für Deutschunterricht. Hier sind die Rohdaten:
 
-Ergebnisse:
 ${summary}
 
 Aufgabe: ${prompts[type]}
 
-Schreibe auf Deutsch, freundlich und konstruktiv. Verwende die Namen der Schüler. Maximal 300 Wörter.`;
+REGELN:
+- Nenne IMMER konkrete Namen und Zahlen aus den Daten oben (z.B. "Mai: 45% in Konjunktiv")
+- KEINE allgemeinen Floskeln wie "weiter üben" oder "gute Arbeit" ohne Bezug zu Zahlen
+- KEINE Anrede, KEINE Begrüßung, KEINE Grußformel
+- Jede Zeile = ein konkreter Fakt oder eine konkrete Handlungsempfehlung mit Namen/Zahl
+- Maximal 8 Zeilen, mit "•" beginnend
+- Wenn die Daten nicht ausreichen für eine Aussage, schreibe das nicht — überspringe es`;
 
   try{
     const res=await fetch(SHEET_URL+'?action=analyze&prompt='+encodeURIComponent(prompt));
