@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEST — Google Sign-In (FedCM)</title>
+<style>
+  body{
+    font-family:'Outfit',sans-serif;background:#f4f6fa;color:#0f2644;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    margin:0;padding:20px;
+  }
+  .card{
+    background:#fff;border-radius:20px;padding:32px 28px;max-width:420px;width:100%;
+    box-shadow:0 10px 40px rgba(0,0,0,0.08);text-align:center;
+  }
+  h1{font-size:1.2rem;margin-bottom:4px;}
+  .sub{font-size:0.82rem;color:#7a8fa8;margin-bottom:24px;}
+  #gBtnBox{display:flex;justify-content:center;margin-bottom:20px;min-height:44px;}
+  .status{
+    text-align:left;font-size:0.78rem;background:#f4f6fa;border-radius:12px;
+    padding:12px 14px;white-space:pre-wrap;word-break:break-all;color:#334;
+    margin-top:16px;display:none;
+  }
+  .status.show{display:block;}
+  .userbox{display:none;text-align:left;background:#eff6ff;border-radius:14px;padding:14px;margin-top:10px;}
+  .userbox.show{display:flex;gap:12px;align-items:center;}
+  .userbox img{width:48px;height:48px;border-radius:50%;}
+  .userbox .name{font-weight:700;font-size:0.9rem;}
+  .userbox .email{font-size:0.75rem;color:#7a8fa8;}
+  .note{font-size:0.7rem;color:#9aa;margin-top:20px;line-height:1.5;}
+  .log-title{font-size:0.72rem;font-weight:700;color:#9a3412;margin-top:16px;margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🧪 Test: Sign In with Google (FedCM)</h1>
+  <div class="sub">File test riêng — không đụng vào grammatik.html.<br>Test trên Safari iPhone để xem còn lỗi 400 không.</div>
+
+  <!-- Google sẽ render nút thật vào đây -->
+  <div id="gBtnBox"></div>
+
+  <div class="userbox" id="userbox">
+    <img id="uPic" src="" alt="">
+    <div>
+      <div class="name" id="uName"></div>
+      <div class="email" id="uEmail"></div>
+    </div>
+  </div>
+
+  <div class="log-title" id="logTitle" style="display:none">Log / Debug:</div>
+  <div class="status" id="status"></div>
+
+  <div class="note">
+    Client ID dùng chung với grammatik.html — chạy trên đúng domain GitHub Pages thì mới hoạt động (Google chặn theo Authorized Origins).<br>
+    Nếu vẫn lỗi trên Safari, chụp lại phần Log/Debug bên trên gửi mình.
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const GOOGLE_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+
+function log(msg){
+  const el = document.getElementById('status');
+  const t = document.getElementById('logTitle');
+  t.style.display = 'block';
+  el.classList.add('show');
+  el.textContent += msg + "\n";
+  console.log(msg);
+}
+
+// Giải mã JWT credential trả về từ Google (chỉ đọc payload, không cần verify chữ ký ở phía client)
+function decodeJwt(token){
+  try{
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c){
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  }catch(e){
+    log('❌ Lỗi decode JWT: ' + e.message);
+    return null;
+  }
+}
+
+function handleCredentialResponse(response){
+  log('✅ Nhận được credential từ Google.');
+  const payload = decodeJwt(response.credential);
+  if (!payload) return;
+  log('✅ Decode JWT thành công:\n' + JSON.stringify({
+    name: payload.name, email: payload.email, picture: payload.picture
+  }, null, 2));
+
+  document.getElementById('uPic').src = payload.picture;
+  document.getElementById('uName').textContent = payload.name;
+  document.getElementById('uEmail').textContent = payload.email;
+  document.getElementById('userbox').classList.add('show');
+}
+
+window.addEventListener('load', ()=>{
+  log('Trang load xong. User-Agent:\n' + navigator.userAgent);
+
+  if (typeof google === 'undefined') {
+    log('⚠️ Thư viện Google chưa load kịp, thử lại sau 1s...');
+    setTimeout(initGoogle, 1000);
+  } else {
+    initGoogle();
+  }
+});
+
+function initGoogle(){
+  try{
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleCredentialResponse,
+      use_fedcm_for_prompt: true
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('gBtnBox'),
+      { theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', width: 280 }
+    );
+    log('✅ Google Identity Services đã init xong, nút đã render.');
+  }catch(e){
+    log('❌ Lỗi khi init Google: ' + e.message);
+  }
+}
+</script>
+
+</body>
+</html>
