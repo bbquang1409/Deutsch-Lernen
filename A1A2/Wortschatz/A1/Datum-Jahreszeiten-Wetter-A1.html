@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14 Datum – Jahreszeiten – Wetter – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;
+  text-align:center;position:sticky;top:0;z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;
+  padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;
+}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;
+  padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;
+}
+.example-box{
+  background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 14px;margin:10px 0;font-size:0.9rem;color:var(--teal);line-height:1.9;
+}
+.example-box b{color:var(--teal-light);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{
+  border:none;border-bottom:2px solid var(--teal-light);background:transparent;
+  font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.dialog-p{margin:6px 0;}
+.check-btn{
+  background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;
+  cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* TTS buttons */
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
+.pron-group{margin:14px 0;}
+.pron-playall{
+  background:var(--teal);color:#fff;border:none;border-radius:20px;padding:6px 16px;
+  font-size:.85rem;cursor:pointer;margin-bottom:8px;
+}
+.pron-playall:hover{background:var(--teal-light);}
+.pron-chip{
+  background:var(--teal-pale);color:var(--teal);padding:6px 12px;border-radius:16px;
+  font-size:.88rem;cursor:pointer;display:inline-block;margin:4px 4px 0 0;
+}
+.pron-chip:hover{background:var(--orange-light);color:var(--orange);}
+
+/* Season cards + compass */
+.season-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;margin:14px 0;}
+.season-card{text-align:center;}
+.season-card svg{width:100%;max-width:130px;border-radius:10px;}
+.season-card input[type=text]{
+  margin-top:6px;width:90%;border:none;border-bottom:2px solid var(--teal-light);
+  background:transparent;font-size:.95rem;padding:2px 4px;font-family:inherit;text-align:center;
+}
+.compass-wrap{display:flex;justify-content:center;margin:14px 0;}
+.compass-wrap svg{width:220px;max-width:100%;}
+
+/* Date cards */
+.date-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px;margin:14px 0;}
+.date-card{text-align:center;background:#fbfaf7;border:1px solid #e2ded4;border-radius:10px;padding:10px;}
+.date-card .dc-month{font-weight:700;color:var(--teal);font-size:.85rem;}
+.date-card .dc-day{font-weight:800;color:var(--orange);font-size:1.8rem;line-height:1.1;}
+.date-card input[type=text]{
+  margin-top:8px;width:100%;border:none;border-bottom:2px solid var(--teal-light);
+  background:transparent;font-size:.85rem;padding:2px 4px;font-family:inherit;text-align:center;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A1 · Modul 14 · Wortschatz</div>
+  <h1>14&nbsp; Datum – Jahreszeiten – Wetter</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🌸 Jahreszeit</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box" id="ex-box-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>🌤️ Wetter</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="example-box" id="ex-box-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>📅 Datum</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="example-box" id="ex-box-3"></div>
+    <div class="scale-box">Ordnungszahlen: 1. erste · 2. zweite · 3. dritte · 4. vierte · 5. fünfte · 6. sechste · 7. siebte · 8. achte · 9. neunte · 10. zehnte · 11. elfte · 12. zwölfte · 13. dreizehnte · 14. vierzehnte ... 20. zwanzigste (ab 20: -ste)</div>
+  </div>
+
+  <div class="section">
+    <h2>🎉 Feiertage</h2>
+    <div class="vocab-grid" id="vg4"></div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache – Die Monate</h2>
+    <div class="ex-instructions">Klatschen Sie den Rhythmus, sprechen Sie die Monate laut. Am Wortende spricht man kein r.</div>
+    <div class="pron-group" id="pron-a"></div>
+    <div class="pron-group" id="pron-b"></div>
+    <div class="pron-group" id="pron-c"></div>
+    <div class="pron-group" id="pron-d"></div>
+    <div class="pron-group" id="pron-e"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Die Jahreszeiten (in Deutschland)</h2>
+    <div class="ex-title">a Ergänzen Sie. b Notieren Sie die passenden Monate.</div>
+    <div class="season-grid" id="ex1-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex1-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex1-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Schreiben Sie</h2>
+    <div class="ex-instructions">Was ist auf dem Kompass wo?</div>
+    <div class="compass-wrap" id="compass-svg"></div>
+    <div class="exercise">
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Wettergespräche – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Kasten:</b> Sonne · warm · Regen · scheinen · minus · Grad · plus · regnet <i>(Wetter = Beispiel)</i></div>
+    <div class="exercise">
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Datum – Schreiben Sie das Datum in Worten</h2>
+
+    <div class="exercise">
+      <div class="ex-title">a Kalenderblätter</div>
+      <div class="date-grid" id="ex4-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">b Datumsliste (Tag.Monat.)</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Datum, Jahreszeiten, Wetter</h2>
+    <div class="ex-instructions">Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","Jahreszeit, -en","einer von vier Teilen des Jahres","mùa (trong năm)"],
+ ["der/das","Frühling / Frühjahr (Sg.)","die Jahreszeit nach dem Winter","mùa xuân"],
+ ["der","Sommer (Sg.)","die wärmste Jahreszeit","mùa hè"],
+ ["der","Herbst (Sg.)","die Jahreszeit nach dem Sommer","mùa thu"],
+ ["der","Winter (Sg.)","die kälteste Jahreszeit","mùa đông"],
+];
+
+var vocab2 = [
+ ["das","Wetter (Sg.)","Sonne, Regen, Wind usw. an einem Tag","thời tiết"],
+ ["der","Regen (Sg.)","Wasser, das vom Himmel fällt","mưa"],
+ ["","regnen","wenn Regen fällt","trời mưa (động từ)"],
+ ["die","Sonne (Sg.)","der helle Stern am Himmel","mặt trời"],
+ ["","scheinen","hier: wenn die Sonne Licht gibt","(mặt trời) chiếu sáng"],
+ ["der","Wind, -e","bewegte Luft","gió"],
+ ["der","Norden (Sg.)","eine Himmelsrichtung, oben auf der Karte","hướng Bắc"],
+ ["der","Süden (Sg.)","eine Himmelsrichtung, unten auf der Karte","hướng Nam"],
+ ["der","Westen (Sg.)","eine Himmelsrichtung, links auf der Karte","hướng Tây"],
+ ["der","Osten (Sg.)","eine Himmelsrichtung, rechts auf der Karte","hướng Đông"],
+ ["das","Grad (Celsius)","die Maßeinheit für Temperatur","độ (nhiệt độ)"],
+ ["","heiß / warm / kalt","sehr warm / angenehm warm / nicht warm","nóng / ấm / lạnh"],
+ ["","klar","ohne Wolken, gut zu sehen","(trời) quang, trong"],
+ ["","minus / plus","unter Null / über Null (Temperatur)","âm / dương (nhiệt độ)"],
+];
+
+var vocab3 = [
+ ["das","Datum (Sg.)","der Tag, der Monat und das Jahr","ngày tháng"],
+ ["","Wann?","Frage nach der Zeit oder dem Datum","khi nào?"],
+ ["das","Jahr, -e","zwölf Monate","năm"],
+ ["der","Monat, -e","ein Teil des Jahres, z. B. Januar","tháng"],
+ ["der","Januar","der erste Monat","tháng Một"],
+ ["der","Februar","der zweite Monat","tháng Hai"],
+ ["der","März","der dritte Monat","tháng Ba"],
+ ["der","April","der vierte Monat","tháng Tư"],
+ ["der","Mai","der fünfte Monat","tháng Năm"],
+ ["der","Juni","der sechste Monat","tháng Sáu"],
+ ["der","Juli","der siebte Monat","tháng Bảy"],
+ ["der","August","der achte Monat","tháng Tám"],
+ ["der","September","der neunte Monat","tháng Chín"],
+ ["der","Oktober","der zehnte Monat","tháng Mười"],
+ ["der","November","der elfte Monat","tháng Mười Một"],
+ ["der","Dezember","der zwölfte Monat","tháng Mười Hai"],
+];
+
+var vocab4 = [
+ ["","Weihnachten","der Feiertag im Dezember (Geburt von Jesus)","lễ Giáng sinh"],
+ ["","Ostern","der Feiertag im Frühling (christliches Fest)","lễ Phục sinh"],
+ ["der","Karneval","ein Fest mit Kostümen vor der Fastenzeit","lễ hội hóa trang"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art && art.indexOf('/')===-1 ? art+' ' : '') + word.split(',')[0].split('(')[0].split('/')[0].trim();
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button class="speak-btn" data-text="'+speakText+'">🔊</button>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= Beispiel-Boxen ================= */
+function renderExampleBox(targetId, lines){
+  var el = document.getElementById(targetId);
+  el.innerHTML = '<b>Beispiele:</b><br>' + lines.map(function(l){
+    return '<span class="dialog-p">'+l+' <button class="speak-btn" data-text="'+l+'">🔊</button></span>';
+  }).join('<br>');
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+}
+renderExampleBox('ex-box-1', [
+  'Im Frühling, Sommer ...'
+]);
+renderExampleBox('ex-box-2', [
+  'Wie ist das Wetter?',
+  'Wie wird das Wetter morgen?',
+  'Es regnet.',
+  'Die Sonne scheint.',
+  'Wo? Im Norden, Süden ...',
+  'Minus ein Grad, das ist minus ein Grad Celsius.',
+  'Plus vier Grad.',
+  'Es ist minus vier Grad. Es ist plus vier Grad.'
+]);
+renderExampleBox('ex-box-3', [
+  'Was haben wir heute?',
+  'Der erste März.',
+  'Heute ist der erste März.',
+  'Wann beginnt der Kurs? Am fünfzehnten Oktober.',
+  'Wann? Im Januar, Februar ...'
+]);
+
+/* ================= Aussprache: Monate (Rhythmus) ================= */
+function renderPronGroup(containerId, words){
+  var el = document.getElementById(containerId);
+  var chips = words.map(function(w){ return '<span class="pron-chip" data-text="'+w+'">'+w+' 🔊</span>'; }).join('');
+  el.innerHTML = '<button class="pron-playall" data-words="'+words.join('|')+'">🔊 Alle anhören</button><div>'+chips+'</div>';
+  el.querySelector('.pron-playall').addEventListener('click', function(){
+    speakDE(this.dataset.words.split('|'));
+  });
+  el.querySelectorAll('.pron-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){ speakDE(chip.dataset.text); });
+  });
+}
+renderPronGroup('pron-a', ['Januar','Februar']);
+renderPronGroup('pron-b', ['Juni','Juli']);
+renderPronGroup('pron-c', ['März','Mai']);
+renderPronGroup('pron-d', ['April','August']);
+renderPronGroup('pron-e', ['September','Oktober','November','Dezember']);
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+  });
+});
+
+/* ================= EX 1.1 Die Jahreszeiten ================= */
+(function(){
+  function treeSVG(colors){
+    return '<svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">'+
+      '<rect x="0" y="0" width="100" height="80" fill="'+colors.sky+'"/>'+
+      '<rect x="0" y="60" width="100" height="20" fill="'+colors.ground+'"/>'+
+      '<rect x="46" y="45" width="8" height="25" fill="#6b4a2f"/>'+
+      '<circle cx="50" cy="35" r="26" fill="'+colors.leaves+'"/>'+
+      '</svg>';
+  }
+  var seasons = [
+    {letter:'F', ans:'Frühling', months:['März','April','Mai'], colors:{sky:'#bfe3ef', ground:'#9fd18a', leaves:'#7bc96f'}},
+    {letter:'S', ans:'Sommer', months:['Juni','Juli','August'], colors:{sky:'#a9d9f5', ground:'#7cbf5e', leaves:'#4f9e3a'}},
+    {letter:'H', ans:'Herbst', months:['September','Oktober','November'], colors:{sky:'#f3d7a6', ground:'#c98f4a', leaves:'#c9762f'}},
+    {letter:'W', ans:'Winter', months:['Dezember','Januar','Februar'], colors:{sky:'#dbe8ef', ground:'#f2f5f7', leaves:'#8fa3ab'}},
+  ];
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = seasons.map(function(s,i){
+    var monthsHtml = s.months.map(function(m,mi){
+      if(i===0 && mi===0) return '<div style="font-size:.85rem;color:var(--teal);margin-top:2px;"><b>'+m+'</b> (Beispiel)</div>';
+      return '<input type="text" id="e11-'+i+'-'+mi+'" data-ans="'+m+'" placeholder="Monat">';
+    }).join('');
+    return '<div class="season-card">'+treeSVG(s.colors)+
+      '<div>der '+s.letter+makeBlank('e11-letter-'+i, s.ans.slice(1), 90)+'</div>'+
+      monthsHtml+
+      '</div>';
+  }).join('');
+})();
+
+/* ================= EX 2 Kompass ================= */
+(function(){
+  var svg = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">'+
+    '<circle cx="100" cy="100" r="90" fill="#fbfaf7" stroke="#0f3d3e" stroke-width="3"/>'+
+    '<circle cx="100" cy="100" r="70" fill="none" stroke="#e2ded4" stroke-width="1"/>'+
+    '<line x1="100" y1="15" x2="100" y2="185" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<line x1="15" y1="100" x2="185" y2="100" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<polygon points="100,25 92,100 100,90 108,100" fill="#e8823a"/>'+
+    '<polygon points="100,175 92,100 100,110 108,100" fill="#1b5c5d"/>'+
+    '<text x="93" y="20" font-size="16" font-weight="bold" fill="#0f3d3e">N</text>'+
+    '<text x="93" y="195" font-size="16" font-weight="bold" fill="#0f3d3e">S</text>'+
+    '<text x="8" y="105" font-size="16" font-weight="bold" fill="#0f3d3e">W</text>'+
+    '<text x="180" y="105" font-size="16" font-weight="bold" fill="#0f3d3e">O</text>'+
+    '</svg>';
+  document.getElementById('compass-svg').innerHTML = svg;
+
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="qline">Was ist oben? '+makeBlank('e21-0','Norden',110)+'</div>'+
+  '<div class="qline">Was ist unten? '+makeBlank('e21-1','Süden',110)+'</div>'+
+  '<div class="qline">Was ist rechts? '+makeBlank('e21-2','Osten',110)+'</div>'+
+  '<div class="qline">Was ist links? '+makeBlank('e21-3','Westen',110)+'</div>';
+})();
+
+/* ================= EX 3.1 Wettergespräche ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<div class="dialog-p">● Hallo, Steven, wie geht\'s?</div>'+
+  '<div class="dialog-p">○ Sehr gut. Wie ist das Wetter bei euch?</div>'+
+  '<div class="dialog-p">● Es '+makeBlank('e31-0','regnet',100)+'. Wir haben seit drei Wochen '+makeBlank('e31-1','Regen',110)+' und es ist kalt.</div>'+
+  '<div class="dialog-p">○ Hier regnet es auch gerade, aber es ist '+makeBlank('e31-2','warm',100)+' und morgen soll die Sonne wieder '+makeBlank('e31-3','scheinen',120)+'.</div>'+
+  '<div class="dialog-p">● Wie warm ist es denn?</div>'+
+  '<div class="dialog-p">○ Ungefähr 28 '+makeBlank('e31-4','Grad',90)+', letzte Woche hatten wir 32 Grad. Und bei euch?</div>'+
+  '<div class="dialog-p">● Letzte Woche hatten wir in der Nacht '+makeBlank('e31-5','minus',100)+' 3 Grad, jetzt haben wir ungefähr fünf Grad '+makeBlank('e31-6','plus',90)+'. Ich warte auf den Sommer, schick mir ein bisschen '+makeBlank('e31-7','Sonne',100)+' über das Meer ...</div>';
+})();
+
+/* ================= EX 4.1 Kalenderblätter ================= */
+(function(){
+  var cards = [
+    {month:'Mai', day:14, ans:'der vierzehnte Mai'},
+    {month:'Juni', day:8, ans:'der achte Juni'},
+    {month:'August', day:2, ans:'der zweite August'},
+    {month:'November', day:11, ans:'der elfte November'},
+    {month:'Dezember', day:9, ans:'der neunte Dezember'},
+  ];
+  var el = document.getElementById('ex4-1');
+  el.innerHTML = cards.map(function(c,i){
+    return '<div class="date-card"><div class="dc-month">'+c.month+'</div><div class="dc-day">'+c.day+'</div>'+
+      '<input type="text" id="e41-'+i+'" data-ans="'+c.ans+'" placeholder="der ... "></div>';
+  }).join('');
+})();
+
+/* ================= EX 4.2 Datumsliste ================= */
+(function(){
+  var dates = [
+    ['1.4.','der erste April'],
+    ['2.3.','der zweite März'],
+    ['3.4.','der dritte April'],
+    ['4.5.','der vierte Mai'],
+    ['5.6.','der fünfte Juni'],
+    ['6.7.','der sechste Juli'],
+    ['7.8.','der siebte August'],
+    ['8.9.','der achte September'],
+    ['9.10.','der neunte Oktober'],
+    ['10.11.','der zehnte November'],
+  ];
+  var el = document.getElementById('ex4-2');
+  el.innerHTML = dates.map(function(d,i){
+    if(i===0) return '<div class="qline">'+d[0]+' <b>'+d[1]+'</b> (Beispiel)</div>';
+    return '<div class="qline">'+d[0]+' '+makeBlank('e42-'+i, d[1], 200)+'</div>';
+  }).join('');
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ['Die Jahreszeit nach dem Winter ist der ...','Frühling'],
+    ['Die wärmste Jahreszeit ist der ...','Sommer'],
+    ['Die kälteste Jahreszeit ist der ...','Winter'],
+    ['Wasser, das vom Himmel fällt, ist der ...','Regen'],
+    ['Wenn die Sonne Licht gibt, sagt man: Die Sonne ...','scheint'],
+    ['Eine Himmelsrichtung oben auf der Karte ist der ...','Norden'],
+    ['Die Maßeinheit für Temperatur ist das ...','Grad'],
+    ['Unter Null Grad heißt ...','minus'],
+    ['Der Tag, der Monat und das Jahr zusammen sind das ...','Datum'],
+    ['Der erste Monat des Jahres ist der ...','Januar'],
+    ['Der letzte Monat des Jahres ist der ...','Dezember'],
+    ['Der Feiertag im Dezember heißt ...','Weihnachten'],
+    ['Zwölf Monate sind ein ...','Jahr'],
+    ['1. = erste, 2. = zweite, 3. = ...','dritte'],
+    ['Das Gegenteil von "warm" ist ...','kalt'],
+    ['Ohne Wolken, gut zu sehen, heißt der Himmel ist ...','klar'],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

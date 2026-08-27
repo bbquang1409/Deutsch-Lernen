@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lückentext-Training B1–C1</title>
+<style>
+:root{
+  --bg:#F4F6F9; --surface:#FFFFFF; --ink:#1E293B; --muted:#64748B; --border:#E2E8F0;
+  --navy:#2C3E5C; --navy-dark:#20304A; --teal:#2C7A7B; --teal-light:#E6F4F3;
+  --amber:#C9973E; --amber-light:#FBF3E3; --sage:#6B8E7F;
+  --correct:#2F855A; --correct-bg:#F0FDF4; --correct-border:#B7E4C7;
+  --wrong:#C0392B; --wrong-bg:#FDF2F1; --wrong-border:#F1B9B2;
+  --radius:14px; --radius-sm:9px;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; padding-bottom:40px;}
+h1,h2,h3,h4{font-family:"Georgia",serif; font-weight:700; margin:0 0 8px;}
+p{margin:0 0 10px;}
+header{position:sticky; top:0; z-index:50; background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%); color:#fff; padding:14px 16px 10px; box-shadow:0 4px 14px rgba(0,0,0,.15);}
+.header-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+.header-title{font-size:1.05rem; font-weight:700;}
+.header-title small{display:block; font-weight:400; font-size:.72rem; color:#C9D6E8; margin-top:2px;}
+.header-controls{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+main{max-width:760px; margin:0 auto; padding:16px;}
+.panel{display:none;}
+.panel.active{display:block;}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px; box-shadow:0 1px 3px rgba(20,30,50,.04);}
+.level-select{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
+.level-btn{flex:1; min-width:60px; padding:10px 4px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); cursor:pointer; text-align:center; font-size:.74rem; font-weight:700; color:var(--muted);}
+.level-btn .sub{display:block; font-weight:400; font-size:.68rem; margin-top:1px;}
+.level-btn .dots{display:block; letter-spacing:1px; color:var(--amber); font-size:.7rem; margin-top:2px;}
+.level-btn.active{border-color:var(--teal); background:var(--teal-light); color:var(--teal);}
+.toolbar{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+.btn-primary{background:var(--teal); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:.86rem; font-weight:700; cursor:pointer;}
+.btn-primary:hover{background:#236263;}
+.score-badge{background:var(--navy); color:#fff; border-radius:20px; padding:6px 14px; font-size:.8rem; font-weight:700;}
+
+.text-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin-bottom:16px;}
+.text-meta{font-size:.72rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:8px;}
+.text-header{font-size:.9rem; color:var(--navy); margin-bottom:4px;}
+.text-header b{color:var(--ink);}
+.text-body{font-size:.96rem; margin:12px 0;}
+.text-body p{margin:0 0 10px;}
+.gap-badge{display:inline-block; background:var(--muted); color:#fff; font-size:.68rem; font-weight:700; border-radius:5px 0 0 5px; padding:5px 6px; vertical-align:middle;}
+.gap-input{
+  border:1.5px solid var(--border); border-left:none; border-radius:0 6px 6px 0; padding:5px 8px;
+  font-size:.9rem; font-family:inherit; vertical-align:middle; min-width:90px; max-width:170px;
+  background:var(--bg); color:var(--ink);
+}
+.gap-input:focus{outline:none; border-color:var(--teal); background:#fff;}
+.gap-input.correct{background:var(--correct-bg); border-color:var(--correct-border); color:var(--correct); font-weight:700;}
+.gap-input.wrong{background:var(--wrong-bg); border-color:var(--wrong-border); color:var(--wrong); font-weight:700;}
+.gap-input.solution{background:var(--amber-light); border-color:var(--amber); color:#7A5C17; font-weight:700;}
+.gap-wrap{display:inline-block; margin:2px 1px;}
+
+.btn-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+.check-btn{background:var(--amber); color:#2b2107; border:none; border-radius:10px; padding:9px 16px; font-size:.85rem; font-weight:700; cursor:pointer;}
+.check-btn:hover{opacity:.9;}
+.check-btn:disabled{opacity:.5; cursor:default;}
+.hint-btn{background:var(--surface); color:var(--teal); border:1.5px solid var(--teal); border-radius:10px; padding:9px 16px; font-size:.85rem; font-weight:700; cursor:pointer;}
+.hint-btn:hover{background:var(--teal-light);}
+.solution-btn{background:var(--surface); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:9px 16px; font-size:.85rem; font-weight:700; cursor:pointer;}
+.solution-btn:hover{border-color:var(--muted);}
+
+.explain-list{margin-top:12px; display:none;}
+.explain-list.show{display:block;}
+.explain-item{background:var(--teal-light); border-left:4px solid var(--teal); border-radius:0 8px 8px 0; padding:8px 12px; margin-bottom:7px; font-size:.85rem;}
+.explain-item .num{display:inline-block; background:var(--navy); color:#fff; font-size:.68rem; font-weight:700; border-radius:20px; padding:1px 8px; margin-right:6px;}
+.explain-item .w{color:var(--teal); font-weight:700;}
+.explain-item.wrong-item{background:var(--wrong-bg); border-left-color:var(--wrong);}
+.explain-item.solution-item{background:var(--amber-light); border-left-color:var(--amber);}
+
+.text-score{font-size:.85rem; font-weight:700; color:var(--navy); margin-top:8px;}
+.result-box{text-align:center; padding:22px;}
+.result-score{font-size:2.4rem; font-weight:800; color:var(--navy); font-family:Georgia,serif;}
+.result-label{color:var(--muted); font-size:.9rem;}
+footer{text-align:center; color:var(--muted); font-size:.75rem; margin-top:22px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-title">Lückentext-Training<small>Text rekonstruieren — B1.1 bis C1</small></div>
+  </div>
+</header>
+
+<main>
+
+<p style="color:var(--muted); font-size:.85rem; margin:2px 0 14px;">Ergänzen Sie die fehlenden Wörter im Text. Danach auf „Auswerten" klicken — bei Bedarf helfen „Hinweis" und „Lösung zeigen".</p>
+
+<section class="panel active" id="panel-uebungen">
+
+  <div class="card">
+    <h2 style="margin-bottom:10px;">Stufe wählen</h2>
+    <div class="level-select" id="levelSelect"></div>
+    <div class="toolbar">
+      <button class="btn-primary" onclick="startUebung()">🔄 Neue Textauswahl (3 Texte)</button>
+      <span class="score-badge" id="uebungScore">0 / 0</span>
+    </div>
+  </div>
+  <div id="uebungContainer"></div>
+</section>
+
+</main>
+<footer>Lückentext-Trainer · für den Deutschunterricht</footer>
+
+<script>
+/* ============================================================
+   DATENBANK: 5 Stufen x 13 Texte x 5 Lücken
+   body: Text mit Platzhaltern {1}..{5}
+   blanks: [{w:Lösungswort, de:Erklärung DE, vi:Erklärung VI}, ...]
+   ============================================================ */
+const LEVELS_META = {
+  1:{label:"Stufe 1", sub:"B1.1", dots:"●"},
+  2:{label:"Stufe 2", sub:"B1.2", dots:"●●"},
+  3:{label:"Stufe 3", sub:"B2.1", dots:"●●●"},
+  4:{label:"Stufe 4", sub:"B2.2", dots:"●●●●"},
+  5:{label:"Stufe 5", sub:"C1", dots:"●●●●●"}
+};
+
+const TEXTS = {
+
+1:[
+{an:"Herrn Kim, Ausbilder", betreff:"Entschuldigung für die Verspätung",
+body:"Sehr geehrter Herr Kim,\n\nes tut mir leid, dass ich heute Morgen zu spät zur Arbeit {1} bin. Der Bus hatte eine Panne, und ich musste 20 Minuten {2} der nächsten Haltestelle warten. Ich weiß, dass Pünktlichkeit in unserem Betrieb sehr wichtig ist, und {3} tut mir die Verspätung besonders leid. Morgen werde ich früher {4} Hause losfahren, {5} so etwas nicht noch einmal passiert.\n\nMit freundlichen Grüßen\nMinh",
+blanks:[
+{w:"gekommen",de:"Perfekt von „kommen“: bin + Partizip II (gekommen). Trennbares Verb „ankommen“ wäre auch möglich, hier reicht das einfache Partizip.",vi:"Thì hoàn thành của „kommen“: bin + Partizip II (gekommen)."},
+{w:"an",de:"„warten an + Dativ“ – hier: an der Haltestelle warten (Ort).",vi:"„warten an“ (chờ ở) + Dativ, chỉ vị trí."},
+{w:"deshalb",de:"Konnektor für die Folge/den Grund: deshalb = aus diesem Grund.",vi:"„deshalb“ (vì vậy) diễn tả kết quả/hệ quả của điều vừa nói."},
+{w:"von",de:"„von zu Hause losfahren“ – feste Wendung mit „von“.",vi:"„von zu Hause losfahren“ (xuất phát từ nhà) là cụm cố định."},
+{w:"damit",de:"Konnektor für den Zweck mit gleichem/anderem Subjekt: damit + Nebensatz.",vi:"„damit“ diễn tả mục đích, theo sau là mệnh đề phụ."}
+]},
+
+{an:"Team Werkstatt", betreff:"Einladung zur Weihnachtsfeier",
+body:"Liebe Kolleginnen und Kollegen,\n\nwie jedes Jahr {1} wir am 15. Dezember unsere Weihnachtsfeier. Wir treffen uns um 18 Uhr {2} Restaurant „Zur Post“. Bitte {3} Sie mir bis Freitag Bescheid, ob Sie {4} können. Wer eine Begleitung mitbringen möchte, ist herzlich {5}.\n\nViele Grüße\nFrau Schulz",
+blanks:[
+{w:"feiern",de:"Präsens von „feiern“ (Verb 1. Person Plural): wir feiern.",vi:"Thì hiện tại của „feiern“ (tổ chức lễ)."},
+{w:"im",de:"„im Restaurant“ = in + dem Restaurant (Wechselpräposition, Ort → Dativ).",vi:"„im“ = in + dem (giới từ chỉ vị trí, cách Dativ)."},
+{w:"geben",de:"„jemandem Bescheid geben“ = jemanden informieren – feste Wendung.",vi:"„jemandem Bescheid geben“ (báo cho ai biết) là cụm cố định."},
+{w:"teilnehmen",de:"Trennbares Verb „teilnehmen“ nach Modalverb „können“ steht im Infinitiv am Satzende.",vi:"Động từ tách „teilnehmen“ (tham gia) đứng nguyên mẫu ở cuối câu sau động từ khiếm khuyết."},
+{w:"willkommen",de:"Feste Wendung: „herzlich willkommen“ = eine freundliche Einladung.",vi:"Cụm cố định „herzlich willkommen“ (rất hoan nghênh)."}
+]},
+
+{an:"—", betreff:"Kurznachricht an einen Freund",
+body:"Hallo Long,\n\nwie geht's dir? Ich {1} seit zwei Wochen ein Praktikum in einer Autowerkstatt {2}. Es macht mir viel Spaß, aber ich bin abends immer sehr müde. Am Wochenende {3} ich mich meistens nur aus. Hast du Lust, {4} Samstag zusammen Fußball zu spielen? Ich {5} mich schon darauf!\n\nBis bald\nDuc",
+blanks:[
+{w:"mache",de:"„ein Praktikum machen“ = an einem Praktikum teilnehmen; Präsens.",vi:"„ein Praktikum machen“ (đi thực tập) — thì hiện tại."},
+{w:"in",de:"„ein Praktikum in einer Werkstatt machen“ – Präposition „in“ für den Ort der Tätigkeit.",vi:"„in“ chỉ nơi diễn ra việc thực tập."},
+{w:"ruhe",de:"Reflexivverb „sich ausruhen“, Präsens 1. Person: ich ruhe mich aus (trennbar).",vi:"Động từ phản thân „sich ausruhen“ (nghỉ ngơi), thì hiện tại, dạng tách."},
+{w:"am",de:"„am Samstag“ = an + dem Samstag (Zeitangabe mit Wochentag).",vi:"„am“ = an + dem, dùng trước thứ trong tuần."},
+{w:"freue",de:"„sich freuen auf + Akkusativ“ – Präsens: ich freue mich darauf.",vi:"„sich freuen auf“ (mong chờ) — thì hiện tại."}
+]},
+
+{an:"—", betreff:"Notiz für die Nachbarin", 
+body:"Liebe Frau Ana,\n\nich {1} am Montag für zwei Tage nach Berlin. Könnten Sie bitte in dieser Zeit meine Blumen {2}? Der Schlüssel liegt {3} der Fußmatte. Wenn etwas {4} sein sollte, erreichen Sie mich {5} Telefon.\n\nVielen Dank!\nFrau Nguyen",
+blanks:[
+{w:"fahre",de:"Präsens mit Zukunftsbedeutung (Zeitangabe „am Montag“ macht die Zukunft klar).",vi:"Thì hiện tại mang nghĩa tương lai (nhờ có mốc thời gian „am Montag“)."},
+{w:"gießen",de:"Trennbares/einfaches Verb „gießen“ nach Modalverb „könnten“ im Infinitiv am Satzende.",vi:"Động từ „gießen“ (tưới) ở dạng nguyên mẫu, đứng cuối câu sau động từ khiếm khuyết."},
+{w:"unter",de:"Wechselpräposition „unter“ + Dativ, weil keine Bewegung, sondern Position (liegt unter der Matte).",vi:"Giới từ hai cách „unter“ + Dativ vì diễn tả vị trí, không phải chuyển động."},
+{w:"unklar",de:"Adjektiv nach „etwas“ + Konjunktiv II Höflichkeitsform „sein sollte“.",vi:"Tính từ sau „etwas“, kết hợp Konjunktiv II lịch sự „sein sollte“."},
+{w:"per",de:"„per Telefon“ = mit Hilfe von Telefon – feste Wendung, oft in formellen Texten.",vi:"„per Telefon“ (qua điện thoại) là cụm cố định, thường dùng trong văn bản trang trọng."}
+]},
+
+{an:"Frau Weber, Personalabteilung", betreff:"Anfrage zur Gehaltsabrechnung",
+body:"Sehr geehrte Frau Weber,\n\nich habe eine Frage {1} meine letzte Gehaltsabrechnung. Der Betrag {2} niedriger als sonst. Könnten Sie das bitte {3} prüfen? Ich habe die Abrechnung als Anhang {4} diese E-Mail gelegt. Ich {5} mich über eine Rückmeldung bis Ende der Woche.",
+blanks:[
+{w:"zu",de:"„eine Frage zu etwas haben“ – feste Präposition „zu“.",vi:"„eine Frage zu etwas haben“ (có câu hỏi về việc gì) — giới từ cố định „zu“."},
+{w:"war",de:"Präteritum von „sein“ in formellen/schriftlichen Texten (statt Perfekt).",vi:"Thì quá khứ đơn của „sein“, hay dùng trong văn bản trang trọng thay vì Perfekt."},
+{w:"kurz",de:"Adverb, das die Bitte modifiziert: kurz prüfen = schnell nachsehen.",vi:"Trạng từ bổ nghĩa cho lời yêu cầu: „kurz prüfen“ (kiểm tra nhanh)."},
+{w:"an",de:"„etwas an eine E-Mail legen/anhängen“ – Präposition „an“ für den Anhang.",vi:"„an“ dùng khi nói về việc đính kèm vào email."},
+{w:"freue",de:"„sich freuen über + Akkusativ“ – hier im Sinn von „ich wäre dankbar für“.",vi:"„sich freuen über“ ở đây mang nghĩa „tôi sẽ rất biết ơn nếu…“."}
+]},
+
+{an:"—", betreff:"Beschwerde über laute Musik", 
+body:"Liebe Nachbarn,\n\nich möchte Sie höflich {1}, abends etwas leiser Musik zu hören. Gestern {2} die Musik bis Mitternacht so laut, dass ich nicht schlafen konnte. Ich verstehe, dass man auch mal feiern {3}, aber vielleicht {4} wir uns auf eine Uhrzeit einigen. Vielen Dank {5} Ihr Verständnis.",
+blanks:[
+{w:"bitten",de:"„jemanden bitten, etwas zu tun“ – Infinitiv nach „bitten“.",vi:"„jemanden bitten, ... zu tun“ (nhờ ai làm gì) — dạng nguyên mẫu sau „bitten“."},
+{w:"war",de:"Präteritum von „sein“: die Musik war laut.",vi:"Thì quá khứ đơn của „sein“."},
+{w:"möchte",de:"Modalverb „möchten“ drückt einen Wunsch/eine Erlaubnis aus.",vi:"Động từ khiếm khuyết „möchten“ diễn tả mong muốn."},
+{w:"könnten",de:"Konjunktiv II von „können“ für einen höflichen Vorschlag.",vi:"Konjunktiv II của „können“ dùng để đề nghị lịch sự."},
+{w:"für",de:"„danken für + Akkusativ“ – feste Präposition.",vi:"„danken für“ (cảm ơn vì) — giới từ cố định."}
+]},
+
+{an:"—", betreff:"Terminverschiebung beim Arzt", 
+body:"Guten Tag,\n\nich habe {1} Dienstag um 9 Uhr einen Termin bei Ihnen. Leider {2} ich an diesem Tag arbeiten und kann nicht kommen. Könnten Sie mir bitte einen anderen Termin {3} nächste Woche geben? Am liebsten {4} ich vormittags, da ich nachmittags in der Werkstatt {5} muss.\n\nVielen Dank!",
+blanks:[
+{w:"am",de:"„am Dienstag“ = an + dem Dienstag, Zeitangabe mit Wochentag.",vi:"„am“ = an + dem, dùng trước thứ trong tuần."},
+{w:"muss",de:"Modalverb „müssen“, Präsens: ich muss arbeiten.",vi:"Động từ khiếm khuyết „müssen“ (phải), thì hiện tại."},
+{w:"für",de:"„einen Termin für nächste Woche geben“ – Präposition „für“ + Zeitangabe.",vi:"„für“ + mốc thời gian, chỉ thời điểm dự kiến."},
+{w:"hätte",de:"Konjunktiv II von „haben“ für eine höfliche Präferenz: „am liebsten hätte ich…“.",vi:"Konjunktiv II của „haben“ để diễn đạt sự ưu tiên một cách lịch sự."},
+{w:"arbeiten",de:"Infinitiv nach Modalverb „muss“, am Satzende.",vi:"Dạng nguyên mẫu sau động từ khiếm khuyết „muss“, đứng cuối câu."}
+]},
+
+{an:"—", betreff:"Glückwunsch zur bestandenen Prüfung",
+body:"Liebe Hoa,\n\nherzlichen Glückwunsch {1} deiner bestandenen Prüfung! Ich weiß, wie viel du {2} das Bestehen gelernt hast. Du hast es dir wirklich {3}. Lass uns {4} feiern, wenn du Zeit hast. Ich bin sehr {5} auf dich!\n\nLiebe Grüße\nMai",
+blanks:[
+{w:"zu",de:"„jemandem zu etwas gratulieren“ – feste Präposition „zu“.",vi:"„zu etwas gratulieren“ (chúc mừng về việc gì) — giới từ cố định „zu“."},
+{w:"für",de:"„für das Bestehen lernen“ – Präposition „für“ (Zweck).",vi:"„für“ chỉ mục đích của việc học."},
+{w:"verdient",de:"Feste Wendung: „sich etwas verdient haben“ = etwas zu Recht bekommen.",vi:"Cụm cố định „sich etwas verdient haben“ (xứng đáng có được điều gì)."},
+{w:"zusammen",de:"Adverb: gemeinsam, miteinander.",vi:"Trạng từ „zusammen“ (cùng nhau)."},
+{w:"stolz",de:"„stolz sein auf + Akkusativ“ – hier: stolz auf dich.",vi:"„stolz sein auf“ (tự hào về) — ở đây: tự hào về bạn."}
+]},
+
+{an:"Frau Al-Amin", betreff:"Bitte um Urlaub",
+body:"Sehr geehrte Frau Al-Amin,\n\nich möchte Sie {1} bitten, mir vom 3. bis 10. August Urlaub {2} genehmigen. In dieser Zeit findet die Hochzeit meiner Schwester {3} Vietnam statt. Meine Aufgaben habe ich bereits {4} meinen Kollegen Herrn Park übergeben. Ich bedanke mich {5} Ihr Verständnis.",
+blanks:[
+{w:"hiermit",de:"Formelle Wendung: „hiermit bitten“ = mit diesem Schreiben bitten.",vi:"Cụm trang trọng „hiermit“ (bằng thư này) — hay dùng trong văn bản chính thức."},
+{w:"zu",de:"„jemandem etwas genehmigen“ nach „bitten“ steht mit „zu + Infinitiv“.",vi:"Sau „bitten“ là cấu trúc „zu + động từ nguyên mẫu“."},
+{w:"in",de:"„in Vietnam“ – Präposition „in“ + Land (ohne Artikel).",vi:"„in“ + tên quốc gia (không có mạo từ)."},
+{w:"an",de:"„etwas an jemanden übergeben“ – feste Präposition „an“.",vi:"„an jemanden übergeben“ (bàn giao cho ai) — giới từ cố định „an“."},
+{w:"für",de:"„sich bedanken für + Akkusativ“ – feste Präposition.",vi:"„sich bedanken für“ (cảm ơn vì) — giới từ cố định."}
+]},
+
+{an:"—", betreff:"Info zum Umzug", 
+body:"Liebe Nachbarn,\n\nwie Sie vielleicht schon {1} haben, ziehen wir am 1. Juli aus. Der Umzugswagen {2} gegen 8 Uhr morgens vor dem Haus stehen. Es {3} sicher etwas lauter sein als sonst. Wir {4} uns schon jetzt für die Unannehmlichkeiten und wünschen Ihnen alles Gute {5} die Zukunft.",
+blanks:[
+{w:"bemerkt",de:"Partizip II von „bemerken“ nach Perfekt-Hilfsverb „haben“.",vi:"Partizip II của „bemerken“ (nhận thấy), dùng với „haben“ trong thì hoàn thành."},
+{w:"wird",de:"Futur I (werden + Infinitiv) für eine Vorhersage: der Wagen wird stehen.",vi:"Thì tương lai (werden + động từ nguyên mẫu) để dự đoán."},
+{w:"wird",de:"Futur I für eine Vermutung über die Zukunft: es wird lauter sein.",vi:"Thì tương lai để phỏng đoán."},
+{w:"entschuldigen",de:"„sich entschuldigen für + Akkusativ“ – Präsens 1. Person Plural.",vi:"„sich entschuldigen für“ (xin lỗi vì) — thì hiện tại, ngôi „chúng tôi“."},
+{w:"für",de:"„alles Gute für die Zukunft wünschen“ – feste Präposition „für“.",vi:"„für die Zukunft“ (cho tương lai) — cụm cố định."}
+]},
+
+{an:"—", betreff:"Kurze Frage im Sprachkurs",
+body:"Hallo Frau Braun,\n\nich habe eine kurze Frage {1} unserer Deutschprüfung nächste Woche. {2} welchen Themen sollen wir uns besonders vorbereiten? Außerdem wollte ich fragen, ob wir ein Wörterbuch {3} dürfen. Vielen Dank {4} Ihre Hilfe, Sie unterstützen uns wirklich {5}.",
+blanks:[
+{w:"zu",de:"„eine Frage zu etwas haben“ – feste Präposition „zu“.",vi:"„eine Frage zu etwas haben“ — giới từ cố định „zu“."},
+{w:"Auf",de:"„sich auf etwas vorbereiten“ – Frageform: „Auf welche Themen…?“",vi:"Dạng câu hỏi của „sich auf etwas vorbereiten“."},
+{w:"benutzen",de:"Infinitiv nach Modalverb „dürfen“ am Satzende.",vi:"Dạng nguyên mẫu sau động từ khiếm khuyết „dürfen“."},
+{w:"für",de:"„danken für + Akkusativ“ – feste Präposition.",vi:"„danken für“ (cảm ơn vì) — giới từ cố định."},
+{w:"sehr",de:"Adverb zur Verstärkung: sehr = in hohem Maße.",vi:"Trạng từ nhấn mạnh „sehr“ (rất)."}
+]},
+
+{an:"—", betreff:"Dank an den Deutschlehrer",
+body:"Lieber Herr Fischer,\n\nich möchte mich bei Ihnen {1} bedanken. Dank Ihres Unterrichts {2} ich mich jetzt viel sicherer auf Deutsch unterhalten. Sie haben immer geduldig {3} erklärt, wenn ich etwas nicht verstanden habe. Ich freue mich schon {4}, im nächsten Kurs weiterzulernen, {5} ich noch besser werde.\n\nHerzliche Grüße\nAnh",
+blanks:[
+{w:"herzlich",de:"Adverb zur Verstärkung des Dankes: herzlich bedanken.",vi:"Trạng từ nhấn mạnh lời cảm ơn: „herzlich bedanken“."},
+{w:"kann",de:"Modalverb „können“, Präsens: ich kann mich unterhalten.",vi:"Động từ khiếm khuyết „können“, thì hiện tại."},
+{w:"alles",de:"Pronomen „alles“ als Objekt des Verbs „erklären“.",vi:"Đại từ „alles“ (mọi thứ) làm tân ngữ của „erklären“."},
+{w:"darauf",de:"„sich freuen auf etwas“ – Vorverweis vor zu-Infinitiv: darauf, weiterzulernen.",vi:"„sich freuen auf“ báo trước cụm zu-Infinitiv."},
+{w:"damit",de:"Konnektor für den Zweck: damit + Nebensatz.",vi:"„damit“ diễn tả mục đích, theo sau là mệnh đề phụ."}
+]},
+
+{an:"—", betreff:"Frage zum Praktikumsplatz",
+body:"Hallo Frau Petrova,\n\nich interessiere mich sehr {1} den Praktikumsplatz in Ihrer Firma. Könnten Sie mir bitte sagen, {2} viele Stunden ich pro Woche arbeiten würde? Außerdem möchte ich wissen, {3} ich mit öffentlichen Verkehrsmitteln zur Firma komme. Ich freue mich {4} Ihre Antwort und bedanke mich {5} Ihre Zeit.",
+blanks:[
+{w:"für",de:"„sich interessieren für + Akkusativ“ – feste Präposition.",vi:"„sich interessieren für“ (quan tâm đến) — giới từ cố định."},
+{w:"wie",de:"Fragewort für die Menge/Anzahl: wie viele Stunden.",vi:"Từ hỏi về số lượng: „wie viele“."},
+{w:"ob",de:"Konjunktion für eine indirekte Ja/Nein-Frage.",vi:"Liên từ dùng cho câu hỏi gián tiếp dạng có/không."},
+{w:"auf",de:"„sich freuen auf + Akkusativ“ – für zukünftige Ereignisse.",vi:"„sich freuen auf“ dùng cho việc trong tương lai."},
+{w:"für",de:"„sich bedanken für + Akkusativ“ – feste Präposition.",vi:"„sich bedanken für“ — giới từ cố định."}
+]}
+,
+
+{an:"—", betreff:"Ein Wochenende in den Bergen",
+body:"Am Wochenende {1} Julia und ihr Freund in die Berge gefahren. Sie {2} am Samstagmorgen früh aufgestanden, {3} der Wetterbericht für den Nachmittag Regen angekündigt hatte. Nach einer langen Wanderung {4} sie in einer kleinen Hütte übernachtet. Am nächsten Morgen {5} sie leider schon wieder zurückfahren, denn Julia hatte am Montag einen wichtigen Termin.",
+blanks:[
+{w:"sind",de:"Hilfsverb Perfekt (sein) — Perfekt mit sein: sind … gefahren (Bewegungsverb)."},
+{w:"sind",de:"Hilfsverb Perfekt (sein) — Perfekt mit sein: sind … aufgestanden."},
+{w:"weil",de:"Konjunktion (Nebensatz) — Kausalsatz mit weil — Verb steht am Satzende (angekündigt hatte)."},
+{w:"haben",de:"Hilfsverb Perfekt (haben) — Perfekt mit haben: haben … übernachtet."},
+{w:"mussten",de:"Modalverb, Präteritum — mussten + Infinitiv (zurückfahren) — Modalverb im Präteritum."}
+]},
+
+{an:"—", betreff:"Meine neue Wohnung",
+body:"Seit letztem Monat wohne ich in einer neuen Wohnung {1} der Stadtmitte. Die Wohnung ist klein, aber ich brauche nicht viel Platz. Am meisten freue ich mich {2} den Balkon, {3} dem ich morgens meinen Kaffee trinke. Leider {4} ich noch keinen Schrank für die Küche finden, {5} wirklich passt.",
+blanks:[
+{w:"in",de:"Präposition + Dativ — in der Stadtmitte — feste Ortsangabe mit Dativ."},
+{w:"über",de:"feste Präposition — sich freuen über + Akk."},
+{w:"auf",de:"Relativpronomen mit Präposition — auf dem Balkon → im Relativsatz: auf dem ich … trinke."},
+{w:"kann",de:"Modalverb, Präsens — kann + Infinitiv (finden)."},
+{w:"der",de:"Relativpronomen, Nom. Maskulin — ein Schrank, der wirklich passt (Nominativ, Maskulin)."}
+]},
+
+{an:"—", betreff:"Der erste Arbeitstag",
+body:"Heute war mein erster Arbeitstag in der neuen Firma. Ich {1} mich sehr {2} den Tag gefreut, aber auch ein bisschen nervös. Mein Chef hat mir zuerst das Büro gezeigt und mich {3} anderen Kolleg*innen vorgestellt. Am Mittag {4} wir zusammen essen gegangen, {5} ich alle besser kennenlernen konnte.",
+blanks:[
+{w:"habe",de:"Hilfsverb Perfekt (haben) — habe mich … gefreut (Perfekt, reflexiv)."},
+{w:"auf",de:"feste Präposition — sich freuen auf + Akk. (Zukünftiges)."},
+{w:"den",de:"Dativ Plural (vorstellen + Dat.) — jemanden(Akk) den Kolleg*innen(Dat) vorstellen."},
+{w:"sind",de:"Hilfsverb Perfekt (sein) — sind … gegangen (Bewegungsverb)."},
+{w:"damit",de:"Konjunktion (Finalsatz) — damit + Nebensatz = Zweck/Absicht."}
+]},
+
+{an:"—", betreff:"Ein Telefonat mit dem Kundenservice",
+body:"Gestern habe ich {1} Kundenservice angerufen, {2} meine Internetverbindung seit Tagen nicht funktioniert hat. Die Mitarbeiterin war sehr freundlich und hat mir sofort geholfen. Sie hat gesagt, {3} ein Techniker am nächsten Tag vorbeikommen {4}. Ich {5} jetzt nur noch zu Hause bleiben und auf ihn warten.",
+blanks:[
+{w:"beim",de:"Präposition + Dativ (Kontraktion) — bei + dem = beim — anrufen bei + Dat."},
+{w:"weil",de:"Konjunktion (Nebensatz) — Kausalsatz mit weil."},
+{w:"dass",de:"Konjunktion (dass-Satz) — sagen, dass … — indirekte Aussage."},
+{w:"wird",de:"Hilfsverb Futur I — wird … vorbeikommen (Futur I)."},
+{w:"muss",de:"Modalverb, Präsens — muss + Infinitiv (bleiben, warten)."}
+]},
+
+{an:"—", betreff:"Urlaubsplanung per E-Mail",
+body:"Liebe Anna, wir planen gerade unseren Sommerurlaub {1} der Ostsee. Vielleicht möchtest du {2} uns kommen? Wir fahren {3} dem Auto und suchen noch eine Ferienwohnung {4} vier Personen. Schreib mir bitte bald, {5} du Zeit hast, damit wir alles rechtzeitig buchen können.",
+blanks:[
+{w:"an",de:"Präposition + Dativ (Ort) — an der Ostsee — feste geografische Präposition."},
+{w:"mit",de:"Präposition + Dativ — mit uns kommen = mitkommen."},
+{w:"mit",de:"Präposition + Dativ (Verkehrsmittel) — mit dem Auto fahren."},
+{w:"für",de:"Präposition + Akkusativ — für vier Personen."},
+{w:"ob",de:"Konjunktion (indirekte Frage) — indirekte Ja/Nein-Frage mit ob."}
+]}
+,
+
+{type:"dialog", an:"—", betreff:"Gespräch beim Bäcker",
+body:"Verkäuferin: Guten Morgen! Was {1} ich für Sie tun?\nKunde: Guten Morgen, ich hätte gern zwei Brötchen und ein Vollkornbrot.\nVerkäuferin: Gerne. Möchten Sie sonst noch {2}?\nKunde: Ja, haben Sie auch frischen Kuchen?\nVerkäuferin: Leider ist der Apfelkuchen schon {3}. Aber der Käsekuchen ist noch da.\nKunde: Dann nehme ich ein Stück {4} Kuchen.\nVerkäuferin: Das macht zusammen sieben Euro fünfzig.\nKunde: Hier, bitte. Und einen schönen Tag {5}!",
+blanks:[
+{w:"kann",de:"„können“ Präsens 1. Person Singular: höfliche Frage „Was kann ich für Sie tun?“"},
+{w:"etwas",de:"Indefinitpronomen nach „sonst“: sonst noch etwas."},
+{w:"ausverkauft",de:"Adjektiv/Partizip: schon ausverkauft = nicht mehr vorhanden."},
+{w:"vom",de:"„vom Kuchen“ = von + dem, Wechselpräposition mit Dativ."},
+{w:"noch",de:"Adverb in der Abschiedsfloskel: einen schönen Tag noch."}
+]},
+
+{type:"tagebuch", an:"—", betreff:"Mein erster Tag in der Werkstatt",
+body:"Liebes Tagebuch,\n\nheute war mein erster Tag als Azubi. Ich {1} sehr früh aufgestanden, weil ich pünktlich sein wollte. Mein Chef hat mich den Kollegen {2} und mir den Arbeitsplatz gezeigt. Zuerst {3} ich ein bisschen nervös, aber alle waren sehr freundlich. Am Nachmittag {4} ich zum ersten Mal an einem Auto arbeiten. Ich freue mich schon {5} morgen!",
+blanks:[
+{w:"bin",de:"Perfekt von „aufstehen“ (Bewegungsverb, Hilfsverb sein): bin aufgestanden."},
+{w:"vorgestellt",de:"Partizip II von „vorstellen“: hat mich vorgestellt."},
+{w:"war",de:"Präteritum von „sein“: ich war nervös."},
+{w:"durfte",de:"Präteritum von „dürfen“ (Erlaubnis): ich durfte arbeiten."},
+{w:"auf",de:"„sich freuen auf + Akkusativ“ – feste Präposition."}
+]},
+
+{type:"anzeige", an:"—", betreff:"Wohnung zu vermieten",
+body:"Schöne 2-Zimmer-Wohnung {1} vermieten!\n\nDie Wohnung liegt zentral und ist gut {2} Bus und Bahn zu erreichen. Sie hat einen Balkon und eine neue Küche. Die Miete {3} 650 Euro kalt {4} Monat. Haustiere sind leider {5} erlaubt. Bei Interesse bitte per E-Mail melden.",
+blanks:[
+{w:"zu",de:"„zu vermieten“ – zu + Infinitiv, typische Anzeigen-Formel."},
+{w:"mit",de:"„mit dem Bus erreichen“ – Präposition „mit“ für Verkehrsmittel."},
+{w:"beträgt",de:"„betragen“ Präsens: die Miete beträgt (formelle Angabe eines Betrags)."},
+{w:"pro",de:"„pro Monat“ = für jeden Monat, feste Wendung."},
+{w:"nicht",de:"Verneinung: Haustiere sind leider nicht erlaubt."}
+]}
+],
+
+2:[
+{an:"Hausverwaltung Meier GmbH", betreff:"Beschwerde wegen defekter Heizung",
+body:"Sehr geehrte Damen und Herren,\n\nseit letzter Woche {1} die Heizung in meiner Wohnung nicht mehr richtig. Obwohl ich den Thermostat {2} aufdrehe, bleibt es kalt. Ich habe bereits {3} Hausmeister gesprochen, aber das Problem besteht {4}. Ich bitte Sie, sich {5} dieser Angelegenheit zu kümmern, bevor die Temperaturen weiter sinken.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"funktioniert",de:"Präsens von „funktionieren“ mit Verneinung „nicht mehr“.",vi:"Thì hiện tại của „funktionieren“ (hoạt động), kèm phủ định „không còn“."},
+{w:"voll",de:"Adverb, das die Handlung verstärkt: voll aufdrehen = ganz aufdrehen.",vi:"Trạng từ nhấn mạnh hành động: „voll aufdrehen“ (vặn hết cỡ)."},
+{w:"mit",de:"„mit jemandem sprechen“ – feste Präposition.",vi:"„mit jemandem sprechen“ (nói chuyện với ai) — giới từ cố định."},
+{w:"weiterhin",de:"Adverb: das Problem besteht weiterhin = es ist immer noch da.",vi:"Trạng từ „weiterhin“ (vẫn tiếp tục), diễn tả vấn đề chưa được giải quyết."},
+{w:"um",de:"„sich kümmern um + Akkusativ“ – feste Präposition.",vi:"„sich kümmern um“ (lo liệu về) — giới từ cố định."}
+]},
+
+{an:"Fitness24 GmbH", betreff:"Kündigung der Mitgliedschaft",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit kündige ich {1} Mitgliedschaft (Vertragsnummer 44821) fristgerecht {2} nächstmöglichen Zeitpunkt. Der Grund ist, dass ich {3} kurzem in eine andere Stadt gezogen bin und das Studio nicht mehr {4} kann. Bitte {5} Sie mir den Erhalt dieser Kündigung schriftlich.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"meine",de:"Possessivpronomen Akkusativ Femininum: meine Mitgliedschaft.",vi:"Đại từ sở hữu, cách Akkusativ, giống cái: „meine“."},
+{w:"zum",de:"„zum nächstmöglichen Zeitpunkt“ = zu + dem, feste Wendung bei Kündigungen.",vi:"Cụm cố định „zum nächstmöglichen Zeitpunkt“ (vào thời điểm sớm nhất có thể) — hay dùng trong thư hủy hợp đồng."},
+{w:"vor",de:"„vor kurzem“ = kürzlich, feste Zeitangabe.",vi:"„vor kurzem“ (gần đây, mới đây) — cụm chỉ thời gian cố định."},
+{w:"nutzen",de:"Infinitiv nach Modalverb „kann“ am Satzende.",vi:"Dạng nguyên mẫu sau động từ khiếm khuyết „kann“."},
+{w:"bestätigen",de:"Infinitiv nach Modalverb „bitte…Sie“ (Imperativ + Infinitiv-Ergänzung).",vi:"Dạng nguyên mẫu, theo sau lời yêu cầu lịch sự."}
+]},
+
+{an:"VHS Sprachzentrum", betreff:"Anfrage zum B2-Deutschkurs",
+body:"Sehr geehrte Damen und Herren,\n\nich habe {1} Ihrer Website Informationen zum B2-Kurs gefunden, hätte aber noch {2} Fragen. Wie viele Teilnehmer sind {3} einem Kurs? Und findet der Unterricht online {4} in Präsenz statt? Nachdem ich meinen B1-Kurs {5} abgeschlossen hatte, möchte ich gerne direkt weitermachen.\n\nVielen Dank im Voraus.",
+blanks:[
+{w:"auf",de:"„auf der Website finden“ – feste Präposition „auf“.",vi:"„auf der Website“ (trên trang web) — giới từ cố định."},
+{w:"ein paar",de:"Unbestimmte Mengenangabe: ein paar Fragen = einige Fragen.",vi:"Cụm chỉ số lượng không xác định: „ein paar“ (vài)."},
+{w:"in",de:"„in einem Kurs sein“ – Präposition „in“ für die Gruppe/Klasse.",vi:"„in einem Kurs“ (trong một lớp) — giới từ chỉ nhóm/lớp."},
+{w:"oder",de:"Konnektor für eine Alternative: online oder in Präsenz.",vi:"Liên từ chỉ sự lựa chọn: „oder“ (hoặc)."},
+{w:"erfolgreich",de:"Adjektiv/Adverb: erfolgreich abschließen = mit Erfolg beenden.",vi:"Tính từ/trạng từ „erfolgreich“ (thành công), bổ nghĩa cho „abschließen“."}
+]},
+
+{an:"—", betreff:"Entschuldigung wegen verpasstem Termin",
+body:"Sehr geehrter Herr Doktor,\n\nich möchte mich {1} entschuldigen, dass ich meinen Termin am Montag verpasst habe. Ich {2} an diesem Tag einen Autounfall auf dem Weg zur Praxis {3}, weshalb ich es leider nicht {4} geschafft habe, rechtzeitig abzusagen. Ich bitte Sie {5} einen neuen Termin.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"herzlich",de:"Adverb zur Verstärkung: sich herzlich entschuldigen.",vi:"Trạng từ nhấn mạnh: „sich herzlich entschuldigen“ (thành thật xin lỗi)."},
+{w:"hatte",de:"Präteritum von „haben“ – für einen abgeschlossenen Vorfall in der Vergangenheit.",vi:"Thì quá khứ đơn của „haben“, diễn tả sự việc đã xảy ra."},
+{w:"gehabt",de:"Partizip II von „haben“ nach Präteritum-Hilfsverb (Plusquamperfekt: hatte...gehabt = ich hatte einen Unfall).",vi:"Partizip II của „haben“, kết hợp thành thì quá khứ hoàn thành."},
+{w:"rechtzeitig",de:"Adverb: rechtzeitig = zur richtigen Zeit.",vi:"Trạng từ „rechtzeitig“ (kịp thời)."},
+{w:"um",de:"„jemanden um etwas bitten“ – feste Präposition „um“.",vi:"„jemanden um etwas bitten“ (xin ai điều gì) — giới từ cố định."}
+]},
+
+{an:"Ausbildungsleitung", betreff:"Bewerbung um einen Ausbildungsplatz",
+body:"Sehr geehrte Frau Direktor,\n\nmit großem Interesse habe ich {1} Anzeige für einen Ausbildungsplatz als Mechatroniker gelesen. Ich {2} zurzeit die zehnte Klasse und werde im Sommer meinen Realschulabschluss {3}. Während meines Praktikums {4} letztem Jahr habe ich bereits erste Erfahrungen in einer Werkstatt {5}.\n\nÜber die Einladung zu einem Vorstellungsgespräch würde ich mich sehr freuen.",
+blanks:[
+{w:"Ihre",de:"Possessivpronomen Akkusativ Femininum: Ihre Anzeige.",vi:"Đại từ sở hữu lịch sự, cách Akkusativ: „Ihre“."},
+{w:"besuche",de:"Präsens von „besuchen“: ich besuche die zehnte Klasse.",vi:"Thì hiện tại của „besuchen“ (đang học lớp)."},
+{w:"machen",de:"Infinitiv nach Futur-Hilfsverb „werde“: werde machen.",vi:"Dạng nguyên mẫu sau trợ động từ tương lai „werde“."},
+{w:"in",de:"„in letztem Jahr“ = im letzten Jahr, Zeitangabe.",vi:"„in letztem Jahr“ (năm ngoái) — cụm chỉ thời gian."},
+{w:"gesammelt",de:"Partizip II von „sammeln“ nach Perfekt-Hilfsverb „habe“: Erfahrungen gesammelt.",vi:"Partizip II của „sammeln“ (tích lũy), dùng với „habe“ trong thì hoàn thành."}
+]},
+
+{an:"Elektro-Schmidt GmbH", betreff:"Reklamation eines defekten Geräts",
+body:"Sehr geehrte Damen und Herren,\n\nich habe {1} 20. Mai bei Ihnen eine Waschmaschine gekauft. Nachdem ich das Gerät nur dreimal {2} hatte, funktionierte es nicht mehr. Ich bitte Sie höflich, das Gerät {3} zu reparieren {4} auszutauschen. Den Kaufbeleg habe ich dieser E-Mail {5} beigefügt.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"am",de:"„am 20. Mai“ = an + dem, Zeitangabe mit Datum.",vi:"„am“ + ngày cụ thể, dùng cho ngày tháng."},
+{w:"benutzt",de:"Partizip II von „benutzen“ im Plusquamperfekt (nachdem-Satz): ich benutzt hatte.",vi:"Partizip II của „benutzen“ (sử dụng), trong thì quá khứ hoàn thành sau „nachdem“."},
+{w:"entweder",de:"Konnektor „entweder…oder“ für zwei Alternativen.",vi:"Liên từ „entweder…oder“ (hoặc…hoặc)."},
+{w:"oder",de:"Zweiter Teil des Konnektors „entweder…oder“.",vi:"Phần thứ hai của liên từ „entweder…oder“."},
+{w:"zur",de:"„etwas zur E-Mail beifügen“ = zu + der, feste Präposition bei Anhängen.",vi:"„zur“ = zu + der, dùng khi đính kèm tài liệu."}
+]},
+
+{an:"Firma Bauer & Söhne", betreff:"Anfrage für ein Schülerpraktikum",
+body:"Sehr geehrte Damen und Herren,\n\nich besuche {1} zehnte Klasse der Realschule und interessiere mich {2} den Beruf des Elektrikers. Deshalb möchte ich gerne wissen, {3} ich bei Ihnen ein zweiwöchiges Praktikum machen kann. Ich bin sehr motiviert und {4} bereit, auch handwerkliche Aufgaben zu übernehmen. {5} eine Rückmeldung würde ich mich sehr freuen.",
+blanks:[
+{w:"die",de:"Bestimmter Artikel Akkusativ Femininum: die zehnte Klasse.",vi:"Mạo từ xác định, cách Akkusativ, giống cái: „die“."},
+{w:"für",de:"„sich interessieren für + Akkusativ“ – feste Präposition.",vi:"„sich interessieren für“ — giới từ cố định."},
+{w:"ob",de:"Konjunktion für eine indirekte Ja/Nein-Frage.",vi:"Liên từ dùng cho câu hỏi gián tiếp có/không."},
+{w:"gerne",de:"Adverb der Bereitschaft: gerne bereit sein = mit Freude bereit sein.",vi:"Trạng từ diễn tả sự sẵn lòng: „gerne bereit sein“."},
+{w:"Über",de:"„sich über etwas freuen“ – hier am Satzanfang vorangestellt.",vi:"„sich über etwas freuen“, đặt „Über“ ở đầu câu để nhấn mạnh."}
+]},
+
+{an:"Herrn Özdemir", betreff:"Bestätigung eines Behördentermins",
+body:"Sehr geehrter Herr Özdemir,\n\nhiermit bestätigen wir Ihren Termin {1} 14. Juni um 10 Uhr {2} Ausländeramt. Bitte bringen Sie {3} Ihren Reisepass sowie eine aktuelle Meldebescheinigung mit. Sollten Sie {4} diesem Termin verhindert sein, bitten wir Sie, sich rechtzeitig {5} melden.",
+blanks:[
+{w:"am",de:"„am 14. Juni“ – Zeitangabe mit Datum.",vi:"„am“ + ngày tháng cụ thể."},
+{w:"im",de:"„im Ausländeramt“ = in + dem, Ort der Behörde.",vi:"„im“ = in + dem, chỉ nơi chốn (cơ quan)."},
+{w:"bitte",de:"Höflichkeitspartikel, hier zur Betonung der Bitte wiederholt.",vi:"Từ nhấn mạnh phép lịch sự „bitte“ (làm ơn)."},
+{w:"an",de:"„an diesem Termin verhindert sein“ – feste Präposition „an“.",vi:"„an diesem Termin verhindert sein“ (bận vào ngày hẹn này) — giới từ cố định."},
+{w:"zu",de:"„sich zu melden“ – Infinitiv mit „zu“ nach „bitten“.",vi:"Dạng „zu + động từ nguyên mẫu“ sau „bitten“."}
+]},
+
+{an:"Projektteam", betreff:"Update zum aktuellen Projekt",
+body:"Liebes Team,\n\nich möchte euch kurz {1} den aktuellen Stand informieren. Nachdem wir letzte Woche {2} Problem mit der Lieferung hatten, konnten wir es inzwischen lösen. Die neuen Teile {3} nächsten Montag geliefert. Bitte {4} bis dahin die Zwischenberichte fertig, {5} wir am Dienstag alles besprechen können.",
+blanks:[
+{w:"über",de:"„jemanden über etwas informieren“ – feste Präposition „über“.",vi:"„jemanden über etwas informieren“ (thông báo cho ai về việc gì) — giới từ cố định."},
+{w:"ein",de:"Unbestimmter Artikel Akkusativ Neutrum: ein Problem.",vi:"Mạo từ không xác định, cách Akkusativ, giống trung: „ein“."},
+{w:"werden",de:"Passiv Präsens: werden + Partizip II (geliefert) für zukünftige Handlung.",vi:"Thể bị động thì hiện tại: werden + Partizip II, mang nghĩa tương lai."},
+{w:"macht",de:"Imperativ höflich/Aufforderung im Plural: macht die Berichte fertig.",vi:"Câu mệnh lệnh số nhiều: „macht fertig“ (hãy hoàn thành)."},
+{w:"damit",de:"Konnektor für den Zweck: damit + Nebensatz.",vi:"„damit“ diễn tả mục đích."}
+]},
+
+{an:"—", betreff:"Beschwerde wegen Lärmbelästigung",
+body:"Sehr geehrter Herr Nachbar,\n\nleider muss ich mich {1} den Baulärm beschweren, der seit einer Woche jeden Morgen {2} sechs Uhr beginnt. Ich verstehe, dass Renovierungen manchmal nötig sind, {3} die frühe Uhrzeit stört doch sehr. Könnten Sie die Arbeiten vielleicht erst {4} acht Uhr beginnen lassen? Ich wäre Ihnen sehr {5}.",
+blanks:[
+{w:"über",de:"„sich über etwas beschweren“ – feste Präposition „über“.",vi:"„sich über etwas beschweren“ (phàn nàn về) — giới từ cố định."},
+{w:"um",de:"„um sechs Uhr“ – Präposition für die Uhrzeit.",vi:"„um“ + giờ cụ thể."},
+{w:"aber",de:"Konnektor für einen Gegensatz: aber = jedoch.",vi:"Liên từ chỉ sự tương phản: „aber“ (nhưng)."},
+{w:"ab",de:"„ab acht Uhr“ = von acht Uhr an, Zeitpunkt des Beginns.",vi:"„ab“ (từ … trở đi) — chỉ thời điểm bắt đầu."},
+{w:"dankbar",de:"Adjektiv nach „sein“, kombiniert mit Konjunktiv II „wäre“ für Höflichkeit.",vi:"Tính từ „dankbar“ (biết ơn), kết hợp Konjunktiv II để diễn đạt lịch sự."}
+]},
+
+{an:"Kindertagesstätte Sonnenschein", betreff:"Anfrage nach einem freien Platz",
+body:"Sehr geehrte Frau Kraus,\n\nwir suchen {1} einen Betreuungsplatz für unsere Tochter, die im September zwei Jahre alt {2}. Auf Ihrer Warteliste stehen wir bereits {3} einem Jahr. Könnten Sie uns bitte mitteilen, {4} wir mit einem freien Platz rechnen können? Wir sind auch {5} eine Teilzeitbetreuung offen.",
+blanks:[
+{w:"nach",de:"„suchen nach + Dativ“ – feste Präposition.",vi:"„suchen nach“ (tìm kiếm) — giới từ cố định."},
+{w:"wird",de:"Präsens von „werden“ (zwei Jahre alt werden), Zukunftsbedeutung durch Zeitangabe.",vi:"Thì hiện tại của „werden“, mang nghĩa tương lai nhờ mốc thời gian."},
+{w:"seit",de:"„seit einem Jahr“ – Präposition für eine andauernde Zeitspanne.",vi:"„seit“ (từ … đến nay) — chỉ khoảng thời gian kéo dài."},
+{w:"wann",de:"Fragewort für den Zeitpunkt: wann können wir rechnen.",vi:"Từ hỏi về thời điểm: „wann“ (khi nào)."},
+{w:"für",de:"„offen sein für + Akkusativ“ – feste Präposition.",vi:"„offen sein für“ (cởi mở với) — giới từ cố định."}
+]},
+
+{an:"—", betreff:"Wechsel der Krankenkasse",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit möchte ich {1} die AOK wechseln, {2} ich mit dem Service meiner bisherigen Kasse unzufrieden bin. Meine aktuelle Mitgliedschaft läuft {3} Ende des Monats. Ich bitte Sie, mir alle nötigen Unterlagen {4} den Wechsel zuzusenden. Über eine schnelle Bearbeitung würde ich mich {5} freuen.",
+blanks:[
+{w:"zu",de:"„zu einer Kasse wechseln“ – feste Präposition „zu“.",vi:"„zu etwas wechseln“ (chuyển sang) — giới từ cố định."},
+{w:"da",de:"Konnektor für den Grund (schriftlich, formeller als „weil“): da = weil.",vi:"Liên từ chỉ lý do, trang trọng hơn „weil“: „da“."},
+{w:"zum",de:"„zum Ende des Monats“ = zu + dem, Zeitangabe.",vi:"„zum“ = zu + dem, chỉ thời điểm kết thúc."},
+{w:"für",de:"„Unterlagen für etwas“ – Präposition „für“ (Zweck).",vi:"„für“ chỉ mục đích của giấy tờ."},
+{w:"sehr",de:"Adverb zur Verstärkung: sich sehr freuen.",vi:"Trạng từ nhấn mạnh: „sich sehr freuen“."}
+]},
+
+{an:"—", betreff:"Feedback nach dem Vorstellungsgespräch",
+body:"Sehr geehrter Herr Ali,\n\nvielen Dank, dass Sie sich {1} Zeit für das Gespräch am Dienstag genommen haben. Es hat mir {2} Freude gemacht, mehr {3} die Firma und Ihre Arbeitsweise zu erfahren. Sollten Sie {4} weitere Informationen benötigen, stehe ich Ihnen gerne {5} Verfügung.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"die",de:"Bestimmter Artikel Akkusativ Femininum: die Zeit.",vi:"Mạo từ xác định, cách Akkusativ, giống cái: „die“."},
+{w:"große",de:"Adjektiv mit Deklination nach „mir“ (Dativ) + Akkusativ „Freude“: große Freude.",vi:"Tính từ „groß“ chia theo cách Akkusativ: „große Freude“ (niềm vui lớn)."},
+{w:"über",de:"„mehr über etwas erfahren“ – feste Präposition „über“.",vi:"„über etwas erfahren“ (tìm hiểu về) — giới từ cố định."},
+{w:"noch",de:"Adverb: noch weitere Informationen = zusätzliche Informationen.",vi:"Trạng từ „noch“ (thêm nữa)."},
+{w:"zur",de:"„zur Verfügung stehen“ = zu + der, feste Wendung.",vi:"Cụm cố định „zur Verfügung stehen“ (sẵn sàng phục vụ)."}
+]}
+,
+
+{an:"—", betreff:"Ein Umzug in eine andere Stadt",
+body:"Nachdem Lisa {1} Studium beendet hatte, ist sie in eine andere Stadt gezogen. {2} sie dort niemanden kannte, hat sie sich schnell eingelebt. Die neue Wohnung ist {3} als die alte, aber auch teurer. Am Anfang war es nicht leicht, {4} an die neue Umgebung zu gewöhnen. Inzwischen fühlt sie {5} aber richtig wohl.",
+blanks:[
+{w:"ihr",de:"Possessivpronomen, Akk. Neutrum — ihr Studium (Akkusativ, Neutrum)."},
+{w:"Obwohl",de:"Konjunktion (Konzessivsatz) — Obwohl … — Gegensatz trotz Umstand."},
+{w:"größer",de:"Komparativ (Adjektiv) — groß → größer als."},
+{w:"sich",de:"Reflexivpronomen — sich gewöhnen an + Akk."},
+{w:"sich",de:"Reflexivpronomen — sich wohlfühlen (reflexiv)."}
+]},
+
+{an:"—", betreff:"Nachhaltiger einkaufen",
+body:"Immer mehr Menschen achten heute {1}, nachhaltiger einzukaufen. {2} früher Plastiktüten selbstverständlich waren, bringen viele Kund*innen jetzt eigene Taschen mit. In vielen Supermärkten {3} inzwischen auch unverpackte Produkte angeboten. Wer bewusst einkauft, {4} damit nicht nur der Umwelt helfen, sondern spart {5} auch noch Geld.",
+blanks:[
+{w:"darauf",de:"Pronominaladverb (achten auf) — achten auf + Akk. → darauf achten, … zu tun."},
+{w:"Während",de:"Konjunktion (Gegensatz/Zeit) — Während … — Gegensatz zu früher."},
+{w:"werden",de:"Passiv, Präsens — werden … angeboten (Passiv Präsens)."},
+{w:"kann",de:"Modalverb, Präsens — kann + Infinitiv (helfen)."},
+{w:"oft",de:"Adverb — Adverb der Häufigkeit."}
+]},
+
+{an:"—", betreff:"Ein Bewerbungsgespräch",
+body:"Bevor Markus zum Vorstellungsgespräch ging, {1} er sich gut vorbereitet. Er {2} sich vorher genau über die Firma informiert. Während des Gesprächs wurde ihm {3} Frage nach seinen Stärken und Schwächen gestellt. Nachdem er ehrlich geantwortet hatte, {4} er noch am selben Tag eine Zusage. Er konnte sein Glück {5} fassen.",
+blanks:[
+{w:"hat",de:"Hilfsverb Perfekt (haben) — hat sich … vorbereitet."},
+{w:"hatte",de:"Hilfsverb Plusquamperfekt — hatte sich informiert — vorzeitig zu 'ging'."},
+{w:"eine",de:"unbestimmter Artikel, Akk. Fem. — eine Frage gestellt (Akkusativ)."},
+{w:"bekam",de:"Verb, Präteritum — bekam eine Zusage."},
+{w:"kaum",de:"Adverb — kaum fassen können — feste Wendung."}
+]},
+
+{an:"—", betreff:"Ein Streit unter Nachbarn",
+body:"Herr Weber hat sich {1} Vermieter über den Lärm seiner Nachbarn beschwert. {2} die neue Familie eingezogen ist, kommt es fast jeden Abend zu lautem Streit. Der Vermieter hat versprochen, {3} um das Problem zu kümmern. Er {4} am liebsten sofort mit den Nachbarn gesprochen, aber sie waren gerade im Urlaub. Herr Weber hofft, dass sich die Situation bald {5}.",
+blanks:[
+{w:"beim",de:"Präposition + Dativ (Kontraktion) — sich beim Vermieter beschweren (bei+dem)."},
+{w:"Seitdem",de:"Konjunktion (temporal) — Seitdem … — seit einem Zeitpunkt bis jetzt."},
+{w:"sich",de:"Reflexivpronomen — sich kümmern um + Akk."},
+{w:"hätte",de:"Konjunktiv II — hätte … gesprochen — irrealer Wunsch der Vergangenheit."},
+{w:"bessert",de:"Verb, 3.Pers.Sg. — sich bessern (reflexiv, Präsens)."}
+]},
+
+{an:"—", betreff:"Digitale Kommunikation in der Familie",
+body:"Seit ihre Tochter im Ausland studiert, {1} Frau Kramer fast täglich mit ihr über Video. {2} fühlt sich die Distanz weniger groß an. Früher musste man lange Briefe schreiben, {3} in Kontakt zu bleiben; heute reicht ein kurzer Videoanruf. Manche Großeltern tun sich {4} der neuen Technik allerdings noch schwer. Trotzdem versuchen die meisten, {5} daran zu gewöhnen.",
+blanks:[
+{w:"telefoniert",de:"Verb, 3.Pers.Sg. — telefoniert (Präsens)."},
+{w:"Dadurch",de:"Pronominaladverb (Folge) — Dadurch = durch diesen Umstand."},
+{w:"um",de:"um…zu-Konstruktion — um … zu bleiben (Finalsatz)."},
+{w:"mit",de:"feste Präposition — sich schwertun mit + Dat."},
+{w:"sich",de:"Reflexivpronomen — sich gewöhnen an + Akk."}
+]}
+,
+
+{type:"artikel", an:"—", betreff:"Neue Berufsschule eröffnet",
+body:"In der Innenstadt {1} am Montag eine neue Berufsschule eröffnet. Rund 300 Auszubildende {2} dort künftig unterrichtet. Die Schule bietet Ausbildungsgänge {3} den Bereichen Metall, Elektro und Pflege an. Der Bürgermeister zeigte sich {4} der modernen Ausstattung beeindruckt. Die ersten Kurse {5} bereits in zwei Wochen.",
+blanks:[
+{w:"wurde",de:"Passiv Präteritum: wurde eröffnet."},
+{w:"werden",de:"Passiv Präsens Plural: werden unterrichtet."},
+{w:"in",de:"„Ausbildungsgänge in den Bereichen“ – Präposition „in“."},
+{w:"von",de:"„beeindruckt sein von + Dativ“ – feste Präposition."},
+{w:"beginnen",de:"Präsens von „beginnen“: die Kurse beginnen."}
+]},
+
+{type:"dialog", an:"—", betreff:"Frage zu den Arbeitszeiten",
+body:"Azubi: Entschuldigung, darf ich Sie etwas fragen?\nAusbilder: Klar, was möchtest du wissen?\nAzubi: Ich habe nächste Woche einen Arzttermin. Könnte ich an dem Tag später {1}?\nAusbilder: Kein Problem, sag mir einfach {2}, wann genau der Termin ist.\nAzubi: Er ist um neun Uhr. Ich {3} also gegen elf Uhr da sein.\nAusbilder: Gut, das {4} kein Problem. Trag es einfach {5} den Kalender ein.",
+blanks:[
+{w:"kommen",de:"Infinitiv nach Modalverb „könnte“ am Satzende: später kommen."},
+{w:"Bescheid",de:"Feste Wendung: „Bescheid sagen“ = jemanden informieren."},
+{w:"würde",de:"Konjunktiv II von „werden“ für eine höfliche Vermutung: ich würde da sein."},
+{w:"wäre",de:"Konjunktiv II von „sein“: das wäre kein Problem."},
+{w:"in",de:"Trennbares Verb „eintragen“: in den Kalender eintragen (Präposition „in“)."}
+]},
+
+{type:"forum", an:"—", betreff:"Frage: Deutschprüfung B1 – Tipps?",
+body:"Hallo zusammen,\n\nich mache {1} zwei Monaten meine B1-Prüfung und bin ziemlich nervös. Hat jemand Tipps, {2} man sich am besten vorbereitet? Ich habe gehört, dass man {3} regelmäßig Podcasts hören soll. Stimmt das? Außerdem frage ich mich, {4} der mündliche Teil wirklich so schwer ist, {5} alle sagen. Danke schon mal für eure Antworten!",
+blanks:[
+{w:"in",de:"„in zwei Monaten“ – Zeitangabe für die Zukunft."},
+{w:"wie",de:"Fragewort: wie man sich vorbereitet."},
+{w:"viel",de:"Adverb: viel Podcasts hören = oft Podcasts hören."},
+{w:"ob",de:"Konjunktion für eine indirekte Ja/Nein-Frage."},
+{w:"wie",de:"Vergleichskonjunktion: so schwer, wie alle sagen."}
+]}
+],
+
+3:[
+{an:"Kundenservice ElektroWelt", betreff:"Formelle Beschwerde wegen mangelhaften Services",
+body:"Sehr geehrte Damen und Herren,\n\nmit diesem Schreiben möchte ich mich {1} den mangelhaften Kundenservice beschweren, den ich {2} meinem letzten Besuch erlebt habe. Trotz mehrfacher Nachfrage {3} mir keine zufriedenstellende Auskunft gegeben. Es {4} von mir erwartet, dass ein Unternehmen Ihrer Größe einen besseren Service {5}. Ich bitte um eine schriftliche Stellungnahme.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"über",de:"„sich über etwas beschweren“ – feste Präposition.",vi:"„sich über etwas beschweren“ (phàn nàn về) — giới từ cố định."},
+{w:"bei",de:"„bei meinem Besuch“ – Präposition „bei“ für einen Anlass/Zeitpunkt.",vi:"„bei“ (nhân dịp/vào lúc) — chỉ thời điểm/dịp."},
+{w:"wurde",de:"Passiv Präteritum: wurde gegeben – die Auskunft wurde mir gegeben.",vi:"Thể bị động, thì quá khứ đơn: „wurde gegeben“."},
+{w:"wird",de:"Passiv Präsens mit Modalbedeutung: es wird erwartet = man erwartet.",vi:"Thể bị động thì hiện tại: „wird erwartet“ (được mong đợi)."},
+{w:"bietet",de:"Präsens von „bieten“: einen Service bieten.",vi:"Thì hiện tại của „bieten“ (cung cấp, mang lại)."}
+]},
+
+{an:"Inkasso Schröder", betreff:"Widerspruch gegen eine Mahnung",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit lege ich Widerspruch {1} Ihre Mahnung vom 5. Mai ein. Die {2} Rechnung wurde bereits {3} 20. April vollständig bezahlt, wie aus dem beigefügten Kontoauszug hervorgeht. Ich bitte Sie, den Vorgang zu {4} und mir eine korrigierte Bestätigung {5} zusenden.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"gegen",de:"„Widerspruch gegen etwas einlegen“ – feste Präposition.",vi:"„Widerspruch gegen etwas einlegen“ (khiếu nại phản đối) — giới từ cố định."},
+{w:"besagte",de:"Adjektiv „besagt“ = genannt, erwähnt – formelles Register.",vi:"Tính từ „besagt“ (đã nêu ở trên) — dùng trong văn phong trang trọng."},
+{w:"am",de:"„am 20. April“ – Zeitangabe mit Datum.",vi:"„am“ + ngày cụ thể."},
+{w:"überprüfen",de:"Infinitiv nach „bitten…zu“: den Vorgang zu überprüfen.",vi:"Dạng nguyên mẫu sau „bitten…zu“."},
+{w:"zu",de:"„etwas zusenden“ nach „bitten…zu“ – zweiter Infinitiv mit „zu“.",vi:"Động từ nguyên mẫu thứ hai sau „bitten…zu“."}
+]},
+
+{an:"Personalabteilung MedTech AG", betreff:"Bewerbung als Fachkraft für Lagerlogistik",
+body:"Sehr geehrte Damen und Herren,\n\nauf Ihre Stellenanzeige {1} bewerbe ich mich hiermit als Fachkraft für Lagerlogistik. Durch meine dreijährige Berufserfahrung {2} ich mit den gängigen Lagerverwaltungssystemen vertraut. Besonders reizt mich {3}, dass Ihr Unternehmen international {4} ist. Über die Möglichkeit eines persönlichen Gesprächs würde ich mich {5} freuen.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"hin",de:"„auf eine Anzeige hin bewerben“ = als Reaktion auf die Anzeige.",vi:"„auf … hin“ (dựa trên/theo) — chỉ phản ứng trước điều gì."},
+{w:"bin",de:"Präsens von „sein“ + Adjektiv „vertraut“: ich bin vertraut mit.",vi:"Thì hiện tại của „sein“, kết hợp tính từ „vertraut“ (quen thuộc)."},
+{w:"daran",de:"Vorverweis „daran“ vor dass-Satz: es reizt mich daran, dass….",vi:"„daran“ báo trước mệnh đề „dass“."},
+{w:"tätig",de:"Adjektiv: international tätig sein = in vielen Ländern arbeiten.",vi:"Tính từ „tätig“ (hoạt động), kết hợp „international“."},
+{w:"sehr",de:"Adverb zur Verstärkung: sich sehr freuen.",vi:"Trạng từ nhấn mạnh: „sich sehr freuen“."}
+]},
+
+{an:"Geschäftsführung", betreff:"Stellungnahme zu einem Vorwurf",
+body:"Sehr geehrte Frau Direktorin,\n\nwie mir mitgeteilt wurde, {1} gegen mich der Vorwurf erhoben, dass ich Firmeneigentum unsachgemäß behandelt {2}. Ich möchte hierzu ausdrücklich {3} nehmen: Der beschriebene Vorfall entspricht {4} den Tatsachen. Gerne stehe ich für ein klärendes Gespräch {5} Verfügung.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"wurde",de:"Passiv Präteritum: der Vorwurf wurde erhoben.",vi:"Thể bị động, thì quá khứ đơn."},
+{w:"habe",de:"Perfekt von „behandeln“: ich habe behandelt.",vi:"Thì hoàn thành của „behandeln“."},
+{w:"Stellung",de:"Feste Wendung: „Stellung nehmen zu“ = seine Meinung äußern.",vi:"Cụm cố định „Stellung nehmen zu“ (bày tỏ quan điểm về)."},
+{w:"nicht",de:"Verneinung: entspricht nicht den Tatsachen = ist nicht wahr.",vi:"Phủ định: „entspricht nicht den Tatsachen“ (không đúng sự thật)."},
+{w:"zur",de:"„zur Verfügung stehen“ = zu + der, feste Wendung.",vi:"Cụm cố định „zur Verfügung stehen“."}
+]},
+
+{an:"Herrn Direktor Wagner", betreff:"Anfrage zur Gehaltsanpassung",
+body:"Sehr geehrter Herr Wagner,\n\nseit meinem Eintritt {1} das Unternehmen vor drei Jahren habe ich meinen Aufgabenbereich kontinuierlich {2}. Vor diesem Hintergrund möchte ich Sie höflich {3} eine Anpassung meines Gehalts bitten. Ich wäre Ihnen dankbar, {4} wir dieses Anliegen in einem persönlichen Gespräch {5} könnten.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"in",de:"„der Eintritt in ein Unternehmen“ – feste Präposition „in“.",vi:"„Eintritt in ein Unternehmen“ (gia nhập công ty) — giới từ cố định."},
+{w:"erweitert",de:"Partizip II von „erweitern“ nach Perfekt „habe“.",vi:"Partizip II của „erweitern“ (mở rộng), dùng với „habe“."},
+{w:"um",de:"„jemanden um etwas bitten“ – feste Präposition „um“.",vi:"„jemanden um etwas bitten“ — giới từ cố định."},
+{w:"wenn",de:"Konnektor für eine Bedingung: wenn wir besprechen könnten.",vi:"Liên từ điều kiện: „wenn“ (nếu)."},
+{w:"besprechen",de:"Infinitiv nach Modalverb „könnten“ (Konjunktiv II, höflich) am Satzende.",vi:"Dạng nguyên mẫu sau „könnten“ (Konjunktiv II lịch sự)."}
+]},
+
+{an:"Arbeitgeber", betreff:"Kündigung des Arbeitsvertrags",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit kündige ich meinen Arbeitsvertrag {1} 30. September unter Einhaltung der vertraglich vereinbarten Frist. Die Zusammenarbeit {2} mir stets Freude bereitet, dennoch habe ich mich {3} beruflich zu verändern entschieden. Ich bitte um ein qualifiziertes Arbeitszeugnis sowie {4} Bestätigung {5} Kündigung.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"zum",de:"„zum 30. September“ = zu + dem, Zeitangabe bei Kündigungen.",vi:"„zum“ + ngày, dùng khi thông báo hủy hợp đồng."},
+{w:"hat",de:"Perfekt von „bereiten“: die Zusammenarbeit hat Freude bereitet.",vi:"Thì hoàn thành của „bereiten“ (mang lại)."},
+{w:"dazu",de:"Vorverweis „dazu“ vor zu-Infinitiv: sich dazu entschieden, zu verändern.",vi:"„dazu“ báo trước cụm „zu + động từ nguyên mẫu“."},
+{w:"um",de:"„bitten um + Akkusativ“ – feste Präposition.",vi:"„bitten um“ (xin) — giới từ cố định."},
+{w:"der",de:"Genitivartikel Femininum: die Bestätigung der Kündigung.",vi:"Mạo từ cách Genitiv, giống cái: „der“."}
+]},
+
+{an:"—", betreff:"Empfehlungsschreiben für einen Kollegen",
+body:"Sehr geehrte Damen und Herren,\n\nes ist mir eine Freude, Herrn Petrov {1} diese Stelle zu empfehlen. Während unserer gemeinsamen Zeit {2} Projektteam habe ich ihn als äußerst zuverlässig kennengelernt. Auch {3} schwierigen Situationen behielt er stets einen kühlen Kopf. Ich bin überzeugt, dass er sich {4} in Ihr Team einfügen und einen wertvollen Beitrag {5} Erfolg des Unternehmens leisten wird.",
+blanks:[
+{w:"für",de:"„jemanden für eine Stelle empfehlen“ – feste Präposition.",vi:"„jemanden für eine Stelle empfehlen“ (giới thiệu ai cho vị trí) — giới từ cố định."},
+{w:"im",de:"„im Team“ = in + dem, Ort der Zusammenarbeit.",vi:"„im“ = in + dem, chỉ nơi làm việc chung."},
+{w:"in",de:"„in schwierigen Situationen“ – Präposition „in“ + Dativ Plural.",vi:"„in“ + Dativ số nhiều, chỉ tình huống."},
+{w:"schnell",de:"Adverb: sich schnell einfügen = ohne Probleme integrieren.",vi:"Trạng từ „schnell“ (nhanh chóng), bổ nghĩa cho „einfügen“."},
+{w:"zum",de:"„einen Beitrag zum Erfolg leisten“ = zu + dem, feste Wendung.",vi:"Cụm cố định „einen Beitrag zum Erfolg leisten“ (đóng góp vào thành công)."}
+]},
+
+{an:"Fluggesellschaft AirBlue", betreff:"Beschwerde wegen Flugverspätung",
+body:"Sehr geehrte Damen und Herren,\n\nmein Flug AB245 {1} München nach Hanoi hatte am 3. Juli eine Verspätung {2} über fünf Stunden. Dadurch verpasste ich meinen Anschlussflug und musste eine Nacht {3} eigene Kosten in einem Hotel verbringen. Gemäß der EU-Fluggastrechteverordnung stehe ich {4} eine Entschädigung zu. Ich bitte um Prüfung {5} zeitnahe Rückmeldung.",
+blanks:[
+{w:"von",de:"„von…nach“ – feste Präpositionen bei Reiserouten.",vi:"„von…nach“ (từ…đến) — cặp giới từ chỉ hành trình."},
+{w:"von",de:"„eine Verspätung von fünf Stunden“ – Präposition „von“ bei Zeitangaben.",vi:"„von“ + khoảng thời gian, chỉ độ trễ."},
+{w:"auf",de:"„auf eigene Kosten“ – feste Wendung.",vi:"Cụm cố định „auf eigene Kosten“ (tự chi trả)."},
+{w:"mir",de:"„jemandem steht etwas zu“ – Dativobjekt: mir steht zu.",vi:"„jemandem etwas zusteht“ (ai được quyền hưởng gì) — tân ngữ Dativ."},
+{w:"und",de:"Konnektor, der zwei Bitten verbindet: Prüfung und Rückmeldung.",vi:"Liên từ nối hai yêu cầu: „und“ (và)."}
+]},
+
+{an:"Personalabteilung", betreff:"Antrag auf Elternzeit",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit beantrage ich Elternzeit {1} 1. Oktober {2} 30. September des Folgejahres für die Betreuung meines Kindes. Gemäß gesetzlicher Regelung {3} ich Ihnen diesen Antrag mindestens sieben Wochen im Voraus {4}. Für Rückfragen stehe ich Ihnen jederzeit {5} Verfügung.\n\nMit freundlichen Grüßen",
+blanks:[
+{w:"vom",de:"„vom…bis zum“ = von + dem, Zeitraum-Angabe.",vi:"„vom“ (từ) — mở đầu khoảng thời gian."},
+{w:"bis",de:"Zweiter Teil der Zeitraum-Angabe: vom…bis zum.",vi:"Phần thứ hai của cụm chỉ khoảng thời gian: „bis“ (đến)."},
+{w:"reiche",de:"Präsens von „einreichen“: ich reiche ein.",vi:"Thì hiện tại của „einreichen“ (nộp)."},
+{w:"ein",de:"Trennbares Verb „einreichen“ – Präfix am Satzende.",vi:"Tiền tố của động từ tách „einreichen“, đứng cuối câu."},
+{w:"zur",de:"„zur Verfügung stehen“ = zu + der, feste Wendung.",vi:"Cụm cố định „zur Verfügung stehen“."}
+]},
+
+{an:"Fitness-Studio VitalFit", betreff:"Widerruf eines Vertrags",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit widerrufe ich {1} 15. Mai geschlossenen Mitgliedschaftsvertrag fristgerecht {2} der gesetzlichen 14-tägigen Widerrufsfrist. Eine Nutzung der Studioräume hat {3} nicht stattgefunden. Ich bitte um schriftliche Bestätigung des Widerrufs sowie um Rückerstattung des bereits {4} Betrags {5} mein Konto.",
+blanks:[
+{w:"den",de:"Relativpronomen/Artikel Akkusativ Maskulin: den…geschlossenen Vertrag.",vi:"Mạo từ cách Akkusativ, giống đực: „den“."},
+{w:"innerhalb",de:"„innerhalb der Frist“ – Präposition mit Genitiv für einen Zeitraum.",vi:"„innerhalb“ (trong vòng) + Genitiv, chỉ khoảng thời gian."},
+{w:"bisher",de:"Adverb: bisher nicht = bis jetzt nicht.",vi:"Trạng từ „bisher“ (cho đến nay)."},
+{w:"gezahlten",de:"Partizip II als Adjektiv (attributiv, dekliniert): der bereits gezahlte Betrag.",vi:"Partizip II làm tính từ, chia theo cách: „gezahlten“ (đã được thanh toán)."},
+{w:"auf",de:"„etwas auf ein Konto überweisen/erstatten“ – feste Präposition.",vi:"„auf ein Konto“ (vào tài khoản) — giới từ cố định."}
+]},
+
+{an:"Kunde", betreff:"Antwort auf eine Kundenbeschwerde",
+body:"Sehr geehrter Herr Trần,\n\nvielen Dank {1} Ihre Rückmeldung. Es tut uns leid, dass die Lieferung {2} verspätet bei Ihnen eingetroffen ist. Wir haben den Vorfall {3} unserer Logistikabteilung geprüft und konnten feststellen, dass es {4} einem technischen Fehler im Versandsystem kam. Als Ausgleich bieten wir Ihnen einen Rabatt {5} Ihre nächste Bestellung an.",
+blanks:[
+{w:"für",de:"„danken für + Akkusativ“ – feste Präposition.",vi:"„danken für“ — giới từ cố định."},
+{w:"so",de:"Adverb: so verspätet = in diesem Ausmaß verspätet.",vi:"Trạng từ „so“ (đến mức) nhấn mạnh mức độ trễ."},
+{w:"mit",de:"„etwas mit jemandem prüfen“ – feste Präposition „mit“.",vi:"„etwas mit jemandem prüfen“ (kiểm tra cùng ai) — giới từ cố định."},
+{w:"zu",de:"„es kommt zu etwas“ – feste Präposition „zu“.",vi:"„es kommt zu etwas“ (xảy ra điều gì) — giới từ cố định."},
+{w:"für",de:"„einen Rabatt für etwas anbieten“ – feste Präposition „für“ (Zweck/Bezug).",vi:"„einen Rabatt für etwas anbieten“ (đề nghị giảm giá cho) — giới từ cố định."}
+]},
+
+{an:"—", betreff:"Bewerbung um eine Führungsposition",
+body:"Sehr geehrte Frau Generaldirektorin,\n\nmit dieser Bewerbung möchte ich mein Interesse {1} die ausgeschriebene Position als Teamleiter bekunden. In meiner aktuellen Funktion trage ich bereits Verantwortung {2} ein zehnköpfiges Team, {3} ich seit zwei Jahren erfolgreich führe. Besonders {4} liegt mir die Weiterentwicklung meiner Mitarbeitenden {5} Herzen.",
+blanks:[
+{w:"an",de:"„Interesse an etwas bekunden“ – feste Präposition „an“.",vi:"„Interesse an etwas bekunden“ (bày tỏ quan tâm đến) — giới từ cố định."},
+{w:"für",de:"„Verantwortung für etwas tragen“ – feste Präposition „für“.",vi:"„Verantwortung für etwas tragen“ (chịu trách nhiệm về) — giới từ cố định."},
+{w:"das",de:"Relativpronomen Akkusativ Neutrum, bezogen auf „Team“: das ich führe.",vi:"Đại từ quan hệ, cách Akkusativ, giống trung: „das“."},
+{w:"am",de:"Feste Wendung: „am Herzen liegen“ = sehr wichtig sein.",vi:"Cụm cố định „am Herzen liegen“ (rất quan trọng đối với ai)."},
+{w:"am",de:"Zweiter Teil der festen Wendung „am Herzen liegen“.",vi:"Phần còn lại của cụm cố định trên."}
+]},
+
+{an:"Teilnehmer", betreff:"Offizielle Einladung zur Fachkonferenz",
+body:"Sehr geehrte Damen und Herren,\n\nwir laden Sie herzlich {1} unserer diesjährigen Fachkonferenz {2} Thema „Digitalisierung in der Ausbildung“ ein. Die Veranstaltung findet {3} 12. bis 14. November {4} Frankfurt statt. Um eine rechtzeitige Anmeldung wird gebeten, {5} die Teilnehmerzahl begrenzt ist.",
+blanks:[
+{w:"zu",de:"„jemanden zu etwas einladen“ – feste Präposition „zu“.",vi:"„jemanden zu etwas einladen“ (mời ai đến) — giới từ cố định."},
+{w:"zum",de:"„zum Thema“ = zu + dem, feste Wendung.",vi:"Cụm cố định „zum Thema“ (về chủ đề)."},
+{w:"vom",de:"„vom 12. bis 14. November“ = von + dem, Zeitraum.",vi:"„vom“ (từ) mở đầu khoảng thời gian."},
+{w:"in",de:"„in Frankfurt“ – Präposition „in“ + Stadt.",vi:"„in“ + tên thành phố."},
+{w:"da",de:"Konnektor für den Grund (formell): da = weil.",vi:"Liên từ trang trọng chỉ lý do: „da“."}
+]}
+,
+
+{an:"—", betreff:"Homeoffice – Vor- und Nachteile",
+body:"Homeoffice wird von vielen Arbeitnehmer*innen geschätzt, {1} es mehr Flexibilität ermöglicht. Allerdings {2} auch bedacht werden, dass die Grenze zwischen Arbeit und Freizeit dadurch verschwimmen kann. Viele Unternehmen haben ihre Regeln inzwischen {3}, um Missbrauch zu vermeiden. Wer im Homeoffice arbeitet, {4} sich feste Arbeitszeiten setzen. Andernfalls {5} die Gefahr, ständig erreichbar zu sein.",
+blanks:[
+{w:"da",de:"Konjunktion (kausal, formell) — da … — kausal, formeller als weil."},
+{w:"muss",de:"Modalverb + Passiv — muss bedacht werden — Passiv mit Modalverb."},
+{w:"angepasst",de:"Partizip II — haben … angepasst (Perfekt)."},
+{w:"sollte",de:"Konjunktiv II (Ratschlag) — sollte + Infinitiv — Empfehlung."},
+{w:"besteht",de:"Verb (feste Wendung) — die Gefahr besteht, … zu sein."}
+]},
+
+{an:"—", betreff:"Eine Beschwerde-E-Mail",
+body:"Sehr geehrte Damen und Herren, ich {1} mich an Sie, weil meine Bestellung noch immer nicht angekommen ist. Laut Sendungsverfolgung {2} das Paket bereits letzte Woche geliefert werden sollen. Ich {3} Sie daher, den Sachverhalt zu klären. Sollte sich das Problem nicht innerhalb der nächsten Woche lösen {4}, sehe ich mich gezwungen, die Bestellung zu stornieren. Für eine schnelle Rückmeldung {5} ich Ihnen dankbar.",
+blanks:[
+{w:"wende",de:"feste Wendung (sich wenden an) — sich an jemanden wenden."},
+{w:"hätte",de:"Konjunktiv II, Vergangenheit — hätte … geliefert werden sollen."},
+{w:"bitte",de:"Verb, 1.Pers.Sg. — bitten (Präsens)."},
+{w:"lassen",de:"sich + Infinitiv + lassen — sich lösen lassen (Passiv-Ersatzform)."},
+{w:"wäre",de:"Konjunktiv II (Höflichkeitsform) — wäre dankbar — höfliche Formulierung."}
+]},
+
+{an:"—", betreff:"Nachhaltigkeit im Alltag",
+body:"Nachhaltigkeit ist längst kein Nischenthema mehr, {1} betrifft mittlerweile fast jeden Lebensbereich. Viele Produkte {2} heute so hergestellt, dass sie länger halten und leichter repariert werden können. Trotzdem {3} sich, dass Konsumverhalten sich nur langsam ändert. Zumal Nachhaltigkeit oft mit höheren Kosten {4} ist, entscheiden sich viele Verbraucher*innen weiterhin für die günstigere Alternative. Ohne staatliche Anreize wird sich {5} vermutlich wenig ändern.",
+blanks:[
+{w:"sondern",de:"Konjunktion (sondern) — kein X, sondern Y — Gegensatz nach Verneinung."},
+{w:"werden",de:"Passiv, Präsens — werden … hergestellt."},
+{w:"zeigt",de:"reflexives Verb, 3.Pers.Sg. — sich zeigen, dass …"},
+{w:"verbunden",de:"Partizip II (feste Wendung) — verbunden sein mit."},
+{w:"daran",de:"Pronominaladverb — sich ändern an + Dat. → daran ändern."}
+]},
+
+{an:"—", betreff:"Ein Vorstellungsgespräch auf Deutsch",
+body:"Auch wenn Deutsch nicht ihre Muttersprache ist, {1} sich Frau Nguyen sehr gut auf das Gespräch vorbereitet. Sie {2} nach ihrer bisherigen Berufserfahrung gefragt und konnte überzeugend antworten. An einer Stelle {3} sie kurz überlegen, wie sie einen Fachbegriff auf Deutsch ausdrücken sollte. Der Personalchef zeigte sich davon sichtlich {4}, denn er lobte ihre klare Ausdrucksweise. Am Ende {5} sie das Gefühl, einen guten Eindruck hinterlassen zu haben.",
+blanks:[
+{w:"hat",de:"Hilfsverb Perfekt (haben) — hat sich … vorbereitet."},
+{w:"wurde",de:"Passiv, Präteritum — wurde … gefragt (Passiv)."},
+{w:"musste",de:"Modalverb, Präteritum — musste + Infinitiv (überlegen)."},
+{w:"beeindruckt",de:"Partizip II (feste Wendung) — sich beeindruckt zeigen von."},
+{w:"bekam",de:"Verb, Präteritum — das Gefühl bekommen, … zu haben."}
+]},
+
+{an:"—", betreff:"Digitalisierung an Schulen",
+body:"Die Digitalisierung der Schulen {1} nur langsam voran, obwohl digitale Medien im Alltag längst selbstverständlich sind. Viele Lehrkräfte {2} gerne mehr digitale Werkzeuge einsetzen, scheitern jedoch häufig an der technischen Ausstattung. Hinzu kommt, dass Fortbildungen oft {3}, sodass Unsicherheit im Umgang mit neuer Technik bestehen bleibt. Sollten Schulen ausreichend {4} werden, könnte sich der Unterricht spürbar verändern. Bis dahin bleibt vieles {5} Alten.",
+blanks:[
+{w:"schreitet",de:"Verb (feste Wendung) — voranschreiten (trennbar)."},
+{w:"würden",de:"Konjunktiv II — würden gerne … einsetzen."},
+{w:"fehlen",de:"Verb, 3.Pers.Pl. — fehlen (Präsens, Plural)."},
+{w:"ausgestattet",de:"Partizip II (Passiv) — ausgestattet werden (Passiv)."},
+{w:"beim",de:"Präposition + Dativ (feste Wendung) — beim Alten bleiben."}
+]}
+,
+
+{type:"artikel", an:"—", betreff:"Immer mehr Betriebe suchen Auszubildende",
+body:"Laut einer aktuellen Studie {1} in diesem Jahr so viele Ausbildungsplätze unbesetzt {2} nie zuvor. Besonders im Handwerk fehlt es {3} geeigneten Bewerbern. Experten führen dies unter anderem {4} den demografischen Wandel zurück. Um die Situation zu verbessern, {5} viele Betriebe inzwischen auch Quereinsteiger ein.",
+blanks:[
+{w:"blieben",de:"Präteritum von „bleiben“: blieben unbesetzt."},
+{w:"wie",de:"Vergleichskonjunktion: wie nie zuvor."},
+{w:"an",de:"„es fehlt an + Dativ“ – feste Präposition."},
+{w:"auf",de:"„etwas auf etwas zurückführen“ – feste Präposition."},
+{w:"laden",de:"Präsens von „einladen“ (trennbar), Plural: laden … ein."}
+]},
+
+{type:"interview", an:"—", betreff:"Interview mit einer Ausbilderin",
+body:"Frage: Frau Roth, was macht für Sie einen guten Azubi aus?\nAntwort: Vor allem Zuverlässigkeit. Ein Azubi, {1} sich auf seine Aufgaben verlässt, macht mir das Leben leichter.\nFrage: Und was raten Sie jungen Leuten, die {2} eine Ausbildung entscheiden?\nAntwort: Ich rate {3}, sich vorher genau zu informieren, {4} der Beruf wirklich zu ihnen passt. Man sollte sich nicht {5} vom ersten Eindruck leiten lassen.",
+blanks:[
+{w:"der",de:"Relativpronomen Nominativ Maskulin, bezogen auf „Azubi“: der sich verlässt."},
+{w:"sich für",de:"„sich für etwas entscheiden“ – feste Präposition."},
+{w:"ihnen",de:"Personalpronomen Dativ Plural nach „raten“: ich rate ihnen."},
+{w:"ob",de:"Konjunktion für eine indirekte Ja/Nein-Frage."},
+{w:"nur",de:"Adverb zur Einschränkung: nicht nur vom ersten Eindruck."}
+]},
+
+{type:"forum", an:"—", betreff:"Diskussion: Sollten Azubis auch Homeoffice machen dürfen?",
+body:"Ich finde, {1} Diskussion wird oft zu einseitig geführt. Natürlich profitieren erfahrene Mitarbeiter {2} flexiblem Arbeiten, aber Azubis brauchen meiner Meinung nach engere Betreuung. Wer noch wenig Erfahrung hat, {3} schneller den Anschluss verlieren, wenn niemand direkt daneben sitzt. Trotzdem {4} ich mir vorstellen, dass zumindest ein Tag pro Woche im Homeoffice möglich {5}.",
+blanks:[
+{w:"die",de:"Bestimmter Artikel Nominativ Femininum: die Diskussion."},
+{w:"von",de:"„profitieren von + Dativ“ – feste Präposition."},
+{w:"kann",de:"Modalverb „können“ Präsens: kann schneller den Anschluss verlieren."},
+{w:"könnte",de:"Konjunktiv II von „können“ für eine vorsichtig geäußerte Meinung."},
+{w:"wäre",de:"Konjunktiv II von „sein“: möglich wäre."}
+]}
+],
+
+4:[
+{an:"Leserbrief", betreff:"Zur Diskussion um mehr Homeoffice",
+body:"Sehr geehrte Redaktion,\n\nin Ihrem Artikel vom 3. Mai wurde die Frage aufgeworfen, {1} Homeoffice langfristig die Produktivität steigert. Aus meiner beruflichen Erfahrung kann ich {2} nur bedingt zustimmen. Zwar ermöglicht flexibles Arbeiten mehr Selbstbestimmung, {3} fehlt vielen Mitarbeitenden der direkte Austausch mit Kollegen. Es sollte daher {4} Lösung gefunden werden, {5} die Vorteile beider Modelle vereint.",
+blanks:[
+{w:"ob",de:"Konjunktion für eine indirekte Ja/Nein-Frage.",vi:"Liên từ dùng cho câu hỏi gián tiếp có/không: „ob“."},
+{w:"dem",de:"„jemandem zustimmen“ – Dativobjekt, hier bezogen auf den Artikel/die Aussage.",vi:"„jemandem zustimmen“ (đồng ý với) — tân ngữ cách Dativ."},
+{w:"jedoch",de:"Konnektor für einen Gegensatz, formeller als „aber“.",vi:"Liên từ chỉ sự tương phản, trang trọng hơn „aber“: „jedoch“."},
+{w:"eine",de:"Unbestimmter Artikel Nominativ Femininum: eine Lösung.",vi:"Mạo từ không xác định, cách Nominativ, giống cái: „eine“."},
+{w:"die",de:"Relativpronomen Nominativ Femininum, bezogen auf „Lösung“: die vereint.",vi:"Đại từ quan hệ, cách Nominativ, giống cái: „die“."}
+]},
+
+{an:"Kommentar", betreff:"Homeoffice: Chance oder Risiko?",
+body:"Die Debatte {1} das Homeoffice wird seit der Pandemie intensiv geführt. Befürworter argumentieren, {2} flexible Arbeitsmodelle die Vereinbarkeit von Beruf und Familie erleichtern. Kritiker hingegen weisen darauf hin, dass durch fehlende soziale Kontakte {3} Unternehmenskultur leiden {4}. Letztlich wird es {5} auf eine individuelle Balance ankommen, die jedes Unternehmen selbst finden muss.",
+blanks:[
+{w:"um",de:"„die Debatte um etwas“ – feste Präposition „um“ (Thema).",vi:"„die Debatte um etwas“ (cuộc tranh luận về) — giới từ cố định."},
+{w:"dass",de:"Konjunktion, leitet einen Nebensatz mit Verb am Ende ein.",vi:"Liên từ „dass“, mở đầu mệnh đề phụ với động từ ở cuối."},
+{w:"die",de:"Bestimmter Artikel Nominativ Femininum: die Unternehmenskultur.",vi:"Mạo từ xác định, cách Nominativ, giống cái: „die“."},
+{w:"könne",de:"Konjunktiv I von „können“ für indirekte Rede/Wiedergabe einer Meinung.",vi:"Konjunktiv I của „können“, dùng để tường thuật gián tiếp một ý kiến."},
+{w:"stets",de:"Adverb: stets = immer, formelles Register.",vi:"Trạng từ „stets“ (luôn luôn), văn phong trang trọng."}
+]},
+
+{an:"Stellungnahme", betreff:"Zur neuen Unternehmensrichtlinie",
+body:"Sehr geehrte Kolleginnen und Kollegen,\n\nnach eingehender Prüfung möchten wir {1} der neuen Richtlinie zur Arbeitszeiterfassung Stellung {2}. Die Regelung wurde eingeführt, {3} eine gerechtere Verteilung der Arbeitsbelastung {4} gewährleisten. Sofern sich in der Praxis Schwierigkeiten zeigen sollten, {5} wir eine Überarbeitung nicht aus.",
+blanks:[
+{w:"zu",de:"„Stellung zu etwas nehmen“ – feste Präposition „zu“.",vi:"„Stellung zu etwas nehmen“ (bày tỏ quan điểm về) — giới từ cố định."},
+{w:"nehmen",de:"Feste Wendung: „Stellung nehmen“ = seine Meinung äußern.",vi:"Cụm cố định „Stellung nehmen“ (nêu quan điểm)."},
+{w:"um",de:"Konnektor „um…zu“ für den Zweck (gleiches Subjekt: die Regelung/sie).",vi:"Liên từ „um…zu“ diễn tả mục đích (cùng chủ ngữ)."},
+{w:"zu",de:"Zweiter Teil von „um…zu“ + Infinitiv: zu gewährleisten.",vi:"Phần thứ hai của „um…zu“, đứng trước động từ nguyên mẫu."},
+{w:"schließen",de:"Feste Wendung: „etwas nicht ausschließen“ = für möglich halten.",vi:"Cụm cố định „etwas nicht ausschließen“ (không loại trừ khả năng)."}
+]},
+
+{an:"Bericht an die Personalabteilung", betreff:"Teamkonflikt in Abteilung Logistik",
+body:"Sehr geehrte Frau Kraft,\n\nhiermit möchte ich Sie {1} einen anhaltenden Konflikt innerhalb des Logistikteams informieren. Wie mir mehrfach berichtet wurde, {2} es in den letzten Wochen wiederholt zu Spannungen zwischen zwei Mitarbeitenden gekommen. Um eine Eskalation zu vermeiden, halte ich es {3} sinnvoll, zeitnah ein klärendes Gespräch {4} beiden Beteiligten zu führen. Für Rückfragen stehe ich {5} Verfügung.",
+blanks:[
+{w:"über",de:"„jemanden über etwas informieren“ – feste Präposition „über“.",vi:"„jemanden über etwas informieren“ — giới từ cố định."},
+{w:"ist",de:"Passiv/Perfekt-Konstruktion mit „kommen“: es ist gekommen (Perfekt mit „sein“).",vi:"Cấu trúc thì hoàn thành với „sein“: „es ist gekommen“."},
+{w:"für",de:"„etwas für sinnvoll halten“ – feste Präposition „für“.",vi:"„etwas für sinnvoll halten“ (cho là hợp lý) — giới từ cố định."},
+{w:"mit",de:"„ein Gespräch mit jemandem führen“ – feste Präposition „mit“.",vi:"„ein Gespräch mit jemandem führen“ (nói chuyện với ai) — giới từ cố định."},
+{w:"zur",de:"„zur Verfügung stehen“ = zu + der, feste Wendung.",vi:"Cụm cố định „zur Verfügung stehen“."}
+]},
+
+{an:"Bewerber", betreff:"Offizielle Absage einer Bewerbung",
+body:"Sehr geehrter Herr Le,\n\nwir bedanken uns {1} Ihr Interesse an einer Tätigkeit {2} unserem Unternehmen sowie {3} die Zeit, die Sie in Ihre Bewerbung investiert haben. Nach sorgfältiger Prüfung aller eingegangenen Unterlagen haben wir uns {4} einen anderen Bewerber entschieden, dessen Profil noch besser zu den Anforderungen der Stelle {5} passte.\n\nWir wünschen Ihnen für Ihre weitere berufliche Zukunft alles Gute.",
+blanks:[
+{w:"für",de:"„sich bedanken für + Akkusativ“ – feste Präposition.",vi:"„sich bedanken für“ — giới từ cố định."},
+{w:"in",de:"„eine Tätigkeit in einem Unternehmen“ – Präposition „in“.",vi:"„eine Tätigkeit in einem Unternehmen“ (công việc tại) — giới từ chỉ nơi làm việc."},
+{w:"für",de:"Wiederholte Präposition „für“ vor der zweiten Dankesursache.",vi:"Giới từ „für“ lặp lại trước lý do cảm ơn thứ hai."},
+{w:"für",de:"„sich für jemanden entscheiden“ – feste Präposition „für“.",vi:"„sich für jemanden entscheiden“ (quyết định chọn ai) — giới từ cố định."},
+{w:"noch",de:"Adverb im Komparativ: noch besser = in höherem Maße besser.",vi:"Trạng từ trong cấu trúc so sánh hơn: „noch besser“ (còn tốt hơn)."}
+]},
+
+{an:"Datenschutzbeauftragter", betreff:"Beschwerde wegen Datenschutzverletzung",
+body:"Sehr geehrte Damen und Herren,\n\nhiermit möchte ich Sie {1} eine mutmaßliche Datenschutzverletzung hinweisen, {2} im Rahmen meiner Bewerbung aufgetreten ist. Meine persönlichen Daten wurden offenbar {3} meine ausdrückliche Zustimmung an Dritte weitergegeben. Ich bitte um umgehende Aufklärung des Sachverhalts sowie um Mitteilung, {4} Maßnahmen zur Verhinderung {5} zukünftiger Vorfälle ergriffen werden.",
+blanks:[
+{w:"auf",de:"„jemanden auf etwas hinweisen“ – feste Präposition „auf“.",vi:"„jemanden auf etwas hinweisen“ (lưu ý ai về việc gì) — giới từ cố định."},
+{w:"die",de:"Relativpronomen Nominativ Femininum, bezogen auf „Datenschutzverletzung“: die aufgetreten ist.",vi:"Đại từ quan hệ, cách Nominativ, giống cái: „die“."},
+{w:"ohne",de:"Präposition „ohne“ + Akkusativ: ohne meine Zustimmung.",vi:"Giới từ „ohne“ (không có) + Akkusativ."},
+{w:"welche",de:"Fragewort/Relativpronomen für eine indirekte Frage: welche Maßnahmen.",vi:"Từ hỏi/đại từ quan hệ dùng trong câu hỏi gián tiếp: „welche“ (những gì)."},
+{w:"zukünftiger",de:"Genitivattribut: zur Verhinderung zukünftiger Vorfälle (Genitiv Plural ohne Artikel).",vi:"Định ngữ cách Genitiv số nhiều không có mạo từ: „zukünftiger“."}
+]},
+
+{an:"Betriebsrat", betreff:"Stellungnahme zur Kündigungsschutzklage",
+body:"Sehr geehrte Mitglieder des Betriebsrats,\n\nim vorliegenden Fall vertritt der Arbeitgeber die Auffassung, {1} die Kündigung betriebsbedingt und somit rechtmäßig {2}. Der Betroffene hingegen macht geltend, {3} vergleichbare Kollegen nicht in die Sozialauswahl einbezogen worden {4}. Wir empfehlen, den Sachverhalt {5} einem Fachanwalt für Arbeitsrecht prüfen zu lassen.",
+blanks:[
+{w:"dass",de:"Konjunktion, leitet einen Nebensatz mit Verb am Ende ein.",vi:"Liên từ „dass“, mở đầu mệnh đề phụ."},
+{w:"sei",de:"Konjunktiv I von „sein“ für die indirekte Wiedergabe einer fremden Aussage.",vi:"Konjunktiv I của „sein“, dùng để tường thuật gián tiếp lời người khác."},
+{w:"dass",de:"Konjunktion für den zweiten Nebensatz (Gegenargument).",vi:"Liên từ „dass“ cho mệnh đề phụ thứ hai (lập luận phản bác)."},
+{w:"seien",de:"Konjunktiv I von „sein“ (Passiv, Plural) für die indirekte Rede.",vi:"Konjunktiv I của „sein“ (thể bị động, số nhiều), dùng cho lời tường thuật gián tiếp."},
+{w:"von",de:"„etwas von jemandem prüfen lassen“ – feste Präposition „von“.",vi:"„etwas von jemandem prüfen lassen“ (nhờ ai kiểm tra) — giới từ cố định."}
+]},
+
+{an:"Presse", betreff:"Pressemitteilung zur Expansion",
+body:"Die MediTech AG gibt bekannt, {1} sie ihr Werk in Leipzig {2} 200 zusätzliche Arbeitsplätze erweitern wird. Die Investition {3} rund 15 Millionen Euro soll bis Ende nächsten Jahres abgeschlossen sein. „Wir sind überzeugt, dass sich der Standort {4} eine Erweiterung eignet“, erklärte Geschäftsführerin Frau Novak. Erste Neueinstellungen {5} bereits im kommenden Quartal erfolgen.",
+blanks:[
+{w:"dass",de:"Konjunktion, leitet den bekanntgegebenen Inhalt als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu nội dung được thông báo."},
+{w:"um",de:"„um…erweitern“ – Präposition „um“ zur Angabe der Zunahme.",vi:"„um“ chỉ mức độ tăng thêm (200 chỗ làm)."},
+{w:"in",de:"„eine Investition in Höhe von…“ oder hier vereinfacht „in Höhe von“; Präposition „in“.",vi:"„in Höhe von“ (với giá trị) — giới từ chỉ số tiền đầu tư."},
+{w:"für",de:"„sich für etwas eignen“ – feste Präposition „für“.",vi:"„sich für etwas eignen“ (phù hợp cho) — giới từ cố định."},
+{w:"sollen",de:"Modalverb „sollen“ Präsens Plural, drückt eine geplante Zukunft aus.",vi:"Động từ khiếm khuyết „sollen“, số nhiều, diễn tả kế hoạch tương lai."}
+]},
+
+{an:"Bildungsabteilung", betreff:"Antrag auf Finanzierung einer Weiterbildung",
+body:"Sehr geehrte Frau Ivanova,\n\nhiermit beantrage ich die Übernahme der Kosten {1} eine berufsbegleitende Weiterbildung zum Industriemeister. Die Qualifikation würde es mir ermöglichen, künftig anspruchsvollere Aufgaben {2} übernehmen, wovon {3} auch das Unternehmen profitieren würde. Die Kursgebühren belaufen sich {4} insgesamt 3.200 Euro, verteilt {5} vier Semester.",
+blanks:[
+{w:"für",de:"„die Kosten für etwas übernehmen“ – feste Präposition „für“.",vi:"„die Kosten für etwas übernehmen“ (chi trả chi phí cho) — giới từ cố định."},
+{w:"zu",de:"„die Möglichkeit haben, etwas zu übernehmen“ – zu-Infinitiv.",vi:"Dạng „zu + động từ nguyên mẫu“ sau cụm khả năng."},
+{w:"letztlich",de:"Adverb: letztlich = am Ende, im Ergebnis.",vi:"Trạng từ „letztlich“ (cuối cùng, xét cho cùng)."},
+{w:"auf",de:"„sich belaufen auf + Akkusativ“ – feste Präposition.",vi:"„sich belaufen auf“ (lên tới) — giới từ cố định."},
+{w:"auf",de:"„verteilt auf + Akkusativ“ – feste Präposition bei einer Aufteilung.",vi:"„verteilt auf“ (chia đều cho) — giới từ cố định."}
+]},
+
+{an:"Kommentar", betreff:"Fachkräftemangel im Handwerk",
+body:"Der Fachkräftemangel {1} deutschen Handwerk hat sich in den vergangenen Jahren erheblich verschärft. Zahlreiche Betriebe berichten, {2} offene Lehrstellen über Monate hinweg unbesetzt bleiben. Als Ursache {3} unter anderem die geringe gesellschaftliche Anerkennung handwerklicher Berufe sowie die starke Konkurrenz {4} akademischen Ausbildungswegen genannt. Ohne gezielte Gegenmaßnahmen dürfte sich diese Entwicklung {5} weiter zuspitzen.",
+blanks:[
+{w:"im",de:"„im Handwerk“ = in + dem, Ort/Bereich der Wirtschaft.",vi:"„im“ = in + dem, chỉ lĩnh vực."},
+{w:"dass",de:"Konjunktion, leitet den berichteten Inhalt als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu nội dung được báo cáo."},
+{w:"wird",de:"Passiv Präsens: als Ursache wird…genannt.",vi:"Thể bị động thì hiện tại: „wird genannt“ (được nêu ra)."},
+{w:"durch",de:"„die Konkurrenz durch etwas“ – feste Präposition „durch“.",vi:"„die Konkurrenz durch etwas“ (sự cạnh tranh từ) — giới từ cố định."},
+{w:"künftig",de:"Adverb: künftig = in Zukunft, formelles Register.",vi:"Trạng từ „künftig“ (trong tương lai), văn phong trang trọng."}
+]},
+
+{an:"Beschwerdestelle", betreff:"Beschwerde wegen Diskriminierung am Arbeitsplatz",
+body:"Sehr geehrte Damen und Herren,\n\nich wende mich {1} Sie, {2} auf mögliche diskriminierende Äußerungen meines Vorgesetzten hinzuweisen. In mehreren Situationen wurde meine Herkunft {3} abwertender Weise thematisiert, obwohl ich {4} keinem Zeitpunkt Anlass dazu gegeben habe. Ich bitte um eine vertrauliche Prüfung des Sachverhalts sowie {5} geeignete Maßnahmen.",
+blanks:[
+{w:"an",de:"„sich an jemanden wenden“ – feste Präposition „an“.",vi:"„sich an jemanden wenden“ (liên hệ với ai) — giới từ cố định."},
+{w:"um",de:"Konnektor „um…zu“ für den Zweck (gleiches Subjekt „ich“).",vi:"Liên từ „um…zu“ diễn tả mục đích (cùng chủ ngữ)."},
+{w:"in",de:"„in abwertender Weise“ – feste Wendung mit „in“.",vi:"Cụm cố định „in abwertender Weise“ (theo cách xúc phạm)."},
+{w:"zu",de:"„zu keinem Zeitpunkt“ – feste Wendung, bedeutet „niemals“.",vi:"Cụm cố định „zu keinem Zeitpunkt“ (không bao giờ)."},
+{w:"um",de:"„bitten um + Akkusativ“ – feste Präposition, hier wiederholt vor „geeignete Maßnahmen“.",vi:"„bitten um“ lặp lại trước yêu cầu thứ hai."}
+]},
+
+{an:"Belegschaft", betreff:"Offener Brief an die Geschäftsführung",
+body:"Sehr geehrte Geschäftsführung,\n\nals Vertreter der Belegschaft möchten wir {1} diesem Schreiben auf die anhaltende Unzufriedenheit {2} den aktuellen Arbeitsbedingungen hinweisen. Viele Kolleginnen und Kollegen berichten {3} einer zunehmenden Arbeitsbelastung, {4} sich seit der letzten Umstrukturierung deutlich verstärkt hat. Wir bitten um einen zeitnahen Dialog, {5} gemeinsam tragfähige Lösungen zu erarbeiten.",
+blanks:[
+{w:"mit",de:"„mit diesem Schreiben“ – feste Präposition „mit“.",vi:"„mit diesem Schreiben“ (bằng thư này) — giới từ cố định."},
+{w:"mit",de:"„Unzufriedenheit mit etwas“ – feste Präposition „mit“.",vi:"„Unzufriedenheit mit etwas“ (sự bất mãn với) — giới từ cố định."},
+{w:"von",de:"„berichten von + Dativ“ – feste Präposition.",vi:"„berichten von“ (kể về) — giới từ cố định."},
+{w:"die",de:"Relativpronomen Nominativ Femininum, bezogen auf „Arbeitsbelastung“: die sich verstärkt hat.",vi:"Đại từ quan hệ, cách Nominativ, giống cái: „die“."},
+{w:"um",de:"Konnektor „um…zu“ für den Zweck des Dialogs.",vi:"Liên từ „um…zu“ diễn tả mục đích của cuộc đối thoại."}
+]},
+
+{an:"Branchenanalyse", betreff:"Wirtschaftliche Entwicklung der Baubranche",
+body:"Die Baubranche sieht sich derzeit {1} mehreren Herausforderungen konfrontiert. Zum einen führen gestiegene Materialpreise {2} steigenden Baukosten, zum anderen erschwert der anhaltende Fachkräftemangel die termingerechte Fertigstellung {3} Projekten. Experten gehen davon aus, {4} sich die Lage kurzfristig nicht wesentlich verbessern wird. Dennoch bleibt die langfristige Nachfrage {5} Wohnraum ungebrochen hoch.",
+blanks:[
+{w:"mit",de:"„sich mit etwas konfrontiert sehen“ – feste Präposition „mit“.",vi:"„sich mit etwas konfrontiert sehen“ (đối mặt với) — giới từ cố định."},
+{w:"zu",de:"„etwas führt zu etwas“ – feste Präposition „zu“ (Ergebnis).",vi:"„zu etwas führen“ (dẫn đến) — giới từ cố định."},
+{w:"von",de:"„die Fertigstellung von Projekten“ – Präposition „von“ bei Nominalisierung.",vi:"„von“ dùng trong cấu trúc danh từ hóa."},
+{w:"dass",de:"Konjunktion, leitet die Einschätzung der Experten als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu nhận định của chuyên gia."},
+{w:"nach",de:"„die Nachfrage nach + Dativ“ – feste Präposition.",vi:"„die Nachfrage nach“ (nhu cầu về) — giới từ cố định."}
+]}
+,
+
+{an:"—", betreff:"Der Wert von Pausen",
+body:"Studien zufolge steigert regelmäßiges Pausieren {1} Konzentrationsfähigkeit erheblich. Wer ohne Unterbrechung stundenlang arbeitet, {2} paradoxerweise eine geringere Produktivität. Dennoch fällt es vielen schwer, sich {3} Pausen zu gönnen, {4} ständige Erreichbarkeit mittlerweile als Norm gilt. Indem man feste Pausenzeiten einplant, {5} sich dieser Teufelskreis jedoch durchbrechen.",
+blanks:[
+{w:"die",de:"bestimmter Artikel, Akk. Fem. — die Konzentrationsfähigkeit steigern."},
+{w:"riskiert",de:"Verb, 3.Pers.Sg. — riskiert (Präsens)."},
+{w:"bewusste",de:"Adjektivendung, Akk. Plural — bewusste Pausen (Nullartikel, Plural)."},
+{w:"zumal",de:"Konjunktion (zumal) — zumal … — verstärkend kausal."},
+{w:"lässt",de:"sich + Infinitiv + lassen — sich durchbrechen lassen."}
+]},
+
+{an:"—", betreff:"Ein Beschwerdebrief an eine Fluggesellschaft",
+body:"Sehr geehrte Damen und Herren, mein Flug {1} am 14. Juni ohne vorherige Ankündigung um sechs Stunden verschoben. Weder {2} ich rechtzeitig informiert, noch erhielt ich eine angemessene Entschädigung. Ich {3} erwartet, dass ein Unternehmen Ihrer Größe transparenter kommuniziert. Zudem {4} mir laut Ihrer Hotline mitgeteilt worden, ich hätte keinen Anspruch auf Entschädigung – eine Aussage, die ich für falsch halte. Ich bitte Sie daher, den Fall erneut {5} prüfen.",
+blanks:[
+{w:"wurde",de:"Passiv, Präteritum — wurde … verschoben."},
+{w:"wurde",de:"Passiv, Präteritum — weder … noch — Passiv-Struktur."},
+{w:"hätte",de:"Konjunktiv II — hätte erwartet, dass … — irreale Erwartung."},
+{w:"sei",de:"Konjunktiv I (indirekte Rede) — sei mitgeteilt worden — formell, indirekte Rede."},
+{w:"zu",de:"zu + Infinitiv — bitten, … zu prüfen."}
+]},
+
+{an:"—", betreff:"Kreativität unter Druck",
+body:"Eine Studie {1}, dass Kreativität nicht zwangsläufig unter Zeitdruck leidet, wie lange angenommen wurde. Manche Proband*innen entwickelten {2} Druck sogar originellere Lösungen als in entspannter Atmosphäre. Die Forscher*innen führen {3} darauf zurück, dass ein gewisses Maß an Anspannung die Konzentration fördert. Zu viel Druck {4} sich jedoch, {5} zu erwarten, negativ aus.",
+blanks:[
+{w:"zeigte",de:"Verb, Präteritum — zeigte, dass … (Präteritum)."},
+{w:"unter",de:"Präposition + Dativ (feste Wendung) — unter Druck."},
+{w:"dies",de:"Demonstrativpronomen — dies darauf zurückführen."},
+{w:"wirkt",de:"reflexives Verb, 3.Pers.Sg. — sich auswirken (Präsens)."},
+{w:"wie",de:"Vergleichspartikel — wie zu erwarten — Einschub."}
+]},
+
+{an:"—", betreff:"Klimawandel und persönliche Verantwortung",
+body:"Auch wenn der Klimawandel {1} globales Problem ist, betonen Expert*innen zunehmend die Bedeutung individuellen Verhaltens. Jede*r Einzelne {2} durch alltägliche Entscheidungen zur Gesamtbilanz bei. Dennoch wird häufig kritisiert, {3} Verantwortung werde zu einseitig auf Verbraucher*innen abgewälzt, {4} große Unternehmen kaum zur Rechenschaft gezogen würden. Nur wenn beide Ebenen zusammenwirken, {5} sich das Klimaziel realistisch erreichen.",
+blanks:[
+{w:"ein",de:"unbestimmter Artikel, Nom. Neutrum — ein globales Problem."},
+{w:"trägt",de:"trennbares Verb (beitragen) — beitragen zu + Dat."},
+{w:"die",de:"bestimmter Artikel, Nom. Fem. — die Verantwortung werde … (Subjekt)."},
+{w:"während",de:"Konjunktion (Gegensatz) — während … — Gegenüberstellung."},
+{w:"lässt",de:"sich + Infinitiv + lassen — sich erreichen lassen."}
+]},
+
+{an:"—", betreff:"Der Wandel der Arbeitswelt",
+body:"Die Digitalisierung verändert die Arbeitswelt {1} einem Tempo, das viele Unternehmen kaum bewältigen können. Berufsbilder, {2} es vor zehn Jahren noch gar nicht gab, gehören heute zum Alltag. Gleichzeitig fallen zahlreiche Tätigkeiten weg, {3} früher als sicher galten. Wer sich diesem Wandel {4} will, riskiert, den Anschluss zu verlieren. Umso wichtiger ist es, lebenslanges Lernen {5} festen Bestandteil der eigenen Laufbahn zu begreifen.",
+blanks:[
+{w:"in",de:"Präposition + Dativ — in einem Tempo."},
+{w:"die",de:"Relativpronomen, Nom. Plural — Berufsbilder, die … (Nominativ)."},
+{w:"die",de:"Relativpronomen, Nom. Plural — Tätigkeiten, die … (Nominativ)."},
+{w:"entziehen",de:"Verb, Infinitiv (reflexiv) — sich entziehen + Dat."},
+{w:"als",de:"Präposition (als + Akk.) — etwas als X begreifen."}
+]}
+,
+
+{type:"artikel", an:"—", betreff:"Handwerksbetriebe klagen über Bürokratie",
+body:"Immer mehr Handwerksbetriebe sehen sich {1} zunehmender bürokratischer Belastung konfrontiert. Laut einer Umfrage des Handwerksverbands verbringen Inhaber durchschnittlich zehn Stunden pro Woche {2} Verwaltungsaufgaben, {3} eigentlich für die eigentliche Arbeit fehlen. Der Verband fordert daher, bürokratische Verfahren deutlich {4} vereinfachen. Ohne spürbare Entlastung {5} viele kleinere Betriebe langfristig kaum überlebensfähig sein.",
+blanks:[
+{w:"mit",de:"„sich mit etwas konfrontiert sehen“ – feste Präposition."},
+{w:"mit",de:"„Zeit mit etwas verbringen“ – feste Präposition."},
+{w:"die",de:"Relativpronomen Nominativ Plural, bezogen auf „Stunden“: die fehlen."},
+{w:"zu",de:"Infinitivkonstruktion nach „fordern“: zu vereinfachen."},
+{w:"dürften",de:"Konjunktiv II von „dürfen“ für eine vorsichtige Prognose."}
+]},
+
+{type:"blog", an:"—", betreff:"Mein Jahr als Quereinsteigerin in der IT-Branche",
+body:"Vor einem Jahr habe ich mich {1}, meinen sicheren Bürojob aufzugeben und noch einmal {2} vorn anzufangen. Rückblickend war es die beste Entscheidung meines Lebens, {3} der Weg alles andere als leicht war. Besonders am Anfang zweifelte ich oft {4}, ob ich den Schritt bereuen würde. Heute weiß ich: Wer offen {5} Neues bleibt, kann in jedem Alter noch einmal ganz von vorn beginnen.",
+blanks:[
+{w:"entschieden",de:"Perfekt von „sich entscheiden“ + zu-Infinitiv: ich habe mich entschieden, … aufzugeben."},
+{w:"von",de:"„von vorn anfangen“ – feste Wendung."},
+{w:"obwohl",de:"Konnektor für einen Gegensatz: obwohl der Weg nicht leicht war."},
+{w:"daran",de:"„zweifeln an + Dativ“ – Vorverweis „daran“ vor dem ob-Satz."},
+{w:"für",de:"„offen sein für + Akkusativ“ – feste Präposition."}
+]},
+
+{type:"interview", an:"—", betreff:"Interview: Fachkräftemangel im Handwerk",
+body:"Frage: Herr Bauer, wie erklären Sie sich den akuten Fachkräftemangel?\nAntwort: Ein wesentlicher Grund liegt {1} der geringen Wertschätzung handwerklicher Berufe. Viele Eltern raten ihren Kindern nach wie vor {2} einem Studium.\nFrage: Was müsste sich ändern?\nAntwort: Vor allem die Bezahlung müsste attraktiver werden, {3} mehr junge Menschen sich für eine Ausbildung entscheiden. Zudem sollte das Image des Handwerks gezielt {4} den Schulen verbessert werden. Auch die Politik ist {5} der Pflicht, bessere Rahmenbedingungen zu schaffen.",
+blanks:[
+{w:"in",de:"„der Grund liegt in etwas“ – feste Präposition."},
+{w:"zu",de:"„jemandem zu etwas raten“ – feste Präposition."},
+{w:"damit",de:"Konnektor für den Zweck bei unterschiedlichen Subjekten (Bezahlung wird besser / Menschen entscheiden sich)."},
+{w:"an",de:"„an den Schulen“ – Präposition „an“ für Institution/Ort."},
+{w:"in",de:"Feste Wendung: „in der Pflicht sein“ = verantwortlich sein."}
+]}
+],
+
+5:[
+{an:"Fachkommentar", betreff:"Digitalisierung der beruflichen Bildung",
+body:"Die fortschreitende Digitalisierung stellt die berufliche Bildung {1} tiefgreifende Herausforderungen, denen mit rein traditionellen Methoden kaum {2} begegnen ist. Insbesondere die Ausbildungsbetriebe, {3} bislang überwiegend analog arbeiteten, sehen sich gezwungen, ihre Konzepte grundlegend zu überdenken. Wäre eine konsequentere Investition {4} digitale Infrastruktur frühzeitig erfolgt, {5} sich der derzeitige Rückstand vermutlich vermeiden lassen.",
+blanks:[
+{w:"vor",de:"„jemanden vor Herausforderungen stellen“ – feste Präposition „vor“.",vi:"„jemanden vor Herausforderungen stellen“ (đặt ai trước thách thức) — giới từ cố định."},
+{w:"zu",de:"„kaum zu begegnen ist“ – Passiversatzform „sein + zu + Infinitiv“ (= kann kaum begegnet werden).",vi:"Cấu trúc thay thế bị động „sein + zu + Infinitiv“ (= khó có thể đối phó được)."},
+{w:"die",de:"Relativpronomen Nominativ Plural, bezogen auf „Ausbildungsbetriebe“: die…arbeiteten.",vi:"Đại từ quan hệ, cách Nominativ, số nhiều: „die“."},
+{w:"in",de:"„eine Investition in etwas“ – feste Präposition „in“.",vi:"„eine Investition in etwas“ (đầu tư vào) — giới từ cố định."},
+{w:"hätte",de:"Konjunktiv II Plusquamperfekt (irreale Bedingung der Vergangenheit): hätte…lassen.",vi:"Konjunktiv II thì quá khứ hoàn thành (điều kiện không có thật trong quá khứ)."}
+]},
+
+{an:"Essay", betreff:"Arbeitsmarktintegration von Zugewanderten",
+body:"Die erfolgreiche Integration Zugewanderter {1} den deutschen Arbeitsmarkt hängt maßgeblich {2} der Anerkennung ausländischer Qualifikationen ab. Zwar wurden in den letzten Jahren zahlreiche Verfahren vereinfacht, dennoch klagen Betroffene weiterhin {3} langwierige Bürokratie. Sollte es gelingen, {4} Anerkennungsverfahren spürbar zu beschleunigen, {5} sich mittelfristig ein positiver Effekt auf den Fachkräftemangel erwarten.",
+blanks:[
+{w:"in",de:"„die Integration in etwas“ – feste Präposition „in“ (Nominalisierung).",vi:"„die Integration in etwas“ (hòa nhập vào) — giới từ cố định."},
+{w:"von",de:"„abhängen von + Dativ“ – feste Präposition.",vi:"„abhängen von“ (phụ thuộc vào) — giới từ cố định."},
+{w:"über",de:"„klagen über + Akkusativ“ – feste Präposition.",vi:"„klagen über“ (than phiền về) — giới từ cố định."},
+{w:"die",de:"Bestimmter Artikel Akkusativ Plural: die Anerkennungsverfahren beschleunigen.",vi:"Mạo từ xác định, cách Akkusativ, số nhiều: „die“."},
+{w:"ließe",de:"Konjunktiv II von „lassen“ für eine vorsichtige Einschätzung: ließe sich erwarten.",vi:"Konjunktiv II của „lassen“, diễn đạt nhận định thận trọng."}
+]},
+
+{an:"Stellungnahme", betreff:"Zu den laufenden Tarifverhandlungen",
+body:"Die Gewerkschaft weist darauf hin, {1} die Reallöhne in der Branche seit Jahren hinter der allgemeinen Preisentwicklung zurückbleiben. Die Arbeitgeberseite hingegen macht geltend, {2} eine deutliche Lohnerhöhung angesichts der wirtschaftlichen Rahmenbedingungen kaum {3} vertreten sei. Beide Seiten zeigen sich grundsätzlich verhandlungsbereit, wenngleich ein Kompromiss {4} jetzigem Stand noch {5} erzielt werden konnte.",
+blanks:[
+{w:"dass",de:"Konjunktion, leitet die Aussage der Gewerkschaft als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu phát biểu của công đoàn."},
+{w:"dass",de:"Konjunktion für die Gegenposition der Arbeitgeberseite.",vi:"Liên từ cho quan điểm đối lập của bên sử dụng lao động."},
+{w:"zu",de:"„zu vertreten sein“ – Passiversatzform mit „sein + zu + Infinitiv“.",vi:"Cấu trúc thay thế bị động „sein + zu + Infinitiv“."},
+{w:"beim",de:"„beim jetzigen Stand“ = bei + dem, feste Wendung.",vi:"Cụm cố định „beim jetzigen Stand“ (ở tình hình hiện tại)."},
+{w:"nicht",de:"Verneinung: noch nicht erzielt werden konnte.",vi:"Phủ định: „noch nicht“ (vẫn chưa)."}
+]},
+
+{an:"Kommentar", betreff:"Demografischer Wandel und Ausbildungsmarkt",
+body:"Angesichts des demografischen Wandels sehen sich immer mehr Betriebe {1} der Situation konfrontiert, Ausbildungsplätze nicht {2} besetzen zu können. Während vor zwei Jahrzehnten noch ein Überangebot {3} Bewerbern herrschte, hat sich das Verhältnis mittlerweile umgekehrt. Wer {4} als Ausbildungsbetrieb attraktiv bleiben will, kommt {5} einer Investition in Ausbildungsqualität und Arbeitsbedingungen kaum umhin.",
+blanks:[
+{w:"mit",de:"„sich mit einer Situation konfrontiert sehen“ – feste Präposition „mit“.",vi:"„sich mit einer Situation konfrontiert sehen“ (đối mặt với tình huống) — giới từ cố định."},
+{w:"mehr",de:"Adverb: nicht mehr besetzen können = es geht nicht mehr wie früher.",vi:"Trạng từ „mehr“ trong cụm phủ định „nicht mehr“ (không còn nữa)."},
+{w:"an",de:"„ein Überangebot an + Dativ“ – feste Präposition.",vi:"„ein Überangebot an“ (nguồn cung dư thừa về) — giới từ cố định."},
+{w:"weiterhin",de:"Adverb: weiterhin attraktiv bleiben = auch in Zukunft attraktiv sein.",vi:"Trạng từ „weiterhin“ (tiếp tục), diễn tả sự duy trì."},
+{w:"um",de:"Feste Wendung: „um etwas nicht umhinkommen“ = etwas nicht vermeiden können.",vi:"Cụm cố định „um etwas nicht umhinkommen“ (không thể tránh khỏi việc gì)."}
+]},
+
+{an:"Fachartikel", betreff:"Zukunft der dualen Ausbildung",
+body:"Ob das duale Ausbildungssystem seine internationale Vorbildfunktion {1} Zukunft behaupten kann, hängt entscheidend {2} seiner Anpassungsfähigkeit ab. Kritiker bemängeln, das System reagiere {3} langsam auf neue Berufsbilder im digitalen Bereich. Befürworter hingegen betonen, gerade die enge Verzahnung {4} Theorie und betrieblicher Praxis mache das Modell auch künftig {5} zukunftsfähig.",
+blanks:[
+{w:"in",de:"„in Zukunft“ – feste Zeitangabe mit „in“.",vi:"Cụm cố định „in Zukunft“ (trong tương lai)."},
+{w:"von",de:"„abhängen von + Dativ“ – feste Präposition.",vi:"„abhängen von“ (phụ thuộc vào) — giới từ cố định."},
+{w:"zu",de:"Adverb der Übermaß-Angabe: zu langsam = übermäßig langsam.",vi:"Trạng từ chỉ mức độ quá: „zu langsam“ (quá chậm)."},
+{w:"von",de:"„die Verzahnung von…und…“ – feste Präposition „von“ bei Verbindungen.",vi:"„die Verzahnung von…und…“ (sự gắn kết giữa) — giới từ cố định."},
+{w:"besonders",de:"Adverb zur Verstärkung: besonders zukunftsfähig = in hohem Maße zukunftsfähig.",vi:"Trạng từ nhấn mạnh „besonders“ (đặc biệt)."}
+]},
+
+{an:"Redebeitrag", betreff:"Redebeitrag zur Betriebsversammlung",
+body:"Liebe Kolleginnen und Kollegen,\n\nwie Sie sicher wissen, steht unser Unternehmen derzeit {1} einem grundlegenden Wandel. Anstatt {2} auf Bewährtes zu verlassen, sind wir gefordert, neue Wege zu gehen. Nur {3} wir gemeinsam an einem Strang ziehen, wird es uns gelingen, diese Phase erfolgreich {4} meistern. Ich möchte Sie daher bitten, den anstehenden Veränderungen mit Offenheit {5} begegnen.",
+blanks:[
+{w:"vor",de:"„vor einem Wandel stehen“ – feste Präposition „vor“.",vi:"„vor einem Wandel stehen“ (đang đứng trước sự thay đổi) — giới từ cố định."},
+{w:"uns",de:"Reflexivpronomen nach „anstatt“ + zu-Infinitiv: anstatt uns zu verlassen.",vi:"Đại từ phản thân sau „anstatt“ + zu-Infinitiv."},
+{w:"wenn",de:"Konnektor für eine Bedingung: nur wenn = ausschließlich unter der Bedingung, dass.",vi:"Liên từ điều kiện: „nur wenn“ (chỉ khi nào)."},
+{w:"zu",de:"„gelingen, etwas zu meistern“ – zu-Infinitiv nach „gelingen“.",vi:"Dạng „zu + động từ nguyên mẫu“ sau „gelingen“."},
+{w:"zu",de:"„etwas mit Offenheit begegnen“ – zu-Infinitiv nach „bitten“.",vi:"Dạng „zu + động từ nguyên mẫu“ sau „bitten“."}
+]},
+
+{an:"Kritischer Kommentar", betreff:"Bürokratie als Ausbildungshindernis",
+body:"Kaum ein Thema wird {1} Ausbildungsbetrieben so häufig kritisiert wie der bürokratische Aufwand, der {2} der Einstellung von Auszubildenden entsteht. Anstatt die Verfahren zu vereinfachen, {3} in den letzten Jahren zusätzliche Nachweispflichten eingeführt worden, die insbesondere kleinere Betriebe {4} überfordern drohen. Eine spürbare Entlastung, {5} von der Politik wiederholt angekündigt wurde, steht bislang aus.",
+blanks:[
+{w:"von",de:"„von Betrieben kritisiert werden“ – Präposition „von“ im Passiv (Urheber).",vi:"„von“ dùng trong thể bị động để chỉ chủ thể thực hiện."},
+{w:"bei",de:"„bei der Einstellung entstehen“ – feste Präposition „bei“ (Anlass).",vi:"„bei der Einstellung“ (khi tuyển dụng) — giới từ chỉ dịp/thời điểm."},
+{w:"sind",de:"Passiv Perfekt Plural: sind…eingeführt worden.",vi:"Thể bị động thì hoàn thành, số nhiều: „sind…eingeführt worden“."},
+{w:"zu",de:"„drohen, etwas zu tun“ – zu-Infinitiv nach „drohen“.",vi:"Dạng „zu + động từ nguyên mẫu“ sau „drohen“."},
+{w:"die",de:"Relativpronomen Nominativ Femininum, bezogen auf „Entlastung“: die angekündigt wurde.",vi:"Đại từ quan hệ, cách Nominativ, giống cái: „die“."}
+]},
+
+{an:"Analyse", betreff:"Fachkräftezuwanderung nach Deutschland",
+body:"Um dem wachsenden Fachkräftemangel {1} begegnen, hat die Bundesregierung die Einwanderungsbestimmungen {2} qualifizierte Arbeitskräfte in den vergangenen Jahren deutlich gelockert. Dennoch zeigt sich, {3} allein gesetzliche Erleichterungen nicht ausreichen: Ohne eine spürbare Verbesserung der Anerkennungspraxis {4} viele hochqualifizierte Zuwanderer weiterhin unterhalb ihres Qualifikationsniveaus beschäftigt bleiben, {5} dem Arbeitsmarkt wertvolles Potenzial entgeht.",
+blanks:[
+{w:"zu",de:"Konnektor „um…zu“ für den Zweck, hier mit trennbarem Verb: um…zu begegnen.",vi:"Liên từ „um…zu“ diễn tả mục đích."},
+{w:"für",de:"„Bestimmungen für qualifizierte Arbeitskräfte“ – feste Präposition „für“.",vi:"„Bestimmungen für etwas“ (quy định dành cho) — giới từ cố định."},
+{w:"dass",de:"Konjunktion, leitet die Feststellung als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu nhận định."},
+{w:"werden",de:"Futur I / Passiv-Kombination im Nebensatz: werden…bleiben (Zukunftsbedeutung).",vi:"Thì tương lai kết hợp trong mệnh đề phụ: „werden…bleiben“."},
+{w:"wodurch",de:"Relativ-Konnektor „wodurch“ = und dadurch, leitet eine Folge ein.",vi:"Liên từ quan hệ „wodurch“ (do đó, qua đó), dẫn dắt hệ quả."}
+]},
+
+{an:"Kommentar", betreff:"Digitalisierung der Verwaltung",
+body:"Die schleppende Digitalisierung deutscher Behörden wird von Wirtschaftsvertretern seit Langem {1} zentrales Hemmnis für die Wettbewerbsfähigkeit des Standorts betrachtet. Während Nachbarländer ihre Verwaltungsprozesse bereits weitgehend digitalisiert haben, hinkt Deutschland {2} hinterher, obwohl entsprechende Gesetze {3} formulieren längst vorliegen. Ohne eine konsequentere Umsetzung dürfte sich dieser Rückstand {4} weiter vergrößern, was letztlich {5} Nachteil für Unternehmen wie Auszubildende gleichermaßen wäre.",
+blanks:[
+{w:"als",de:"„etwas als etwas betrachten“ – feste Präposition „als“.",vi:"„etwas als etwas betrachten“ (coi cái gì là) — giới từ cố định."},
+{w:"weiterhin",de:"Adverb: weiterhin hinterherhinken = immer noch zurückliegen.",vi:"Trạng từ „weiterhin“ (vẫn tiếp tục)."},
+{w:"zu",de:"„Gesetze zu formulieren“ – zu-Infinitiv nach „vorliegen“ (unpersönliche Konstruktion).",vi:"Dạng „zu + động từ nguyên mẫu“ trong cấu trúc vô nhân xưng."},
+{w:"künftig",de:"Adverb: künftig = in Zukunft, formelles Register.",vi:"Trạng từ „künftig“ (trong tương lai), văn phong trang trọng."},
+{w:"zum",de:"„zum Nachteil gereichen“ = zu + dem, feste Wendung.",vi:"Cụm cố định „zum Nachteil“ (gây bất lợi cho)."}
+]},
+
+{an:"Diskussionsbeitrag", betreff:"Work-Life-Balance in der Ausbildung",
+body:"In der Diskussion {1} eine bessere Work-Life-Balance für Auszubildende wird häufig übersehen, {2} bereits während der Ausbildungszeit wichtige Weichen für spätere Arbeitsgewohnheiten gestellt werden. Wer {3} Beginn seiner beruflichen Laufbahn ständige Überlastung als normal erlebt, wird diese Haltung mit hoher Wahrscheinlichkeit auch später {4} beibehalten. Ausbildungsbetriebe sollten sich dieser Vorbildfunktion {5} bewusst sein.",
+blanks:[
+{w:"um",de:"„die Diskussion um etwas“ – feste Präposition „um“ (Thema).",vi:"„die Diskussion um etwas“ (cuộc thảo luận về) — giới từ cố định."},
+{w:"dass",de:"Konjunktion, leitet den übersehenen Umstand als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu điều thường bị bỏ qua."},
+{w:"von",de:"„von Beginn an“ – feste Wendung mit „von“.",vi:"Cụm cố định „von Beginn an“ (ngay từ đầu)."},
+{w:"beibehalten",de:"Trennbares Verb „beibehalten“, Infinitiv am Satzende nach Futur „wird…werden“.",vi:"Động từ tách „beibehalten“ (giữ nguyên), dạng nguyên mẫu ở cuối câu."},
+{w:"stärker",de:"Komparativ von „stark“: sich stärker bewusst sein = mehr bewusst sein.",vi:"So sánh hơn của „stark“: „sich stärker bewusst sein“ (ý thức rõ hơn)."}
+]},
+
+{an:"Fachlicher Bericht", betreff:"Nachhaltigkeit als Unternehmensstrategie",
+body:"Immer mehr mittelständische Unternehmen integrieren Nachhaltigkeitsziele {1} ihre strategische Ausrichtung, nicht zuletzt, {2} sich hieraus auch wirtschaftliche Vorteile ergeben können. Studien zufolge gewinnen ökologisch verantwortungsvoll agierende Betriebe zunehmend {3} Attraktivität bei jungen Fachkräften, {4} bei der Berufswahl verstärkt auf die Werte ihres künftigen Arbeitgebers achten. Wer diesen Wandel verschläft, riskiert {5}, langfristig an Wettbewerbsfähigkeit einzubüßen.",
+blanks:[
+{w:"in",de:"„etwas in die Ausrichtung integrieren“ – feste Präposition „in“.",vi:"„etwas in etwas integrieren“ (lồng ghép vào) — giới từ cố định."},
+{w:"da",de:"Konnektor für den Grund (formell): da = weil.",vi:"Liên từ trang trọng chỉ lý do: „da“."},
+{w:"an",de:"„an Attraktivität gewinnen“ – feste Präposition „an“.",vi:"„an Attraktivität gewinnen“ (trở nên hấp dẫn hơn) — giới từ cố định."},
+{w:"die",de:"Relativpronomen Nominativ Plural, bezogen auf „Fachkräfte“: die achten.",vi:"Đại từ quan hệ, cách Nominativ, số nhiều: „die“."},
+{w:"es",de:"Vorläufiges „es“ vor zu-Infinitiv-Konstruktion: riskiert es, einzubüßen.",vi:"„es“ tạm thời đứng trước cụm zu-Infinitiv."}
+]},
+
+{an:"Kommentar", betreff:"Künstliche Intelligenz am Arbeitsplatz",
+body:"Der Einsatz künstlicher Intelligenz {1} Arbeitsalltag wirft zunehmend Fragen {2} Qualifikationsanforderungen und Arbeitsplatzsicherheit auf. Während einige Berufsbilder {3} absehbarer Zeit grundlegend verändert werden dürften, entstehen gleichzeitig neue Tätigkeitsfelder, deren Anforderungsprofile heute vielfach noch unklar sind. Bildungseinrichtungen stehen damit {4} der Herausforderung, Ausbildungsinhalte kontinuierlich anzupassen, {5} den Anschluss an die technologische Entwicklung nicht zu verlieren.",
+blanks:[
+{w:"im",de:"„im Arbeitsalltag“ = in + dem, feste Wendung.",vi:"Cụm cố định „im Arbeitsalltag“ (trong công việc hàng ngày)."},
+{w:"nach",de:"„Fragen nach + Dativ“ – feste Präposition.",vi:"„Fragen nach etwas“ (câu hỏi về) — giới từ cố định."},
+{w:"in",de:"„in absehbarer Zeit“ – feste Wendung mit „in“.",vi:"Cụm cố định „in absehbarer Zeit“ (trong tương lai gần)."},
+{w:"vor",de:"„vor einer Herausforderung stehen“ – feste Präposition „vor“.",vi:"„vor einer Herausforderung stehen“ (đứng trước thách thức) — giới từ cố định."},
+{w:"um",de:"Konnektor „um…zu“ für den Zweck (gleiches Subjekt: Bildungseinrichtungen).",vi:"Liên từ „um…zu“ diễn tả mục đích (cùng chủ ngữ)."}
+]},
+
+{an:"Stellungnahme", betreff:"Zur geplanten Gesetzesänderung im Einwanderungsrecht",
+body:"Der vorliegende Gesetzentwurf sieht vor, {1} Fachkräften aus Drittstaaten künftig ein erleichterter Zugang {2} deutschen Arbeitsmarkt ermöglicht wird. Verbände begrüßen diesen Schritt grundsätzlich, weisen jedoch darauf hin, {3} die praktische Umsetzung maßgeblich von einer beschleunigten Bearbeitung {4} den Ausländerbehörden abhängen wird. Ohne ausreichende personelle Ressourcen dürften die neuen Regelungen ihre beabsichtigte Wirkung {5} verfehlen.",
+blanks:[
+{w:"dass",de:"Konjunktion, leitet den Inhalt des Gesetzentwurfs als Nebensatz ein.",vi:"Liên từ „dass“, mở đầu nội dung của dự luật."},
+{w:"zum",de:"„Zugang zum Arbeitsmarkt“ = zu + dem, feste Wendung.",vi:"Cụm cố định „Zugang zum Arbeitsmarkt“ (khả năng tiếp cận thị trường lao động)."},
+{w:"dass",de:"Konjunktion, leitet den zweiten Nebensatz nach „darauf hinweisen“ ein.",vi:"Liên từ „dass“, mở đầu mệnh đề phụ thứ hai sau „darauf hinweisen“."},
+{w:"bei",de:"„bei den Ausländerbehörden“ – feste Präposition „bei“ (Institution).",vi:"„bei den Behörden“ (tại cơ quan) — giới từ chỉ nơi chốn/cơ quan."},
+{w:"nicht",de:"Verneinung: die Wirkung nicht verfehlen = das Ziel doch noch erreichen (hier: negiert im Kontext „dürften…verfehlen“ = wahrscheinlich verfehlen).",vi:"Phủ định trong ngữ cảnh dự đoán khả năng thất bại của quy định."}
+]}
+,
+
+{an:"—", betreff:"Erkenntnisse aus der Schlafforschung",
+body:"Lange Zeit galt Schlafmangel in vielen Berufsfeldern als Ausdruck von Leistungsbereitschaft. Neuere Untersuchungen zeichnen jedoch ein anderes Bild: Wer regelmäßig zu wenig schläft, {1} nicht nur an Konzentrationsfähigkeit ein, sondern erhöht auch nachweislich {2} Risiko für zahlreiche Erkrankungen. Ein Forschungsteam der Universität Zürich {3} zeigen, dass bereits eine einzige durchwachte Nacht messbare Veränderungen im Immunsystem {4} Folge hat. Ungeachtet {5} Erkenntnisse gilt Schlaf in der Arbeitswelt vielerorts nach wie vor als verzichtbare Größe.",
+blanks:[
+{w:"büßt",de:"Verb (feste Wendung, trennbar) — an etwas einbüßen."},
+{w:"das",de:"bestimmter Artikel, Akk. Neutrum — das Risiko erhöhen."},
+{w:"konnte",de:"Modalverb, Präteritum — konnte … zeigen."},
+{w:"zur",de:"Präposition + Dativ (feste Wendung) — etwas zur Folge haben (zu+der)."},
+{w:"dieser",de:"Demonstrativpronomen, Gen. Plural — ungeachtet dieser Erkenntnisse."}
+]},
+
+{an:"—", betreff:"Der Wandel der Arbeitswelt (C1)",
+body:"Dass sich die Arbeitswelt in einem beispiellosen Tempo wandelt, {1} mittlerweile unbestritten sein. Wovon dieser Wandel jedoch konkret abhängt, {2} gehen die Meinungen innerhalb der Forschung deutlich auseinander. Während die einen den technologischen Fortschritt als treibende Kraft {3}, betonen andere die Bedeutung gesellschaftlicher Wertevorstellungen. Mithin {4} sich der Wandel kaum auf eine einzige Ursache zurückführen. Fest steht lediglich, dass Unternehmen, die sich diesem Prozess {5}, langfristig an Wettbewerbsfähigkeit einbüßen werden.",
+blanks:[
+{w:"dürfte",de:"Konjunktiv II (Vermutung) — dürfte … sein — vorsichtige Vermutung."},
+{w:"darüber",de:"Pronominaladverb — korrespondiert mit wovon → darüber."},
+{w:"ansehen",de:"Verb, Infinitiv (feste Wendung) — etwas als X ansehen."},
+{w:"lässt",de:"sich + Infinitiv + lassen — sich zurückführen lassen."},
+{w:"verschließen",de:"reflexives Verb, 3.Pers.Pl. — sich einer Sache(Dat) verschließen."}
+]},
+
+{an:"—", betreff:"Beschwerdebrief an eine Fluggesellschaft (C1)",
+body:"Sehr geehrte Damen und Herren, mit diesem Schreiben {1} ich mich mit Nachdruck über den Verlauf meines Fluges vom 14. Juni beschweren. Nicht nur wurde der Abflug ohne jegliche Erklärung um mehrere Stunden verschoben, {2} auch die Kommunikation seitens Ihres Personals ließ erheblich zu wünschen übrig. Es {3} dahingestellt, ob eine derartige Vorgehensweise den eigenen Qualitätsansprüchen genügt, die Sie öffentlich stets betonen. Ich {4} mich daher gezwungen, eine angemessene Entschädigung einzufordern, sollte sich das Unternehmen nicht binnen zwei Wochen {5} einer Stellungnahme bereitfinden.",
+blanks:[
+{w:"möchte",de:"Modalverb (Höflichkeitsform) — möchte mich beschweren."},
+{w:"sondern",de:"Konjunktion (nicht nur…sondern auch) — nicht nur X, sondern auch Y."},
+{w:"sei",de:"Konjunktiv I (feste Wendung) — es sei dahingestellt, ob …"},
+{w:"sehe",de:"reflexives Verb, 1.Pers.Sg. — sich gezwungen sehen, … zu tun."},
+{w:"zu",de:"Präposition (feste Wendung) — sich zu etwas bereitfinden."}
+]},
+
+{an:"—", betreff:"Studie zur Kreativität unter Zeitdruck (C1)",
+body:"Der weitverbreiteten Annahme, Kreativität setze grundsätzlich Muße voraus, {1} eine aktuelle Studie der Universität Amsterdam. Die Forscher*innen konnten nachweisen, dass ein moderates Maß an Zeitdruck {2} durchaus positiv auf die Ideenfindung auswirken kann – vorausgesetzt, der Druck wird nicht als Bedrohung, sondern als Ansporn {3}. Entscheidend sei dabei weniger die objektive Zeitknappheit als vielmehr {4} subjektive Bewertung durch die betroffene Person. Die Studie stellt somit gängige Vorstellungen {5} kreatives Arbeiten grundlegend infrage.",
+blanks:[
+{w:"widerspricht",de:"Verb + Dativ — einer Sache(Dat) widersprechen."},
+{w:"sich",de:"Reflexivpronomen — sich auswirken auf + Akk."},
+{w:"wahrgenommen",de:"Partizip II — etwas als X wahrnehmen."},
+{w:"deren",de:"Possessivartikel (Genitiv-Bezug) — deren subjektive Bewertung — bezieht sich auf 'Zeitknappheit'."},
+{w:"über",de:"Präposition (feste Wendung mit Nomen) — Vorstellungen über etwas."}
+]},
+
+{an:"—", betreff:"Klimawandel und individuelle Verantwortung (C1)",
+body:"Kaum ein Thema wird derart kontrovers diskutiert wie die Frage, {1} der Einzelne für die Folgen des Klimawandels verantwortlich zu machen ist. Während manche jegliche individuelle Verantwortung {2} und stattdessen strukturelle Veränderungen fordern, plädieren andere dafür, bei sich selbst {3}. Freilich lässt sich beides kaum gegeneinander ausspielen: Strukturelle Reformen {4} individuelles Handeln bedingen einander. Wer sich dieser Wechselwirkung {5} ist, wird kaum noch für die eine oder andere Position allein plädieren wollen.",
+blanks:[
+{w:"inwiefern",de:"Fragewort (indirekte Frage) — inwiefern … — Ausmaß-Frage."},
+{w:"zurückweisen",de:"Verb, Infinitiv — zurückweisen (Plural)."},
+{w:"anzufangen",de:"zu + Infinitiv — dafür plädieren, … anzufangen."},
+{w:"und",de:"Konjunktion (und) — verbindet zwei Subjekte."},
+{w:"bewusst",de:"Adjektiv (feste Wendung + Gen.) — sich einer Sache(Gen) bewusst sein."}
+]}
+,
+
+{type:"artikel", an:"—", betreff:"Kommentar: Die Zukunft der Ausbildung ist digital",
+body:"Wer glaubt, die duale Ausbildung könne sich {1} den digitalen Wandel stemmen, irrt gewaltig. Bereits heute zeigt sich, {2} Betriebe, die frühzeitig in digitale Lernformate investiert haben, deutlich besser {3} sind, kurzfristig auf veränderte Anforderungen zu reagieren. Wer hingegen weiterhin ausschließlich {4} traditionelle Methoden setzt, riskiert, den Anschluss zu verlieren. Es {5} daher höchste Zeit, dass auch kleinere Betriebe in digitale Infrastruktur investieren.",
+blanks:[
+{w:"gegen",de:"„sich gegen etwas stemmen“ – feste Präposition (= sich widersetzen)."},
+{w:"dass",de:"Konjunktion, leitet den Nebensatz ein."},
+{w:"in der Lage",de:"Feste Wendung: „in der Lage sein, etwas zu tun“ = fähig sein."},
+{w:"auf",de:"„auf etwas setzen“ – feste Präposition (= sich verlassen auf)."},
+{w:"ist",de:"Präsens von „sein“ in fester Wendung: es ist höchste Zeit."}
+]},
+
+{type:"artikel", an:"—", betreff:"Auszug: Studie zur beruflichen Weiterbildung",
+body:"Die vorliegende Studie untersucht, inwiefern berufsbegleitende Weiterbildungsangebote die Aufstiegschancen von Fachkräften {1} Hochschulabschluss verbessern. Die Ergebnisse deuten darauf hin, dass insbesondere modulare Angebote, {2} sich flexibel in den Berufsalltag integrieren lassen, {3} hoher Akzeptanz stoßen. Gleichzeitig zeigt sich, dass finanzielle Unterstützung durch den Arbeitgeber die Teilnahmebereitschaft signifikant erhöht. Die Autoren empfehlen daher, entsprechende Fördermodelle {4} auszubauen und deren Bekanntheit {5} erhöhen.",
+blanks:[
+{w:"ohne",de:"Präposition „ohne“ + Akkusativ: Fachkräfte ohne Hochschulabschluss."},
+{w:"die",de:"Relativpronomen Nominativ Plural, bezogen auf „Angebote“: die sich integrieren lassen."},
+{w:"auf",de:"„auf etwas stoßen“ – feste Präposition (= etwas erfahren, vorfinden)."},
+{w:"stärker",de:"Komparativ von „stark“: stärker auszubauen."},
+{w:"zu",de:"Paralleler Infinitiv mit „zu“: … auszubauen und … zu erhöhen."}
+]},
+
+{type:"interview", an:"—", betreff:"Podcast-Auszug: Gespräch über New Work",
+body:"Moderatorin: Herr Klein, das Schlagwort „New Work“ ist in aller Munde. Was verbirgt sich {1} eigentlich dahinter?\nGast: Im Kern geht es {2} mehr Selbstbestimmung und Sinnhaftigkeit in der Arbeit. Es reicht nicht mehr, {3} man einfach nur ein Gehalt zahlt.\nModeratorin: Heißt das, klassische Hierarchien haben ausgedient?\nGast: Nicht ganz. Aber Unternehmen, {4} weiterhin ausschließlich auf starre Strukturen setzen, werden es künftig schwerer haben, Talente {5} sich zu binden.",
+blanks:[
+{w:"denn",de:"Adverb zur Verstärkung einer Frage: was verbirgt sich denn eigentlich."},
+{w:"um",de:"„es geht um + Akkusativ“ – feste Präposition."},
+{w:"dass",de:"Konjunktion, leitet den Nebensatz ein."},
+{w:"die",de:"Relativpronomen Nominativ Plural, bezogen auf „Unternehmen“."},
+{w:"an",de:"„jemanden an sich binden“ – feste Präposition."}
+]}
+]
+};
+
+/* ============================================================
+   ENGINE
+   ============================================================ */
+let currentLevel = 1;
+let usedIdx = {1:[],2:[],3:[],4:[],5:[]};
+
+function norm(s){
+  return s.trim().toLowerCase()
+    .replace(/ß/g,"ss").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue");
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function buildLevelSelect(){
+  const wrap = document.getElementById('levelSelect');
+  wrap.innerHTML = '';
+  for(let lv=1; lv<=5; lv++){
+    const meta = LEVELS_META[lv];
+    const b = document.createElement('button');
+    b.className = 'level-btn' + (lv===currentLevel ? ' active':'');
+    b.innerHTML = meta.label+'<span class="sub">'+meta.sub+'</span><span class="dots">'+meta.dots+'</span>';
+    b.onclick = ()=>{ currentLevel = lv; buildLevelSelect(); startUebung(); };
+    wrap.appendChild(b);
+  }
+}
+buildLevelSelect();
+
+function pickTexts(level, count){
+  const pool = TEXTS[level];
+  let avail = pool.map((t,i)=>i).filter(i=>!usedIdx[level].includes(i));
+  if(avail.length < count){ usedIdx[level] = []; avail = pool.map((t,i)=>i); }
+  const chosen = shuffle(avail).slice(0, Math.min(count, avail.length));
+  usedIdx[level].push(...chosen);
+  return chosen.map(i=>pool[i]);
+}
+
+let globalStats = {correctGaps:0, totalGaps:0};
+
+function updateScore(){
+  document.getElementById('uebungScore').textContent = globalStats.correctGaps+' / '+globalStats.totalGaps;
+}
+
+const TYPE_META = {
+  email:{icon:"✉️", label:"E-Mail / Brief"},
+  dialog:{icon:"💬", label:"Dialog"},
+  tagebuch:{icon:"📔", label:"Tagebucheintrag"},
+  anzeige:{icon:"📢", label:"Anzeige"},
+  artikel:{icon:"📰", label:"Zeitungsartikel"},
+  forum:{icon:"💻", label:"Forumsbeitrag"},
+  interview:{icon:"🎙️", label:"Interview"},
+  blog:{icon:"✍️", label:"Blogbeitrag"}
+};
+
+function renderText(container, textObj, textIdx){
+  const card = document.createElement('div');
+  card.className = 'text-card';
+  const typ = TYPE_META[textObj.type] || TYPE_META.email;
+  card.innerHTML = '<div class="text-meta">Text '+(textIdx+1)+' · '+LEVELS_META[currentLevel].label+' ('+LEVELS_META[currentLevel].sub+') · '+typ.icon+' '+typ.label+'</div>'
+    + (!textObj.type || textObj.type === 'email' ? (textObj.an && textObj.an !== '—' ? '<div class="text-header"><b>An:</b> '+textObj.an+'</div>' : '') + '<div class="text-header"><b>Betreff:</b> '+textObj.betreff+'</div>' : '<div class="text-header"><b>'+textObj.betreff+'</b></div>');
+
+  const bodyDiv = document.createElement('div');
+  bodyDiv.className = 'text-body';
+  const paragraphs = textObj.body.split('\n\n');
+  const inputs = [];
+  paragraphs.forEach(para=>{
+    const p = document.createElement('p');
+    const lines = para.split('\n');
+    lines.forEach((line, li)=>{
+      const segments = line.split(/(\{\d\})/g);
+      segments.forEach(seg=>{
+        const m = seg.match(/^\{(\d)\}$/);
+        if(m){
+          const gapNum = parseInt(m[1],10);
+          const wrap = document.createElement('span');
+          wrap.className = 'gap-wrap';
+          const badge = document.createElement('span');
+          badge.className = 'gap-badge';
+          badge.textContent = gapNum;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'gap-input';
+          input.setAttribute('autocomplete','off');
+          input.setAttribute('autocapitalize','off');
+          input.setAttribute('spellcheck','false');
+          input.dataset.gap = gapNum;
+          wrap.appendChild(badge);
+          wrap.appendChild(input);
+          p.appendChild(wrap);
+          inputs.push({num:gapNum, el:input});
+        } else if(seg.length){
+          p.appendChild(document.createTextNode(seg));
+        }
+      });
+      if(li < lines.length-1) p.appendChild(document.createElement('br'));
+    });
+    bodyDiv.appendChild(p);
+  });
+  card.appendChild(bodyDiv);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'check-btn';
+  checkBtn.textContent = '✓ Auswerten';
+
+  const hintBtn = document.createElement('button');
+  hintBtn.className = 'hint-btn';
+  hintBtn.textContent = '💡 Hinweis';
+
+  const solutionBtn = document.createElement('button');
+  solutionBtn.className = 'solution-btn';
+  solutionBtn.textContent = '👁 Lösung zeigen';
+
+  const speakBtn = document.createElement('button');
+  speakBtn.className = 'solution-btn';
+  speakBtn.textContent = '🔊 Vorlesen';
+  speakBtn.onclick = ()=>{
+    if(!('speechSynthesis' in window)){ return; }
+    let spoken = textObj.body.replace(/\n+/g,' ');
+    textObj.blanks.forEach((b,i)=>{ spoken = spoken.replace('{'+(i+1)+'}', b.w); });
+    const utter = new SpeechSynthesisUtterance(spoken);
+    utter.lang = 'de-DE';
+    utter.rate = 0.92;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  };
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'btn-row';
+  btnRow.appendChild(checkBtn);
+  btnRow.appendChild(hintBtn);
+  btnRow.appendChild(solutionBtn);
+  btnRow.appendChild(speakBtn);
+  card.appendChild(btnRow);
+
+  const scoreLine = document.createElement('div');
+  scoreLine.className = 'text-score';
+  card.appendChild(scoreLine);
+
+  const explainList = document.createElement('div');
+  explainList.className = 'explain-list';
+  textObj.blanks.forEach((b,i)=>{
+    const item = document.createElement('div');
+    item.className = 'explain-item';
+    item.dataset.gap = i+1;
+    item.innerHTML = '<span class="num">'+(i+1)+'</span><span class="w">'+b.w+'</span> — '+b.de;
+    explainList.appendChild(item);
+  });
+  card.appendChild(explainList);
+
+  let hintsOn = false;
+  hintBtn.onclick = ()=>{
+    hintsOn = !hintsOn;
+    hintBtn.textContent = hintsOn ? '💡 Hinweis ausblenden' : '💡 Hinweis';
+    inputs.forEach(inp=>{
+      if(inp.el.disabled) return;
+      const solution = textObj.blanks[inp.num-1].w;
+      if(hintsOn){
+        const pattern = solution[0] + '_'.repeat(Math.max(solution.length-1,0));
+        inp.el.placeholder = pattern + ' (' + solution.length + ')';
+      } else {
+        inp.el.placeholder = '';
+      }
+    });
+  };
+
+  checkBtn.onclick = ()=>{
+    let correct = 0;
+    inputs.forEach(inp=>{
+      const idx = inp.num - 1;
+      const b = textObj.blanks[idx];
+      const accepted = [b.w].concat(b.alt || []);
+      const val = norm(inp.el.value);
+      const isCorrect = accepted.some(a=>norm(a)===val);
+      inp.el.classList.remove('correct','wrong','solution');
+      inp.el.classList.add(isCorrect ? 'correct' : 'wrong');
+      inp.el.disabled = true;
+      if(isCorrect) correct++;
+      const item = explainList.querySelector('.explain-item[data-gap="'+inp.num+'"]');
+      if(!isCorrect) item.classList.add('wrong-item');
+    });
+    scoreLine.textContent = 'Ergebnis: '+correct+' / '+textObj.blanks.length+' richtig';
+    explainList.classList.add('show');
+    checkBtn.disabled = true;
+    hintBtn.disabled = true;
+    solutionBtn.disabled = true;
+    globalStats.correctGaps += correct;
+    globalStats.totalGaps += textObj.blanks.length;
+    updateScore();
+  };
+
+  solutionBtn.onclick = ()=>{
+    inputs.forEach(inp=>{
+      const solution = textObj.blanks[inp.num-1].w;
+      inp.el.value = solution;
+      inp.el.classList.remove('correct','wrong');
+      inp.el.classList.add('solution');
+      inp.el.disabled = true;
+      const item = explainList.querySelector('.explain-item[data-gap="'+inp.num+'"]');
+      item.classList.add('solution-item');
+    });
+    scoreLine.textContent = 'Lösung angezeigt (zählt nicht zur Punktzahl)';
+    explainList.classList.add('show');
+    checkBtn.disabled = true;
+    hintBtn.disabled = true;
+    solutionBtn.disabled = true;
+  };
+
+  container.appendChild(card);
+}
+
+function startUebung(){
+  const container = document.getElementById('uebungContainer');
+  container.innerHTML = '';
+  globalStats = {correctGaps:0, totalGaps:0};
+  updateScore();
+  const texts = pickTexts(currentLevel, 3);
+  texts.forEach((t,i)=> renderText(container, t, i));
+}
+
+startUebung();
+</script>
+</body>
+</html>

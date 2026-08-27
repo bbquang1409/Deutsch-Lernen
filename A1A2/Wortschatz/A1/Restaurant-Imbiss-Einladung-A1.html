@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8 Restaurant – Imbiss – Einladung – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e; --teal-light:#1b5c5d; --teal-pale:#e6f0ef;
+  --orange:#e8823a; --orange-light:#fdece0; --bg:#f7f5f0; --card:#ffffff;
+  --text:#233333; --muted:#6b7c7c; --der:#2563eb; --das:#16a34a; --die:#dc2626;
+  --ok:#16a34a; --bad:#dc2626; --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.15rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);} .vocab-word.das{color:var(--das);} .vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.namebar{position:sticky;top:0;z-index:30;background:var(--orange-light);border-bottom:1px solid var(--orange);padding:8px 16px;display:flex;justify-content:center;}
+.namebar input{width:100%;max-width:400px;border:1px solid var(--teal-light);border-radius:20px;padding:6px 14px;font-size:0.9rem;font-family:inherit;color:var(--text);}
+
+/* Drag & Drop */
+.dnd-bank{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;padding:10px;background:var(--teal-pale);border-radius:10px;min-height:50px;}
+.dnd-chip{background:#fff;border:2px solid var(--teal-light);border-radius:20px;padding:8px 14px;font-size:0.88rem;cursor:grab;user-select:none;touch-action:none;color:var(--teal);font-weight:600;}
+.dnd-chip:active{cursor:grabbing;}
+.dnd-chip.dragging{opacity:0.35;}
+.dnd-floating{position:fixed;z-index:999;pointer-events:none;opacity:0.95;box-shadow:0 4px 12px rgba(0,0,0,0.25);}
+.dnd-row{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.dnd-slot{display:inline-flex;align-items:center;justify-content:center;min-width:150px;min-height:40px;border:2px dashed var(--teal-light);border-radius:8px;padding:4px 10px;background:#fbfaf7;font-size:0.88rem;flex:1 1 150px;}
+.dnd-slot.filled{border-style:solid;}
+.dnd-slot.correct{border-color:var(--ok)!important;background:#eafaf0;}
+.dnd-slot.wrong{border-color:var(--bad)!important;background:#fdecec;}
+.dnd-slot.over{border-color:var(--orange)!important;background:var(--orange-light);}
+.dnd-num{font-weight:700;color:var(--teal);width:22px;flex-shrink:0;}
+.dnd-bin{border:2px dashed var(--teal-light);border-radius:10px;padding:10px;min-height:80px;background:#fbfaf7;}
+.dnd-bin.over{border-color:var(--orange);background:var(--orange-light);}
+.dnd-bin-title{font-weight:700;color:var(--teal-light);font-size:0.85rem;margin-bottom:6px;}
+.dnd-bin-inner{display:flex;flex-wrap:wrap;gap:6px;min-height:34px;}
+.dnd-bins-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.dnd-bins-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="namebar"><input type="text" id="studentName" placeholder="Name eingeben..."></div>
+
+<header>
+  <div class="badge">A1 · Modul-Wortschatz</div>
+  <h1>8&nbsp; Essen und Trinken: Restaurant – Imbiss – Einladung</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<div id="wortschatz" class="tabcontent active">
+  <div class="vn-toggle-bar"><label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label></div>
+
+  <div class="section"><h2>🍽️ Im Restaurant</h2><div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">Ist der Tisch frei? – Nein, er ist besetzt. Bringen Sie uns bitte die Speisekarte. Was können Sie empfehlen?</div></div>
+
+  <div class="section"><h2>💳 Bezahlen</h2><div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">Bringen Sie mir bitte die Rechnung. Zahlen bitte! Wo ist bitte die Toilette?</div></div>
+
+  <div class="section"><h2>🍕 Essen</h2><div class="vocab-grid" id="vg3"></div>
+    <div class="scale-box">Hast du Hunger? Ich mag keinen Salat. Schmeckt es Ihnen? Das sieht sehr gut aus.</div></div>
+
+  <div class="section"><h2>🥤 Getränke</h2><div class="vocab-grid" id="vg4"></div>
+    <div class="scale-box">Ich habe Durst.</div></div>
+
+  <div class="section"><h2>🎉 Einladung</h2><div class="vocab-grid" id="vg5"></div>
+    <div class="scale-box">Herzlich willkommen! Könnten Sie mir bitte das Salz geben? Vielen Dank! Nein, danke. Ja, bitte.</div></div>
+
+  <div class="section"><h2>🕐 Mahlzeiten</h2><div class="vocab-grid" id="vg6"></div></div>
+</div>
+
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Im Restaurant – Ziehen Sie in die richtige Reihenfolge</h2>
+    <div class="ex-instructions">Ziehen Sie die Wörter/Ausdrücke (per Drag & Drop) in die zeitliche Reihenfolge.</div>
+    <div class="dnd-row"><span class="dnd-num">1</span><div class="dnd-slot filled" style="border-style:solid;background:var(--teal-pale);">Guten Tag!</div></div>
+    <div class="dnd-row"><span class="dnd-num">2</span><div class="dnd-slot filled" style="border-style:solid;background:var(--teal-pale);">Einen Tisch für zwei Personen, bitte.</div></div>
+    <div id="dnd1-slots"></div>
+    <div class="dnd-bank" id="dnd1-bank"></div>
+    <button class="check-btn" data-check="dnd-order" data-target="dnd1">Kontrollieren</button>
+    <button class="reset-btn" data-reset="dnd" data-target="dnd1">Zurücksetzen</button>
+    <div class="result-msg" id="res-dnd1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Am Imbiss – Dialog 1</h2>
+    <div class="wordbank"><b>Liste:</b> auch · das Bier · der Durst · essen · das Glas · der Hunger · kosten · die Pommes · trinken (2×) · das Wasser</div>
+    <div id="ex2-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Am Imbiss – Dialog 2</h2>
+    <div class="wordbank"><b>Liste:</b> aussehen · das Lieblingsessen · die Pommes · schlecht · sehr gut</div>
+    <div id="ex2-2"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex2-2">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>3 Was passt wohin? – Ziehen Sie in die Kategorien</h2>
+    <div class="dnd-bins-grid" id="dnd3-bins"></div>
+    <div class="dnd-bank" id="dnd3-bank"></div>
+    <button class="check-btn" data-check="dnd-bin" data-target="dnd3">Kontrollieren</button>
+    <button class="reset-btn" data-reset="dnd" data-target="dnd3">Zurücksetzen</button>
+    <div class="result-msg" id="res-dnd3"></div>
+  </div>
+
+  <div class="section">
+    <h2>4 Im Restaurant – Ergänzen Sie</h2>
+    <div id="ex4-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex4-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>5 Nomen und Verben – Was passt zusammen?</h2>
+    <div class="wordbank"><b>Liste:</b> anbieten · bezahlen · bringen (Beispiel) · lesen · bestellen · empfehlen</div>
+    <div id="ex5-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex5-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex5-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>6 Mahlzeiten in Deutschland – Ziehen Sie zur richtigen Uhrzeit</h2>
+    <div id="dnd6-slots"></div>
+    <div class="dnd-bank" id="dnd6-bank"></div>
+    <button class="check-btn" data-check="dnd-order" data-target="dnd6">Kontrollieren</button>
+    <button class="reset-btn" data-reset="dnd" data-target="dnd6">Zurücksetzen</button>
+    <div class="result-msg" id="res-dnd6"></div>
+  </div>
+
+  <div class="section">
+    <h2>7 Einladungen – Dialog 1 und 2</h2>
+    <div class="wordbank"><b>Liste:</b> pünktlich · die Gäste (Pl.) · kochen · Mögen · sehr · einladen (Beispiel) · freuen · das Essen · die Einladung · das Geschenk</div>
+    <div id="ex7-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex7-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex7-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>7 Einladungen – Dialog 3 und 4</h2>
+    <div class="wordbank"><b>Liste:</b> nur · fahren · danken · die Einladung · willkommen (Beispiel) · der Dank · geben · entschuldigen</div>
+    <div id="ex7-2"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex7-2">Kontrollieren</button>
+    <div class="result-msg" id="res-ex7-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>8 Wie viele Wörter fallen Ihnen ein?</h2>
+    <div class="ex-instructions">Denken Sie an ein Restaurant-Foto (Tisch, Teller, Salat, Gäste ...). Notieren Sie Wörter. Nicht automatisch kontrolliert.</div>
+    <div class="qline">der Salat, <input type="text" style="width:400px;"></div>
+  </div>
+
+</div>
+
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Restaurant/Imbiss/Einladung</h2>
+    <div class="ex-instructions">Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+var vocab1 = [
+ ["das","Restaurant, -s","dort isst man außer Haus","nhà hàng"],
+ ["","besetzt","der Platz ist nicht frei","đã có người / hết chỗ"],
+ ["","frei","niemand ist da, man kann sitzen","còn trống"],
+ ["die","Speisekarte, -n","Liste mit Essen und Preisen","thực đơn"],
+ ["die","Karte, -n","kurz für Speisekarte","thực đơn (gọi tắt)"],
+ ["","anbieten","sagen, was es gibt","mời, đề nghị"],
+ ["","empfehlen","sagen, was gut ist","gợi ý, giới thiệu"],
+ ["","bestellen","sagen, was man möchte","gọi món"],
+ ["","bringen","zu jemandem tragen","mang đến"],
+ ["","rauchen","eine Zigarette anzünden","hút thuốc"],
+];
+
+var vocab2 = [
+ ["die","Rechnung, -en","was man bezahlen muss","hóa đơn"],
+ ["","kosten","einen Preis haben","có giá"],
+ ["","zahlen","Geld geben","trả tiền"],
+ ["","bezahlen","für etwas Geld geben","thanh toán"],
+ ["","zufrieden","froh, alles ist gut","hài lòng"],
+ ["das","Trinkgeld","extra Geld für den Service","tiền boa"],
+ ["","Damen/Herren","Toiletten-Schilder","nữ/nam (nhà vệ sinh)"],
+];
+
+var vocab3 = [
+ ["der","Hunger (Sg.)","Ich möchte essen.","cơn đói"],
+ ["das","Lieblingsessen","das Essen, das man am liebsten mag","món ăn yêu thích"],
+ ["die","Pommes frites (nur Pl.)","frittierte Kartoffelstreifen","khoai tây chiên"],
+ ["der","Salat, -e","z. B. grüner Salat","rau xà lách, món salad"],
+ ["","mögen","gern haben","thích"],
+ ["","möchten","gern haben wollen","muốn"],
+ ["der","Kuchen, -","süßes Gebäck","bánh ngọt"],
+ ["","essen","Nahrung zu sich nehmen","ăn"],
+ ["","schmecken","Wie ist der Geschmack?","có vị, ngon"],
+ ["","bitter","ein unangenehmer Geschmack","đắng"],
+ ["","aussehen","wie etwas wirkt","trông như thế nào"],
+ ["","wunderbar","sehr gut, toll","tuyệt vời"],
+ ["","(sehr) gut","positiv","(rất) ngon/tốt"],
+ ["","schlecht","negativ","dở, tệ"],
+];
+
+var vocab4 = [
+ ["der","Durst (Sg.)","Ich möchte trinken.","cơn khát"],
+ ["das","Getränk, -e","z. B. Wasser, Saft","đồ uống"],
+ ["","trinken","Flüssigkeit zu sich nehmen","uống"],
+ ["der","Kaffee (Sg.)","ein warmes Getränk","cà phê"],
+ ["der","Saft, ¨-e","aus Obst gepresst","nước ép"],
+ ["der","Tee (Sg.)","ein warmes Getränk","trà"],
+ ["der","Wein (Sg.)","alkoholisches Getränk aus Trauben","rượu vang"],
+ ["das","Bier (Sg.)","alkoholisches Getränk","bia"],
+ ["das","Wasser (Sg.)","zum Trinken","nước"],
+ ["das","Glas, ¨-er","damit trinkt man","cái ly"],
+];
+
+var vocab5 = [
+ ["die","Einladung, -en","man bittet jemanden zu kommen","lời mời"],
+ ["","einladen","jemanden bitten zu kommen","mời"],
+ ["","(sich) freuen","ein gutes Gefühl haben","vui mừng"],
+ ["","willkommen","Gruß, wenn jemand kommt","chào mừng"],
+ ["der","Gast, ¨-e","eine eingeladene Person","khách"],
+ ["das","Geschenk, -e","etwas, das man schenkt","món quà"],
+ ["","kochen","Essen zubereiten","nấu ăn"],
+ ["","pünktlich","genau zur richtigen Zeit","đúng giờ"],
+ ["","nur","nicht mehr als","chỉ"],
+ ["","geben","jemandem etwas reichen","đưa cho"],
+ ["","nehmen","etwas an sich nehmen","lấy, nhận"],
+ ["die","Entschuldigung (Sg.)","man sagt es, wenn man einen Fehler macht","lời xin lỗi"],
+ ["","entschuldigen","um Verzeihung bitten","xin lỗi"],
+ ["der","Dank (Sg.)","man sagt es, wenn man dankbar ist","lời cảm ơn"],
+ ["","danken","Dank sagen","cảm ơn"],
+ ["die","Bitte, -n","eine höfliche Frage","lời đề nghị, xin"],
+ ["","bitten","höflich um etwas fragen","xin, đề nghị"],
+ ["","gern(e)","mit Freude","vui lòng, sẵn lòng"],
+ ["","lieber","mehr gewünscht","thích hơn"],
+];
+
+var vocab6 = [
+ ["das","Frühstück, -e","die erste Mahlzeit am Morgen","bữa sáng"],
+ ["","frühstücken","das Frühstück essen","ăn sáng"],
+ ["das","Mittagessen, -","die Mahlzeit am Mittag","bữa trưa"],
+ ["das","Abendessen, -","die Mahlzeit am Abend","bữa tối"],
+ ["das","Essen, -","Mahlzeit oder Nahrung","bữa ăn, thức ăn"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div><div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1'); renderVocab(vocab2,'vg2'); renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4'); renderVocab(vocab5,'vg5'); renderVocab(vocab6,'vg6');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]:not([readonly])');
+  var correct = 0, total = 0;
+  inputs.forEach(function(inp){
+    if(!inp.dataset.ans) return;
+    total++;
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+document.querySelectorAll('.check-btn[data-check="group"],.check-btn[data-check="groupci"]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    checkGroup(btn.dataset.target, btn.dataset.check==='groupci');
+  });
+});
+
+/* ================= DRAG & DROP ENGINE ================= */
+var dnd = { chip:null, ghost:null, originParent:null, startX:0, startY:0, moved:false };
+
+function dndMakeChip(el){
+  el.classList.add('dnd-chip');
+  el.addEventListener('pointerdown', function(e){
+    e.preventDefault();
+    dnd.chip = el;
+    dnd.originParent = el.parentNode;
+    dnd.startX = e.clientX; dnd.startY = e.clientY; dnd.moved = false;
+    var rect = el.getBoundingClientRect();
+    var ghost = el.cloneNode(true);
+    ghost.classList.add('dnd-floating');
+    ghost.style.width = rect.width+'px';
+    document.body.appendChild(ghost);
+    dnd.ghost = ghost;
+    dndMoveGhost(e.clientX, e.clientY, rect.width, rect.height);
+    el.classList.add('dragging');
+    document.addEventListener('pointermove', dndOnMove);
+    document.addEventListener('pointerup', dndOnUp);
+  });
+}
+function dndMoveGhost(x,y,w,h){
+  if(!dnd.ghost) return;
+  dnd.ghost.style.left = (x-(w||60)/2)+'px';
+  dnd.ghost.style.top = (y-(h||30)/2)+'px';
+}
+function dndOnMove(e){
+  if(Math.abs(e.clientX-dnd.startX)>4 || Math.abs(e.clientY-dnd.startY)>4) dnd.moved = true;
+  dndMoveGhost(e.clientX, e.clientY);
+  document.querySelectorAll('.dnd-slot,.dnd-bin').forEach(function(s){ s.classList.remove('over'); });
+  var el = document.elementFromPoint(e.clientX, e.clientY);
+  var target = el ? (el.closest('.dnd-slot') || el.closest('.dnd-bin')) : null;
+  if(target) target.classList.add('over');
+}
+function dndOnUp(e){
+  document.removeEventListener('pointermove', dndOnMove);
+  document.removeEventListener('pointerup', dndOnUp);
+  var el = document.elementFromPoint(e.clientX, e.clientY);
+  var slot = el ? el.closest('.dnd-slot') : null;
+  var bin = el ? el.closest('.dnd-bin') : null;
+  if(dnd.ghost){ dnd.ghost.remove(); dnd.ghost=null; }
+  if(dnd.chip) dnd.chip.classList.remove('dragging');
+  document.querySelectorAll('.dnd-slot,.dnd-bin').forEach(function(s){ s.classList.remove('over'); });
+
+  if(!dnd.moved && dnd.chip && dnd.chip.parentNode && (dnd.chip.parentNode.classList.contains('dnd-slot') || dnd.chip.parentNode.classList.contains('dnd-bin-inner'))){
+    /* Tap auf platziertes Chip: zurück zur Bank */
+    var bankId = dnd.chip.dataset.bank;
+    var bankEl = document.getElementById(bankId);
+    if(bankEl) bankEl.appendChild(dnd.chip);
+    var parentSlot = dnd.chip.closest ? null : null;
+  } else if(slot && dnd.chip){
+    var existing = slot.querySelector('.dnd-chip');
+    if(existing){
+      var bankId2 = existing.dataset.bank;
+      var bankEl2 = document.getElementById(bankId2);
+      if(bankEl2) bankEl2.appendChild(existing);
+    }
+    slot.appendChild(dnd.chip);
+    slot.classList.add('filled');
+    slot.classList.remove('correct','wrong');
+  } else if(bin && dnd.chip){
+    var inner = bin.querySelector('.dnd-bin-inner');
+    inner.appendChild(dnd.chip);
+  }
+  dnd.chip=null; dnd.originParent=null;
+}
+
+/* EX Kreuzworträtsel-Style Reset Handler */
+document.querySelectorAll('.reset-btn[data-reset="dnd"]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.target;
+    var bank = document.getElementById(id+'-bank');
+    document.querySelectorAll('#'+id+'-slots .dnd-chip, #'+id+'-bins .dnd-chip').forEach(function(chip){
+      bank.appendChild(chip);
+    });
+    document.querySelectorAll('#'+id+'-slots .dnd-slot').forEach(function(s){ s.classList.remove('correct','wrong'); });
+    document.querySelectorAll('#'+id+'-bins .dnd-bin').forEach(function(s){ s.classList.remove('correct','wrong'); });
+    var res = document.getElementById('res-'+id);
+    if(res) res.textContent='';
+  });
+});
+
+/* ================= EX1: Reihenfolge Restaurant ================= */
+(function(){
+  var items = [
+    "die Speisekarte","empfehlen","Können wir etwas bestellen?","bringen","bezahlen/Zahlen, bitte!","die Rechnung","Auf Wiedersehen"
+  ];
+  var shuffled = ["bringen","die Rechnung","empfehlen","Auf Wiedersehen","die Speisekarte","bezahlen/Zahlen, bitte!","Können wir etwas bestellen?"];
+  var slotsEl = document.getElementById('dnd1-slots');
+  var slotsHtml = '';
+  items.forEach(function(it,i){
+    slotsHtml += '<div class="dnd-row"><span class="dnd-num">'+(i+3)+'</span><div class="dnd-slot" id="dnd1-slot-'+i+'" data-correct="'+it+'"></div></div>';
+  });
+  slotsEl.innerHTML = slotsHtml;
+  var bank = document.getElementById('dnd1-bank');
+  shuffled.forEach(function(it,i){
+    var chip = document.createElement('div');
+    chip.className = 'dnd-chip';
+    chip.textContent = it;
+    chip.dataset.value = it;
+    chip.dataset.bank = 'dnd1-bank';
+    chip.id = 'dnd1-chip-'+i;
+    bank.appendChild(chip);
+    dndMakeChip(chip);
+  });
+})();
+
+/* ================= EX3: Was passt wohin (Bins) ================= */
+(function(){
+  var bins = [
+    ["Getränke (warm)", ["Kaffee","Tee"]],
+    ["Getränke (kalt)", ["Saft","Wasser"]],
+    ["Essen (warm)", ["Suppe","Pommes"]],
+    ["Essen (kalt)", ["Salat","Eis"]],
+  ];
+  var binsEl = document.getElementById('dnd3-bins');
+  binsEl.innerHTML = bins.map(function(b,i){
+    return '<div class="dnd-bin" id="dnd3-bin-'+i+'" data-expected="'+b[1].join(',')+'"><div class="dnd-bin-title">'+b[0]+'</div><div class="dnd-bin-inner"></div></div>';
+  }).join('');
+  var allWords = [];
+  bins.forEach(function(b){ b[1].forEach(function(w){ allWords.push(w); }); });
+  var shuffledWords = ["Suppe","Kaffee","Salat","Saft","Eis","Tee","Pommes","Wasser"];
+  var bank = document.getElementById('dnd3-bank');
+  shuffledWords.forEach(function(w,i){
+    var chip = document.createElement('div');
+    chip.className = 'dnd-chip';
+    chip.textContent = w;
+    chip.dataset.value = w;
+    chip.dataset.bank = 'dnd3-bank';
+    chip.id = 'dnd3-chip-'+i;
+    bank.appendChild(chip);
+    dndMakeChip(chip);
+  });
+})();
+
+/* ================= EX6: Mahlzeiten Uhrzeit ================= */
+(function(){
+  var slots = [
+    ["6–10 Uhr","Frühstück"],
+    ["12–14 Uhr","Mittagessen"],
+    ["15–17 Uhr","Nachmittagskaffee"],
+    ["18–22 Uhr","Abendessen"],
+  ];
+  var slotsEl = document.getElementById('dnd6-slots');
+  slotsEl.innerHTML = slots.map(function(s,i){
+    return '<div class="dnd-row"><span style="min-width:80px;font-weight:600;color:var(--teal);">'+s[0]+'</span><div class="dnd-slot" id="dnd6-slot-'+i+'" data-correct="'+s[1]+'"></div></div>';
+  }).join('');
+  var words = ["Nachmittagskaffee","Abendessen","Frühstück","Mittagessen"];
+  var bank = document.getElementById('dnd6-bank');
+  words.forEach(function(w,i){
+    var chip = document.createElement('div');
+    chip.className = 'dnd-chip';
+    chip.textContent = w;
+    chip.dataset.value = w;
+    chip.dataset.bank = 'dnd6-bank';
+    chip.id = 'dnd6-chip-'+i;
+    bank.appendChild(chip);
+    dndMakeChip(chip);
+  });
+})();
+
+/* Check-Funktionen für Drag&Drop */
+function checkDndOrder(id){
+  var slots = document.querySelectorAll('#'+id+'-slots .dnd-slot');
+  var correct = 0, total = slots.length;
+  slots.forEach(function(s){
+    var chip = s.querySelector('.dnd-chip');
+    var val = chip ? chip.dataset.value : '';
+    if(val === s.dataset.correct){ s.classList.add('correct'); s.classList.remove('wrong'); correct++; }
+    else { s.classList.add('wrong'); s.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+id);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function checkDndBin(id){
+  var bins = document.querySelectorAll('#'+id+'-bins .dnd-bin');
+  var correct = 0, total = bins.length;
+  bins.forEach(function(b){
+    var expected = b.dataset.expected.split(',').sort();
+    var chips = Array.prototype.slice.call(b.querySelectorAll('.dnd-chip')).map(function(c){ return c.dataset.value; }).sort();
+    var ok = expected.length===chips.length && expected.every(function(v,i){ return v===chips[i]; });
+    if(ok){ b.classList.add('correct'); b.classList.remove('wrong'); correct++; }
+    else { b.classList.add('wrong'); b.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+id);
+  res.textContent = correct+' / '+total+' Kategorien richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+document.querySelectorAll('.check-btn[data-check="dnd-order"]').forEach(function(btn){
+  btn.addEventListener('click', function(){ checkDndOrder(btn.dataset.target); });
+});
+document.querySelectorAll('.check-btn[data-check="dnd-bin"]').forEach(function(btn){
+  btn.addEventListener('click', function(){ checkDndBin(btn.dataset.target); });
+});
+
+/* EX2.1 Am Imbiss Dialog1 */
+(function(){
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="qline">● Ich habe <b>Hunger</b> und '+makeBlank('e21-0','Durst',110)+'. Wollen wir etwas '+makeBlank('e21-1','essen',110)+' und '+makeBlank('e21-2','trinken',110)+'?</div>'+
+  '<div class="qline">○ Au ja. Ich bin '+makeBlank('e21-3','auch',90)+' hungrig. Ich habe Lust auf '+makeBlank('e21-4','Pommes frites',150)+'.</div>'+
+  '<div class="qline">■ Was darf es sein?</div>'+
+  '<div class="qline">○ Eine Portion '+makeBlank('e21-5','Pommes',110)+' und ein '+makeBlank('e21-6','Glas Wasser|Bier',150)+', bitte.</div>'+
+  '<div class="qline">■ Und für Sie?</div>'+
+  '<div class="qline">● Geben Sie mir eine Bratwurst mit Senf und Brötchen.</div>'+
+  '<div class="qline">○ '+makeBlank('e21-7','Trinken',110)+' Sie auch etwas?</div>'+
+  '<div class="qline">■ Nur ein '+makeBlank('e21-8','Glas',90)+' '+makeBlank('e21-9','Wasser',110)+', bitte. Ich muss noch Auto fahren.</div>'+
+  '<div class="qline">● Was '+makeBlank('e21-10','kostet',110)+' das alles zusammen?</div>'+
+  '<div class="qline">■ 10 Euro 20.</div>';
+})();
+
+/* EX2.2 Am Imbiss Dialog2 */
+(function(){
+  var el = document.getElementById('ex2-2');
+  el.innerHTML =
+  '<div class="qline">● Wie <b>sind</b> die '+makeBlank('e22-0','Pommes',110)+'?</div>'+
+  '<div class="qline">○ '+makeBlank('e22-1','Sehr gut',130)+'. Sie sind mein '+makeBlank('e22-2','Lieblingsessen',150)+'.</div>'+
+  '<div class="qline">○ Sie '+makeBlank('e22-3','sehen',90)+' auch gut '+makeBlank('e22-4','aus',80)+'.</div>'+
+  '<div class="qline">○ Und wie ist die Bratwurst?</div>'+
+  '<div class="qline">● Nicht s'+makeBlank('e22-5','chlecht',110)+', aber auch nicht super.</div>';
+})();
+
+/* EX4 Im Restaurant */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">● Ist hier noch f'+makeBlank('e41-0','rei',110)+'?</div>'+
+  '<div class="qline">○ Ein Platz ist b'+makeBlank('e41-1','esetzt',110)+'.</div>'+
+  '<div class="qline">Aber die hier sind noch f'+makeBlank('e41-2','rei',110)+'.</div>'+
+  '<div class="qline">Setzen Sie sich doch.</div>';
+})();
+
+/* EX5 Nomen und Verben */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<div class="qline">die Speisekarte → <b>bringen</b> (Beispiel)</div>'+
+  '<div class="qline">das Essen → '+makeBlank('e51-0','bestellen',150)+'</div>'+
+  '<div class="qline">etwas zum Essen → '+makeBlank('e51-1','anbieten|empfehlen',180)+'</div>'+
+  '<div class="qline">die Rechnung → '+makeBlank('e51-2','bezahlen',150)+'</div>';
+})();
+
+/* EX7.1 Einladungen Dialog 1+2 */
+(function(){
+  var el = document.getElementById('ex7-1');
+  el.innerHTML =
+  '<div class="qline">● Herr Chaudhuri, wir möchten Sie und Ihre Frau zum Essen <b>einladen</b>.</div>'+
+  '<div class="qline">Haben Sie am Samstag Zeit?</div>'+
+  '<div class="qline">○ Ja, danke. Wir '+makeBlank('e71-0','freuen',110)+' uns sehr.</div>'+
+  '<div class="qline">● '+makeBlank('e71-1','Mögen',110)+' Sie vegetarisches '+makeBlank('e71-2','Essen',110)+'?</div>'+
+  '<div class="qline">○ Ich '+makeBlank('e71-3','koche',110)+' nämlich gern vegetarisch.</div>'+
+  '<div class="qline">● Ja, '+makeBlank('e71-4','sehr',90)+' gern.</div>'+
+  '<div class="qline">○ Schön, dann sind Sie am Samstag unsere '+makeBlank('e71-5','Gäste',110)+'. Wir freuen uns.</div>'+
+  '<div class="qline">● Am Samstag haben wir e'+makeBlank('e71-6','ingeladen',150)+' bei Weiklings.</div>'+
+  '<div class="qline">○ Bei deinem Chef? Da müssen wir aber '+makeBlank('e71-7','pünktlich',150)+' sein.</div>'+
+  '<div class="qline">● Und wir brauchen ein '+makeBlank('e71-8','Geschenk',150)+'. Hast du eine Idee?</div>'+
+  '<div class="qline">○ Vielleicht Blumen für Frau Weikling und für ihn ...? Keine Ahnung.</div>';
+})();
+
+/* EX7.2 Einladungen Dialog 3+4 */
+(function(){
+  var el = document.getElementById('ex7-2');
+  el.innerHTML =
+  '<div class="qline">● Herzlich <b>willkommen</b>! Kommen Sie herein.</div>'+
+  '<div class="qline">○ Guten Abend und vielen '+makeBlank('e72-0','Dank',110)+' für d'+makeBlank('e72-1','ie Einladung',150)+'.</div>'+
+  '<div class="qline">● Das sind aber schöne Blumen. Ich '+makeBlank('e72-2','danke',110)+' Ihnen!</div>'+
+  '<div class="qline">○ Wir müssen uns '+makeBlank('e72-3','entschuldigen',170)+'.</div>'+
+  '<div class="qline">Wir sind etwas zu spät. Der Verkehr ...</div>'+
+  '<div class="qline">● Aber das macht doch nichts.</div>'+
+  '<div class="qline">○ Kann ich Ihnen noch etwas Wein '+makeBlank('e72-4','geben',110)+'?</div>'+
+  '<div class="qline">● Nein, danke. Ich muss noch '+makeBlank('e72-5','fahren',110)+'.</div>'+
+  '<div class="qline">○ Und Sie, Frau Chaudhuri?</div>'+
+  '<div class="qline">● Ja, bitte, aber '+makeBlank('e72-6','nur',90)+' ganz wenig.</div>';
+})();
+
+/* Schnelltest */
+(function(){
+  var questions = [
+    ["Der Platz ist nicht frei, er ist ...", "besetzt"],
+    ["Liste mit Essen und Preisen: die ...", "Speisekarte"],
+    ["Sagen, was gut ist: ...", "empfehlen"],
+    ["Was man bezahlen muss: die ...", "Rechnung"],
+    ["Extra Geld für den Service: das ...", "Trinkgeld"],
+    ["Ich möchte essen: ich habe ...", "Hunger"],
+    ["Ich möchte trinken: ich habe ...", "Durst"],
+    ["Frittierte Kartoffelstreifen: die ...", "Pommes"],
+    ["Eine eingeladene Person ist der ...", "Gast"],
+    ["Etwas, das man schenkt: das ...", "Geschenk"],
+    ["Genau zur richtigen Zeit heißt ...", "pünktlich"],
+    ["Die erste Mahlzeit am Morgen: das ...", "Frühstück"],
+    ["Die Mahlzeit am Mittag: das ...", "Mittagessen"],
+    ["Die Mahlzeit am Abend: das ...", "Abendessen"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

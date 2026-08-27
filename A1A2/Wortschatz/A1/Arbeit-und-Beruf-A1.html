@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11 Arbeit und Beruf – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;
+  text-align:center;position:sticky;top:0;z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;
+  padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;
+}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;
+  padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;
+}
+.example-box{
+  background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 14px;margin:10px 0;font-size:0.9rem;color:var(--teal);line-height:1.9;
+}
+.example-box b{color:var(--teal-light);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{
+  border:none;border-bottom:2px solid var(--teal-light);background:transparent;
+  font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.dialog-p{margin:6px 0;}
+.check-btn{
+  background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;
+  cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* TTS buttons */
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
+.pron-group{margin:14px 0;}
+.pron-playall{
+  background:var(--teal);color:#fff;border:none;border-radius:20px;padding:6px 16px;
+  font-size:.85rem;cursor:pointer;margin-bottom:8px;
+}
+.pron-playall:hover{background:var(--teal-light);}
+.pron-chip{
+  background:var(--teal-pale);color:var(--teal);padding:6px 12px;border-radius:16px;
+  font-size:.88rem;cursor:pointer;display:inline-block;margin:4px 4px 0 0;
+}
+.pron-chip:hover{background:var(--orange-light);color:var(--orange);}
+.stress-dots{color:var(--orange);font-weight:700;letter-spacing:3px;font-size:.8rem;display:block;margin-top:2px;}
+.stress-row{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;margin:6px 0;
+  background:#fbfaf7;border:1px solid #e2ded4;border-radius:10px;flex-wrap:wrap;
+}
+.sr-play{
+  background:var(--teal);color:#fff;border:none;border-radius:50%;width:30px;height:30px;
+  font-size:.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.sr-play:hover{background:var(--teal-light);}
+.sr-word{flex:1;font-size:1rem;min-width:120px;}
+.sr-artikel{color:var(--muted);font-weight:600;}
+.sr-ref-label{color:var(--muted);font-style:italic;font-weight:400;}
+.sr-unit{cursor:pointer;padding:1px 3px;border-radius:4px;color:var(--teal);font-weight:600;}
+.sr-unit:hover{background:var(--teal-pale);}
+.sr-unit.selected{color:var(--orange);}
+.sr-unit.selected::after{content:' ●';color:var(--orange);font-size:.7rem;}
+.sr-unit.correct{color:var(--ok);}
+.sr-unit.correct::after{content:' ●';color:var(--ok);font-size:.7rem;}
+.sr-unit.wrongpick{color:var(--bad);text-decoration:line-through;}
+.sr-unit.wrongpick::after{content:' ✗';color:var(--bad);font-size:.7rem;}
+.sr-loesung{
+  background:var(--orange);color:#fff;border:none;border-radius:16px;
+  padding:6px 14px;font-size:.82rem;cursor:pointer;flex-shrink:0;margin-left:auto;
+}
+.sr-loesung:hover{background:#d5722c;}
+.sr-result{font-size:.78rem;font-weight:700;color:var(--teal);flex-shrink:0;min-width:90px;text-align:right;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A1 · Modul 11 · Wortschatz</div>
+  <h1>11&nbsp; Arbeit und Beruf</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>💼 Arbeit</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box" id="ex-box-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>🧑‍💼 Tätigkeit</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="example-box" id="ex-box-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>🏢 Firma</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="example-box" id="ex-box-3"></div>
+  </div>
+
+  <div class="section">
+    <h2>💻 Technik im Büro</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="example-box" id="ex-box-4"></div>
+  </div>
+
+  <div class="section">
+    <h2>⏰ Arbeit und Freizeit</h2>
+    <div class="vocab-grid" id="vg5"></div>
+    <div class="example-box" id="ex-box-5"></div>
+  </div>
+
+  <div class="section">
+    <h2>🗓️ Pläne</h2>
+    <div class="vocab-grid" id="vg6"></div>
+    <div class="example-box" id="ex-box-6"></div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache – Wortakzent in Komposita</h2>
+    <div class="ex-instructions">Sprechen Sie die Wörter und Sätze laut. Achten Sie auf den richtigen Akzent (●).</div>
+
+    <h3>das Haus → der Hausmann</h3>
+    <div class="pron-group" id="pron-a"></div>
+
+    <h3>die Arbeit → die Arbeitsstelle</h3>
+    <div class="pron-group" id="pron-b"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Wie heißen die Wörter?</h2>
+    <div class="exercise">
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Eine E-Mail – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Kasten:</b> Termin · selbstständig · Arbeit · Arbeitsplatz · Praktikum · arbeitslos · verdienen · Wochenende · beide <i>(Stelle = Beispiel)</i></div>
+    <div class="exercise">
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Arbeitszeit – Freizeit – Pläne</h2>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 1</div>
+      <div class="wordbank"><b>Kasten:</b> Feiertag · Feierabend · müssen <i>(Arbeit = Beispiel)</i></div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 2</div>
+      <div class="wordbank"><b>Kasten:</b> Anfang · Urlaub · lang · müde · tun</div>
+      <div id="ex3-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 3</div>
+      <div class="wordbank"><b>Kasten:</b> arbeiten · Studentin · Plan · werden · studieren</div>
+      <div id="ex3-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-3"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Im Büro</h2>
+
+    <div class="exercise">
+      <div class="ex-title">Dialoge 1 und 2</div>
+      <div class="wordbank"><b>Kasten:</b> international · fertig · unterschreiben · Papiere · Chef <i>(Firma = Beispiel)</i></div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialoge 3 und 4</div>
+      <div class="wordbank"><b>Kasten:</b> wichtig · Gespräch · telefonieren · Termin · komme · Feierabend · Chef</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+  </div>
+  <div class="section">
+    <h2>5 Aussprache – Wortakzent und Satzakzent</h2>
+    <div class="ex-instructions">Schritt 1: 🔊 anhören. Schritt 2: Klicken Sie auf das Wort/den Wortteil, der betont ist (er wird orange + ●). Schritt 3: „Lösung" klicken und vergleichen.</div>
+    <div class="exercise">
+      <div id="ex5-1"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Arbeit und Beruf</h2>
+    <div class="ex-instructions">Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["","arbeiten","seine Arbeit machen","làm việc"],
+ ["die","Arbeit (hier Sg.)","was man beruflich macht, um Geld zu verdienen","công việc"],
+ ["die","Stelle, -n","ein Arbeitsplatz bei einer Firma","vị trí công việc, chỗ làm"],
+ ["der","Job, -s","eine Arbeit, oft nicht lange oder nicht die Hauptarbeit","công việc (tạm/thời vụ)"],
+ ["das","Praktikum, Praktika","eine Zeit, in der man in einer Firma lernt und arbeitet","kỳ thực tập"],
+ ["der","Arbeitsplatz, ¨-e","der Ort, an dem man arbeitet","nơi làm việc"],
+ ["","arbeitslos","ohne Arbeit","thất nghiệp"],
+ ["","verdienen","Geld für seine Arbeit bekommen","kiếm được (tiền)"],
+ ["","gut / schlecht","positiv / negativ","tốt / xấu, kém"],
+ ["","schwer / leicht","nicht einfach / einfach","khó / dễ"],
+ ["","angestellt / selbstständig","bei einer Firma arbeiten / für sich selbst arbeiten","làm công ăn lương / tự kinh doanh"],
+ ["der/die","Angestellte, -n","eine Person, die bei einer Firma arbeitet","nhân viên"],
+ ["","beide","zwei Personen zusammen","cả hai"],
+];
+
+var vocab2 = [
+ ["","tun","machen","làm"],
+ ["der/die","Student/in, -en/-nen","eine Person, die an der Universität lernt","sinh viên"],
+ ["das","Studium, Studien","das Lernen an der Universität","việc học đại học"],
+ ["","studieren","an der Universität lernen","học đại học"],
+ ["","werden","in der Zukunft etwas sein","trở thành"],
+ ["der","Beruf, -e","die Arbeit, die man gelernt hat","nghề nghiệp"],
+ ["","von Beruf ... sein / arbeiten als ...","den Beruf sagen","làm nghề..."],
+ ["der/die","Lehrer/in, -/-nen","eine Person, die unterrichtet","giáo viên"],
+ ["der/die","Verkäufer/in, -/-nen","eine Person, die etwas verkauft","người bán hàng"],
+ ["der/die","Arbeiter/in, -/-nen","eine Person, die körperlich arbeitet","công nhân"],
+ ["der/die","Hausmann/Hausfrau, ¨-er/-en","eine Person, die zu Hause den Haushalt macht","người nội trợ"],
+ ["der/die","Babysitter/in, -/-nen","eine Person, die auf Kinder aufpasst","người trông trẻ"],
+ ["der","Arbeitstag, -e","ein Tag, an dem man arbeitet","ngày làm việc"],
+];
+
+var vocab3 = [
+ ["die","Firma, Firmen","ein Unternehmen","công ty"],
+ ["der/die","Chef/in, -s/-nen","die Person, die die Firma oder die Arbeit leitet","sếp, giám đốc"],
+ ["das","Büro, -s","der Raum, in dem man arbeitet","văn phòng"],
+ ["das","Gespräch, -e","wenn zwei oder mehr Personen sprechen","cuộc trò chuyện, buổi họp"],
+ ["der","Termin, -e","eine geplante Zeit für ein Treffen","cuộc hẹn"],
+ ["","wichtig","sehr bedeutend","quan trọng"],
+ ["","fertig","nicht mehr in Arbeit, abgeschlossen","xong, hoàn thành"],
+ ["","international","in vielen Ländern","quốc tế"],
+ ["","kommen","zu einem Ort gehen oder fahren","đến"],
+];
+
+var vocab4 = [
+ ["der","Computer, -","ein elektronisches Gerät zum Arbeiten","máy tính"],
+ ["der","PC, -s","der Personal Computer","máy tính cá nhân"],
+ ["der","Laptop, -s","ein tragbarer Computer","máy tính xách tay"],
+ ["das","Tablet, -s","ein flaches, tragbares Computergerät","máy tính bảng"],
+ ["","anmachen / ausmachen","ein Gerät starten / stoppen","bật / tắt (máy)"],
+ ["der","Drucker, -","ein Gerät, das Texte auf Papier druckt","máy in"],
+ ["","drucken","einen Text auf Papier bringen","in (tài liệu)"],
+ ["die","E-Mail, -s","eine Nachricht über den Computer","thư điện tử"],
+ ["","abschicken","eine E-Mail oder einen Brief senden","gửi đi"],
+ ["","gehen","hier: funktionieren","hoạt động (máy móc)"],
+ ["das","Fax, -e","ein Dokument, das man über das Telefonnetz sendet","bản fax"],
+ ["","faxen","ein Fax senden","gửi fax"],
+ ["das","Internet (Sg.)","das weltweite Computernetzwerk","mạng Internet"],
+ ["","anklicken","mit der Maus auf etwas klicken","nhấp chuột vào"],
+ ["","markieren","einen Text farbig oder besonders zeigen","đánh dấu, tô sáng"],
+ ["das","Problem, -e","eine Schwierigkeit","vấn đề"],
+];
+
+var vocab5 = [
+ ["der","Feierabend, -e","das Ende der Arbeitszeit","giờ tan làm"],
+ ["der","Feiertag, -e","ein Tag ohne Arbeit, z. B. Weihnachten","ngày lễ"],
+ ["","müde","man will schlafen, keine Energie mehr","mệt, buồn ngủ"],
+ ["die","Arbeitswoche, -n","die Tage, an denen man in der Woche arbeitet","tuần làm việc"],
+ ["","kurz / lang","wenig Zeit / viel Zeit","ngắn / dài"],
+];
+
+var vocab6 = [
+ ["der","Urlaub, -e","freie Zeit ohne Arbeit, oft für eine Reise","kỳ nghỉ phép"],
+ ["","machen","hier: Urlaub nehmen","đi, thực hiện (nghỉ phép)"],
+ ["der","Anfang, ¨-e","der erste Moment von etwas","sự bắt đầu"],
+ ["","anfangen","beginnen","bắt đầu"],
+ ["der","Plan, ¨-e","was man in der Zukunft machen möchte","kế hoạch"],
+ ["","planen","einen Plan machen","lập kế hoạch"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art && art.indexOf('/')===-1 ? art+' ' : '') + word.split(',')[0].split('(')[0].split('/')[0].trim();
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button class="speak-btn" data-text="'+speakText+'">🔊</button>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+renderVocab(vocab5,'vg5');
+renderVocab(vocab6,'vg6');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= Beispiel-Boxen ================= */
+function renderExampleBox(targetId, lines){
+  var el = document.getElementById(targetId);
+  el.innerHTML = '<b>Beispiele:</b><br>' + lines.map(function(l){
+    return '<span class="dialog-p">'+l+' <button class="speak-btn" data-text="'+l+'">🔊</button></span>';
+  }).join('<br>');
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+}
+renderExampleBox('ex-box-1', [
+  'Ich arbeite bei Siemens.',
+  'eine Arbeit suchen',
+  'Sie hat jetzt eine neue Stelle.',
+  'Ich bin arbeitslos.',
+  'Die Arbeit ist leicht.',
+  'Wir arbeiten beide.'
+]);
+renderExampleBox('ex-box-2', [
+  'Was tust du den ganzen Tag?',
+  'Ich bin Studentin. Was studierst du?',
+  'Ich werde Lehrerin.',
+  'Ich bin Lehrer von Beruf.',
+  'Ich arbeite als Taxifahrer.',
+  'Ich arbeite zu Hause.'
+]);
+renderExampleBox('ex-box-3', [
+  'Hier ist ein Gespräch für Sie.',
+  'Die Präsentation ist fertig.'
+]);
+renderExampleBox('ex-box-4', [
+  'Ich schicke eine E-Mail ab.',
+  'Der Drucker geht nicht.',
+  'Sie müssen hier klicken.'
+]);
+renderExampleBox('ex-box-5', [
+  'Diese Arbeitswoche ist kurz.'
+]);
+renderExampleBox('ex-box-6', [
+  'Wir machen Urlaub.',
+  'Anfang August mache ich Urlaub.'
+]);
+
+/* ================= Aussprache: Wortakzent ================= */
+function renderPronGroup(containerId, words){
+  var el = document.getElementById(containerId);
+  var chips = words.map(function(w){ return '<span class="pron-chip" data-text="'+w+'">'+w+' 🔊</span>'; }).join('');
+  el.innerHTML = '<button class="pron-playall" data-words="'+words.join('|')+'">🔊 Alle anhören</button><div>'+chips+'</div>';
+  el.querySelector('.pron-playall').addEventListener('click', function(){
+    speakDE(this.dataset.words.split('|'));
+  });
+  el.querySelectorAll('.pron-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){ speakDE(chip.dataset.text); });
+  });
+}
+renderPronGroup('pron-a', ['das Haus','der Mann','der Hausmann','Ich bin Hausmann.']);
+renderPronGroup('pron-b', ['die Arbeit','die Stelle','die Arbeitsstelle','Sie hat eine Arbeitsstelle.']);
+
+/* ================= Aussprache-Ratespiel: kurz oder lang? ================= */
+function renderStressGuess(containerId, items){
+  var el = document.getElementById(containerId);
+  function seps(item){
+    if(item.seps) return item.seps;
+    var j = item.joiner !== undefined ? item.joiner : ' ';
+    var arr = [];
+    for(var i=0;i<item.units.length-1;i++) arr.push(j);
+    return arr;
+  }
+  function joinUnits(units, sepArr){
+    var out = units[0];
+    for(var i=1;i<units.length;i++) out += sepArr[i-1] + units[i];
+    return out;
+  }
+  el.innerHTML = items.map(function(item, ii){
+    var sepArr = seps(item);
+    var unitsHtml = item.units.map(function(u, ui){
+      var span = '<span class="sr-unit" data-item="'+ii+'" data-idx="'+ui+'">'+u+'</span>';
+      return ui===0 ? span : sepArr[ui-1]+span;
+    }).join('');
+    var fullText = joinUnits(item.units, sepArr);
+    return '<div class="stress-row" data-item="'+ii+'">'+
+      '<button class="sr-play" data-text="'+fullText+'">🔊</button>'+
+      '<span class="sr-word">'+unitsHtml+'</span>'+
+      '<button class="sr-loesung" data-item="'+ii+'">Lösung</button>'+
+      '<span class="sr-result" id="stress-res-'+containerId+'-'+ii+'"></span>'+
+      '</div>';
+  }).join('');
+
+  el.querySelectorAll('.sr-play').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+
+  el.querySelectorAll('.sr-unit').forEach(function(u){
+    u.addEventListener('click', function(){
+      var row = u.closest('.stress-row');
+      var already = u.classList.contains('selected');
+      row.querySelectorAll('.sr-unit').forEach(function(o){ o.classList.remove('selected'); });
+      if(!already) u.classList.add('selected');
+    });
+  });
+
+  el.querySelectorAll('.sr-loesung').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var ii = parseInt(btn.dataset.item,10);
+      var item = items[ii];
+      var correctIdx = item.pattern.indexOf('lang');
+      var row = el.querySelector('.stress-row[data-item="'+ii+'"]');
+      var guessedUnit = row.querySelector('.sr-unit.selected');
+      var guessedIdx = guessedUnit ? parseInt(guessedUnit.dataset.idx,10) : -1;
+      row.querySelectorAll('.sr-unit').forEach(function(u){
+        u.classList.remove('selected','correct','wrongpick');
+        var ui = parseInt(u.dataset.idx,10);
+        if(ui===correctIdx) u.classList.add('correct');
+        else if(ui===guessedIdx) u.classList.add('wrongpick');
+      });
+      var res = document.getElementById('stress-res-'+containerId+'-'+ii);
+      if(guessedIdx===correctIdx){ res.textContent='Richtig!'; res.style.color='var(--ok)'; }
+      else { res.textContent='Leider nicht.'; res.style.color='var(--bad)'; }
+    });
+  });
+}
+renderStressGuess('ex5-1', [
+  {units:['das','Haus'], pattern:['kurz','lang']},
+  {units:['der','Mann'], pattern:['kurz','lang']},
+  {units:['der','Haus','mann'], pattern:['kurz','lang','kurz'], seps:[' ','']},
+  {units:['Ich','bin','Hausmann'], pattern:['kurz','kurz','lang']},
+  {units:['die','Arbeit'], pattern:['kurz','lang']},
+  {units:['die','Stelle'], pattern:['kurz','lang']},
+  {units:['die','Arbeits','stelle'], pattern:['kurz','lang','kurz'], seps:[' ','']},
+  {units:['Sie','hat','eine','Arbeitsstelle'], pattern:['kurz','kurz','kurz','lang']},
+]);
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+  });
+});
+
+/* ================= EX 1.1 Wie heißen die Wörter? ================= */
+(function(){
+  var el = document.getElementById('ex1-1');
+  el.innerHTML =
+  '<div class="qline">1. Ali hat keine Arbeit. Er ist '+makeBlank('e11-0','arbeitslos',140)+'.</div>'+
+  '<div class="qline">2. Er hat eine Stelle. Das ist sein '+makeBlank('e11-1','Arbeitsplatz',150)+'.</div>'+
+  '<div class="qline">3. Er bekommt jeden Monat Geld. Er '+makeBlank('e11-2','verdient',120)+' Geld.</div>'+
+  '<div class="qline">4. Herr Schulz arbeitet und Frau Schulz arbeitet. Sie arbeiten '+makeBlank('e11-3','beide',100)+'.</div>'+
+  '<div class="qline">5. Die Arbeit ist nicht leicht, sie ist '+makeBlank('e11-4','schwer',100)+'.</div>'+
+  '<div class="qline">6. Lisa arbeitet nur am Wochenende. Sie hat einen '+makeBlank('e11-5','Job',90)+' in einem Kiosk.</div>';
+})();
+
+/* ================= EX 2.1 Eine E-Mail ================= */
+(function(){
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="dialog-p">Liebe Mama,</div>'+
+  '<div class="dialog-p">zuerst die gute Nachricht: Max hat eine neue Stelle! Er arbeitet jetzt bei COMPI, das ist eine kleine Computerfirma.</div>'+
+  '<div class="dialog-p">Der '+makeBlank('e21-0','Arbeitsplatz',140)+' ist leicht und er kann '+makeBlank('e21-1','selbstständig',140)+' arbeiten. Jetzt arbeiten wir '+makeBlank('e21-2','beide',90)+' und '+makeBlank('e21-3','verdienen',120)+' gut.</div>'+
+  '<div class="dialog-p">Und die schlechte Nachricht: Sabine ist '+makeBlank('e21-4','arbeitslos',130)+' und sucht seit drei Wochen eine neue Arbeit. Es ist schwer, '+makeBlank('e21-5','eine Arbeit|Arbeit',130)+' zu bekommen, aber morgen hat sie '+makeBlank('e21-6','ein Praktikum|Praktikum',140)+' bei einer kleinen Firma. Sie hat den Tipp von Rudi bekommen. Er macht dort '+makeBlank('e21-7','einen Termin|Termin',130)+'.</div>'+
+  '<div class="dialog-p">Geht es euch gut? Seid ihr gesund? Max und ich kommen am '+makeBlank('e21-8','Wochenende',130)+'!</div>'+
+  '<div class="dialog-p">Liebe Grüße,<br>deine Martina</div>';
+})();
+
+/* ================= EX 3.1 Dialog 1 ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<div class="dialog-p">● Wann beginnt deine Arbeit?</div>'+
+  '<div class="dialog-p">○ Um 7 Uhr.</div>'+
+  '<div class="dialog-p">● Und wann hast du '+makeBlank('e31-0','Feierabend',130)+'?</div>'+
+  '<div class="dialog-p">○ Meistens um 16.30 Uhr.</div>'+
+  '<div class="dialog-p">● '+makeBlank('e31-1','Musst',100)+' du auch am Sonntag arbeiten?</div>'+
+  '<div class="dialog-p">○ Nein, am Sonntag und an den '+makeBlank('e31-2','Feiertagen',130)+' arbeiten wir nicht.</div>';
+})();
+
+/* ================= EX 3.2 Dialog 2 ================= */
+(function(){
+  var el = document.getElementById('ex3-2');
+  el.innerHTML =
+  '<div class="dialog-p">● Kommst du am Samstag mit auf die Party?</div>'+
+  '<div class="dialog-p">○ Nein, ich bin '+makeBlank('e32-0','müde',100)+', die Woche war sehr '+makeBlank('e32-1','lang',90)+'.</div>'+
+  '<div class="dialog-p">● Und wann machst du '+makeBlank('e32-2','Urlaub',110)+'?</div>'+
+  '<div class="dialog-p">○ '+makeBlank('e32-3','Anfang',110)+' August, das sind nur noch sechs Wochen!</div>'+
+  '<div class="dialog-p">● Was '+makeBlank('e32-4','tust',90)+' du dann den ganzen Tag?</div>'+
+  '<div class="dialog-p">○ Schlafen, essen, Zeitung lesen, wandern ...</div>';
+})();
+
+/* ================= EX 3.3 Dialog 3 ================= */
+(function(){
+  var el = document.getElementById('ex3-3');
+  el.innerHTML =
+  '<div class="dialog-p">● Was machen deine Kinder?</div>'+
+  '<div class="dialog-p">○ Lisa ist '+makeBlank('e33-0','Studentin',120)+', sie studiert Medizin. Und Peter '+makeBlank('e33-1','arbeitet',110)+' als Taxifahrer, er will auch Medizin '+makeBlank('e33-2','studieren',120)+' und muss noch warten. Und Jonas hat auch schon '+makeBlank('e33-3','Pläne',100)+', er geht zur Schule und will später Busfahrer '+makeBlank('e33-4','werden',110)+'.</div>';
+})();
+
+/* ================= EX 4.1 Im Büro (Dialoge 1&2) ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="dialog-p">● Arbeitet deine Firma nur in Europa?</div>'+
+  '<div class="dialog-p">○ Nein, sie arbeitet '+makeBlank('e41-0','international',140)+'.</div>'+
+  '<div class="dialog-p">● Sind die '+makeBlank('e41-1','Papiere',110)+' für die Firma Klapp '+makeBlank('e41-2','fertig',110)+'?</div>'+
+  '<div class="dialog-p">○ Nein, sie sind noch beim '+makeBlank('e41-3','Chef',100)+', er muss sie noch '+makeBlank('e41-4','unterschreiben',150)+'.</div>';
+})();
+
+/* ================= EX 4.2 Im Büro (Dialoge 3&4) ================= */
+(function(){
+  var el = document.getElementById('ex4-2');
+  el.innerHTML =
+  '<div class="dialog-p">● Haben Sie jetzt auch '+makeBlank('e42-0','Feierabend',130)+'?</div>'+
+  '<div class="dialog-p">○ Nein, ich muss noch '+makeBlank('e42-1','telefonieren',140)+' und der '+makeBlank('e42-2','Termin',110)+' ist sehr wichtig.</div>'+
+  '<div class="dialog-p">● Ist der '+makeBlank('e42-3','Chef',100)+' noch im Büro?</div>'+
+  '<div class="dialog-p">○ Ja, er hat bis 17.00 Uhr ein '+makeBlank('e42-4','Gespräch',130)+'. Ist es '+makeBlank('e42-5','wichtig',110)+' oder kann es bis morgen warten?</div>'+
+  '<div class="dialog-p">● Ich '+makeBlank('e42-6','komme',100)+' morgen wieder.</div>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ['Ohne Arbeit sein heißt ...','arbeitslos'],
+    ['Der Ort, an dem man arbeitet, heißt der ...','Arbeitsplatz'],
+    ['Geld für seine Arbeit bekommen nennt man ...','verdienen'],
+    ['Eine Person, die für sich selbst arbeitet, ist ...','selbstständig'],
+    ['Das Ende der Arbeitszeit heißt der ...','Feierabend'],
+    ['Ein Tag ohne Arbeit, z. B. Weihnachten, ist ein ...','Feiertag'],
+    ['Freie Zeit für eine Reise, ohne Arbeit, heißt der ...','Urlaub'],
+    ['Der erste Moment von etwas ist der ...','Anfang'],
+    ['Was man in der Zukunft machen möchte, ist der ...','Plan'],
+    ['Die Person, die die Firma leitet, ist der/die ...','Chef|Chefin'],
+    ['Eine geplante Zeit für ein Treffen ist der ...','Termin'],
+    ['Nicht mehr in Arbeit, abgeschlossen, heißt ...','fertig'],
+    ['Ein Gerät, das Texte auf Papier druckt, ist der ...','Drucker'],
+    ['Eine E-Mail senden nennt man auch ...','abschicken'],
+    ['Eine Zeit, in der man in einer Firma lernt und arbeitet, ist das ...','Praktikum'],
+    ['Eine Person, die zu Hause den Haushalt macht, ist der/die ...','Hausmann|Hausfrau'],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

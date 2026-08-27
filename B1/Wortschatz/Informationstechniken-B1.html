@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moderne Informationstechniken – B1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.25rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.1rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.readtext{background:var(--teal-pale);border-radius:10px;padding:14px;font-size:.9rem;line-height:1.6;margin-bottom:12px;}
+.readtext h3{margin:0 0 8px;color:var(--teal);font-size:1rem;}
+.note-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.88rem;color:var(--teal);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">B1 · Wortschatz &amp; Übungen</div>
+  <h1>Moderne Informationstechniken</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="uebungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🖥️ Hardware</h2>
+    <div class="vocab-grid" id="vg1"></div>
+  </div>
+
+  <div class="section">
+    <h2>💻 Software &amp; Internet</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>⚙️ Verben rund um Computer &amp; Internet</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="uebungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Ordnen Sie zu.</h2>
+    <div class="wordbank"><b>Kasten:</b> der Computer/der Rechner – der Bildschirm/der Monitor – die Maus – die Tastatur – das CD-ROM-Laufwerk – der Drucker – der Scanner – das Kabel – der Lautsprecher</div>
+    <div class="ex-instructions">Beschriften Sie die Teile 1-9 des Computerarbeitsplatzes.</div>
+    <div id="ex1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Welches Wort passt nicht? Klicken Sie das falsche Wort an.</h2>
+    <div id="ex2"></div>
+    <div class="note-box"><b>D/A – CH:</b> das Handy (Deutschland/Österreich) = das Handy / das Natel (Schweiz)</div>
+    <button class="check-btn" data-check="mc" data-target="ex2">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2"></div>
+  </div>
+
+  <div class="section">
+    <h2>3 Wie schreiben Sie einen Brief am Computer? Ordnen Sie die Sätze.</h2>
+    <div class="wordbank"><b>Kasten:</b> Computer einschalten – Text drucken – Datei schließen – Text schreiben – neue Datei öffnen – Datei speichern – Computer ausschalten – Programm öffnen – Datei speichern – Programm beenden</div>
+    <div class="ex-instructions">Beispiel: <i>Zuerst schalte ich den Computer ein. Dann …</i> Wählen Sie für jeden Schritt die richtige Reihenfolge (1-10).</div>
+    <div id="ex3"></div>
+    <button class="check-btn" data-check="selects" data-target="ex3">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3"></div>
+  </div>
+
+  <div class="section">
+    <h2>4 Was kann man im Internet machen? Ordnen Sie zu.</h2>
+    <div class="wordbank"><b>Kasten links:</b> mit anderen Leuten – Reisen – Musik – Preise – Informationen – Produkte – Leute – Filme – Deutsch – Nachrichten – Apps<br>
+    <b>Kasten rechts:</b> lesen – lernen – kaufen – chatten – vergleichen – bestellen – suchen – hören – kennenlernen – buchen – anschauen – herunterladen – senden</div>
+    <div class="ex-instructions">Beispiel: <i>Im Internet kann man mit anderen Leuten chatten.</i></div>
+    <div id="ex4"></div>
+    <button class="check-btn" data-check="selects" data-target="ex4">Kontrollieren</button>
+    <div class="result-msg" id="res-ex4"></div>
+  </div>
+
+  <div class="section">
+    <h2>5 Moderne Informationstechniken. Was passt? Ordnen Sie zu.</h2>
+    <div class="wordbank"><b>Kasten:</b> Computer – Onlinebanking – E-Book – Mailbox – Smartphone – Chat – E-Mails – Laptop – Links – Homepage – Mobiltelefon</div>
+    <div id="ex5"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex5">Kontrollieren</button>
+    <div class="result-msg" id="res-ex5"></div>
+  </div>
+
+  <div class="section">
+    <h2>6 Wie heißen die Verben? Ergänzen Sie.</h2>
+    <div id="ex6"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex6">Kontrollieren</button>
+    <div class="result-msg" id="res-ex6"></div>
+  </div>
+
+  <div class="section">
+    <h2>7 Lesen Sie den Text. Sammeln Sie Wortschatz zum Thema „Internet".</h2>
+    <div class="readtext">
+      <h3>Wie viel Internet pro Tag ist gesund?</h3>
+      <p>Eine Welt ohne Internet ist kaum noch vorstellbar. Wir surfen im Internet, um uns über aktuelle Nachrichten zu informieren, checken unsere E-Mails und kommunizieren in sozialen Netzwerken wie Facebook und Twitter. Ab wann wird die Internetnutzung gefährlich? Hier gibt es unterschiedliche Meinungen. Tatsache ist aber, dass viele Jugendliche unter 18 Jahren in einer Umfrage angegeben haben, dass sie ohne chatten, surfen, spielen und twittern gar nicht mehr leben können. Medien sprechen immer mehr von der Gefahr der Internetsucht. So sei jeder zehnte Jugendliche heute gefährdet. Durch die Flucht in die virtuelle Welt des Internets hätten viele Menschen heute Probleme, sich in der Realität zu bewegen.</p>
+    </div>
+    <div class="ex-instructions">Sammeln Sie mindestens 8 Wörter/Ausdrücke zum Thema Internet aus dem Text. Diese Aufgabe wird nicht automatisch kontrolliert — vergleichen Sie am Ende mit dem Lösungsvorschlag.</div>
+    <div id="ex7"></div>
+    <button class="check-btn" id="showEx7">Lösungsvorschlag anzeigen</button>
+    <div class="result-msg" id="res-ex7"></div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Informationstechniken</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Thema. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["der","Computer, -/der Rechner, -","das Gerät, mit dem man arbeitet, surft und speichert","máy tính"],
+ ["der","Bildschirm, -e/der Monitor, -e","das Gerät, auf dem man das Bild des Computers sieht","màn hình"],
+ ["die","Maus, ¨-e","das kleine Gerät, mit dem man den Cursor steuert","con chuột máy tính"],
+ ["die","Tastatur, -en","das Gerät mit den Buchstaben und Zahlen zum Tippen","bàn phím"],
+ ["das","CD-ROM-Laufwerk, -e","das Teil des Computers, das CDs liest","ổ đĩa CD-ROM"],
+ ["der","Drucker, -","das Gerät, das Texte auf Papier druckt","máy in"],
+ ["der","Scanner, -","das Gerät, das Papierdokumente digitalisiert","máy quét"],
+ ["das","Kabel, -","die Leitung, die Geräte verbindet","dây cáp"],
+ ["der","Lautsprecher, -","das Gerät, aus dem man Ton hört","loa"],
+];
+
+var vocab2 = [
+ ["die","Datei, -en","eine gespeicherte Sammlung von Daten auf dem Computer","tệp tin"],
+ ["das","Programm, -e","eine Software, mit der man am Computer arbeitet","chương trình phần mềm"],
+ ["das","Passwort, ¨-er","ein geheimes Wort zum Schutz eines Kontos","mật khẩu"],
+ ["das","Onlinebanking (nur Sg.)","Bankgeschäfte, die man über das Internet erledigt","ngân hàng trực tuyến"],
+ ["das","E-Book, -s","ein Buch in digitaler Form","sách điện tử"],
+ ["die","Mailbox, -en","der Speicher für Nachrichten auf dem Handy","hộp thư thoại"],
+ ["das","Smartphone, -s","ein Handy, mit dem man auch im Internet surfen kann","điện thoại thông minh"],
+ ["der","Chat, -s","ein Gespräch, das man online in Echtzeit schreibt","trò chuyện trực tuyến"],
+ ["die","E-Mail, -s","eine elektronische Nachricht","thư điện tử"],
+ ["der","Laptop, -s","ein tragbarer Computer","máy tính xách tay"],
+ ["der","Link, -s","eine Verbindung zu einer anderen Internetseite","đường liên kết"],
+ ["die","Homepage, -s","die Startseite einer Website","trang chủ"],
+ ["das","Mobiltelefon, -e","ein anderes Wort für Handy","điện thoại di động"],
+ ["die","Internetsucht (nur Sg.)","die krankhafte Abhängigkeit vom Internet","nghiện internet"],
+ ["das","soziale Netzwerk, -e","eine Online-Plattform, auf der man sich vernetzt, z. B. Facebook","mạng xã hội"],
+];
+
+var vocab3 = [
+ ["","öffnen (+A)","eine Datei oder ein Programm starten","mở (tệp/chương trình)"],
+ ["","speichern (+A)","Daten dauerhaft auf dem Computer sichern","lưu (dữ liệu)"],
+ ["","drucken (+A)","einen Text auf Papier ausgeben","in (tài liệu)"],
+ ["","schließen (+A)","eine Datei oder ein Programm beenden","đóng (tệp/chương trình)"],
+ ["","einschalten (+A)","ein Gerät anmachen","bật (thiết bị)"],
+ ["","ausschalten (+A)","ein Gerät ausmachen","tắt (thiết bị)"],
+ ["","hochfahren","den Computer starten","khởi động máy"],
+ ["","surfen","im Internet Seiten besuchen","lướt web"],
+ ["","chatten","online in Echtzeit schreiben","trò chuyện trực tuyến"],
+ ["","googeln (+A)","mit Google im Internet suchen","tìm kiếm bằng Google"],
+ ["","bloggen","einen Blog schreiben","viết blog"],
+ ["","twittern","eine Nachricht auf Twitter/X veröffentlichen","đăng bài trên Twitter"],
+ ["","herunterladen (+A)","eine Datei aus dem Internet auf den Computer laden","tải xuống"],
+ ["","mailen (+D)","jemandem eine E-Mail schicken","gửi email"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    var ansList = s.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    if(ansList.indexOf(s.value) > -1){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='selects') checkGroupSelects(target);
+  });
+});
+
+/* ================= EX 1 Computerteile ================= */
+(function(){
+  var items = [
+    ["1","der Computer|der Rechner"],
+    ["2","der Scanner"],
+    ["3","der Lautsprecher"],
+    ["4","das Kabel"],
+    ["5","die Maus"],
+    ["6","der Bildschirm|der Monitor"],
+    ["7","der Drucker"],
+    ["8","die Tastatur"],
+    ["9","das CD-ROM-Laufwerk"],
+  ];
+  var el = document.getElementById('ex1');
+  el.innerHTML = items.map(function(it){
+    return '<div class="qline">'+it[0]+'. '+makeBlank('e1-'+it[0], it[1], 220)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2 Welches Wort passt nicht? ================= */
+(function(){
+  var data = [
+    ["eine Datei:",["öffnen","speichern","drucken","ausschalten"],3],
+    ["eine CD:",["kaufen","umtauschen","verbinden","hören"],2],
+    ["eine SMS:",["schreiben","beantworten","senden","surfen"],3],
+    ["den Computer:",["anmachen","hochfahren","reparieren","arbeiten"],3],
+    ["sein Passwort:",["eingeben","einführen","ändern","geheim halten"],1],
+  ];
+  var el = document.getElementById('ex2');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. <b>'+d[0]+'</b>'+mcHtml('mc2',i,d[1],d[2])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* ================= EX 3 Reihenfolge Brief schreiben ================= */
+(function(){
+  var items = [
+    ["Computer einschalten",1],
+    ["Programm öffnen",2],
+    ["neue Datei öffnen",3],
+    ["Text schreiben",4],
+    ["Datei speichern (1. Mal)",5],
+    ["Text drucken",6],
+    ["Datei speichern (2. Mal)",7],
+    ["Datei schließen",8],
+    ["Programm beenden",9],
+    ["Computer ausschalten",10],
+  ];
+  var el = document.getElementById('ex3');
+  var optHtml = '';
+  for(var n=1;n<=10;n++){ optHtml += '<option value="'+n+'">'+n+'</option>'; }
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="matchrow">'+it[0]+' <select id="e3-'+i+'" data-ans="'+it[1]+'"><option value="">Nr...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 4 Was kann man im Internet machen? ================= */
+(function(){
+  var items = [
+    ["mit anderen Leuten","chatten"],
+    ["Reisen","buchen"],
+    ["Musik","hören"],
+    ["Preise","vergleichen"],
+    ["Informationen","suchen"],
+    ["Produkte","bestellen"],
+    ["Leute","kennenlernen"],
+    ["Filme","anschauen"],
+    ["Deutsch","lernen"],
+    ["Nachrichten","lesen"],
+    ["Apps","herunterladen"],
+  ];
+  var opts = ["lesen","lernen","kaufen","chatten","vergleichen","bestellen","suchen","hören","kennenlernen","buchen","anschauen","herunterladen","senden"];
+  var el = document.getElementById('ex4');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e4-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 5 Was passt? ================= */
+(function(){
+  var el = document.getElementById('ex5');
+  el.innerHTML =
+  '<div class="qline">1. Ich hatte lange Zeit ein altes '+makeBlank('e5-0','Mobiltelefon',170)+
+  ', jetzt habe ich mir ein '+makeBlank('e5-1','Smartphone',170)+' gekauft. Damit kann ich nicht nur telefonieren, sondern auch im Internet surfen.</div>'+
+  '<div class="qline">2. Früher schickte man Briefe, heute sendet man '+makeBlank('e5-2','E-Mails',170)+'.</div>'+
+  '<div class="qline">3. Im Büro habe ich einen '+makeBlank('e5-3','Computer',170)+' mit Tastatur und großem Monitor. Wenn ich unterwegs bin, zum Beispiel im Zug, dann arbeite ich am '+makeBlank('e5-4','Laptop',170)+'.</div>'+
+  '<div class="qline">4. Auf der '+makeBlank('e5-5','Homepage',170)+' der Firma Minimaxis.de kann man online Kinderspielzeug bestellen. Außerdem gibt es dort viele '+makeBlank('e5-6','Links',170)+' zu interessanten Seiten im Internet.</div>'+
+  '<div class="qline">5. Ein Buch in digitaler Form. Mit einer Lesesoftware kann ich es lesen: '+makeBlank('e5-7','E-Book',170)+'.</div>'+
+  '<div class="qline">6. Ich kommuniziere gern mit anderen Internetnutzern. Meine Freundin habe ich im '+makeBlank('e5-8','Chat',170)+' kennengelernt.</div>'+
+  '<div class="qline">7. Ich mache auch '+makeBlank('e5-9','Onlinebanking',170)+'. Das ist bequemer, als Überweisungsformulare von Hand auszufüllen.</div>'+
+  '<div class="qline">8. Ich schaltete mein Handy ein. Ich hatte fünf Nachrichten auf der '+makeBlank('e5-10','Mailbox',170)+'.</div>';
+})();
+
+/* ================= EX 6 Verben ================= */
+(function(){
+  var items = [
+    ["die E-Mail","mailen|e-mailen"],
+    ["der Blog","bloggen"],
+    ["der Chat","chatten"],
+    ["Google","googeln"],
+    ["Twitter","twittern"],
+  ];
+  var el = document.getElementById('ex6');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' → '+makeBlank('e6-'+i, it[1], 170)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 7 Wortschatz sammeln (Lösungsvorschlag) ================= */
+(function(){
+  var el = document.getElementById('ex7');
+  el.innerHTML = '<div class="qline" style="color:var(--muted);font-size:.88rem;">Notieren Sie hier Ihre eigenen Funde (auf Papier oder im Kopf) und klicken Sie dann auf den Button.</div>'+
+  '<div id="ex7-solution" style="display:none;" class="wordbank"><b>Lösungsvorschlag:</b> surfen, sich informieren, E-Mails checken, kommunizieren, soziale Netzwerke, Internetnutzung, chatten, spielen, twittern, Internetsucht, gefährdet sein, die virtuelle Welt, sich in der Realität bewegen</div>';
+})();
+document.getElementById('showEx7').addEventListener('click', function(){
+  document.getElementById('ex7-solution').style.display = 'block';
+  document.getElementById('res-ex7').textContent = 'Vergleichen Sie Ihre Liste mit dem Vorschlag oben.';
+  document.getElementById('res-ex7').style.color = 'var(--teal)';
+});
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Das Gerät, mit dem man den Cursor steuert: die ...", "Maus"],
+    ["Das Gerät, das Papierdokumente digitalisiert: der ...", "Scanner"],
+    ["Eine gespeicherte Sammlung von Daten auf dem Computer: die ...", "Datei"],
+    ["Ein geheimes Wort zum Schutz eines Kontos: das ...", "Passwort"],
+    ["Bankgeschäfte über das Internet erledigen: das ...", "Onlinebanking"],
+    ["Ein Buch in digitaler Form: das ...", "E-Book"],
+    ["Ein tragbarer Computer: der ...", "Laptop"],
+    ["Die Startseite einer Website: die ...", "Homepage"],
+    ["Die krankhafte Abhängigkeit vom Internet: die ...", "Internetsucht"],
+    ["Im Internet Seiten besuchen: ...", "surfen"],
+    ["Mit Google im Internet suchen: ...", "googeln"],
+    ["Eine Datei aus dem Internet auf den Computer laden: ...", "herunterladen"],
+    ["Ein Gerät anmachen: ...", "einschalten"],
+    ["Den Computer starten: ...", "hochfahren"],
+    ["Eine Verbindung zu einer anderen Internetseite: der ...", "Link"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 190)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

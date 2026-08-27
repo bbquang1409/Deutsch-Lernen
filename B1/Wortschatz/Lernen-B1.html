@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Lernen – B1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.section h3{
+  color:var(--teal-light);
+  font-size:1rem;
+  margin-bottom:8px;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:#fbfaf7;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{
+  margin-top:4px;
+  color:var(--teal-light);
+  font-size:0.88rem;
+}
+.vocab-vn{
+  display:none;
+  margin-top:4px;
+  color:var(--orange);
+  font-size:0.9rem;
+  font-style:italic;
+}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.vn-switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.85rem;
+  color:var(--teal);
+  cursor:pointer;
+  user-select:none;
+}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);
+  background:var(--orange-light);
+  border-radius:10px;
+  padding:10px 14px;
+  margin:10px 0;
+  font-weight:600;
+  color:var(--teal);
+  text-align:center;
+}
+.exercise{
+  margin-bottom:22px;
+  padding-bottom:14px;
+  border-bottom:1px solid #eee;
+}
+.exercise:last-child{border-bottom:none;}
+.ex-title{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:6px;
+}
+.ex-instructions{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-bottom:10px;
+}
+.qline{
+  margin:10px 0;
+  line-height:1.9;
+}
+.qline input[type=text]{
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-size:1rem;
+  padding:2px 4px;
+  width:150px;
+  font-family:inherit;
+  color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{
+  border:2px solid var(--teal-light);
+  border-radius:20px;
+  padding:6px 14px;
+  cursor:pointer;
+  font-size:0.9rem;
+  background:#fff;
+}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{
+  background:var(--teal-pale);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:12px;
+  font-size:0.9rem;
+  color:var(--teal);
+}
+.wordbank b{color:var(--teal-light);}
+.matchrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  flex-wrap:wrap;
+}
+.matchrow select{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+}
+.check-btn{
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  padding:9px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{
+  background:#fff;
+  color:var(--teal);
+  border:2px solid var(--teal);
+  border-radius:20px;
+  padding:7px 18px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+  margin-left:6px;
+}
+.result-msg{
+  margin-top:8px;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.footer-credit{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.8rem;
+  margin-top:30px;
+}
+
+/* ---- Kreuzworträtsel (Treppen-Rätsel) ---- */
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{
+  display:flex;align-items:center;justify-content:center;
+  width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;
+}
+input.letter-box{
+  flex:0 0 28px !important;
+  width:28px !important;height:28px !important;
+  text-align:center;font-size:.9rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;
+  padding:0 !important;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);
+  box-sizing:border-box;
+}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{
+  margin-top:16px;padding-top:14px;border-top:2px dashed #e2ded4;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){
+  .letter-spacer{flex:0 0 22px;width:22px;height:22px;}
+  input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}
+}
+
+/* ---- Wortsuche-Gitter ---- */
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{
+  width:24px;height:24px;text-align:center;vertical-align:middle;
+  border:1px solid var(--teal-pale);font-size:.8rem;font-weight:700;color:var(--teal);
+}
+.ws-wordlist{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;
+}
+.ws-word{
+  background:var(--teal-pale);color:var(--teal);border-radius:16px;
+  padding:5px 12px;font-size:.85rem;font-weight:600;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">B1 · Modul-Wortschatz</div>
+  <h1>5&nbsp; Lernen</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Das Gedächtnis</h2>
+    <div class="vocab-grid" id="vg1"></div>
+  </div>
+
+  <div class="section">
+    <h2>🏫 Schule und Zeugnisse</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">Grundschule → Hauptschule / Realschule / Gymnasium → Berufsschule / Universität</div>
+  </div>
+
+  <div class="section">
+    <h2>🗣️ Sprachkenntnisse</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="scale-box">A1 &lt; A2 &lt; B1 &lt; B2 &lt; C1 &lt; C2</div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <!-- 1 Wiederholung -->
+  <div class="section">
+    <h2>1 Wiederholung</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Was passt zusammen? Ordnen Sie zu.</div>
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Notieren Sie die Wörter und finden Sie das Lösungswort.</div>
+      <div class="ex-instructions">Lesen Sie die Definition und ergänzen Sie das passende Wort im Treppen-Kreuzworträtsel.</div>
+      <ol id="cw-clues" style="font-size:.92rem;line-height:1.7;padding-left:20px;"></ol>
+      <div id="cw-body"></div>
+      <div class="loes-wrap">
+        <span style="font-size:.9rem;"><b>🔑 Lösungswort:</b></span>
+        <div id="cw-loes" class="letterrow"></div>
+      </div>
+      <button class="check-btn" data-check="crossword">Prüfen</button>
+      <button class="reset-btn" data-reset="crossword">Zurücksetzen</button>
+      <div class="result-msg" id="res-cw-body"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Was passt nicht? Klicken Sie das falsche Wort an.</div>
+      <div id="ex1-3"></div>
+      <button class="check-btn" data-check="mc" data-target="ex1-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-3"></div>
+    </div>
+  </div>
+
+  <!-- 2 Das Gedächtnis -->
+  <div class="section">
+    <h2>2 Das Gedächtnis</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Bedeutet das Verb "sich an etwas erinnern"? Wählen Sie Ja oder Nein.</div>
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="mc" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Ergänzen Sie die Lerntipps mit Wörtern aus dem Kasten.</div>
+      <div class="wordbank"><b>Kasten:</b> Motivation · Lernumgebung · konzentrieren · Zusammenhang · Gehirn · Gedächtnis</div>
+      <div id="ex2-2"></div>
+      <button class="check-btn" data-check="group" data-target="ex2-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Bilden Sie aus den Adjektiven Verben mit ver-.</div>
+      <div class="ex-instructions">TIPP: Bei Adjektiven wie einfach, kurz, stark und deutlich wird das Verb auf -en und nicht auf -ern gebildet.</div>
+      <div id="ex2-3"></div>
+      <button class="check-btn" data-check="group" data-target="ex2-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">4 Ergänzen Sie weitere Verben mit ver-.</div>
+      <div id="ex2-4"></div>
+      <button class="check-btn" data-check="group" data-target="ex2-4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-4"></div>
+    </div>
+  </div>
+
+  <!-- 3 Schule und Zeugnisse -->
+  <div class="section">
+    <h2>3 Schule und Zeugnisse</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Das Schulsystem in Deutschland: Ergänzen Sie die Schularten.</div>
+      <div class="wordbank"><b>Kasten:</b> Grundschule · Hauptschule · Realschule · Gymnasium · Gesamtschule · Berufsschule · Volkshochschule</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Ich habe eine Eins! Ordnen Sie die Noten den Bedeutungen zu.</div>
+      <div id="ex3-2"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Ordnen Sie die Ausdrücke den Modalverben können, dürfen und müssen zu.</div>
+      <div id="ex3-3"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">4 Schreiben Sie die Wörter richtig.</div>
+      <div id="ex3-4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-4"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">5 Ordnen Sie die Gegenteile zu.</div>
+      <div id="ex3-5"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-5"></div>
+    </div>
+  </div>
+
+  <!-- 4 Sprachkenntnisse -->
+  <div class="section">
+    <h2>4 Sprachkenntnisse</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Finden Sie elf Wörter zum Thema Sprachkenntnisse.</div>
+      <div class="ex-instructions">Suchen Sie die Wörter im Gitter (waagerecht, senkrecht, diagonal). Diese Aufgabe wird nicht automatisch kontrolliert.</div>
+      <div class="ws-wrap"><div id="ws-grid"></div></div>
+      <div class="ws-wordlist" id="ws-words"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Sprachkenntnisse einordnen: Ergänzen Sie die Niveaustufen.</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="group" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Lernen</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","Dauer (nur Sg.)","wie lange etwas dauert oder anhält","khoảng thời gian kéo dài"],
+ ["das","Gedächtnis, -se","die Fähigkeit, sich an Dinge zu erinnern","trí nhớ"],
+ ["die","Gedächtnisleistung, -en","wie gut das Gedächtnis funktioniert","khả năng ghi nhớ"],
+ ["das","Gehirn, -e","das Organ, mit dem man denkt und lernt","não bộ"],
+ ["die","Konzentration (nur Sg.)","wenn man die ganze Aufmerksamkeit auf eine Sache richtet","sự tập trung"],
+ ["die","Lernumgebung, -en","der Ort und die Bedingungen, in denen man lernt","môi trường học tập"],
+ ["die","Motivation, -en","der Grund, warum man etwas tun möchte","động lực"],
+ ["die","Vokabel, -n","ein einzelnes Wort, das man in einer Fremdsprache lernt","từ vựng"],
+ ["der","Wortschatz, ¨-e","alle Wörter, die man in einer Sprache kennt","vốn từ vựng"],
+ ["der","Zusammenhang, ¨-e","die Verbindung zwischen zwei oder mehr Dingen","mối liên hệ"],
+ ["","auf|schreiben (+A)","etwas mit Papier und Stift notieren","ghi chú lại"],
+ ["","auswendig lernen (+A)","einen Text so lernen, dass man ihn ohne Vorlage sagen kann","học thuộc lòng"],
+ ["","behalten (+A)","sich an etwas erinnern können, nicht vergessen","ghi nhớ, giữ lại"],
+ ["","ein|fallen (+D)","plötzlich an etwas denken müssen","chợt nhớ ra"],
+ ["","sich konzentrieren auf (+A)","die Aufmerksamkeit auf eine Sache richten","tập trung vào"],
+ ["","motivieren (+A)","jemandem Lust machen, etwas zu tun","tạo động lực"],
+ ["","verbessern (+A)","etwas besser machen","cải thiện"],
+ ["","verdeutlichen (+A)","etwas deutlicher, klarer machen","làm rõ"],
+ ["","vereinfachen (+A)","etwas einfacher machen","đơn giản hóa"],
+ ["","verfeinern (+A)","etwas feiner, genauer machen","làm tinh tế hơn"],
+ ["","vergrößern (+A)","etwas größer machen","làm to hơn"],
+ ["","verkleinern (+A)","etwas kleiner machen","làm nhỏ hơn"],
+ ["","verkürzen (+A)","etwas kürzer machen","rút ngắn"],
+ ["","verlängern (+A)","etwas länger machen","kéo dài"],
+ ["","verschlechtern (+A)","etwas schlechter machen","làm xấu đi"],
+ ["","verschönern (+A)","etwas schöner machen","làm đẹp hơn"],
+ ["","auf Dauer","für eine lange Zeit, langfristig","về lâu dài"],
+ ["der","Rückschritt, ¨-e","wenn man schlechter statt besser wird","bước lùi"],
+ ["der","Schulabschluss, ¨-e","das Zeugnis am Ende der Schulzeit, z. B. Abitur","bằng tốt nghiệp phổ thông"],
+ ["das","Seminar, -e","ein Kurs, in dem eine kleine Gruppe zusammen lernt","hội thảo, khóa học nhỏ"],
+ ["die","Sonderschule, -n","eine Schule für Kinder mit besonderem Förderbedarf","trường chuyên biệt"],
+ ["die","Stimme, -n","der Ton, den man beim Sprechen oder Singen produziert","giọng nói"],
+ ["das","Stimmtraining, -s","Übungen, um die Stimme zu verbessern","luyện giọng"],
+ ["die","Volkshochschule (VHS), -n","eine Schule für Erwachsene mit vielen verschiedenen Kursen","trung tâm giáo dục cộng đồng"],
+ ["die","Weiterbildung, -en","ein Kurs, den man nach der Ausbildung macht, um mehr zu lernen","đào tạo nâng cao"],
+ ["","beherrschen (+A)","etwas sehr gut können","thành thạo"],
+ ["","durch|fallen durch (+A)","eine Prüfung nicht bestehen","trượt kỳ thi"],
+ ["","entwickeln (+A)","etwas Neues schaffen oder wachsen lassen","phát triển"],
+ ["","genehmigen (+A)","offiziell erlauben","phê duyệt"],
+ ["","gestatten (+A + D)","erlauben","cho phép"],
+ ["","nach|holen (+A)","etwas später machen, das man verpasst hat","học bù, làm bù"],
+ ["","verlernen (+A)","etwas, das man konnte, wieder vergessen","quên kỹ năng đã học"],
+ ["","verpflichten (+A)","jemanden zu etwas zwingen, das er tun muss","bắt buộc"],
+ ["","ausreichend","gerade genug, Note 4 in Deutschland","đủ điểm (4/6)"],
+ ["","befriedigend","gut genug, zufriedenstellend, Note 3","khá (điểm 3/6)"],
+ ["","erforderlich","notwendig, man braucht es","cần thiết"],
+ ["","fähig","in der Lage, etwas zu tun","có khả năng"],
+ ["","intensiv","sehr stark, konzentriert","chuyên sâu, mạnh mẽ"],
+ ["","mangelhaft","nicht gut genug, Note 5","yếu (điểm 5/6)"],
+ ["","ungenügend","sehr schlecht, Note 6, nicht bestanden","không đạt (điểm 6/6)"],
+ ["","in der Lage sein","etwas tun können","có khả năng làm gì"],
+];
+
+var vocab2 = [
+ ["der","Anfänger, -","eine Person, die neu mit etwas anfängt","người mới bắt đầu"],
+ ["die","Bedingung, -en","etwas, das erfüllt sein muss, damit etwas passiert","điều kiện"],
+ ["die","Berufsschule, -n","eine Schule für die praktische Ausbildung in einem Beruf","trường nghề"],
+ ["das","Einzeltraining, -s","Unterricht nur für eine Person","học kèm 1-1"],
+ ["der/die","Fortgeschrittene, -n","eine Person, die schon viel gelernt hat, nicht mehr Anfänger","người đã có trình độ"],
+ ["der","Fortschritt, -e","wenn man besser wird","sự tiến bộ"],
+ ["die","Gesamtschule, -n","eine Schule, in der Haupt-, Real- und Gymnasialschüler zusammen lernen","trường tổng hợp"],
+ ["die","Grundschule, -n","die erste Schule, die Kinder ab sechs Jahren besuchen","trường tiểu học"],
+ ["das","Gymnasium, Gymnasien","die Schule, die zum Abitur führt","trường dẫn đến bằng Abitur"],
+ ["die","Hauptschule, -n","eine Schulform, die nach fünf Jahren mit einem einfachen Abschluss endet","trường phổ thông cơ sở (5 năm)"],
+ ["die","Mittelschule, -n","ein anderer Name für die Hauptschule in manchen Bundesländern","tên khác của Hauptschule"],
+ ["die","Realschule, -n","eine Schulform mit mittlerem Abschluss nach sechs Jahren","trường trung học (6 năm)"],
+];
+
+var vocab3 = [
+ ["der","Ausdruck, ¨-e","eine bestimmte Art, etwas zu sagen","cách diễn đạt"],
+ ["die","Fremdsprache, -n","eine Sprache, die nicht die Muttersprache ist","ngoại ngữ"],
+ ["das","Gebiet, -e","ein bestimmter Bereich oder ein Thema","lĩnh vực"],
+ ["die","Mühe, -n","die Anstrengung, die man braucht, um etwas zu schaffen","sự cố gắng, công sức"],
+ ["","aus|druecken (+A)","etwas mit Worten sagen oder zeigen","diễn đạt"],
+ ["","sich beteiligen an (+D)","bei etwas mitmachen","tham gia vào"],
+ ["","verwenden (+A)","benutzen","sử dụng"],
+ ["","alltäglich","jeden Tag, normal","hàng ngày"],
+ ["","fliessend","sehr flüssig, ohne Pausen, bei einer Sprache","trôi chảy"],
+ ["","mündlich","gesprochen, nicht geschrieben","bằng miệng, khẩu ngữ"],
+ ["","muttersprachlich","wie die eigene erste Sprache","bản ngữ"],
+ ["","spontan","ohne Plan, aus einem plötzlichen Gefühl heraus","tự phát, ngẫu hứng"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='crossword') checkCrossword();
+  });
+});
+document.querySelectorAll('.reset-btn[data-reset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.dataset.reset==='crossword') resetCrossword();
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  var html = '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+  return html;
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+
+/* ================= EX 1.1 Was passt zusammen? ================= */
+(function(){
+  var items = [
+    ["Wir können","uns gut auf Deutsch verständigen"],
+    ["Wir kennen","schon viele Menschen hier im Kurs"],
+    ["Wir wissen","noch nicht, wann der nächste Test ist"],
+    ["Wir lernen","jede Woche neue Vokabeln"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' … <select id="e11-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 1.2 Kreuzworträtsel ================= */
+function renderCrossword(opts){
+  var body = document.getElementById(opts.bodyId);
+  var clues = document.getElementById(opts.cluesId);
+  clues.innerHTML = opts.words.map(function(w){ return '<li>'+w.clue+'</li>'; }).join('');
+
+  var targetCol = Math.max.apply(null, opts.words.map(function(w){ return w.markPos - 1; }));
+
+  opts.words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'"'+(isMarked?(' data-los="'+wi+'"'):'')+'>';
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+
+  var loesBox = document.getElementById(opts.loesId);
+  var loesHtml = '';
+  for(var k=0; k<opts.loesung.length; k++){
+    loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" data-ans="'+opts.loesung[k]+'" id="'+opts.bodyId+'-los-'+k+'">';
+  }
+  loesBox.innerHTML = loesHtml;
+
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(opts.bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+
+function checkCrossword(){
+  var inputs = document.querySelectorAll('#cw-body input.letter-box:not(.loesung)');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-cw-body');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetCrossword(){
+  document.querySelectorAll('#cw-body input.letter-box, #cw-loes input.letter-box').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw-body').textContent='';
+}
+
+renderCrossword({
+  bodyId:'cw-body', loesId:'cw-loes', cluesId:'cw-clues',
+  loesung:'SPRACHKURS',
+  words:[
+    {clue:'1. Alle Wörter, die man in einer Sprache kennt, nennt man den ...', answer:'wortschatz', markPos:5},
+    {clue:'2. Ohne Plan, aus einem plötzlichen Gefühl heraus handeln: ...', answer:'spontan', markPos:2},
+    {clue:'3. Das Organ, mit dem man denkt und lernt: das ...', answer:'gehirn', markPos:5},
+    {clue:'4. Ein einzelnes Wort, das man in einer Fremdsprache lernt: die ...', answer:'vokabel', markPos:4},
+    {clue:'5. Das Zeugnis am Ende der Schulzeit, z. B. das Abitur: der ...', answer:'schulabschluss', markPos:2},
+    {clue:'6. Eine Sprache, die nicht die Muttersprache ist: die ...', answer:'fremdsprache', markPos:11},
+    {clue:'7. Eine bestimmte Art, etwas zu sagen: der ...', answer:'ausdruck', markPos:8},
+    {clue:'8. Wie die eigene erste Sprache: ...', answer:'muttersprachlich', markPos:2},
+    {clue:'9. Ein Kurs nach der Ausbildung, um mehr zu lernen: die ...', answer:'weiterbildung', markPos:6},
+    {clue:'10. Die Fähigkeit, sich an Dinge zu erinnern: das ...', answer:'gedächtnis', markPos:10},
+  ]
+});
+
+/* ================= EX 1.3 Was passt nicht? ================= */
+(function(){
+  var data = [
+    ["sich zu ... anmelden",["einer Prüfung","einem Kurs","einer Vokabel"],2],
+    ["an ... teilnehmen",["einem Seminar","einer Weiterbildung","einem Zeugnis"],2],
+    ["ein ... ausfüllen",["Formular","Antwortbogen","Gedächtnis"],2],
+    ["eine ... abgeben",["Hausaufgabe","einen Test","eine Sprache"],2],
+    ["etwas ... markieren",["im Text","in der Prüfung","im Gehirn"],2],
+  ];
+  var el = document.getElementById('ex1-3');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. <b>'+d[0]+'</b>'+mcHtml('mc13',i,d[1],d[2])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* ================= EX 2.1 Ja/Nein ================= */
+(function(){
+  var data = [
+    ["behalten",0],
+    ["sich konzentrieren auf",1],
+    ["jemandem einfallen",0],
+    ["motivieren",1],
+    ["auswendig lernen",0],
+    ["verbessern",1],
+  ];
+  var el = document.getElementById('ex2-1');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. <b>'+d[0]+'</b>'+mcHtml('mc21',i,['Ja','Nein'],d[1])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* ================= EX 2.2 Lerntipps ================= */
+(function(){
+  var el = document.getElementById('ex2-2');
+  el.innerHTML =
+  '<p>✓ Ohne '+makeBlank('e22-0','Motivation',150)+' macht Lernen keinen Spass.</p>'+
+  '<p>✓ Wählen Sie eine ruhige '+makeBlank('e22-1','Lernumgebung',150)+', in der Sie sich gut '+makeBlank('e22-2','konzentrieren',150)+' können.</p>'+
+  '<p>✓ Neue Wörter behält man besser, wenn man sie im '+makeBlank('e22-3','Zusammenhang',150)+' mit einem Beispielsatz lernt.</p>'+
+  '<p>✓ Regelmäßiges Wiederholen hilft dem '+makeBlank('e22-4','Gehirn',120)+', neue Informationen zu speichern.</p>'+
+  '<p>✓ Ein gutes '+makeBlank('e22-5','Gedächtnis',150)+' entwickelt sich mit der Zeit, wenn man aktiv übt.</p>';
+})();
+
+/* ================= EX 2.3 ver- Verben bilden ================= */
+(function(){
+  var items = [
+    ["schlechter machen","verschlechtern"],
+    ["schöner machen","verschönern"],
+    ["länger machen","verlängern"],
+    ["kürzer machen","verkürzen"],
+    ["größer machen","vergrößern"],
+    ["kleiner machen","verkleinern"],
+    ["einfacher machen","vereinfachen"],
+    ["deutlicher machen","verdeutlichen"],
+  ];
+  var el = document.getElementById('ex2-3');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' → '+makeBlank('e23-'+i, it[1], 160)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.4 weitere ver- Verben ================= */
+(function(){
+  var el = document.getElementById('ex2-4');
+  el.innerHTML =
+  '<div class="qline">1. Wenn man regelmäßig übt, kann man den Wortschatz stark '+makeBlank('e24-0','vergrößern',150)+'.</div>'+
+  '<div class="qline">2. Ohne Uebung kann sich die Aussprache mit der Zeit '+makeBlank('e24-1','verschlechtern',150)+'.</div>'+
+  '<div class="qline">3. Ein guter Lehrer kann schwierige Grammatik '+makeBlank('e24-2','vereinfachen',150)+'.</div>'+
+  '<div class="qline">4. Mit viel Erfahrung kann man seine Sprachkenntnisse immer weiter '+makeBlank('e24-3','verbessern|verfeinern',150)+'.</div>';
+})();
+
+/* ================= EX 3.1 Schulsystem ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<p>Kinder in Deutschland gehen normalerweise mit sechs Jahren zum ersten Mal in die '+makeBlank('e31-0','Grundschule',150)+
+  '. Nach vier Jahren müssen sich die Familien für eine weiterführende Schule entscheiden: Die '+makeBlank('e31-1','Hauptschule',150)+
+  ' endet meist nach fünf Jahren, die '+makeBlank('e31-2','Realschule',150)+' nach sechs Jahren, und wer das Abitur machen möchte, geht auf das '+
+  makeBlank('e31-3','Gymnasium',150)+'. Es gibt auch die '+makeBlank('e31-4','Gesamtschule',150)+
+  ', in der alle drei Schulformen unter einem Dach vereint sind. Wer eine Ausbildung macht, besucht zusätzlich die '+
+  makeBlank('e31-5','Berufsschule',150)+', und Erwachsene können an der '+makeBlank('e31-6','Volkshochschule',150)+' Kurse zu vielen Themen belegen.</p>';
+})();
+
+/* ================= EX 3.2 Noten ================= */
+(function(){
+  var items = [
+    ["eine Eins","sehr gut"],
+    ["eine Zwei","gut"],
+    ["eine Drei","befriedigend"],
+    ["eine Vier","ausreichend"],
+    ["eine Fünf","mangelhaft"],
+    ["eine Sechs","ungenügend"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex3-2');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e32-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 3.3 Modalverben ================= */
+(function(){
+  var items = [
+    ["fähig sein","können"],
+    ["notwendig sein","müssen"],
+    ["gestattet sein","dürfen"],
+    ["verpflichtet sein","müssen"],
+    ["beherrschen","können"],
+    ["in der Lage sein","können"],
+    ["erlaubt sein","dürfen"],
+    ["erforderlich sein","müssen"],
+  ];
+  var el = document.getElementById('ex3-3');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = ['können','dürfen','müssen'].map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e33-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 3.4 Buchstabensalat ================= */
+(function(){
+  var items = [
+    ["oioviMntta","Motivation"],
+    ["rcsrthtoFti","Fortschritt"],
+    ["einriulbgtedW","Weiterbildung"],
+    ["tcWahzsotr","Wortschatz"],
+    ["sdathGeinec","Gedächtnis|Gedächtnis"],
+  ];
+  var el = document.getElementById('ex3-4');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. ['+it[0]+'] → '+makeBlank('e34-'+i, it[1], 170)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 3.5 Gegenteile ================= */
+(function(){
+  var items = [
+    ["Anfänger","Fortgeschrittene/r"],
+    ["Fortschritt","Rückschritt"],
+    ["bestehen","durchfallen"],
+    ["auswendig lernen","verlernen"],
+    ["verbessern","verschlechtern"],
+    ["vergrößern","verkleinern"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex3-5');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' ↔ <select id="e35-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 4.1 Wortsuche ================= */
+(function(){
+  var grid = [
+    "WAUSDRUCKHBVDOL",
+    "JVERSTEHENFMVQE",
+    "EHCARPSSUAWYJWS",
+    "DUJLKITAMMARGTE",
+    "HHEPEOXTLNWRPYN",
+    "RZVGYHVYTZCQOQW",
+    "LCSDBRSPRECHENQ",
+    "GSREFKQODVGWSPC",
+    "QOFREMDSPRACHEZ",
+    "NEBIERHCSBOEQNO",
+    "SBROVZJXAMIAXGS",
+    "CBNLWWORTSCHATZ",
+    "CRBCPBJNFYEYUXU",
+    "NLMHOERENOMMCVV",
+    "REUFLUESSIGLDFR",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+
+  var words = ['VERSTEHEN','SPRECHEN','HÖREN','LESEN','SCHREIBEN','AUSDRUCK','FLÜSSIG','WORTSCHATZ','FREMDSPRACHE','GRAMMATIK','AUSSPRACHE'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+})();
+
+/* ================= EX 4.2 Niveaustufen ================= */
+(function(){
+  var el = document.getElementById('ex4-2');
+  el.innerHTML =
+  '<p><b>A1 - Erste Kenntnisse:</b> Lernende können vertraute, alltägliche Ausdrücke und ganz einfache Sätze '+makeBlank('e42-0','verstehen',150)+'.</p>'+
+  '<p><b>A2 - Grundlegende Kenntnisse:</b> Lernende können sich in einfachen, routinemäßigen Situationen '+makeBlank('e42-1','verständigen',150)+
+  ' und einfache Texte '+makeBlank('e42-2','lesen',130)+'.</p>'+
+  '<p><b>B1 - Fortgeschrittene Sprachverwendung:</b> Lernende können die meisten Alltagssituationen '+makeBlank('e42-3','bewältigen',150)+
+  ' und über Erfahrungen und Pläne '+makeBlank('e42-4','berichten',150)+'.</p>'+
+  '<p><b>B2 - Selbstständige Sprachverwendung:</b> Lernende können sich spontan und '+makeBlank('e42-5','fliessend',150)+
+  ' unterhalten und zu vielen Themen ihre Meinung '+makeBlank('e42-6','ausdrücken',150)+'.</p>'+
+  '<p><b>C1 - Fachsprachliche Kenntnisse:</b> Lernende können auch anspruchsvolle Texte verstehen und sich ohne grosse '+
+  makeBlank('e42-7','Mühe',130)+' spontan ausdrücken.</p>'+
+  '<p><b>C2 - Annähernd muttersprachliche Kenntnisse:</b> Lernende können sich in allen Situationen '+makeBlank('e42-8','mühelos',150)+
+  ' mündlich und schriftlich ausdrücken.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Die Fähigkeit, sich an Dinge zu erinnern, nennt man das ...", "Gedächtnis|Gedächtnis"],
+    ["Das Organ, mit dem wir denken und lernen: das ...", "Gehirn"],
+    ["Ein einzelnes Wort in einer Fremdsprache lernt man als ...", "Vokabel"],
+    ["Wenn man alle Wörter einer Sprache kennt, hat man einen grossen ...", "Wortschatz"],
+    ["Eine Schule für Erwachsene mit vielen Kursen heisst ...", "Volkshochschule|VHS"],
+    ["Ein Kurs nach der Ausbildung, um mehr zu lernen: die ...", "Weiterbildung"],
+    ["Note 4 in Deutschland heisst ...", "ausreichend"],
+    ["Note 6, 'nicht bestanden', heisst ...", "ungenügend"],
+    ["Die erste Schule für Kinder ab sechs Jahren: die ...", "Grundschule"],
+    ["Die Schule, die zum Abitur führt: das ...", "Gymnasium"],
+    ["Eine Person, die schon viel gelernt hat und nicht mehr Anfänger ist: der/die ...", "Fortgeschrittene|Fortgeschrittener"],
+    ["Eine Sprache, die nicht die Muttersprache ist: die ...", "Fremdsprache"],
+    ["Sehr flüssig sprechen, ohne Pausen: ...", "fliessend"],
+    ["Wie die eigene erste Sprache: ...", "muttersprachlich"],
+    ["Das Gegenteil von Fortschritt: der ...", "Rückschritt"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

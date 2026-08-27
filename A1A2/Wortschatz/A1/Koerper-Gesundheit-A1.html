@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 Körper – Gesundheit – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e; --teal-light:#1b5c5d; --teal-pale:#e6f0ef;
+  --orange:#e8823a; --orange-light:#fdece0; --bg:#f7f5f0; --card:#ffffff;
+  --text:#233333; --muted:#6b7c7c; --der:#2563eb; --das:#16a34a; --die:#dc2626;
+  --ok:#16a34a; --bad:#dc2626; --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.3rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);} .vocab-word.das{color:var(--das);} .vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{width:24px;height:24px;text-align:center;vertical-align:middle;border:1px solid var(--teal-pale);font-size:.8rem;font-weight:700;color:var(--teal);}
+.ws-wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;}
+.ws-word{background:var(--teal-pale);color:var(--teal);border-radius:16px;padding:5px 12px;font-size:.85rem;font-weight:600;}
+.namebar{position:sticky;top:0;z-index:30;background:var(--orange-light);border-bottom:1px solid var(--orange);padding:8px 16px;display:flex;justify-content:center;}
+.namebar input{width:100%;max-width:400px;border:1px solid var(--teal-light);border-radius:20px;padding:6px 14px;font-size:0.9rem;font-family:inherit;color:var(--text);}
+</style>
+</head>
+<body>
+
+<div class="namebar"><input type="text" id="studentName" placeholder="Name eingeben..."></div>
+
+<header>
+  <div class="badge">A1 · Modul-Wortschatz</div>
+  <h1>3&nbsp; Körper – Hygiene – Gesundheit – Krankheit</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<div id="wortschatz" class="tabcontent active">
+  <div class="vn-toggle-bar"><label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label></div>
+
+  <div class="section"><h2>🩺 Beim Arzt</h2><div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">Hilfe! Können Sie mir bitte helfen? Holen Sie bitte einen Arzt.</div></div>
+
+  <div class="section"><h2>🤒 Krankheit</h2><div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">Bist du krank? – Ich bin erkältet. Ich habe Husten und Schnupfen.<br>Wie geht es dir/Ihnen? – Danke, gut. / Danke, wieder besser. / Mir geht es schlecht.</div></div>
+
+  <div class="section"><h2>🧍 Körperteile</h2><div class="vocab-grid" id="vg3"></div></div>
+</div>
+
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Körperteile lernen</h2>
+    <div class="ex-instructions">Zeigen Sie auf sich selbst: der Arm, der Fuß, das Bein, die Hand, das Auge, die Nase, das Ohr, der Kopf, das Gesicht, das Haar, der Mund, der Bauch. (Nicht automatisch kontrolliert.)</div>
+  </div>
+
+  <div class="section">
+    <h2>2 Körperteile zu Verben</h2>
+    <div class="ex-instructions">Es gibt manchmal mehrere Möglichkeiten. (Beispiel: gehen → der Fuß, das Bein)</div>
+    <div id="ex2-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>3 Krank und gesund – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Dialog 1:</b> der Arzt · der Doktor · das Fieber · gehen · die Grippe · krank · die Praxis</div>
+    <div id="ex3-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3-1"></div>
+
+    <div class="wordbank" style="margin-top:14px;"><b>Dialog 2:</b> besser · erkältet · gehen · gesund · gut · der Husten · der Schnupfen · nicht</div>
+    <div id="ex3-2"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex3-2">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3-2"></div>
+
+    <div class="wordbank" style="margin-top:14px;"><b>Dialog 3:</b> duschen · das Gesicht · die Haare · die Hände · aussehen</div>
+    <div id="ex3-3"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex3-3">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3-3"></div>
+
+    <div class="wordbank" style="margin-top:14px;"><b>Dialog 4</b></div>
+    <div id="ex3-4"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex3-4">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3-4"></div>
+  </div>
+
+  <div class="section">
+    <h2>4 Gut essen – Ergänzen Sie</h2>
+    <div id="ex4-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex4-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>5 Wörter in Paaren lernen</h2>
+    <div id="ex5-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex5-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex5-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>6 Ein Unfall – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Liste:</b> der Arzt · der Doktor · helfen · die Hilfe · holen · die Praxis</div>
+    <div id="ex6-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex6-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex6-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>➕ Extra-Übung: Wortsuche</h2>
+    <div class="ex-instructions">Zusatzübung (nicht aus dem Buch). Nicht automatisch kontrolliert.</div>
+    <div class="ws-wrap"><div id="ws-grid"></div></div>
+    <div class="ws-wordlist" id="ws-words"></div>
+  </div>
+
+</div>
+
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Körper und Gesundheit</h2>
+    <div class="ex-instructions">Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+var vocab1 = [
+ ["der","Arzt, ¨-e","behandelt kranke Menschen","bác sĩ (nam)"],
+ ["die","Ärztin, -nen","behandelt kranke Menschen","bác sĩ (nữ)"],
+ ["der","Zahnarzt, ¨-e","behandelt die Zähne","nha sĩ (nam)"],
+ ["die","Zahnärztin, -nen","behandelt die Zähne","nha sĩ (nữ)"],
+ ["der","Krankenpfleger, -","hilft im Krankenhaus","y tá (nam)"],
+ ["die","Krankenschwester, -n","hilft im Krankenhaus","y tá (nữ)"],
+ ["der","Doktor, Doktoren","der Arzt","bác sĩ"],
+ ["die","Praxis, Praxen","wo der Arzt arbeitet","phòng khám"],
+ ["die","Hilfe, -n","Hilfe! Können Sie mir helfen?","sự giúp đỡ"],
+ ["","helfen","jemandem etwas Gutes tun","giúp đỡ"],
+ ["","holen","z. B. einen Arzt holen","đi lấy, gọi"],
+];
+
+var vocab2 = [
+ ["die","Grippe (Sg.)","eine Krankheit mit Fieber und Husten","cúm"],
+ ["","kriegen","z. B. eine Grippe kriegen","bị mắc"],
+ ["das","Fieber (Sg.)","hohe Körpertemperatur","sốt"],
+ ["","erkältet sein","eine leichte Krankheit haben","bị cảm"],
+ ["","krank sein","nicht gesund sein","bị bệnh"],
+ ["","gesund sein","nicht krank sein","khỏe mạnh"],
+ ["der","Husten (Sg.)","Symptom bei Erkältung","ho"],
+ ["der","Schnupfen (Sg.)","Symptom bei Erkältung","sổ mũi"],
+ ["","gut gehen","Wie geht es dir? – Gut.","(tình trạng) tốt"],
+ ["","besser gehen","Es geht mir schon besser.","đỡ hơn"],
+ ["","schlecht gehen","Mir geht es schlecht.","(tình trạng) tệ"],
+];
+
+var vocab3 = [
+ ["der","Mensch, -en","eine Person","con người"],
+ ["der","Kopf, ¨-e","oben am Körper","đầu"],
+ ["das","Gesicht, -er","vorne am Kopf","khuôn mặt"],
+ ["das","Auge, -n","damit sehen und lesen wir","mắt"],
+ ["die","Nase, -n","damit riechen wir","mũi"],
+ ["das","Ohr, -en","damit hören und verstehen wir","tai"],
+ ["der","Mund, ¨-er","damit essen, schmecken und lachen wir","miệng"],
+ ["das","Haar, -e","kurz oder lang","tóc"],
+ ["der","Arm, -e","am Körper, mit der Hand","cánh tay"],
+ ["die","Hand, ¨-e","damit schreiben wir","bàn tay"],
+ ["der","Fuß, ¨-e","am Ende vom Bein","bàn chân"],
+ ["das","Bein, -e","damit stehen und gehen wir","chân"],
+ ["der","Bauch, ¨-e","in der Mitte vom Körper","bụng"],
+ ["das","Gewicht (Sg.)","wie schwer man ist","cân nặng"],
+ ["","stehen","nicht sitzen, nicht liegen","đứng"],
+ ["","gehen","z. B. zu Fuß gehen","đi"],
+ ["","laufen","schnell gehen","chạy, đi bộ"],
+ ["","sich waschen","den Körper sauber machen","rửa/tắm"],
+ ["","sich duschen","unter der Dusche waschen","tắm vòi sen"],
+ ["","aussehen (wie)","Du siehst schlecht aus.","trông như thế nào"],
+ ["","trinken","z. B. Wasser trinken","uống"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div><div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]:not([readonly])');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check, target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+  });
+});
+
+/* EX 2.1 Körperteile zu Verben (aus dem Buch) */
+(function(){
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="qline">gehen → <b>der Fuß, das Bein</b> (Beispiel)</div>'+
+  '<div class="qline">sprechen → '+makeBlank('e21-0','Mund',130)+'</div>'+
+  '<div class="qline">sehen → '+makeBlank('e21-1','Auge|Augen',130)+'</div>'+
+  '<div class="qline">schmecken → '+makeBlank('e21-2','Mund',130)+'</div>'+
+  '<div class="qline">hören → '+makeBlank('e21-3','Ohr|Ohren',130)+'</div>'+
+  '<div class="qline">verstehen → '+makeBlank('e21-4','Ohr|Ohren|Kopf',130)+'</div>'+
+  '<div class="qline">stehen → '+makeBlank('e21-5','Fuß|Füße|Bein|Beine',150)+'</div>'+
+  '<div class="qline">riechen → '+makeBlank('e21-6','Nase',130)+'</div>'+
+  '<div class="qline">laufen → '+makeBlank('e21-7','Fuß|Füße|Bein|Beine',150)+'</div>'+
+  '<div class="qline">schreiben → '+makeBlank('e21-8','Hand|Hände',130)+'</div>'+
+  '<div class="qline">lesen → '+makeBlank('e21-9','Auge|Augen',130)+'</div>'+
+  '<div class="qline">lachen → '+makeBlank('e21-10','Mund',130)+'</div>';
+})();
+
+/* EX 3 Dialoge (aus dem Buch) */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<div class="qline">● Du <b>siehst</b> aber schlecht <b>aus</b>. Was ist los? Bist du '+makeBlank('e31-0','krank',110)+'?</div>'+
+  '<div class="qline">○ Mir '+makeBlank('e31-1','geht',90)+' es nicht gut. Ich habe G'+makeBlank('e31-2','rippe',110)+'. Ich habe F'+makeBlank('e31-3','ieber',110)+', 38,5 Grad.</div>'+
+  '<div class="qline">● Fieber? Dann musst du zum '+makeBlank('e31-4','Arzt|Doktor',130)+' gehen. Ich gebe dir die Telefonnummer von '+makeBlank('e31-5','Doktor',130)+' Sanus.</div>'+
+  '<div class="qline">Seine '+makeBlank('e31-6','Praxis',130)+' ist in der Hauptstraße 38.</div>';
+
+  var el2 = document.getElementById('ex3-2');
+  el2.innerHTML =
+  '<div class="qline">● Wie g'+makeBlank('e32-0','eht',90)+' es Ihnen?</div>'+
+  '<div class="qline">○ Danke, g'+makeBlank('e32-1','ut',90)+', und Ihnen?</div>'+
+  '<div class="qline">● Leider n'+makeBlank('e32-2','icht',90)+' so g'+makeBlank('e32-3','ut',90)+'. Ich bin e'+makeBlank('e32-4','rkältet',130)+'.</div>'+
+  '<div class="qline">Ich habe seit drei Tagen H'+makeBlank('e32-5','usten',110)+' und Sch'+makeBlank('e32-6','nupfen',130)+' und kann nicht gut schlafen.</div>'+
+  '<div class="qline">Und bei Ihnen? Geht es Ihnen wieder b'+makeBlank('e32-7','esser',110)+'?</div>'+
+  '<div class="qline">○ Ja, Gott sei Dank! Ich bin schon wieder ganz g'+makeBlank('e32-8','esund',110)+'!</div>'+
+  '<div class="qline">● Na, das ist ja schön.</div>';
+
+  var el3 = document.getElementById('ex3-3');
+  el3.innerHTML =
+  '<div class="qline">● Wie '+makeBlank('e33-0','siehst',110)+' du denn '+makeBlank('e33-1','aus',90)+'?</div>'+
+  '<div class="qline">○ Wieso?</div>'+
+  '<div class="qline">● Na, schau mal, deine '+makeBlank('e33-2','Haare',120)+', dein '+makeBlank('e33-3','Gesicht',130)+', deine '+makeBlank('e33-4','Hände',120)+'!</div>'+
+  '<div class="qline">Du musst '+makeBlank('e33-5','duschen',130)+' und die '+makeBlank('e33-6','Haare',120)+' waschen.</div>';
+
+  var el4 = document.getElementById('ex3-4');
+  el4.innerHTML =
+  '<div class="qline">● Ahhhhhhhhhggrrrrrrrrrr!</div>'+
+  '<div class="qline">○ Was hast du? Wo willst du hin?</div>'+
+  '<div class="qline">● Ich muss zum Z'+makeBlank('e34-0','ahnarzt',150)+'.</div>';
+})();
+
+/* EX 4 Gut essen */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">● Hm, die Pommes frites sehen gut aus. Darf ich mal '+makeBlank('e41-0','probieren',150)+'?</div>'+
+  '<div class="qline">○ Ja, klar. Und wie '+makeBlank('e41-1','schmecken',150)+' sie dir?</div>'+
+  '<div class="qline">● Sehr gut.</div>';
+})();
+
+/* EX 5 Wörter in Paaren */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<div class="qline">1. Ich habe Husten und '+makeBlank('e51-0','Schnupfen',150)+'.</div>'+
+  '<div class="qline">2. Er hat Grippe mit '+makeBlank('e51-1','Fieber',150)+'.</div>'+
+  '<div class="qline">3. Wir müssen Augen und '+makeBlank('e51-2','Ohren',150)+' offen halten.</div>'+
+  '<div class="qline">4. Er redet mit Händen und '+makeBlank('e51-3','Füßen',150)+'.</div>';
+})();
+
+/* EX 6 Ein Unfall */
+(function(){
+  var el = document.getElementById('ex6-1');
+  el.innerHTML =
+  '<div class="qline">H'+makeBlank('e61-0','elfen',110)+' Sie bitte! H'+makeBlank('e61-1','olen',110)+' Sie einen A'+makeBlank('e61-2','rzt',110)+'!</div>'+
+  '<div class="qline">D'+makeBlank('e61-3','oktor',110)+' Sanus hat seine P'+makeBlank('e61-4','raxis',110)+' 100 Meter von hier. Hauptstraße 38.</div>';
+})();
+
+/* Extra: Wortsuche */
+(function(){
+  var grid = [
+    "WARZTHBVDOLKQC",
+    "JDOKTORMVQENLZ",
+    "GRIPPEOMARWYJT",
+    "DUJLKIFIEBERST",
+    "HHUSTENXTLNWRP",
+    "RZBAUCHHYTZCQO",
+    "LCKOPFAUGEHENP",
+    "GSREHANDGGWSPO",
+    "QONASEACHEZOOH",
+    "NEBMUNDBOEQNOR",
+    "SBROVFUSSCHNAM",
+    "CBNSCHNUPFENVE",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+  var words = ['ARZT','DOKTOR','GRIPPE','FIEBER','HUSTEN','SCHNUPFEN','BAUCH','KOPF','AUGE','HAND','NASE','MUND','FUSS'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+})();
+
+/* Schnelltest */
+(function(){
+  var questions = [
+    ["Der Arzt, der die Zähne behandelt, ist der ...", "Zahnarzt"],
+    ["Wo der Arzt arbeitet, ist die ...", "Praxis"],
+    ["Eine Krankheit mit Fieber und Husten ist die ...", "Grippe"],
+    ["Nicht gesund sein heißt ... sein.", "krank"],
+    ["Symptom bei Erkältung: der Husten und der ...", "Schnupfen"],
+    ["Damit sehen wir: das ...", "Auge"],
+    ["Damit riechen wir: die ...", "Nase"],
+    ["Damit hören wir: das ...", "Ohr"],
+    ["Damit essen und lachen wir: der ...", "Mund"],
+    ["Damit schreiben wir: die ...", "Hand"],
+    ["Am Ende vom Bein ist der ...", "Fuß"],
+    ["In der Mitte vom Körper ist der ...", "Bauch"],
+    ["Sich unter der Dusche waschen heißt sich ...", "duschen"],
+    ["Wie man aussieht oder wie es einem geht: Du siehst schlecht ...", "aus"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

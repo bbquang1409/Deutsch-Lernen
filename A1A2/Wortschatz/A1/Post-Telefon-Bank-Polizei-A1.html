@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4 Post – Telefon – Bank – Ämter – Polizei – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e; --teal-light:#1b5c5d; --teal-pale:#e6f0ef;
+  --orange:#e8823a; --orange-light:#fdece0; --bg:#f7f5f0; --card:#ffffff;
+  --text:#233333; --muted:#6b7c7c; --der:#2563eb; --das:#16a34a; --die:#dc2626;
+  --ok:#16a34a; --bad:#dc2626; --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.15rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);} .vocab-word.das{color:var(--das);} .vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{width:24px;height:24px;text-align:center;vertical-align:middle;border:1px solid var(--teal-pale);font-size:.8rem;font-weight:700;color:var(--teal);}
+.ws-wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;}
+.ws-word{background:var(--teal-pale);color:var(--teal);border-radius:16px;padding:5px 12px;font-size:.85rem;font-weight:600;}
+.namebar{position:sticky;top:0;z-index:30;background:var(--orange-light);border-bottom:1px solid var(--orange);padding:8px 16px;display:flex;justify-content:center;}
+.namebar input{width:100%;max-width:400px;border:1px solid var(--teal-light);border-radius:20px;padding:6px 14px;font-size:0.9rem;font-family:inherit;color:var(--text);}
+
+/* Kreuzworträtsel */
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{display:flex;align-items:center;justify-content:center;width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;}
+input.letter-box{flex:0 0 28px !important;width:28px !important;height:28px !important;text-align:center;font-size:.9rem;font-weight:700;line-height:1;border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;padding:0 !important;text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);box-sizing:border-box;}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{margin-top:16px;padding-top:14px;border-top:2px dashed #e2ded4;display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){.letter-spacer{flex:0 0 22px;width:22px;height:22px;} input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}}
+</style>
+</head>
+<body>
+
+<div class="namebar"><input type="text" id="studentName" placeholder="Name eingeben..."></div>
+
+<header>
+  <div class="badge">A1 · Modul-Wortschatz</div>
+  <h1>4&nbsp; Post – Telefon – Bank – Ämter – Polizei</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<div id="wortschatz" class="tabcontent active">
+  <div class="vn-toggle-bar"><label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label></div>
+
+  <div class="section"><h2>📮 Adresse</h2><div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">Wie ist Ihre Adresse? Wie heißt die Postleitzahl?</div></div>
+
+  <div class="section"><h2>✉️ Post</h2><div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">Einen Brief schreiben. Zum Schalter gehen. Wie schwer ist der Brief? Was kostet die Briefmarke?</div></div>
+
+  <div class="section"><h2>📞 Telefon und E-Mail</h2><div class="vocab-grid" id="vg3"></div>
+    <div class="scale-box">Eine E-Mail schreiben. Die E-Mail-Adresse. Schnelles Internet ist möglich.</div></div>
+
+  <div class="section"><h2>📝 Antrag</h2><div class="vocab-grid" id="vg4"></div>
+    <div class="scale-box">Einen Antrag ausfüllen. Den Namen buchstabieren.</div></div>
+
+  <div class="section"><h2>🏦 Bank</h2><div class="vocab-grid" id="vg5"></div>
+    <div class="scale-box">Zur Bank gehen. Ich muss Geld holen.</div></div>
+
+  <div class="section"><h2>👮 Polizei</h2><div class="vocab-grid" id="vg6"></div>
+    <div class="scale-box">Die Polizei holen. Zur Polizei gehen.</div></div>
+</div>
+
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Brief – Ordnen Sie zu</h2>
+    <div class="ex-instructions">Klaus Bonert, Olgastraße 14, 33615 Bielefeld schreibt an Frau Maria Schumann, Goethestr. 42, 32427 Minden.</div>
+    <div id="ex1-1"></div>
+    <button class="check-btn" data-check="selects" data-target="ex1-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex1-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Post – Dialog 1</h2>
+    <div class="wordbank"><b>Liste:</b> der Automat · geschlossen · die Briefmarke · der Brief · die Post</div>
+    <div id="ex2-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Post – Dialog 2</h2>
+    <div class="wordbank"><b>Liste:</b> der Schalter · die E-Mail · schwer · der Absender</div>
+    <div id="ex2-2"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex2-2">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>3 Bank – Ergänzen Sie (Rätsel)</h2>
+    <div class="ex-instructions">Lesen Sie die Sätze und schreiben Sie die Wörter ins Treppen-Rätsel. Finden Sie das Lösungswort.</div>
+    <ol id="cw-clues" style="font-size:.92rem;line-height:1.7;padding-left:20px;"></ol>
+    <div id="cw-body"></div>
+    <div class="loes-wrap">
+      <span style="font-size:.9rem;"><b>🔑 Lösungswort:</b></span>
+      <div id="cw-loes" class="letterrow"></div>
+    </div>
+    <button class="check-btn" data-check="crossword">Prüfen</button>
+    <button class="check-btn" data-reset="crossword" style="background:#fff;color:var(--teal);border:2px solid var(--teal);">Zurücksetzen</button>
+    <div class="result-msg" id="res-cw-body"></div>
+  </div>
+
+  <div class="section">
+    <h2>4 Geld holen – Dialog</h2>
+    <div class="wordbank"><b>Liste:</b> die Bank · die Karte · das Geld · der Geldautomat · gehen · holen · die Überweisung</div>
+    <div id="ex4-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex4-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>5 Telefon und Internet – Dialog 1</h2>
+    <div class="wordbank"><b>Liste:</b> der Familienname · das Formular · buchstabieren · die Adresse · ausfüllen</div>
+    <div id="ex5-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex5-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex5-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>5 Telefon und Internet – Dialog 2</h2>
+    <div class="wordbank"><b>Liste:</b> die Bank · die Bankverbindung · unterschreiben · das Internet · die IBAN · der Tarif · der Antrag</div>
+    <div id="ex5-2"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex5-2">Kontrollieren</button>
+    <div class="result-msg" id="res-ex5-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>6 Was passt?</h2>
+    <div id="ex6-1"></div>
+    <button class="check-btn" data-check="mc" data-target="ex6-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex6-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>7 Was passt nicht zu dem Thema?</h2>
+    <div id="ex7-1"></div>
+    <button class="check-btn" data-check="mc" data-target="ex7-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex7-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>8 Kombinieren Sie die Wörter mit den Verben</h2>
+    <div class="wordbank"><b>Liste:</b> schreiben · holen · ausfüllen · haben (mehrere Möglichkeiten)</div>
+    <div id="ex8-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex8-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex8-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>9 Polizeikontrolle – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Liste:</b> der Ausweis · die Papiere · der Alkohol · der Pass · die Arbeit · kommen · fahren</div>
+    <div id="ex9-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex9-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex9-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>10 Welcher Satz passt zu welcher Situation?</h2>
+    <div id="ex10-1"></div>
+    <button class="check-btn" data-check="selects" data-target="ex10-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex10-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>➕ Extra-Übung: Wortsuche</h2>
+    <div class="ex-instructions">Zusatzübung (nicht aus dem Buch). Nicht automatisch kontrolliert.</div>
+    <div class="ws-wrap"><div id="ws-grid"></div></div>
+    <div class="ws-wordlist" id="ws-words"></div>
+  </div>
+
+</div>
+
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest</h2>
+    <div class="ex-instructions">Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+var vocab1 = [
+ ["die","Adresse, -n","wo man wohnt","địa chỉ"],
+ ["der","Absender, -","wer den Brief schickt","người gửi"],
+ ["der","Empfänger, -","wer den Brief bekommt","người nhận"],
+ ["der","Name, -n","z. B. Vor- und Nachname","tên"],
+ ["die","Straße, -n","z. B. Rathausstraße","đường phố"],
+ ["die","Postleitzahl, -en","die Zahl der Stadt bei der Adresse","mã bưu điện"],
+ ["die","Stadt, Städte","z. B. Bielefeld","thành phố"],
+];
+
+var vocab2 = [
+ ["der","Brief, -e","man schreibt und schickt ihn","thư"],
+ ["die","Briefmarke, -n","man klebt sie auf den Brief","tem thư"],
+ ["die","Post (Sg.)","wo man Briefe abgibt","bưu điện"],
+ ["","geöffnet","man kann hineingehen","đang mở cửa"],
+ ["","geschlossen","man kann nicht hineingehen","đóng cửa"],
+ ["der","Automat, -en","eine Maschine, die etwas macht","máy tự động"],
+ ["","automatisch","von selbst, ohne Person","tự động"],
+ ["der","Schalter, -","wo man bezahlt/abgibt (Post, Bank)","quầy giao dịch"],
+ ["","abgeben","z. B. einen Brief abgeben","nộp, đưa"],
+];
+
+var vocab3 = [
+ ["das","Telefon, -e","damit telefoniert man","điện thoại"],
+ ["","telefonieren","am Telefon sprechen","gọi điện"],
+ ["","hallo","Gruß am Telefon","xin chào"],
+ ["die","Telefonnummer, -n","die Nummer für einen Anruf","số điện thoại"],
+ ["die","(E-)Mail, -s","eine Nachricht im Internet","thư điện tử"],
+ ["","mailen","eine E-Mail schreiben","gửi email"],
+ ["das","Internet (Sg.)","damit ist man online","internet"],
+ ["der","Tarif, -e","der Preis für Telefon/Internet","gói cước"],
+ ["","möglich","es geht, es kann sein","có thể"],
+];
+
+var vocab4 = [
+ ["das","Amt, ¨-er","eine offizielle Stelle","cơ quan nhà nước"],
+ ["der","Antrag, ¨-e","ein offizielles Formular für eine Bitte","đơn xin"],
+ ["","ausfüllen","ein Formular schreiben","điền (vào)"],
+ ["das","Formular, -e","ein Papier zum Ausfüllen","biểu mẫu"],
+ ["","buchstabieren","Buchstabe für Buchstabe sagen","đánh vần"],
+ ["die","Unterschrift, -en","der eigene Name geschrieben","chữ ký"],
+ ["","unterschreiben","seinen Namen schreiben","ký tên"],
+ ["","befristet","nur für eine bestimmte Zeit","có thời hạn"],
+];
+
+var vocab5 = [
+ ["die","Bank, -en","dort hat man ein Konto","ngân hàng"],
+ ["das","Geld (Sg.)","damit bezahlt man","tiền"],
+ ["","abheben","Geld von der Bank holen","rút (tiền)"],
+ ["das","Konto, Konten","dort ist das Geld bei der Bank","tài khoản"],
+ ["die","(Kredit-)Karte, -n","damit bezahlt man ohne Bargeld","thẻ (tín dụng)"],
+ ["der","Geldautomat, -en","dort holt man Bargeld","cây ATM"],
+ ["","BIC","Business Identifier Code der Bank","mã BIC"],
+ ["die","Kontonummer, -n","IBAN = International Bank Account Number","số tài khoản"],
+ ["die","Bankverbindung, -en","alle Bankdaten zusammen","thông tin tài khoản ngân hàng"],
+ ["die","Bankleitzahl, -en","BLZ, Nummer der Bank","mã ngân hàng"],
+ ["der","Bankkaufmann, -leute","arbeitet bei der Bank","nhân viên ngân hàng (nam)"],
+ ["die","Bankkauffrau, -leute","arbeitet bei der Bank","nhân viên ngân hàng (nữ)"],
+ ["die","Überweisung, -en","Geld von einem Konto zum anderen schicken","chuyển khoản"],
+ ["","überweisen","Geld auf ein anderes Konto schicken","chuyển tiền"],
+];
+
+var vocab6 = [
+ ["die","Polizei (Sg.)","hilft bei Problemen und Unfällen","cảnh sát"],
+ ["der","Ausweis, -e","zeigt, wer man ist","giấy tờ tùy thân"],
+ ["die","Papiere (nur Pl.)","Ausweis, Pass usw.","giấy tờ"],
+ ["der","Pass, ¨-e","Dokument für die Reise ins Ausland","hộ chiếu"],
+ ["die","Ordnung (Sg.)","alles ist richtig/in Ordnung","trật tự"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div><div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1'); renderVocab(vocab2,'vg2'); renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4'); renderVocab(vocab5,'vg5'); renderVocab(vocab6,'vg6');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]:not([readonly])');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    var ans = s.dataset.ans.split('|');
+    if(ans.indexOf(s.value) > -1){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check, target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='selects') checkGroupSelects(target);
+  });
+});
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+
+/* EX1 Brief - Ordnen Sie zu */
+(function(){
+  var items = [
+    ["Absender-Zeile (Klaus Bonert, Olgastraße 14, 33615 Bielefeld)","der Absender"],
+    ["Anrede vor dem Namen (Frau)","der Empfänger"],
+    ["Maria Schumann","der Name"],
+    ["Goethestr. 42","die Straße"],
+    ["32427","die Postleitzahl"],
+    ["Minden","die Stadt"],
+    ["Briefmarken-Feld oben rechts","die Briefmarke"],
+  ];
+  var opts = ["der Absender","der Empfänger","der Name","die Straße","die Postleitzahl","die Stadt","die Briefmarke"];
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e11-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* EX2.1 Post Dialog 1 */
+(function(){
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="qline">● Hat die Post um 13.00 Uhr <b>geöffnet</b>?</div>'+
+  '<div class="qline">○ Nein, d'+makeBlank('e21-0','ie Post',110)+' in der Spindelstraße hat von 13.00 bis 14.00 Uhr '+makeBlank('e21-1','geschlossen',150)+'.</div>'+
+  '<div class="qline">● M'+makeBlank('e21-2','ein Brief',140)+' muss heute noch weg. Hast du e'+makeBlank('e21-3','ine Briefmarke',160)+'?</div>'+
+  '<div class="qline">○ Nein. Aber an der Post ist e'+makeBlank('e21-4','in Automat',140)+' für Briefmarken.</div>'+
+  '<div class="qline">● Danke.</div>';
+})();
+
+/* EX2.2 Post Dialog 2 */
+(function(){
+  var el = document.getElementById('ex2-2');
+  el.innerHTML =
+  '<div class="qline">● Was <b>kostet</b> der Brief in die Türkei?</div>'+
+  '<div class="qline">○ Es tut mir leid, aber dieser '+makeBlank('e22-0','Schalter',130)+' ist geschlossen. Gehen Sie bitte an den Schalter 5.</div>'+
+  '<div class="qline">● Gut. – Was kostet der Brief in die Türkei?</div>'+
+  '<div class="qline">○ Der ist '+makeBlank('e22-1','schwer',110)+'. Das macht 1.50 Euro. Hier fehlt der '+makeBlank('e22-2','Absender',150)+'. Den müssen Sie noch auf den Brief schreiben.</div>'+
+  '<div class="qline">● Das ist ja kompliziert. Das nächste Mal schreibe ich lieber eine '+makeBlank('e22-3','E-Mail',130)+'.</div>';
+})();
+
+/* Kreuzworträtsel-Engine */
+function renderCrossword(opts){
+  var body = document.getElementById(opts.bodyId);
+  var clues = document.getElementById(opts.cluesId);
+  clues.innerHTML = opts.words.map(function(w){ return '<li>'+w.clue+'</li>'; }).join('');
+  var targetCol = Math.max.apply(null, opts.words.map(function(w){ return w.markPos - 1; }));
+  opts.words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'"'+(isMarked?(' data-los="'+wi+'"'):'')+'>';
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+  var loesBox = document.getElementById(opts.loesId);
+  var loesHtml = '';
+  for(var k=0; k<opts.loesung.length; k++){
+    loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" data-ans="'+opts.loesung[k]+'" id="'+opts.bodyId+'-los-'+k+'">';
+  }
+  loesBox.innerHTML = loesHtml;
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(opts.bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+function checkCrossword(){
+  var inputs = document.querySelectorAll('#cw-body input.letter-box:not(.loesung)');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-cw-body');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetCrossword(){
+  document.querySelectorAll('#cw-body input.letter-box, #cw-loes input.letter-box').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw-body').textContent='';
+}
+document.querySelectorAll('.check-btn[data-check="crossword"]').forEach(function(btn){
+  btn.addEventListener('click', checkCrossword);
+});
+document.querySelectorAll('.check-btn[data-reset="crossword"]').forEach(function(btn){
+  btn.addEventListener('click', resetCrossword);
+});
+
+renderCrossword({
+  bodyId:'cw-body', loesId:'cw-loes', cluesId:'cw-clues',
+  loesung:'BANKEN',
+  words:[
+    {clue:'Sie müssen die ... unterschreiben. (Geld von einem Konto zum anderen schicken)', answer:'überweisung', markPos:2},
+    {clue:'Jede Bank oder Sparkasse hat eine ...', answer:'bankleitzahl', markPos:2},
+    {clue:'Bei der Bank hat man ein ...', answer:'konto', markPos:3},
+    {clue:'Sie haben bei der Sparkasse ein Konto. Wie heißt Ihre ...?', answer:'kontonummer', markPos:1},
+    {clue:'Der Antrag ist fertig. Aber hier fehlt noch Ihre ...', answer:'unterschrift', markPos:4},
+    {clue:'Viele Rechnungen muss man ...', answer:'überweisen', markPos:10},
+  ]
+});
+
+/* EX4 Geld holen */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">● Ich <b>brauche</b> Geld, wo ist der nächste '+makeBlank('e41-0','Geldautomat',150)+'?</div>'+
+  '<div class="qline">○ Am Bahnhof. Aber ich muss erst zu meiner Bank '+makeBlank('e41-1','gehen',110)+', meine neue '+makeBlank('e41-2','Karte',110)+' abholen und eine '+makeBlank('e41-3','Überweisung',150)+' abgeben.</div>'+
+  '<div class="qline">● Wo ist deine Bank?</div>'+
+  '<div class="qline">○ Am Rathaus.</div>'+
+  '<div class="qline">● Gut, dann '+makeBlank('e41-4','hole',100)+' ich auch dort '+makeBlank('e41-5','das Geld',130)+'.</div>'+
+  '<div class="qline">Da ist ja auch ein Geldautomat.</div>';
+})();
+
+/* EX5.1 Telefon Dialog1 */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<div class="qline">● Ich möchte ein <b>Telefon</b> beantragen.</div>'+
+  '<div class="qline">○ Wir können das '+makeBlank('e51-0','Formular',140)+' gleich am PC '+makeBlank('e51-1','ausfüllen',150)+'. Wie ist Ihr Name?</div>'+
+  '<div class="qline">● Mein '+makeBlank('e51-2','Familienname',160)+' ist Bognacki, Josef Bognacki.</div>'+
+  '<div class="qline">○ Können Sie das bitte '+makeBlank('e51-3','buchstabieren',160)+'?</div>'+
+  '<div class="qline">● B O G N A C K I.</div>'+
+  '<div class="qline">○ Und wie ist Ihre '+makeBlank('e51-4','Adresse',130)+'?</div>'+
+  '<div class="qline">● Lessingstraße 2, 33602 Bielefeld.</div>';
+})();
+
+/* EX5.2 Telefon Dialog2 */
+(function(){
+  var el = document.getElementById('ex5-2');
+  el.innerHTML =
+  '<div class="qline">● Können Sie mir das Geld <b>überweisen</b>?</div>'+
+  '<div class="qline">○ Ja, bitte geben Sie mir Ihre '+makeBlank('e52-0','Bankverbindung',170)+'. Wie heißt Ihre '+makeBlank('e52-1','Bank',110)+'?</div>'+
+  '<div class="qline">● Neue Sparkasse.</div>'+
+  '<div class="qline">○ Und wie ist Ihre '+makeBlank('e52-2','IBAN',110)+'?</div>'+
+  '<div class="qline">● DE47 0501 6100 0000 6960 12</div>'+
+  '<div class="qline">○ Gut, bitte '+makeBlank('e52-3','unterschreiben',170)+' Sie hier, dann ist der '+makeBlank('e52-4','Antrag',130)+' fertig.</div>'+
+  '<div class="qline">Haben Sie '+makeBlank('e52-5','Internet',130)+'? Wir können Ihnen einen günstigen '+makeBlank('e52-6','Tarif',110)+' für Online-Banking anbieten.</div>';
+})();
+
+/* EX6 Was passt? */
+(function(){
+  var data = [
+    ["einen Brief",["schreiben","ausfüllen","abgeben"],0],
+    ["eine Briefmarke",["bekommen","kaufen","anmelden"],1],
+    ["einen Antrag",["ausfüllen","anmelden","unterschreiben"],0],
+    ["ein Formular",["buchstabieren","ausfüllen","bekommen"],1],
+    ["eine E-Mail",["schreiben","abgeben","schicken"],0],
+  ];
+  var el = document.getElementById('ex6-1');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. <b>'+d[0]+'</b>'+mcHtml('mc6',i,d[1],d[2])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* EX7 Was passt nicht */
+(function(){
+  var data = [
+    ["die Bank",["Geld holen","die Überweisung","das Konto","der Absender","unterschreiben"],3],
+    ["der Brief",["die Adresse","die Bankleitzahl","die Straße","schreiben","die Briefmarke"],1],
+    ["die Adresse",["die Straße","der Vorname","die Postleitzahl","die Stadt","die E-Mail-Adresse"],1],
+  ];
+  var el = document.getElementById('ex7-1');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. <b>'+d[0]+'</b>'+mcHtml('mc7',i,d[1],d[2])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* EX8 Kombinieren Sie */
+(function(){
+  var el = document.getElementById('ex8-1');
+  el.innerHTML =
+  '<div class="qline">einen Brief '+makeBlank('e81-0','schreiben',130)+'</div>'+
+  '<div class="qline">eine Adresse '+makeBlank('e81-1','haben',130)+'</div>'+
+  '<div class="qline">Geld '+makeBlank('e81-2','holen',130)+'</div>'+
+  '<div class="qline">den Namen '+makeBlank('e81-3','haben',130)+'</div>'+
+  '<div class="qline">ein Formular '+makeBlank('e81-4','ausfüllen',130)+'</div>'+
+  '<div class="qline">den Ausweis '+makeBlank('e81-5','haben',130)+'</div>';
+})();
+
+/* EX9 Polizeikontrolle */
+(function(){
+  var el = document.getElementById('ex9-1');
+  el.innerHTML =
+  '<div class="qline">● Bitte steigen Sie aus. Kann ich Ihre <b>Papiere</b> sehen?</div>'+
+  '<div class="qline">○ Bitte. Brauchen Sie auch meinen '+makeBlank('e91-0','Ausweis|Pass',130)+'?</div>'+
+  '<div class="qline">● Ja.</div>'+
+  '<div class="qline">○ Ich habe nur meinen '+makeBlank('e91-1','Pass',110)+'.</div>'+
+  '<div class="qline">● Das ist in Ordnung. Haben Sie '+makeBlank('e91-2','Alkohol',130)+' getrunken?</div>'+
+  '<div class="qline">○ Nein, ich '+makeBlank('e91-3','komme',110)+' gerade von meiner '+makeBlank('e91-4','Arbeit',110)+' und will nach Hause.</div>'+
+  '<div class="qline">● Hm, heute ist das große Stadtfest und da trinken viele Leute ein Bier zu viel und '+makeBlank('e91-5','fahren',110)+' mit dem Auto. Bei Ihnen ist alles in Ordnung, hier sind Ihre '+makeBlank('e91-6','Papiere',130)+'. Guten Abend.</div>'+
+  '<div class="qline">○ Danke und guten Abend.</div>';
+})();
+
+/* EX10 Welcher Satz passt zu welcher Situation */
+(function(){
+  var phrases = [
+    "Ich rufe die Polizei!",
+    "Mein Fahrrad ist weg! Ich muss zur Polizei gehen und eine Anzeige machen.",
+    "Wir müssen die Polizei holen.",
+    "Ein Nachbar hat angerufen. Bitte machen Sie die Musik leiser. Es ist 1.00 Uhr."
+  ];
+  var items = [
+    ["Es ist mitten in der Nacht, und die Musik vom Nachbarn ist sehr laut.", "Wir müssen die Polizei holen.|Ich rufe die Polizei!"],
+    ["Zwei Wanderer kommen zurück, aber das Fahrrad ist nicht mehr da.", "Mein Fahrrad ist weg! Ich muss zur Polizei gehen und eine Anzeige machen."],
+    ["Die Polizei steht vor der Tür und spricht mit der Nachbarin.", "Ein Nachbar hat angerufen. Bitte machen Sie die Musik leiser. Es ist 1.00 Uhr."],
+  ];
+  var el = document.getElementById('ex10-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = phrases.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+'<br><select id="e101-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* Extra: Wortsuche */
+(function(){
+  var grid = [
+    "WPOSTHBVDOLKQC",
+    "JBRIEFMVQENLZO",
+    "BANKROMARWYJTN",
+    "DUJLKANTRAGSTO",
+    "HKONTOXTLNWRPR",
+    "RZPOLIZEIYTZCM",
+    "LCSCHALTERHENA",
+    "GSREPASSGGWSPT",
+    "QOTARIFACHEZOI",
+    "NEBADRESSEBEQO",
+    "SBROVKARTECHNN",
+    "CBNAUSWEISUVEE",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+  var words = ['POST','BRIEF','BANK','ANTRAG','KONTO','POLIZEI','SCHALTER','PASS','TARIF','ADRESSE','KARTE','AUSWEIS'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+})();
+
+/* Schnelltest */
+(function(){
+  var questions = [
+    ["Wer den Brief schickt, ist der ...", "Absender"],
+    ["Man klebt sie auf den Brief: die ...", "Briefmarke"],
+    ["Wo man bei der Post oder Bank bezahlt/abgibt: der ...", "Schalter"],
+    ["Ein Papier zum Ausfüllen ist das ...", "Formular"],
+    ["Buchstabe für Buchstabe sagen heißt ...", "buchstabieren"],
+    ["Der eigene Name geschrieben ist die ...", "Unterschrift"],
+    ["Dort ist das Geld bei der Bank: das ...", "Konto"],
+    ["Dort holt man Bargeld: der ...", "Geldautomat"],
+    ["Geld von einem Konto zum anderen schicken heißt ...", "überweisen"],
+    ["Dokument für die Reise ins Ausland: der ...", "Pass"],
+    ["Zeigt, wer man ist: der ...", "Ausweis"],
+    ["Damit ist man online: das ...", "Internet"],
+    ["Der Preis für Telefon oder Internet ist der ...", "Tarif"],
+    ["Eine offizielle Stelle ist das ...", "Amt"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

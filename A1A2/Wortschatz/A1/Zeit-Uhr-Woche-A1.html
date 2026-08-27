@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 Zeit – Uhr – Woche – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;
+  text-align:center;position:sticky;top:0;z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;
+  padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;
+}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;
+  padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;
+}
+.example-box{
+  background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 14px;margin:10px 0;font-size:0.9rem;color:var(--teal);line-height:1.9;
+}
+.example-box b{color:var(--teal-light);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{
+  border:none;border-bottom:2px solid var(--teal-light);background:transparent;
+  font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;max-width:220px;}
+.dialog-p{margin:6px 0;}
+textarea.free-answer{
+  width:100%;min-height:100px;border:1px solid var(--teal-light);border-radius:10px;
+  padding:10px;font-family:inherit;font-size:0.95rem;color:var(--text);resize:vertical;
+}
+.check-btn{
+  background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;
+  cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* TTS buttons */
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
+
+/* Clock faces */
+.clock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px;margin:14px 0;}
+.clock-card{text-align:center;}
+.clock-card svg{width:100%;max-width:110px;}
+.clock-card select{
+  margin-top:8px;width:100%;padding:5px 6px;border-radius:8px;border:1px solid var(--teal-light);
+  font-family:inherit;font-size:.82rem;
+}
+.clock-card .clock-num{font-weight:700;color:var(--orange);margin-bottom:2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A1 · Modul 13 · Wortschatz</div>
+  <h1>13&nbsp; Zeit – Uhr – Woche</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🕐 Uhrzeit</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box" id="ex-box-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>☀️ Tag</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="example-box" id="ex-box-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>📅 Woche</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="example-box" id="ex-box-3"></div>
+  </div>
+
+  <div class="section">
+    <h2>⏳ Zeitpunkt</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="example-box" id="ex-box-4"></div>
+  </div>
+
+  <div class="section">
+    <h2>🌸 Jahreszeiten und Monate</h2>
+    <div class="vocab-grid" id="vg5"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Die Uhr tickt</h2>
+    <div class="exercise">
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Uhrzeiten – Wählen Sie die richtige Uhrzeit zu jeder Uhr</h2>
+    <div class="ex-instructions">🔊 zum Anhören. Wählen Sie dann die passende Uhrzeit aus.</div>
+    <div class="clock-grid" id="clock-grid"></div>
+    <button class="check-btn" data-check="selects" data-target="clock-grid">Kontrollieren</button>
+    <div class="result-msg" id="res-clock-grid"></div>
+  </div>
+
+  <div class="section">
+    <h2>3 Mein Tag – Ergänzen Sie</h2>
+    <div class="exercise">
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Die Woche</h2>
+    <div class="exercise">
+      <div class="ex-title">Schreiben Sie die Wochentage in der richtigen Reihenfolge.</div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+    <div class="exercise">
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Worte zur Zeit – Verbinden Sie die Teile</h2>
+    <div class="ex-instructions">Deutsche Sprichwörter über die Zeit. Wählen Sie das passende Satzende.</div>
+    <div class="exercise">
+      <div id="ex5-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex5-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Was passt zusammen?</h2>
+    <div class="exercise">
+      <div id="ex6-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex6-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7 Termingespräche – Ergänzen Sie die Dialoge</h2>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 1</div>
+      <div class="wordbank"><b>Kasten:</b> zurzeit · um · seit · gleich · wann · warte · sofort · immer · spät <i>(noch = Beispiel)</i></div>
+      <div id="ex7-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex7-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex7-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 2</div>
+      <div class="wordbank"><b>Kasten:</b> Moment · gerade · bald · schnell <i>(später = Beispiel)</i></div>
+      <div id="ex7-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex7-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex7-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 3</div>
+      <div class="wordbank"><b>Kasten:</b> wann · lange · bis · dann · nächste · am · Uhr <i>(von...bis = Beispiel)</i></div>
+      <div id="ex7-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex7-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex7-3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 4</div>
+      <div class="wordbank"><b>Kasten:</b> nie · am · letzte · oft <i>(wann = Beispiel)</i></div>
+      <div id="ex7-4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex7-4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex7-4"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Zeit, Uhr, Woche</h2>
+    <div class="ex-instructions">Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","Uhrzeit, -en","die Zeit auf der Uhr","giờ (theo đồng hồ)"],
+ ["","spät","nicht früh","muộn, trễ"],
+ ["","(drei) Uhr","Uhrzeit mit voller Stunde","... giờ (đúng)"],
+ ["","vor / nach","hier: vor/nach einer vollen Stunde","trước / sau (giờ)"],
+ ["das","Viertel / die Viertelstunde","15 Minuten","một phần tư (giờ), 15 phút"],
+ ["","halb (vier)","30 Minuten vor der genannten Stunde","rưỡi (... giờ rưỡi = trước giờ đó 30 phút)"],
+ ["","um","Präposition für die Uhrzeit","vào lúc (giờ)"],
+ ["die","Uhr, -en","das Gerät, das die Zeit zeigt","đồng hồ"],
+ ["die","Stunde, -n","60 Minuten","giờ (đơn vị)"],
+ ["die","Minute, -n","60 Sekunden","phút"],
+ ["die","Sekunde, -n","die kleinste Zeiteinheit hier","giây"],
+ ["der","Moment, -e","ein sehr kurzer Zeitpunkt","khoảnh khắc, lát"],
+];
+
+var vocab2 = [
+ ["der","Tag, -e","24 Stunden","ngày"],
+ ["die","Nacht, ¨-e","die Zeit, in der es dunkel ist und man schläft","đêm"],
+ ["der","Morgen, -","der Anfang des Tages","buổi sáng sớm"],
+ ["der","Abend, -e","das Ende des Tages","buổi tối"],
+ ["","am","Präposition für Tageszeiten, z. B. am Morgen","vào (buổi)"],
+ ["der","Vormittag, -e","die Zeit vor dem Mittag","buổi sáng (trước trưa)"],
+ ["der","Nachmittag, -e","die Zeit nach dem Mittag","buổi chiều"],
+ ["der","Mittag, -e","die Mitte des Tages, ca. 12 Uhr","buổi trưa"],
+ ["die","Mitternacht (Sg.)","die Mitte der Nacht, 0 Uhr","nửa đêm"],
+];
+
+var vocab3 = [
+ ["die","Woche, -n","sieben Tage","tuần"],
+ ["der","Wochentag, -e","ein Tag der Woche","ngày trong tuần"],
+ ["der","Sonntag, -e","der erste/letzte Tag der Woche","Chủ nhật"],
+ ["der","Montag, -e","der erste Arbeitstag","thứ Hai"],
+ ["der","Dienstag, -e","der zweite Wochentag","thứ Ba"],
+ ["der","Mittwoch, -e","der dritte Wochentag","thứ Tư"],
+ ["der","Donnerstag, -e","der vierte Wochentag","thứ Năm"],
+ ["der","Freitag, -e","der fünfte Wochentag","thứ Sáu"],
+ ["der","Samstag, -e / Sonnabend, -e","der sechste Wochentag (süddeutsch/norddeutsch)","thứ Bảy"],
+ ["das","Wochenende, -n","Samstag und Sonntag","cuối tuần"],
+ ["","seit","Präposition: von einem Zeitpunkt bis jetzt","kể từ, từ khi"],
+ ["","ab","Präposition: von einem Zeitpunkt an (in der Zukunft)","kể từ (thời điểm tương lai)"],
+ ["","von ... bis","Präposition für einen Zeitraum","từ ... đến"],
+];
+
+var vocab4 = [
+ ["","wann?","Frage nach der Zeit","khi nào?"],
+ ["","früher","in der Vergangenheit","trước đây"],
+ ["","letzt- / letzte Woche","die Woche davor","tuần trước"],
+ ["","gestern / heute / morgen","der Tag davor / dieser Tag / der Tag danach","hôm qua / hôm nay / ngày mai"],
+ ["","jetzt / sofort / gleich","in diesem Moment / ohne Pause / sehr bald","bây giờ / ngay lập tức / sắp"],
+ ["","nächst- / (am) nächsten Mittwoch","die Zeit danach","tới, sau, kế tiếp"],
+ ["","bald","in kurzer Zeit","sớm, chẳng bao lâu nữa"],
+ ["","spät / später","nicht früh / zu einem späteren Zeitpunkt","muộn / muộn hơn, sau này"],
+ ["","nie / oft / immer","0 Mal / viele Male / jedes Mal","không bao giờ / thường xuyên / luôn luôn"],
+ ["","gerade / zurzeit","in diesem Moment / in dieser Zeit","vừa mới, hiện đang / hiện tại"],
+ ["","schon","früher als erwartet","đã, rồi"],
+ ["","noch","bis jetzt, weiterhin","vẫn còn"],
+ ["","lange","eine lange Zeit","lâu"],
+ ["","warten","an einem Ort bleiben, bis etwas passiert","chờ đợi"],
+ ["","schnell / langsam","mit viel Tempo / mit wenig Tempo","nhanh / chậm"],
+];
+
+var vocab5 = [
+ ["der","Frühling (Sg.)","März, April, Mai","mùa xuân"],
+ ["der","Sommer (Sg.)","Juni, Juli, August","mùa hè"],
+ ["der","Herbst (Sg.)","September, Oktober, November","mùa thu"],
+ ["der","Winter (Sg.)","Dezember, Januar, Februar","mùa đông"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art && art.indexOf('/')===-1 ? art+' ' : '') + word.split(',')[0].split('(')[0].split('/')[0].trim();
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button class="speak-btn" data-text="'+speakText+'">🔊</button>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+renderVocab(vocab5,'vg5');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= Beispiel-Boxen ================= */
+function renderExampleBox(targetId, lines){
+  var el = document.getElementById(targetId);
+  el.innerHTML = '<b>Beispiele:</b><br>' + lines.map(function(l){
+    return '<span class="dialog-p">'+l+' <button class="speak-btn" data-text="'+l+'">🔊</button></span>';
+  }).join('<br>');
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+}
+renderExampleBox('ex-box-1', [
+  'Wie spät ist es?',
+  'Es ist drei Uhr.',
+  'Sieben Uhr elf.',
+  'Fünf Minuten vor zwei.',
+  'Viertel vor drei, das ist 14.45 Uhr.',
+  'Es ist Viertel nach drei, das ist 15.15 Uhr.',
+  'Er kommt um neun Uhr.',
+  'Moment mal!',
+  'Einen Moment, bitte.'
+]);
+renderExampleBox('ex-box-2', [
+  'In der Nacht.',
+  'Am Morgen.'
+]);
+renderExampleBox('ex-box-3', [
+  'Am Wochenende.',
+  'Er ist seit Freitag hier.',
+  'Sie arbeitet ab Montag.',
+  'Sie arbeitet von Montag bis Freitag.'
+]);
+renderExampleBox('ex-box-4', [
+  'Ich muss jetzt sofort gehen.',
+  'In zehn Minuten geht mein Zug!',
+  'Ich gehe am Wochenende oft in die Stadt.',
+  'Es ist schon spät.',
+  'Wir kommen zu spät.',
+  'Das können wir später machen.',
+  'Ich bin gerade in der Stadt.',
+  'Ich warte schon lange.',
+  'Warte bitte noch zwei Minuten.'
+]);
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='selects') checkGroupSelects(target);
+  });
+});
+
+/* ================= EX 1.1 Die Uhr tickt ================= */
+(function(){
+  var el = document.getElementById('ex1-1');
+  el.innerHTML =
+  '<div class="qline">Die Uhr zeigt die '+makeBlank('e11-0','Uhrzeit',120)+'.</div>'+
+  '<div class="qline">60 '+makeBlank('e11-1','Sekunden',120)+' sind eine '+makeBlank('e11-2','Minute',110)+' und</div>'+
+  '<div class="qline">60 '+makeBlank('e11-3','Minuten',110)+' sind eine '+makeBlank('e11-4','Stunde',110)+'.</div>'+
+  '<div class="qline">24 '+makeBlank('e11-5','Stunden',110)+' sind ein '+makeBlank('e11-6','Tag',90)+'.</div>';
+})();
+
+/* ================= EX 2 Uhrzeiten (Uhren-Grafiken) ================= */
+function clockSVG(hour, minute){
+  var cx=50, cy=50;
+  function point(angleDeg, length){
+    var rad = (angleDeg-90)*Math.PI/180;
+    return [cx+length*Math.cos(rad), cy+length*Math.sin(rad)];
+  }
+  var minuteAngle = minute*6;
+  var hourAngle = (hour%12)*30 + minute*0.5;
+  var hp = point(hourAngle, 24);
+  var mp = point(minuteAngle, 36);
+  var ticks = '';
+  for(var i=0;i<12;i++){
+    var a = i*30;
+    var p1 = point(a, 39), p2 = point(a, 45);
+    ticks += '<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#0f3d3e" stroke-width="2"/>';
+  }
+  return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+
+    '<circle cx="50" cy="50" r="46" fill="#fff" stroke="#0f3d3e" stroke-width="3"/>'+
+    ticks+
+    '<line x1="50" y1="50" x2="'+hp[0].toFixed(1)+'" y2="'+hp[1].toFixed(1)+'" stroke="#0f3d3e" stroke-width="4" stroke-linecap="round"/>'+
+    '<line x1="50" y1="50" x2="'+mp[0].toFixed(1)+'" y2="'+mp[1].toFixed(1)+'" stroke="#e8823a" stroke-width="3" stroke-linecap="round"/>'+
+    '<circle cx="50" cy="50" r="3" fill="#0f3d3e"/>'+
+    '</svg>';
+}
+(function(){
+  var options = ['zwölf Uhr','fünf nach halb sechs','fünf vor acht','halb fünf','Viertel nach drei','Viertel vor acht','zehn nach eins'];
+  var clocks = [
+    {hour:12, minute:0, ans:'zwölf Uhr'},
+    {hour:5, minute:35, ans:'fünf nach halb sechs'},
+    {hour:7, minute:55, ans:'fünf vor acht'},
+    {hour:4, minute:30, ans:'halb fünf'},
+    {hour:3, minute:15, ans:'Viertel nach drei'},
+    {hour:7, minute:45, ans:'Viertel vor acht'},
+    {hour:1, minute:10, ans:'zehn nach eins'},
+  ];
+  var el = document.getElementById('clock-grid');
+  el.innerHTML = clocks.map(function(c,i){
+    var optHtml = options.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    var speakText = 'Es ist '+c.ans+'.';
+    return '<div class="clock-card"><div class="clock-num">'+(i+1)+'</div>'+
+      clockSVG(c.hour,c.minute)+
+      '<div><button class="speak-btn" data-text="'+speakText+'" style="margin:4px 0;">🔊</button></div>'+
+      '<select id="clk-'+i+'" data-ans="'+c.ans+'"><option value="">wählen...</option>'+optHtml+'</select>'+
+      '</div>';
+  }).join('');
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+})();
+
+/* ================= EX 3.1 Mein Tag ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<div class="dialog-p">Es ist Montag. Am Morgen stehe ich auf, dusche, frühstücke und gehe zur Arbeit.</div>'+
+  '<div class="dialog-p">Dann kommt der '+makeBlank('e31-0','Vormittag',130)+' und schon nach wenigen Stunden ist es 12 Uhr: '+makeBlank('e31-1','Mittag',110)+'.</div>'+
+  '<div class="dialog-p">Ich esse etwas und mache Pause. Am '+makeBlank('e31-2','Nachmittag',140)+' arbeite ich bis 17 Uhr.</div>'+
+  '<div class="dialog-p">Dann gehe ich nach Hause und bald ist es '+makeBlank('e31-3','Abend',110)+'. Ich treffe ein paar Freunde oder ich sehe fern.</div>'+
+  '<div class="dialog-p">Um 11 Uhr gehe ich ins Bett und schlafe eine '+makeBlank('e31-4','Nacht',110)+' lang bis zum '+makeBlank('e31-5','Morgen',110)+'.</div>'+
+  '<div class="dialog-p">Es ist Dienstag. Am ... stehe ich auf, frühstücke und ...</div>';
+})();
+
+/* ================= EX 4.1 Wochentage in Reihenfolge ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  var days = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+  el.innerHTML = days.map(function(d,i){
+    if(i===0) return '<div class="qline">1. <b>Montag</b> (Beispiel)</div>';
+    return '<div class="qline">'+(i+1)+'. '+makeBlank('e41-'+i, d, 140)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 4.2 Wochenende Text ================= */
+(function(){
+  var el = document.getElementById('ex4-2');
+  el.innerHTML =
+  '<div class="qline">Es gibt sieben '+makeBlank('e42-0','Wochentage',140)+'. SA und SO sind das '+makeBlank('e42-1','Wochenende',140)+'.</div>'+
+  '<div class="qline">Am '+makeBlank('e42-2','Wochenende',140)+' arbeiten die meisten Deutschen nicht.</div>';
+})();
+
+/* ================= EX 5.1 Sprichwörter ================= */
+(function(){
+  var starts = [
+    'Morgen, morgen, nur nicht heute,',
+    'Was du heute kannst besorgen (tun),',
+    'Früher war',
+    'Gestern, heute, morgen,',
+    'Wer zu spät kommt,',
+    'Es ist fünf vor',
+    'Unmögliches erledigen wir sofort,',
+  ];
+  var ends = [
+    'alles besser.',
+    'das verschiebe nicht auf morgen.',
+    'den bestraft das Leben.',
+    'heute, sagen alle faulen Leute.',
+    'nichts als Sorgen, Sorgen, Sorgen!',
+    'Wunder dauern etwas länger.',
+    'zwölf.',
+  ];
+  var answers = ['heute, sagen alle faulen Leute.','das verschiebe nicht auf morgen.','alles besser.','nichts als Sorgen, Sorgen, Sorgen!','den bestraft das Leben.','zwölf.','Wunder dauern etwas länger.'];
+  var el = document.getElementById('ex5-1');
+  el.innerHTML = starts.map(function(s,i){
+    var optHtml = ends.map(function(e){ return '<option value="'+e+'">'+e+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+s+' → <select id="e51-'+i+'" data-ans="'+answers[i]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 6.1 Was passt zusammen ================= */
+(function(){
+  var pairs = [
+    ['gestern', 'heute', true],
+    ['letzte ...', 'nächste', false],
+    ['jetzt', 'später', false],
+    ['nie', 'oft', false],
+    ['langsam', 'schnell', false],
+  ];
+  var opts = ['heute','nächste','später','oft','schnell'];
+  var el = document.getElementById('ex6-1');
+  el.innerHTML = pairs.map(function(p,i){
+    if(p[2]) return '<div class="qline">'+p[0]+' – <b>'+p[1]+'</b> (Beispiel)</div>';
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+p[0]+' – <select id="e61-'+i+'" data-ans="'+p[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 7.1 Termingespräche Dialog 1 ================= */
+(function(){
+  var el = document.getElementById('ex7-1');
+  el.innerHTML =
+  '<div class="dialog-p">● Wo bist du?</div>'+
+  '<div class="dialog-p">○ Ich bin im Moment noch im Büro.</div>'+
+  '<div class="dialog-p">● '+makeBlank('e71-0','Wann',100)+' kommst du nach Hause?</div>'+
+  '<div class="dialog-p">○ Ich fahre '+makeBlank('e71-1','gleich',100)+' los. In fünf Minuten.</div>'+
+  '<div class="dialog-p">● Ich '+makeBlank('e71-2','warte',100)+' schon '+makeBlank('e71-3','seit',90)+' einer Stunde mit dem Essen.</div>'+
+  '<div class="dialog-p">○ Ja, ja ich fahre '+makeBlank('e71-4','sofort',110)+' los.</div>'+
+  '<div class="dialog-p">'+makeBlank('e71-5','Um',80)+' 9 Uhr bin ich zu Hause.</div>'+
+  '<div class="dialog-p">● '+makeBlank('e71-6','Immer',100)+' kommst du zu spät</div>'+
+  '<div class="dialog-p">'+makeBlank('e71-7','spät',90)+' und das Essen ist kalt.</div>'+
+  '<div class="dialog-p">○ Ich habe '+makeBlank('e71-8','zurzeit',110)+' sehr viel zu tun.</div>';
+})();
+
+/* ================= EX 7.2 Termingespräche Dialog 2 ================= */
+(function(){
+  var el = document.getElementById('ex7-2');
+  el.innerHTML =
+  '<div class="dialog-p">● Hallo, Schatz, bei mir wird es heute etwas später im Büro.</div>'+
+  '<div class="dialog-p">Ich fahre '+makeBlank('e72-0','schnell',100)+' los.</div>'+
+  '<div class="dialog-p">○ O.K. bis '+makeBlank('e72-1','bald',90)+'. Oh, warte mal einen '+makeBlank('e72-2','Moment',110)+'.</div>'+
+  '<div class="dialog-p">Kannst du etwas zum Trinken mitbringen?</div>'+
+  '<div class="dialog-p">● O.K., ich fahre noch '+makeBlank('e72-3','gerade',100)+' beim Neukauf vorbei.</div>';
+})();
+
+/* ================= EX 7.3 Termingespräche Dialog 3 ================= */
+(function(){
+  var el = document.getElementById('ex7-3');
+  el.innerHTML =
+  '<div class="dialog-p">● Die Prüfung geht von 8 bis 12 Uhr.</div>'+
+  '<div class="dialog-p">○ Vier Stunden? So '+makeBlank('e73-0','lange',100)+'?</div>'+
+  '<div class="dialog-p">● Der erste Teil geht '+makeBlank('e73-1','bis',80)+' 9 '+makeBlank('e73-2','Uhr',80)+' 45, '+makeBlank('e73-3','dann',90)+' haben Sie 30 Minuten Pause.</div>'+
+  '<div class="dialog-p">○ Und '+makeBlank('e73-4','wann',90)+' bekommen wir das Ergebnis?</div>'+
+  '<div class="dialog-p">● '+makeBlank('e73-5','Nächste',110)+' Woche, '+makeBlank('e73-6','am',80)+' Mittwoch.</div>';
+})();
+
+/* ================= EX 7.4 Termingespräche Dialog 4 ================= */
+(function(){
+  var el = document.getElementById('ex7-4');
+  el.innerHTML =
+  '<div class="dialog-p">● Wann war deine Prüfung?</div>'+
+  '<div class="dialog-p">○ '+makeBlank('e74-0','Letzte',100)+' Woche, '+makeBlank('e74-1','am',80)+' Freitag.</div>'+
+  '<div class="dialog-p">● Und was machst du jetzt?</div>'+
+  '<div class="dialog-p">Gehst du '+makeBlank('e74-2','oft',90)+' ins Kino?</div>'+
+  '<div class="dialog-p">○ Nein, ich gehe fast '+makeBlank('e74-3','nie',90)+' ins Kino.</div>'+
+  '<div class="dialog-p">Aber ich mache jetzt wieder viel Sport.</div>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ['15 Minuten nennt man auch ein ...','Viertel'],
+    ['60 Sekunden sind eine ...','Minute'],
+    ['60 Minuten sind eine ...','Stunde'],
+    ['Ein sehr kurzer Zeitpunkt ist ein ...','Moment'],
+    ['Die Zeit, in der es dunkel ist, heißt die ...','Nacht'],
+    ['Die Mitte der Nacht, 0 Uhr, ist die ...','Mitternacht'],
+    ['Samstag und Sonntag sind das ...','Wochenende'],
+    ['Präposition für "von einem Zeitpunkt bis jetzt" ist ...','seit'],
+    ['Das Gegenteil von "gestern" ist ...','morgen'],
+    ['Das Gegenteil von "früher" ist ...','später'],
+    ['Das Gegenteil von "nie" ist ...','immer'],
+    ['An einem Ort bleiben, bis etwas passiert, nennt man ...','warten'],
+    ['Das Gegenteil von "schnell" ist ...','langsam'],
+    ['März, April, Mai sind der ...','Frühling'],
+    ['Juni, Juli, August sind der ...','Sommer'],
+    ['Dezember, Januar, Februar sind der ...','Winter'],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

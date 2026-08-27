@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1-Grundmuster – Deutsche Phonetik</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fira+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#f0f4f8;min-height:100vh;color:#1a2336}
+
+.sticky-header{position:sticky;top:0;z-index:100;background:#1a2336;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.header-top{display:flex;align-items:center;gap:12px}
+.back-btn{color:#8fa3bf;text-decoration:none;font-size:20px;line-height:1}
+.back-btn:hover{color:#4ecdc4}
+.site-title{color:#fff;font-size:17px;font-weight:800}
+.site-title span{color:#4ecdc4}
+
+.main{padding:14px;max-width:640px;margin:0 auto;padding-bottom:40px}
+
+.intro{background:#fff;border-radius:16px;padding:16px;margin:6px 0 20px;box-shadow:0 2px 6px rgba(0,0,0,0.07)}
+.intro p{font-size:13.5px;color:#4a5a72;line-height:1.65}
+.intro b{color:#0f8f86}
+
+.section-label{
+  font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  color:#4ecdc4;margin-bottom:10px;margin-top:26px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:#dde3ea}
+
+.rule-block{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,0.07);border-left:4px solid #4ecdc4}
+.rule-block.amber{border-left-color:#e0a020}
+.rule-block.slate{border-left-color:#5b7ca8}
+
+.rule-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.rule-combo{font-size:15px;font-weight:800;color:#1a2336;font-family:'Fira Mono',monospace}
+.ipa-badge{font-size:12.5px;font-weight:700;font-family:'Fira Mono',monospace;background:#f0f4f8;color:#5a6b82;padding:3px 10px;border-radius:20px}
+.rule-block.amber .ipa-badge{background:#fdf3e2;color:#9a6a0c}
+.rule-block.slate .ipa-badge{background:#eaf0f8;color:#3c5a80}
+
+.rule-desc{font-size:13.5px;color:#5a6b82;margin-bottom:14px;line-height:1.6}
+.rule-desc b{color:#1a2336}
+.rule-desc .context{display:inline-block;background:#f0f4f8;border-radius:6px;padding:1px 7px;font-family:'Fira Mono',monospace;font-size:12px;color:#2d3f5a;font-weight:700}
+
+.sub-rule{border-top:1px dashed #e2e8f0;margin-top:12px;padding-top:12px}
+.sub-rule:first-child{border-top:none;margin-top:0;padding-top:0}
+
+/* PAIR CHIPS (word-level) */
+.pair-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.pair-row:last-child{margin-bottom:0}
+.pair-chip{flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent;min-height:46px}
+.pair-chip:active{transform:scale(0.96)}
+.pair-chip:hover{border-color:#4ecdc4;background:#edfaf9}
+.pair-chip.speaking{border-color:#ff6b6b;background:#fff5f5}
+.pair-chip .word{font-size:16px;font-weight:800;color:#1a2336;font-family:'Fira Mono',monospace}
+.pair-chip .word mark{background:transparent;color:#0f8f86;text-decoration:underline;text-decoration-color:#7fd8d0;text-decoration-thickness:2px;text-underline-offset:3px}
+.pair-chip .spk{font-size:12px;flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#e3f7f5;color:#1f9d94;display:inline-flex;align-items:center;justify-content:center;transition:all .18s ease}
+.pair-chip:hover .spk{background:#4ecdc4;color:#fff;transform:scale(1.1)}
+.pair-chip.speaking .spk{background:#ff6b6b;color:#fff;transform:scale(1.15)}
+.pair-vs{font-size:11px;font-weight:800;color:#aab4c2;flex-shrink:0;width:20px;text-align:center}
+.pair-chip-static{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px dashed #e2e8f0;border-radius:12px;padding:10px 14px;min-height:46px}
+
+/* GLOTTAL STOP MARKER */
+.glottal{color:#c07d0f;font-weight:900;font-size:.7em;vertical-align:super;margin:0 1px}
+
+/* SENTENCE CHIPS (Satzmelodie) */
+.sent-row{margin-bottom:9px}
+.sent-row:last-child{margin-bottom:0}
+.sentence-chip{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:11px 14px;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent}
+.sentence-chip:active{transform:scale(0.98)}
+.sentence-chip:hover{border-color:#4ecdc4;background:#edfaf9}
+.sentence-chip.speaking{border-color:#ff6b6b;background:#fff5f5}
+.sentence-chip .sent-text{font-size:15px;font-weight:700;color:#1a2336;flex:1}
+.sentence-chip .arrow-badge{font-size:15px;font-weight:900;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.arrow-badge.down{background:#eaf0f8;color:#3c5a80}
+.arrow-badge.up{background:#fdf3e2;color:#c07d0f}
+.sentence-chip .spk{font-size:12px;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#e3f7f5;color:#1f9d94;display:inline-flex;align-items:center;justify-content:center;transition:all .18s ease}
+.sentence-chip:hover .spk{background:#4ecdc4;color:#fff;transform:scale(1.1)}
+.sentence-chip.speaking .spk{background:#ff6b6b;color:#fff;transform:scale(1.15)}
+
+.tip-box{background:#f0f4f8;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:12.5px;color:#5a6b82;line-height:1.6}
+.tip-box b{color:#1a2336}
+</style>
+</head>
+<body>
+
+<div class="sticky-header">
+  <div class="header-top">
+    <a href="index.html" class="back-btn">&#8592;</a>
+    <div class="site-title">A1-<span>Grundmuster</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+<div class="intro">
+  <p>Drei Muster, die von Anfang an <b>automatisch</b> richtig sitzen müssen – sie sind später sehr schwer zu korrigieren, wenn man sie sich erst einmal falsch angewöhnt hat.</p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<div class="section-label">1. Auslautverhärtung</div>
+
+<div class="rule-block">
+  <div class="rule-desc">Am Wortende (oder vor Konsonant) werden <b>b, d, g</b> immer <b>stimmlos</b> gesprochen: b→p, d→t, g→k. Kommt danach ein Vokal (z. B. im Plural), hört man den Laut wieder normal.</div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">b → p</span></div>
+    <div class="pair-row">
+      <div class="pair-chip"><span class="word">gel<mark>b</mark></span><span class="spk">🔊</span></div>
+      <div class="pair-vs">↔</div>
+      <div class="pair-chip"><span class="word">gel<mark>b</mark>e Tasche</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">d → t</span></div>
+    <div class="pair-row">
+      <div class="pair-chip"><span class="word">Han<mark>d</mark></span><span class="spk">🔊</span></div>
+      <div class="pair-vs">↔</div>
+      <div class="pair-chip"><span class="word">Hän<mark>d</mark>e</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">g → k</span></div>
+    <div class="pair-row">
+      <div class="pair-chip"><span class="word">Ta<mark>g</mark></span><span class="spk">🔊</span></div>
+      <div class="pair-vs">↔</div>
+      <div class="pair-chip"><span class="word">Ta<mark>g</mark>e</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="tip-box"><b>Wichtig:</b> Das ist keine Ausnahme, sondern eine feste Regel – gilt für <b>jedes</b> Wort mit b/d/g am Ende, nicht nur für diese Beispiele.</div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<div class="section-label">2. Knacklaut (Vokalneueinsatz)</div>
+
+<div class="rule-block amber">
+  <div class="rule-desc">Ein Wort oder Wortteil, das mit Vokal beginnt, wird <b>nicht</b> mit dem vorherigen Laut verbunden – es gibt einen kleinen "Knack" (Glottisschlag) davor. Im Vietnamesischen verbindet man Vokale oft weich – im Deutschen macht man bewusst eine kleine Pause/einen Neueinsatz.</div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">am Wortanfang</span><span class="ipa-badge">klarer Neueinsatz</span></div>
+    <div class="pair-row">
+      <div class="pair-chip"><span class="word"><mark>A</mark>pfel</span><span class="spk">🔊</span></div>
+      <div class="pair-vs">↔</div>
+      <div class="pair-chip"><span class="word"><mark>E</mark>rdbeere</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">nach Vorsilbe</span><span class="ipa-badge">auch mitten im Wort</span></div>
+    <div class="rule-desc" style="margin-bottom:8px">Auch innerhalb eines Wortes, wenn eine Vorsilbe auf einen Vokal trifft: <span class="context">be‧obachten</span>, <span class="context">ver‧ein</span>.</div>
+    <div class="pair-row">
+      <div class="pair-chip"><span class="word">be<span class="glottal">ʔ</span>obachten</span><span class="spk">🔊</span></div>
+      <div class="pair-vs">↔</div>
+      <div class="pair-chip"><span class="word">Ver<span class="glottal">ʔ</span>ein</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">zwischen zwei Wörtern</span><span class="ipa-badge">nicht verbinden!</span></div>
+    <div class="rule-desc" style="margin-bottom:8px">Zwei Wörter im Satz werden <b>nicht</b> zu einem Wort verbunden – jedes Wort bleibt klar getrennt hörbar.</div>
+    <div class="pair-row">
+      <div class="pair-chip"><span class="word">ein<span class="glottal">ʔ</span>Apfel</span><span class="spk">🔊</span></div>
+      <div class="pair-vs">≠</div>
+      <div class="pair-chip-static" style="cursor:default;background:#fdf1f1;border-color:#f3d4d4"><span class="word" style="color:#c0392b">"einapfel"</span></div>
+    </div>
+    <div class="tip-box"><b>Falsch:</b> Wenn man wie im Vietnamesischen weich verbindet, klingt es wie ein neues, unverständliches Wort.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<div class="section-label">3. Satzmelodie</div>
+
+<div class="rule-block slate">
+  <div class="rule-desc">Die Melodie am Satzende zeigt, was für ein Satz es ist – wichtig für natürliches Klingen von Anfang an.</div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">Aussagesatz</span><span class="ipa-badge">Melodie fällt ↘</span></div>
+    <div class="sent-row">
+      <div class="sentence-chip"><span class="sent-text">Ich heiße Lan.</span><span class="arrow-badge down">↘</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">W-Frage</span><span class="ipa-badge">Melodie fällt ↘</span></div>
+    <div class="rule-desc" style="margin-bottom:8px">Bei Fragen mit <span class="context">wer, wie, was, wo, wann, warum</span> fällt die Melodie am Ende – genau wie bei einer Aussage.</div>
+    <div class="sent-row">
+      <div class="sentence-chip"><span class="sent-text">Wie heißt du?</span><span class="arrow-badge down">↘</span><span class="spk">🔊</span></div>
+    </div>
+    <div class="sent-row">
+      <div class="sentence-chip"><span class="sent-text">Woher kommst du?</span><span class="arrow-badge down">↘</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="sub-rule">
+    <div class="rule-head"><span class="rule-combo">Ja/Nein-Frage</span><span class="ipa-badge">Melodie steigt ↗</span></div>
+    <div class="rule-desc" style="margin-bottom:8px">Fragen ohne Fragewort (Antwort: ja oder nein) – die Melodie steigt am Ende deutlich nach oben.</div>
+    <div class="sent-row">
+      <div class="sentence-chip"><span class="sent-text">Kommst du aus Vietnam?</span><span class="arrow-badge up">↗</span><span class="spk">🔊</span></div>
+    </div>
+    <div class="sent-row">
+      <div class="sentence-chip"><span class="sent-text">Sprechen Sie Deutsch?</span><span class="arrow-badge up">↗</span><span class="spk">🔊</span></div>
+    </div>
+  </div>
+  <div class="tip-box"><b>Übung im Kurs:</b> Lassen Sie Lernende beide Melodien mit der Hand mitzeichnen (nach unten / nach oben), während sie sprechen – körperliche Bewegung hilft, die Melodie zu verinnerlichen.</div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+(function(){
+  var synth = window.speechSynthesis;
+  function bindSpeak(selector, textSelector){
+    document.querySelectorAll(selector).forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var textEl = chip.querySelector(textSelector);
+        if (!textEl) return;
+        var text = textEl.textContent.trim();
+        document.querySelectorAll(selector+'.speaking').forEach(function(c){ c.classList.remove('speaking'); });
+        chip.classList.add('speaking');
+        if (synth){
+          synth.cancel();
+          var utt = new SpeechSynthesisUtterance(text);
+          utt.lang = 'de-DE';
+          utt.rate = 0.78;
+          utt.onend = function(){ chip.classList.remove('speaking'); };
+          synth.speak(utt);
+        }
+      });
+    });
+  }
+  bindSpeak('.pair-chip', '.word');
+  bindSpeak('.sentence-chip', '.sent-text');
+})();
+</script>
+</body>
+</html>

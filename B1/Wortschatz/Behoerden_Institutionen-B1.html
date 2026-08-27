@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 Behörden und Institutionen</title>
+<style>
+  :root{
+    --teal:#0f5c5c;
+    --teal-dark:#0a3d3d;
+    --teal-light:#e6f2f2;
+    --accent-blue:#2b6ca3;
+    --accent-pink:#b3336b;
+    --accent-green:#3a8f3a;
+    --bg:#f4f8f8;
+    --card:#ffffff;
+    --text:#1e2b2b;
+    --muted:#6b7d7d;
+    --correct:#2e8b57;
+    --wrong:#c0392b;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI", Roboto, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:60px;
+  }
+  header{
+    background:linear-gradient(135deg,var(--teal-dark),var(--teal));
+    color:#fff;
+    padding:22px 16px 16px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:20;
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+  }
+  header .num{
+    display:inline-block;
+    background:#fff;
+    color:var(--teal-dark);
+    font-weight:800;
+    border-radius:50%;
+    width:34px;height:34px;
+    line-height:34px;
+    margin-right:8px;
+  }
+  header h1{margin:6px 0 0; font-size:1.3rem;}
+  .tabs{
+    display:flex;
+    max-width:720px;
+    margin:14px auto 0;
+    background:rgba(255,255,255,.15);
+    border-radius:999px;
+    padding:4px;
+  }
+  .tab-btn{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:#fff;
+    padding:10px 6px;
+    border-radius:999px;
+    font-size:.95rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .tab-btn.active{background:#fff;color:var(--teal-dark);}
+  main{max-width:760px;margin:18px auto;padding:0 14px;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  body.tab-wortschatz .vn-toggle{display:block;}
+
+  .vn-toggle{
+    display:none;
+    position:fixed;
+    right:16px; bottom:16px;
+    background:var(--teal-dark);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:12px 18px;
+    font-weight:700;
+    box-shadow:0 4px 12px rgba(0,0,0,.25);
+    cursor:pointer;
+    z-index:30;
+  }
+  body.show-vn .vn{display:block;}
+  .vn{display:none;color:var(--accent-pink);font-size:.85rem;margin-top:3px;}
+
+  .section-title{
+    color:var(--teal-dark);
+    border-bottom:3px solid var(--teal);
+    padding-bottom:6px;
+    margin-top:34px;
+    font-size:1.15rem;
+  }
+  .word-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:12px;
+  }
+  .word-card{
+    background:var(--card);
+    border-left:5px solid var(--teal);
+    border-radius:10px;
+    padding:10px 14px;
+    box-shadow:0 1px 4px rgba(0,0,0,.06);
+    font-size:.98rem;
+  }
+  .art-der{color:var(--accent-blue);font-weight:700;}
+  .art-die{color:var(--accent-pink);font-weight:700;}
+  .art-das{color:var(--accent-green);font-weight:700;}
+  .word{font-weight:700;}
+  .plural{color:var(--muted);font-weight:400;}
+  .dede{
+    color:var(--text);
+    font-size:.88rem;
+    margin-top:4px;
+    line-height:1.5;
+    font-style:italic;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:18px;
+    margin:18px 0;
+    box-shadow:0 2px 8px rgba(0,0,0,.07);
+  }
+  .card h3{color:var(--teal-dark);margin-top:0;}
+  .tip{
+    background:var(--teal-light);
+    border-left:4px solid var(--teal);
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:.9rem;
+    color:var(--teal-dark);
+    margin:10px 0;
+  }
+  input[type="text"]{
+    border:2px solid #cfe0e0;
+    border-radius:8px;
+    padding:6px 10px;
+    font-size:.95rem;
+    font-family:inherit;
+    width:170px;
+    max-width:60vw;
+  }
+  input[type="text"]:focus{outline:none;border-color:var(--teal);}
+  input.correct{border-color:var(--correct);background:#eafaf0;}
+  input.wrong{border-color:var(--wrong);background:#fdecea;}
+  select{
+    border:2px solid #cfe0e0;
+    border-radius:8px;
+    padding:5px 8px;
+    font-family:inherit;
+    font-size:.9rem;
+  }
+  select.correct{border-color:var(--correct);background:#eafaf0;}
+  select.wrong{border-color:var(--wrong);background:#fdecea;}
+
+  .q{margin:12px 0;line-height:1.7;}
+  .q-num{
+    display:inline-block;
+    width:24px;height:24px;
+    background:var(--teal);
+    color:#fff;
+    border-radius:50%;
+    text-align:center;
+    line-height:24px;
+    font-size:.8rem;
+    margin-right:6px;
+  }
+  .check-btn, .reset-btn{
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:9px 18px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:10px;
+    margin-right:8px;
+  }
+  .reset-btn{background:#8a8a8a;}
+  .check-btn:hover{background:var(--teal-dark);}
+  .result-box{
+    margin-top:10px;
+    font-weight:700;
+    padding:8px 12px;
+    border-radius:8px;
+    display:none;
+  }
+  .result-box.show{display:block;}
+  .result-good{background:#eafaf0;color:var(--correct);}
+  .result-bad{background:#fdecea;color:var(--wrong);}
+
+  .mc-option{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin:3px 12px 3px 0;
+    padding:5px 10px;
+    border:2px solid #d5e4e4;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.92rem;
+  }
+  .mc-option input{margin:0;}
+  .mc-option.correct{border-color:var(--correct);background:#eafaf0;}
+  .mc-option.wrong{border-color:var(--wrong);background:#fdecea;}
+
+  .wordbank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    background:var(--teal-light);
+    padding:10px;
+    border-radius:10px;
+    margin:10px 0;
+  }
+  .wordbank span{
+    background:#fff;
+    border:1px solid var(--teal);
+    color:var(--teal-dark);
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:.88rem;
+  }
+
+  .dialog-line{margin:8px 0;}
+  .speaker{font-weight:700;color:var(--teal-dark);margin-right:4px;}
+
+  .match-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:6px 0;
+    flex-wrap:wrap;
+  }
+  .match-row .term{min-width:220px;}
+
+  .text-block{
+    background:var(--teal-light);
+    border-radius:10px;
+    padding:12px 14px;
+    margin:8px 0;
+    font-size:.92rem;
+    line-height:1.6;
+  }
+
+  .score-final{
+    text-align:center;
+    font-size:1.3rem;
+    font-weight:800;
+    color:var(--teal-dark);
+    margin:20px 0;
+  }
+  .footer-sign{
+    text-align:center;
+    color:var(--muted);
+    font-size:.85rem;
+    margin-top:40px;
+  }
+  .footer-sign span{color:var(--accent-pink);}
+
+  /* ---- Kreuzworträtsel-Engine CSS (nicht anfassen) ---- */
+  .word-row{margin:14px 0;}
+  .word-row .clue{font-size:.9rem;margin-bottom:6px;}
+  .letterrow{display:flex;flex-wrap:nowrap;}
+  .letterrow > *:first-child{margin-left:0 !important;}
+  .letter-spacer{
+    flex:0 0 30px;width:30px;height:30px;margin-left:-1.5px;box-sizing:border-box;
+  }
+  .rownum{
+    display:flex;align-items:center;justify-content:center;
+    width:20px;font-size:.82rem;font-weight:700;color:var(--teal);flex-shrink:0;
+  }
+  input.letter-box{
+    flex:0 0 30px !important;
+    width:30px !important;height:30px !important;
+    text-align:center;font-size:.95rem;font-weight:700;line-height:1;
+    border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;
+    padding:0 !important;
+    text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);
+    box-sizing:border-box;
+  }
+  input.letter-box:focus{outline:none;background:#eafaf7;position:relative;z-index:2;border-color:var(--teal) !important;}
+  input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--correct);}
+  input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--wrong);}
+  input.letter-box.marked{
+    border:2.5px solid #d97706 !important;background:#fff7ed;color:#9a3412;
+    position:relative;z-index:1;
+  }
+  .loes-wrap{
+    margin-top:18px;padding-top:14px;border-top:2px dashed var(--teal-light);
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  }
+  input.letter-box.loes-box{
+    border:1.5px solid var(--teal) !important;background:var(--teal-light);color:var(--teal-dark);
+  }
+  @media(max-width:400px){
+    .letter-spacer{flex:0 0 24px;width:24px;height:24px;}
+    input.letter-box{flex:0 0 24px !important;width:24px !important;height:24px !important;font-size:.8rem;}
+  }
+  /* ---- Ende Engine CSS ---- */
+</style>
+</head>
+<body>
+
+<header>
+  <div><span class="num">12</span><strong>Kapitel 12</strong></div>
+  <h1>Behörden und Institutionen</h1>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="wortschatz">📖 Wortschatz</button>
+    <button class="tab-btn" data-tab="uebungen">✍️ Übungen</button>
+    <button class="tab-btn" data-tab="test">⚡ Schnelltest</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ TAB 1: WORTSCHATZ ============ -->
+<section class="tab-panel active" id="wortschatz">
+
+  <h2 class="section-title">🏛️ Das politische System</h2>
+  <div class="word-grid" id="wg-politik"></div>
+
+  <h2 class="section-title">📋 In der Verwaltung</h2>
+  <div class="word-grid" id="wg-verwaltung"></div>
+
+  <h2 class="section-title">🏦 Bei der Bank</h2>
+  <div class="word-grid" id="wg-bank"></div>
+
+  <h2 class="section-title">🛡️ Versicherungen</h2>
+  <div class="word-grid" id="wg-versicherungen"></div>
+
+</section>
+
+<!-- ============ TAB 2: ÜBUNGEN ============ -->
+<section class="tab-panel" id="uebungen">
+
+  <div class="card">
+    <h3>1 Wiederholung — Institutionen in der Stadt: Lösen Sie das Rätsel</h3>
+    <p>Dorthin gehen Sie, ...</p>
+    <ol style="font-size:.92rem;line-height:1.7;padding-left:20px;">
+      <li>... um Bücher auszuleihen.</li>
+      <li>... wenn Sie studieren.</li>
+      <li>... wenn Sie eine Flugreise machen möchten.</li>
+      <li>... um Briefe und Pakete abzuschicken.</li>
+      <li>... wenn Sie krank sind oder jemanden besuchen möchten, der krank ist.</li>
+      <li>... wenn Sie Wasserball spielen möchten.</li>
+      <li>... wenn Sie Geld brauchen.</li>
+      <li>... wenn Sie Formulare brauchen.</li>
+      <li>... um Ihre kleinen Kinder abzuholen.</li>
+      <li>... wenn jemand Ihre Geldbörse weggenommen hat.</li>
+      <li>... um mit dem Zug zu fahren.</li>
+    </ol>
+
+    <div id="ex1-body"></div>
+    <div class="loes-wrap">
+      <span style="font-size:.9rem;"><b>🔑 Dorthin gehen Sie, wenn Sie eine Frage haben — zur:</b></span>
+      <div id="ex1-loes" class="letterrow"></div>
+    </div>
+
+    <button class="check-btn" onclick="checkEx('ex1-body')">Prüfen</button>
+    <button class="reset-btn" onclick="resetEx('ex1-body')">Zurücksetzen</button>
+    <div class="result" id="ex1-body-result"></div>
+    <div class="tip">💡 Anstelle von <em>Geldbörse</em> kann man auch <em>Portemonnaie</em>, <em>Geldbeutel</em> und <em>Brieftasche</em> sagen.</div>
+  </div>
+
+  <div class="card">
+    <h3>2 Welches Verb passt?</h3>
+    <div class="match-row"><span class="term">1. Geld auf ein Konto</span>
+      <select class="ex2-sel" data-correct="d"><option value="">--</option><option value="a">ausfüllen</option><option value="b">informieren</option><option value="c">eintragen</option><option value="d">überweisen</option><option value="e">ankreuzen</option></select>
+    </div>
+    <div class="match-row"><span class="term">2. Namen, Adresse und Geburtsdatum</span>
+      <select class="ex2-sel" data-correct="c"><option value="">--</option><option value="a">ausfüllen</option><option value="b">informieren</option><option value="c">eintragen</option><option value="d">überweisen</option><option value="e">ankreuzen</option></select>
+    </div>
+    <div class="match-row"><span class="term">3. die richtige Antwort</span>
+      <select class="ex2-sel" data-correct="e"><option value="">--</option><option value="a">ausfüllen</option><option value="b">informieren</option><option value="c">eintragen</option><option value="d">überweisen</option><option value="e">ankreuzen</option></select>
+    </div>
+    <div class="match-row"><span class="term">4. ein Formular</span>
+      <select class="ex2-sel" data-correct="a"><option value="">--</option><option value="a">ausfüllen</option><option value="b">informieren</option><option value="c">eintragen</option><option value="d">überweisen</option><option value="e">ankreuzen</option></select>
+    </div>
+    <div class="match-row"><span class="term">5. sich über ein Angebot</span>
+      <select class="ex2-sel" data-correct="b"><option value="">--</option><option value="a">ausfüllen</option><option value="b">informieren</option><option value="c">eintragen</option><option value="d">überweisen</option><option value="e">ankreuzen</option></select>
+    </div>
+    <button class="check-btn" onclick="checkSelectGroup('ex2-sel','ex2-result')">Prüfen</button>
+    <div class="result-box" id="ex2-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>3 Das politische System: Was ist das?</h3>
+    <div class="q"><span class="q-num">1</span>Chef der deutschen oder österreichischen Regierung: <input type="text" class="ex3-in" data-a="Bundeskanzler" data-alt="Bundeskanzler,der Bundeskanzler,Bundeskanzlerin"></div>
+    <div class="q"><span class="q-num">2</span>Höchster Politiker in Deutschland und Österreich: <input type="text" class="ex3-in" data-a="Bundespräsident" data-alt="Bundespräsident,der Bundespräsident,Bundespräsidentin"></div>
+    <div class="q"><span class="q-num">3</span>Parlament der Bundesrepublik Deutschland: <input type="text" class="ex3-in" data-a="Bundestag" data-alt="Bundestag,der Bundestag"></div>
+    <div class="q"><span class="q-num">4</span>Parlament der Schweiz: <input type="text" class="ex3-in" data-a="Nationalrat" data-alt="Nationalrat,der Nationalrat"></div>
+    <div class="q"><span class="q-num">5</span>Leiter der Verwaltung einer Gemeinde: <input type="text" class="ex3-in" data-a="Bürgermeister" data-alt="Bürgermeister,der Bürgermeister,Bürgermeisterin"></div>
+    <div class="q"><span class="q-num">6</span>Politische Gruppe, die von Bürgern gewählt werden kann: <input type="text" class="ex3-in" data-a="Partei" data-alt="Partei,die Partei"></div>
+    <div class="q"><span class="q-num">7</span>Veranstaltung, bei der Bürger abstimmen können: <input type="text" class="ex3-in" data-a="Wahl" data-alt="Wahl,die Wahl"></div>
+    <div class="q"><span class="q-num">8</span>Land wie die Bundesrepublik Deutschland, die Schweizerische Eidgenossenschaft oder die Republik Österreich: <input type="text" class="ex3-in" data-a="Staat" data-alt="Staat,der Staat"></div>
+    <button class="check-btn" onclick="checkInputGroup('ex3-in','ex3-result')">Prüfen</button>
+    <div class="result-box" id="ex3-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>4 Sortieren Sie die Wörter nach ihrer Größe</h3>
+    <p>Nummerieren Sie von 1 (am größten) bis 5 (am kleinsten). <em>Die Europäische Union</em> ist bereits als 1 markiert.</p>
+    <div class="match-row"><span class="term">1. die Europäische Union</span> <strong style="color:var(--teal-dark);">— 1 —</strong></div>
+    <div class="match-row"><span class="term">das Bundesland Schleswig-Holstein</span>
+      <select class="ex4-sel" data-correct="3"><option value="">--</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+    </div>
+    <div class="match-row"><span class="term">die Gemeinde Barlt</span>
+      <select class="ex4-sel" data-correct="5"><option value="">--</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+    </div>
+    <div class="match-row"><span class="term">der Staat Deutschland</span>
+      <select class="ex4-sel" data-correct="2"><option value="">--</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+    </div>
+    <div class="match-row"><span class="term">der Kreis Dithmarschen</span>
+      <select class="ex4-sel" data-correct="4"><option value="">--</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+    </div>
+    <button class="check-btn" onclick="checkSelectGroup('ex4-sel','ex4-result')">Prüfen</button>
+    <div class="result-box" id="ex4-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>5 Welches Adjektiv passt?</h3>
+    <div class="wordbank">
+      <span>konservativ</span><span>demokratisch</span><span>liberal</span><span>politisch</span><span>staatlich</span>
+    </div>
+    <div class="q"><span class="q-num">1</span>Die Partei ist nicht modern oder alternativ, sondern <input type="text" class="ex5-in" data-a="konservativ">.</div>
+    <div class="q"><span class="q-num">2</span>Die Partei setzt sich für eine freie Wirtschaft ein. Sie ist <input type="text" class="ex5-in" data-a="liberal">.</div>
+    <div class="q"><span class="q-num">3</span>Es gibt alle vier Jahre freie Wahlen. Das Land ist <input type="text" class="ex5-in" data-a="demokratisch">.</div>
+    <div class="q"><span class="q-num">4</span>Die meisten Schulen und Universitäten sind nicht privat, sondern <input type="text" class="ex5-in" data-a="staatlich">.</div>
+    <div class="q"><span class="q-num">5</span>Über bestimmte Themen sprechen wir im Kurs nicht. Sie sind zu <input type="text" class="ex5-in" data-a="politisch">.</div>
+    <button class="check-btn" onclick="checkInputGroup('ex5-in','ex5-result')">Prüfen</button>
+    <div class="result-box" id="ex5-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>6 In der Verwaltung: Was ist richtig?</h3>
+    <div class="q"><span class="q-num">1</span>Ich würde gern meinen Pass
+      <select class="ex6-sel" data-correct="verlängern"><option value="">--</option><option value="vergrößern">vergrößern</option><option value="verlängern">verlängern</option><option value="gelten lassen">gelten lassen</option></select>
+      . Dann brauchen Sie ein neues
+      <select class="ex6-sel" data-correct="Passfoto"><option value="">--</option><option value="Passfoto">Passfoto</option><option value="Zeugnis">Zeugnis</option><option value="Dokument">Dokument</option></select>.
+    </div>
+    <div class="q"><span class="q-num">2</span>Ich möchte Unterstützung für meine Mietkosten
+      <select class="ex6-sel" data-correct="beantragen"><option value="">--</option><option value="beantragen">beantragen</option><option value="abstimmen">abstimmen</option><option value="ausstellen">ausstellen</option></select>
+      . Wenn Sie Arbeitslosengeld bekommen, haben Sie leider keinen
+      <select class="ex6-sel" data-correct="Anspruch"><option value="">--</option><option value="Vertrag">Vertrag</option><option value="Antrag">Antrag</option><option value="Anspruch">Anspruch</option></select> auf Wohngeld.
+    </div>
+    <div class="q"><span class="q-num">3</span>Ich bin gerade hergezogen und möchte meinen neuen Wohnsitz
+      <select class="ex6-sel" data-correct="anmelden"><option value="">--</option><option value="verlängern">verlängern</option><option value="unterschreiben">unterschreiben</option><option value="anmelden">anmelden</option></select>
+      . Dafür bin ich nicht
+      <select class="ex6-sel" data-correct="zuständig"><option value="">--</option><option value="bereit">bereit</option><option value="gültig">gültig</option><option value="zuständig">zuständig</option></select>, das macht das Einwohnermeldeamt.
+    </div>
+    <div class="q"><span class="q-num">4</span>Die Ehe schließt ein
+      <select class="ex6-sel" data-correct="Beamter"><option value="">--</option><option value="Angestellter">Angestellter</option><option value="Beamter">Beamter</option><option value="Kollege">Kollege</option></select>
+      auf dem Standesamt. Welche
+      <select class="ex6-sel" data-correct="Unterlagen"><option value="">--</option><option value="Unterlagen">Unterlagen</option><option value="Pässe">Pässe</option><option value="Behörden">Behörden</option></select> brauchen wir dafür?
+    </div>
+    <button class="check-btn" onclick="checkSelectGroup('ex6-sel','ex6-result')">Prüfen</button>
+    <div class="result-box" id="ex6-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>7 Welches Wort passt nicht?</h3>
+    <div class="q"><span class="q-num">1</span>Verb: <strong>ausstellen</strong> —
+      <label class="mc-option"><input type="radio" name="ex7q1" value="a"> einen Pass</label>
+      <label class="mc-option"><input type="radio" name="ex7q1" value="b"> eine Bestätigung</label>
+      <label class="mc-option"><input type="radio" name="ex7q1" value="c"> einen Anspruch</label>
+    </div>
+    <div class="q"><span class="q-num">2</span>Verb: <strong>beantragen</strong> —
+      <label class="mc-option"><input type="radio" name="ex7q2" value="a"> einen Antrag</label>
+      <label class="mc-option"><input type="radio" name="ex7q2" value="b"> Arbeitslosengeld</label>
+      <label class="mc-option"><input type="radio" name="ex7q2" value="c"> ein Visum</label>
+    </div>
+    <div class="q"><span class="q-num">3</span>Verb: <strong>gelten</strong> —
+      <label class="mc-option"><input type="radio" name="ex7q3" value="a"> international</label>
+      <label class="mc-option"><input type="radio" name="ex7q3" value="b"> für eine bestimmte Frist</label>
+      <label class="mc-option"><input type="radio" name="ex7q3" value="c"> staatlich</label>
+    </div>
+    <div class="q"><span class="q-num">4</span>Verb: <strong>angeben</strong> —
+      <label class="mc-option"><input type="radio" name="ex7q4" value="a"> eine Adresse</label>
+      <label class="mc-option"><input type="radio" name="ex7q4" value="b"> die Zahl der Kinder</label>
+      <label class="mc-option"><input type="radio" name="ex7q4" value="c"> einen Pass</label>
+    </div>
+    <div class="q"><span class="q-num">5</span>Verb: <strong>stellen</strong> —
+      <label class="mc-option"><input type="radio" name="ex7q5" value="a"> Unterstützung</label>
+      <label class="mc-option"><input type="radio" name="ex7q5" value="b"> einen Antrag</label>
+      <label class="mc-option"><input type="radio" name="ex7q5" value="c"> eine Frage</label>
+    </div>
+    <div class="q"><span class="q-num">6</span>Verb: <strong>erhalten</strong> —
+      <label class="mc-option"><input type="radio" name="ex7q6" value="a"> einen Bescheid</label>
+      <label class="mc-option"><input type="radio" name="ex7q6" value="b"> eine Bestätigung</label>
+      <label class="mc-option"><input type="radio" name="ex7q6" value="c"> einen Wohnsitz</label>
+    </div>
+    <div class="tip">💡 Die richtige Verbindung aus Nomen und Verb ist sehr wichtig. Wählen Sie das Wort, das <strong>nicht</strong> zum Verb passt.</div>
+    <button class="check-btn" onclick="checkEx7()">Prüfen</button>
+    <div class="result-box" id="ex7-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>8 Aus einem Steuerbescheid: Ergänzen Sie die Wörter</h3>
+    <div class="wordbank">
+      <span>Einkommen</span><span>Kontonummer</span><span>Bescheid</span><span>Steuererklärung</span><span>Ausgaben</span>
+    </div>
+    <div class="text-block">
+      Re: Einkommensteuererklärung<br><br>
+      Sehr geehrte Frau Schmidtbauer,<br><br>
+      bei Ihrer (1)<input type="text" class="ex8-in" data-a="Steuererklärung"> vom 20.2. haben Sie Ihr (2)<input type="text" class="ex8-in" data-a="Einkommen"> und Ihre (3)<input type="text" class="ex8-in" data-a="Ausgaben"> angegeben, aber keine Belege geschickt. Ohne die Belege kann kein (4)<input type="text" class="ex8-in" data-a="Bescheid"> ausgestellt werden. Bitte senden Sie uns außerdem Ihre aktuellen Bankdaten mit (5)<input type="text" class="ex8-in" data-a="Kontonummer">, Bankleitzahl und IBAN.<br><br>
+      Mit freundlichen Grüßen<br>Stanislav Nickel<br>Finanzamt Altdorf
+    </div>
+    <button class="check-btn" onclick="checkInputGroup('ex8-in','ex8-result')">Prüfen</button>
+    <div class="result-box" id="ex8-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>9 Bei der Bank: Was passt zusammen?</h3>
+    <div class="match-row"><span class="term">1. einen bestimmten Betrag auf ein Konto</span>
+      <select class="ex9-sel" data-correct="e"><option value="">--</option><option value="a">abheben</option><option value="b">aufnehmen</option><option value="c">eröffnen</option><option value="d">umtauschen</option><option value="e">einzahlen</option></select>
+    </div>
+    <div class="match-row"><span class="term">2. ein neues Konto</span>
+      <select class="ex9-sel" data-correct="c"><option value="">--</option><option value="a">abheben</option><option value="b">aufnehmen</option><option value="c">eröffnen</option><option value="d">umtauschen</option><option value="e">einzahlen</option></select>
+    </div>
+    <div class="match-row"><span class="term">3. ausländisches Geld in Euro</span>
+      <select class="ex9-sel" data-correct="d"><option value="">--</option><option value="a">abheben</option><option value="b">aufnehmen</option><option value="c">eröffnen</option><option value="d">umtauschen</option><option value="e">einzahlen</option></select>
+    </div>
+    <div class="match-row"><span class="term">4. mit der EC-Karte Geld vom Automaten</span>
+      <select class="ex9-sel" data-correct="a"><option value="">--</option><option value="a">abheben</option><option value="b">aufnehmen</option><option value="c">eröffnen</option><option value="d">umtauschen</option><option value="e">einzahlen</option></select>
+    </div>
+    <div class="match-row"><span class="term">5. einen Kredit bei der Bank</span>
+      <select class="ex9-sel" data-correct="b"><option value="">--</option><option value="a">abheben</option><option value="b">aufnehmen</option><option value="c">eröffnen</option><option value="d">umtauschen</option><option value="e">einzahlen</option></select>
+    </div>
+    <button class="check-btn" onclick="checkSelectGroup('ex9-sel','ex9-result')">Prüfen</button>
+    <div class="result-box" id="ex9-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>10 Dialoge bei der Bank: Ergänzen Sie die Wörter</h3>
+    <div class="wordbank">
+      <span>Scheine</span><span>IBAN</span><span>EC-Karte</span><span>Ausweis</span><span>abheben</span><span>Quittung</span><span>Antrag</span><span>Zählen</span><span>einzahlen</span><span>Summe</span><span>Geldautomaten</span>
+    </div>
+    <div class="dialog-line"><span class="speaker">●</span>Guten Tag, ich würde gern ein Konto bei Ihnen eröffnen.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Nehmen Sie Platz. Sie müssten diesen (1)<input type="text" class="ex10-in" data-a="Antrag"> hier ausfüllen, und ich bräuchte Ihren (2)<input type="text" class="ex10-in" data-a="Ausweis">. Darf ich fragen, ob Sie neben der (3)<input type="text" class="ex10-in" data-a="EC-Karte" data-alt="EC-Karte,ECKarte,EC Karte"> auch eine Kreditkarte beantragen möchten?</div>
+    <div class="dialog-line"><span class="speaker">●</span>Können Sie mir sagen, ob ich mit meiner EC-Karte auch Geld auf ein Konto (4)<input type="text" class="ex10-in" data-a="einzahlen"> kann?</div>
+    <div class="dialog-line"><span class="speaker">○</span>Am Schalter geht das, aber am (5)<input type="text" class="ex10-in" data-a="Geldautomaten"> ist das leider nicht möglich.</div>
+    <div class="dialog-line"><span class="speaker">●</span>Dann würde ich gern 300 Euro einzahlen. Die (6)<input type="text" class="ex10-in" data-a="IBAN"> ist DE02 9999 8888 1234 2345 00.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Ja, gern. Einen Moment. Hier bitte, das ist Ihre (7)<input type="text" class="ex10-in" data-a="Quittung">. Dort steht die (8)<input type="text" class="ex10-in" data-a="Summe">. Und ich bräuchte noch eine Unterschrift von Ihnen.</div>
+    <div class="dialog-line"><span class="speaker">●</span>Guten Tag. Ich würde gerne 150 Euro von meinem Konto (9)<input type="text" class="ex10-in" data-a="abheben">, aber ich habe meine EC-Karte verloren.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Wenn Sie Ihren Ausweis dabei haben, ist das kein Problem. Möchten Sie große oder kleine (10)<input type="text" class="ex10-in" data-a="Scheine">?</div>
+    <div class="dialog-line"><span class="speaker">●</span>Kleine bitte, am besten zehn und 20 Euro.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Hier bitte. (11)<input type="text" class="ex10-in" data-a="Zählen"> Sie das Geld gerne noch einmal. Vier Augen sehen mehr als zwei.</div>
+    <div class="tip">💡 Das Wort <em>Automat</em> gehört zur n-Deklination, deshalb hat es auch im Singular im Akkusativ, Dativ und Genitiv die Endung <em>-en</em>.</div>
+    <button class="check-btn" onclick="checkInputGroup('ex10-in','ex10-result')">Prüfen</button>
+    <div class="result-box" id="ex10-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>11 Versicherungen: Welches Wort passt nicht?</h3>
+    <div class="q"><span class="q-num">1</span>Verb: <strong>abschließen</strong> —
+      <label class="mc-option"><input type="radio" name="ex11q1" value="a"> eine Versicherung</label>
+      <label class="mc-option"><input type="radio" name="ex11q1" value="b"> einen Betrag</label>
+      <label class="mc-option"><input type="radio" name="ex11q1" value="c"> einen Vertrag</label>
+    </div>
+    <div class="q"><span class="q-num">2</span>Verb: <strong>bezahlen</strong> —
+      <label class="mc-option"><input type="radio" name="ex11q2" value="a"> eine Versichertenkarte</label>
+      <label class="mc-option"><input type="radio" name="ex11q2" value="b"> einen Beitrag</label>
+      <label class="mc-option"><input type="radio" name="ex11q2" value="c"> eine Rechnung</label>
+    </div>
+    <div class="q"><span class="q-num">3</span>Verb: <strong>melden</strong> —
+      <label class="mc-option"><input type="radio" name="ex11q3" value="a"> einen Einbruch</label>
+      <label class="mc-option"><input type="radio" name="ex11q3" value="b"> einen Unfall</label>
+      <label class="mc-option"><input type="radio" name="ex11q3" value="c"> eine Versicherung</label>
+    </div>
+    <div class="q"><span class="q-num">4</span>Verb: <strong>erhalten</strong> —
+      <label class="mc-option"><input type="radio" name="ex11q4" value="a"> eine Aufforderung</label>
+      <label class="mc-option"><input type="radio" name="ex11q4" value="b"> einen Schaden</label>
+      <label class="mc-option"><input type="radio" name="ex11q4" value="c"> eine Mahnung</label>
+    </div>
+    <button class="check-btn" onclick="checkEx11()">Prüfen</button>
+    <div class="result-box" id="ex11-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>12 Ergänzen Sie die Wörter aus dem Kasten</h3>
+    <div class="wordbank">
+      <span>melden</span><span>Mahnung</span><span>versichern</span><span>Schaden</span><span>angeben</span><span>erkundigen</span><span>verursacht</span><span>fällig</span><span>Antrag</span><span>abschließen</span><span>monatlich</span><span>Beiträge</span>
+    </div>
+    <div class="dialog-line"><span class="speaker">●</span>Guten Tag, ich würde gern meinen Hund (1)<input type="text" class="ex12-in" data-a="versichern"> und wollte mich bei Ihnen nach Ihren Bedingungen (2)<input type="text" class="ex12-in" data-a="erkundigen">.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Ja, gerne. Sehen Sie hier, das wäre die Höhe der jährlichen (3)<input type="text" class="ex12-in" data-a="Beiträge">. Sie können sie auch (4)<input type="text" class="ex12-in" data-a="monatlich"> zahlen, wie Sie möchten.</div>
+    <div class="dialog-line"><span class="speaker">●</span>Und wogegen bin ich genau versichert?</div>
+    <div class="dialog-line"><span class="speaker">○</span>Wenn Ihr Hund einen Unfall (5)<input type="text" class="ex12-in" data-a="verursacht"> oder etwas kaputtmacht, zahlt die Versicherung den (6)<input type="text" class="ex12-in" data-a="Schaden">. Sie müssten das nur der Versicherung (7)<input type="text" class="ex12-in" data-a="melden">.</div>
+    <div class="dialog-line"><span class="speaker">●</span>Dann würde ich die Versicherung gern bei Ihnen (8)<input type="text" class="ex12-in" data-a="abschließen">.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Natürlich, sehr gerne. Füllen Sie bitte diesen (9)<input type="text" class="ex12-in" data-a="Antrag"> aus. Sie müssen auch die Größe und das Gewicht des Hundes (10)<input type="text" class="ex12-in" data-a="angeben">.</div>
+    <div class="dialog-line"><span class="speaker">●</span>Hier bitte.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Vielen Dank. Wenn der Beitrag (11)<input type="text" class="ex12-in" data-a="fällig"> ist, erhalten Sie von uns eine Aufforderung, den Betrag zu überweisen. Sollten Sie ihn nicht bezahlen, bekommen Sie zwei Wochen später eine (12)<input type="text" class="ex12-in" data-a="Mahnung">.</div>
+    <div class="dialog-line"><span class="speaker">●</span>Wenn Sie eine Aufforderung schicken, werde ich es bestimmt nicht vergessen. Vielen Dank.</div>
+    <div class="dialog-line"><span class="speaker">○</span>Auf Wiedersehen.</div>
+    <div class="tip">💡 In manchen Bundesländern sind Hundehalter verpflichtet, eine Haftpflichtversicherung für ihren Hund abzuschließen. Damit ist der Halter versichert, wenn der Hund etwas kaputtmacht oder einen Unfall verursacht.</div>
+    <button class="check-btn" onclick="checkInputGroup('ex12-in','ex12-result')">Prüfen</button>
+    <div class="result-box" id="ex12-result"></div>
+  </div>
+
+</section>
+
+<!-- ============ TAB 3: SCHNELLTEST ============ -->
+<section class="tab-panel" id="test">
+  <div class="card">
+    <h3>⚡ Schnelltest — 15 Fragen</h3>
+    <p>Testen Sie Ihr Wissen zu Kapitel 12!</p>
+    <div id="test-container"></div>
+    <button class="check-btn" onclick="checkTest()">Test auswerten</button>
+    <button class="reset-btn" onclick="resetTest()">Neu starten</button>
+    <div class="score-final" id="test-score"></div>
+  </div>
+</section>
+
+</main>
+
+<button class="vn-toggle" onclick="toggleVN()">🇻🇳 Tiếng Việt</button>
+
+<div class="footer-sign">Made with ♥ by <span>Bảo Quang</span> · Deutsch-Lernen B1/B2</div>
+
+<script>
+/* ============ VOCAB DATA ============ */
+/* [Artikel, Wort, Deutsch-Deutsch Definition, Vietnamesische Übersetzung] */
+const vocabPolitik = [
+["die","Behörde, -n","eine offizielle staatliche Institution, die bestimmte Aufgaben erledigt","cơ quan nhà nước"],
+["der","Bundeskanzler, -; die Bundeskanzlerin, -nen","der Chef bzw. die Chefin der deutschen oder österreichischen Regierung","thủ tướng liên bang"],
+["das","Bundesland, -¨er","einer der Teilstaaten, aus denen Deutschland oder Österreich besteht","tiểu bang liên bang"],
+["der","Bundespräsident, -en; die Bundespräsidentin, -nen","der/die höchste Politiker/in in Deutschland und Österreich","tổng thống liên bang"],
+["die","Bundesrepublik Deutschland (nur Sg.)","der offizielle Name des Staates Deutschland","Cộng hòa Liên bang Đức"],
+["der","Bundestag, -e","das Parlament der Bundesrepublik Deutschland","Quốc hội liên bang (Đức)"],
+["der","Bürger, -; die Bürgerin, -nen","eine Person mit den vollen Rechten und Pflichten eines Staates","công dân"],
+["der","Bürgermeister, -; die Bürgermeisterin, -nen","der Leiter bzw. die Leiterin der Verwaltung einer Gemeinde oder Stadt","thị trưởng"],
+["die","Europäische Union (EU) (nur Sg.)","ein Zusammenschluss europäischer Staaten","Liên minh châu Âu (EU)"],
+["die","Gemeinde, -n","die kleinste politische und administrative Einheit","xã, khu tự quản"],
+["die","Institution, -en","eine feste, offizielle Einrichtung, z. B. eine Behörde","cơ quan, tổ chức"],
+["der","Kreis, -e","eine Verwaltungseinheit zwischen Gemeinde und Bundesland","huyện, quận"],
+["der","Nationalrat (nur Sg.) (Schweiz)","das Parlament der Schweiz","Quốc hội (Thụy Sĩ)"],
+["das","Parlament, -e","die gewählte Volksvertretung eines Staates","nghị viện, quốc hội"],
+["die","Partei, -en","eine politische Gruppe, die von Bürgern gewählt werden kann","đảng phái chính trị"],
+["der","Politiker, -; die Politikerin, -nen","eine Person, die beruflich Politik macht","chính trị gia"],
+["die","Regierung, -en","die Gruppe, die einen Staat offiziell leitet","chính phủ"],
+["die","Republik Österreich (nur Sg.)","der offizielle Name des Staates Österreich","Cộng hòa Áo"],
+["die","Schweizerische Eidgenossenschaft (nur Sg.)","der offizielle Name des Staates Schweiz","Liên bang Thụy Sĩ"],
+["der","Staat, -en","ein politisch organisiertes Land mit eigener Regierung","quốc gia, nhà nước"],
+["die","Verwaltung, -en","die Organisation, die offizielle Aufgaben eines Staates oder einer Gemeinde erledigt","bộ máy hành chính"],
+["die","Wahl, -en","eine Veranstaltung, bei der Bürger abstimmen können","cuộc bầu cử"],
+["","ab|stimmen","bei einer Wahl seine Stimme abgeben","bỏ phiếu"],
+["","wählen (+A)","bei einer Wahl seine Stimme für jemanden abgeben","bầu chọn"],
+["","demokratisch","nach den Prinzipien der Demokratie","(mang tính) dân chủ"],
+["","konservativ","an traditionellen Werten festhaltend","bảo thủ"],
+["","liberal","für persönliche und wirtschaftliche Freiheit","tự do (khuynh hướng chính trị)"],
+["","politisch","die Politik betreffend","thuộc về chính trị"],
+["","staatlich","vom Staat organisiert oder finanziert","thuộc nhà nước, công lập"],
+];
+
+const vocabVerwaltung = [
+["der","Antrag, -¨e","ein offizielles Dokument, mit dem man um etwas bittet","đơn xin, tờ khai"],
+["das","Arbeitslosengeld (nur Sg.)","Geld, das man vom Staat bekommt, wenn man keine Arbeit hat","trợ cấp thất nghiệp"],
+["die","Ausgabe, -n","Geld, das man ausgibt","khoản chi tiêu"],
+["die","Bankleitzahl, -en","eine Nummer, die eine Bank identifiziert","mã số ngân hàng"],
+["der","Beamte, -n; die Beamtin, -nen","eine Person, die beim Staat angestellt ist","công chức, viên chức"],
+["der","Beleg, -e","ein Dokument, das etwas beweist, z. B. eine Rechnung","hóa đơn, chứng từ"],
+["der","Bescheid, -e","eine offizielle Mitteilung einer Behörde","thông báo chính thức"],
+["die","Bestätigung, -en","ein Dokument, das etwas offiziell bestätigt","giấy xác nhận"],
+["der","Betrag, -¨e","eine bestimmte Summe Geld","số tiền"],
+["das","Einkommen, -","das Geld, das man regelmäßig verdient","thu nhập"],
+["das","Einwohnermeldeamt, -¨er","die Behörde, bei der man seinen Wohnsitz anmeldet","cơ quan đăng ký cư trú"],
+["die","Kontonummer, -n","die Nummer eines Bankkontos","số tài khoản"],
+["das","Standesamt, -¨er","die Behörde, bei der man heiratet oder Geburten registriert","cơ quan hộ tịch"],
+["das","Wohngeld (nur Sg.)","staatliche finanzielle Unterstützung für die Miete","trợ cấp nhà ở"],
+["der","Wohnsitz, -e","der offizielle Wohnort einer Person","nơi cư trú"],
+["","an|geben (+A)","Informationen offiziell mitteilen","khai báo"],
+["","aus|stellen (+A)","ein offizielles Dokument ausfertigen","cấp (giấy tờ)"],
+["","gelten","gültig sein","có hiệu lực"],
+["","eine Frage/einen Antrag stellen","eine Frage stellen = fragen; einen Antrag stellen = etwas offiziell beantragen","đặt câu hỏi / nộp đơn"],
+];
+
+const vocabBank = [
+["die","EC-Karte, -n","eine Bankkarte, mit der man bargeldlos bezahlen oder Geld abheben kann","thẻ ATM/thẻ ghi nợ"],
+["der","Geldautomat, -en","ein Automat, an dem man Geld abheben kann","máy rút tiền tự động"],
+["die","Quittung, -en","ein Beleg, der eine Zahlung bestätigt","biên lai"],
+["der","(Geld-)Schein, -e","ein Geldschein aus Papier","tờ tiền giấy"],
+["die","Summe, -n","der Gesamtbetrag von etwas","tổng số tiền"],
+["","ab|heben (+A)","Geld von einem Konto nehmen","rút tiền"],
+["","auf|nehmen (+A)","hier: einen Kredit bei einer Bank bekommen","vay (tiền)"],
+["","ein|zahlen (+A)","Geld auf ein Konto bringen","nộp/gửi tiền vào tài khoản"],
+["","eröffnen (+A)","ein neues Konto beginnen","mở (tài khoản)"],
+["","um|tauschen (+A)","eine Währung gegen eine andere tauschen","đổi (tiền tệ)"],
+["","zählen (+A)","die Anzahl von etwas feststellen","đếm"],
+];
+
+const vocabVersicherungen = [
+["die","Aufforderung, -en","eine offizielle Bitte oder Anweisung, etwas zu tun","yêu cầu chính thức"],
+["der","Beitrag, -¨e","der regelmäßige Betrag, den man für eine Versicherung zahlt","phí bảo hiểm"],
+["der","Einbruch, -¨e","das illegale Eindringen in ein Haus, um zu stehlen","vụ đột nhập trộm cắp"],
+["die","Mahnung, -en","eine Erinnerung, eine Zahlung noch zu leisten","thư nhắc nợ"],
+["der","Schaden, -¨","ein finanzieller Verlust oder eine Beschädigung","thiệt hại"],
+["die","Versichertenkarte, -n","eine Karte, die zeigt, dass man versichert ist","thẻ bảo hiểm"],
+["die","Versicherung, -en","ein Vertrag, der gegen finanzielle Risiken schützt","bảo hiểm"],
+["","ab|schließen (+A)","einen Vertrag offiziell unterschreiben, z. B. eine Versicherung","ký kết (hợp đồng)"],
+["","(sich = A) erkundigen (nach +D)","nach Informationen fragen","hỏi thăm, tìm hiểu thông tin"],
+["","melden (+A)","offiziell mitteilen, z. B. einen Schaden","báo cáo, thông báo"],
+["","versichern (+A)","gegen ein Risiko absichern","bảo hiểm cho"],
+["","fällig","so, dass eine Zahlung jetzt geleistet werden muss","đến hạn (thanh toán)"],
+];
+
+function artClass(a){
+  if(a==="der")return "art-der";
+  if(a==="die")return "art-die";
+  if(a==="das")return "art-das";
+  return "";
+}
+
+function renderVocab(list, containerId){
+  const el = document.getElementById(containerId);
+  el.innerHTML = list.map(([art,word,de,vn])=>{
+    const artHtml = art ? `<span class="${artClass(art)}">${art}</span> ` : "";
+    return `<div class="word-card">
+      <div>${artHtml}<span class="word">${word}</span></div>
+      <div class="dede">${de}</div>
+      <div class="vn">🇻🇳 ${vn}</div>
+    </div>`;
+  }).join("");
+}
+renderVocab(vocabPolitik,"wg-politik");
+renderVocab(vocabVerwaltung,"wg-verwaltung");
+renderVocab(vocabBank,"wg-bank");
+renderVocab(vocabVersicherungen,"wg-versicherungen");
+
+/* ============ TABS ============ */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+    document.body.classList.toggle("tab-wortschatz", btn.dataset.tab==="wortschatz");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+document.body.classList.add("tab-wortschatz");
+
+function toggleVN(){
+  document.body.classList.toggle("show-vn");
+}
+
+/* ============ HELPERS ============ */
+function norm(s){
+  return (s||"").trim().toLowerCase().replace(/ß/g,"ss");
+}
+function checkAnswer(val, correct, alt){
+  const v = norm(val);
+  if(v===norm(correct)) return true;
+  if(v.includes(norm(correct))) return true;
+  if(alt){
+    const alts = alt.split(",").map(norm);
+    if(alts.some(a=>v===a || v.includes(a))) return true;
+  }
+  return false;
+}
+
+function checkInputGroup(cls, resultId, keywordMode){
+  const inputs = document.querySelectorAll("."+cls);
+  let correctCount=0, total=0;
+  inputs.forEach(inp=>{
+    if(!inp.dataset.a) return;
+    total++;
+    const ok = checkAnswer(inp.value, inp.dataset.a, inp.dataset.alt);
+    inp.classList.remove("correct","wrong");
+    inp.classList.add(ok?"correct":"wrong");
+    if(ok) correctCount++;
+  });
+  showResult(resultId, correctCount, total);
+}
+
+function resetGroup(cls){
+  document.querySelectorAll("."+cls).forEach(inp=>{
+    inp.value="";
+    inp.classList.remove("correct","wrong");
+  });
+}
+
+function checkSelectGroup(cls, resultId){
+  const sels = document.querySelectorAll("."+cls);
+  let correctCount=0, total=sels.length;
+  sels.forEach(sel=>{
+    const ok = sel.value === sel.dataset.correct;
+    sel.classList.remove("correct","wrong");
+    sel.classList.add(ok?"correct":"wrong");
+    if(ok) correctCount++;
+  });
+  showResult(resultId, correctCount, total);
+}
+
+function showResult(resultId, correct, total){
+  const box = document.getElementById(resultId);
+  box.classList.add("show");
+  box.classList.remove("result-good","result-bad");
+  box.classList.add(correct===total?"result-good":"result-bad");
+  box.textContent = `${correct} / ${total} richtig`;
+}
+
+/* Ex7 & Ex11: Welches Wort passt nicht (radio odd-one-out) */
+const ex7Answers = {ex7q1:"c", ex7q2:"a", ex7q3:"c", ex7q4:"c", ex7q5:"a", ex7q6:"c"};
+function checkEx7(){
+  let correctCount=0, total=0;
+  Object.keys(ex7Answers).forEach(name=>{
+    total++;
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp=>{
+      inp.closest(".mc-option").classList.remove("correct","wrong");
+    });
+    if(checked){
+      const ok = checked.value === ex7Answers[name];
+      checked.closest(".mc-option").classList.add(ok?"correct":"wrong");
+      if(ok) correctCount++;
+    }
+  });
+  showResult("ex7-result", correctCount, total);
+}
+
+const ex11Answers = {ex11q1:"b", ex11q2:"a", ex11q3:"c", ex11q4:"b"};
+function checkEx11(){
+  let correctCount=0, total=0;
+  Object.keys(ex11Answers).forEach(name=>{
+    total++;
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp=>{
+      inp.closest(".mc-option").classList.remove("correct","wrong");
+    });
+    if(checked){
+      const ok = checked.value === ex11Answers[name];
+      checked.closest(".mc-option").classList.add(ok?"correct":"wrong");
+      if(ok) correctCount++;
+    }
+  });
+  showResult("ex11-result", correctCount, total);
+}
+
+/* ============ SCHNELLTEST ============ */
+const testQuestions = [
+  {q:"Der Chef der deutschen Regierung heißt der/die ___.", a:"Bundeskanzler", type:"input", alt:"Bundeskanzlerin"},
+  {q:"Das Parlament der Bundesrepublik Deutschland heißt:", a:"Bundestag", type:"input"},
+  {q:"Wenn man einen neuen Wohnsitz hat, muss man ihn beim Einwohnermeldeamt ___.", a:"anmelden", type:"input"},
+  {q:"Ein Dokument, das eine Zahlung bestätigt, heißt:", a:"Quittung", type:"input"},
+  {q:"Geld von einem Konto nehmen nennt man:", a:"abheben", type:"input"},
+  {q:"Ein neues Konto bei der Bank beginnen heißt: ein Konto ___.", a:"eröffnen", type:"input"},
+  {q:"Der regelmäßige Betrag, den man für eine Versicherung zahlt, heißt:", a:"Beitrag", type:"input"},
+  {q:"Eine Erinnerung, eine Zahlung zu leisten, heißt:", a:"Mahnung", type:"input"},
+  {q:"Geld, das man vom Staat bekommt, wenn man keine Arbeit hat, heißt:", a:"Arbeitslosengeld", type:"input"},
+  {q:"Die Heirat findet auf dem ___ statt.", a:"Standesamt", type:"input"},
+  {q:"Eine politische Gruppe, die man wählen kann, heißt:", a:"Partei", type:"input"},
+  {q:"Wenn eine Zahlung jetzt geleistet werden muss, ist sie ___.", a:"fällig", type:"input"},
+  {q:"Die kleinste politische Einheit in Deutschland ist die:", a:"Gemeinde", type:"input"},
+  {q:"Eine Karte, mit der man bargeldlos bezahlen kann, heißt:", a:"EC-Karte", type:"input"},
+  {q:"Das Gegenteil von 'privat' bei Schulen ist:", a:"staatlich", type:"input"},
+];
+
+function renderTest(){
+  const container = document.getElementById("test-container");
+  container.innerHTML = testQuestions.map((item,i)=>{
+    return `<div class="q"><span class="q-num">${i+1}</span>${item.q}
+      <input type="text" class="test-in" data-idx="${i}"></div>`;
+  }).join("");
+}
+renderTest();
+
+function checkTest(){
+  let correctCount=0;
+  document.querySelectorAll(".test-in").forEach(inp=>{
+    const idx = inp.dataset.idx;
+    const item = testQuestions[idx];
+    const ok = checkAnswer(inp.value, item.a, item.alt);
+    inp.classList.remove("correct","wrong");
+    inp.classList.add(ok?"correct":"wrong");
+    if(ok) correctCount++;
+  });
+  const total = testQuestions.length;
+  const scoreEl = document.getElementById("test-score");
+  let emoji = "💪";
+  if(correctCount===total) emoji="🏆";
+  else if(correctCount>=total*0.7) emoji="👍";
+  else if(correctCount<total*0.4) emoji="📚";
+  scoreEl.textContent = `${emoji} Ergebnis: ${correctCount} / ${total}`;
+}
+
+function resetTest(){
+  document.querySelectorAll(".test-in").forEach(inp=>{
+    inp.value="";
+    inp.classList.remove("correct","wrong");
+  });
+  document.getElementById("test-score").textContent="";
+}
+
+/* ================================================================
+   RAETSEL-ENGINE (wiederverwendbar für jedes Treppen-Kreuzworträtsel)
+   ================================================================ */
+function renderCrossword({bodyId, loesId, words, loesung}){
+  const body = document.getElementById(bodyId);
+  if(!body) return;
+
+  const targetCol = Math.max(...words.map(w => w.markPos - 1));
+
+  words.forEach((w,wi)=>{
+    const row = document.createElement('div');
+    row.className='word-row';
+    const markIndex = w.markPos - 1;
+    const offset = targetCol - markIndex;
+
+    let cells = '';
+    for(let s=0; s<offset; s++){
+      cells += `<span class="letter-spacer"></span>`;
+    }
+    for(let i=0;i<w.answer.length;i++){
+      const isMarked = (i === markIndex);
+      cells += `<input type="text" maxlength="1"
+        class="letter-box blank${isMarked?' marked':''}"
+        data-ans="${w.answer[i]}"
+        data-word="${wi}" data-pos="${i}"
+        ${isMarked?`data-los="${wi}"`:''}>`;
+    }
+    row.innerHTML = `<div class="letterrow"><span class="rownum">${wi+1}</span>${cells}</div>`;
+    body.appendChild(row);
+  });
+
+  const loesBox = document.getElementById(loesId);
+  if(loesBox){
+    let loesHtml = '';
+    for(let k=0;k<loesung.length;k++){
+      loesHtml += `<input type="text" maxlength="1" readonly
+        class="letter-box blank loesung loes-box"
+        data-ans="${loesung[k]}" id="${bodyId}-los-${k}">`;
+    }
+    loesBox.innerHTML = loesHtml;
+  }
+
+  body.querySelectorAll('input.letter-box').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      inp.value = inp.value.toUpperCase().slice(-1);
+      inp.classList.remove('correct','wrong');
+      if(inp.dataset.los !== undefined){
+        const target = document.getElementById(bodyId+'-los-'+inp.dataset.los.split('-').pop());
+        if(target){ target.value = inp.value; target.classList.remove('correct','wrong'); }
+      }
+      if(inp.value){
+        const row = inp.closest('.letterrow');
+        const all = Array.from(row.querySelectorAll('input.letter-box'));
+        const idx = all.indexOf(inp);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', (e)=>{
+      if(e.key==='Backspace' && !inp.value){
+        const row = inp.closest('.letterrow');
+        const all = Array.from(row.querySelectorAll('input.letter-box'));
+        const idx = all.indexOf(inp);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+
+function checkEx(id){
+  const box = document.getElementById(id);
+  const inputs = box.querySelectorAll('input.letter-box:not(.loesung)');
+  let correct=0, total=inputs.length;
+  inputs.forEach(inp=>{
+    const ans = inp.dataset.ans;
+    if(norm(inp.value)===norm(ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  const res = document.getElementById(id+'-result');
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.className = 'result ' + (correct===total ? 'ok':'bad');
+  }
+}
+function resetEx(id){
+  const box = document.getElementById(id);
+  box.querySelectorAll('input.letter-box').forEach(inp=>{inp.value='';inp.classList.remove('correct','wrong');});
+  const res = document.getElementById(id+'-result');
+  if(res){res.textContent='';}
+}
+
+renderCrossword({
+  bodyId: 'ex1-body',
+  loesId: 'ex1-loes',
+  loesung: "INFORMATION",
+  words: [
+    {clue:"1. ... um Bücher auszuleihen.", answer:"BIBLIOTHEK", markPos:2},
+    {clue:"2. ... wenn Sie studieren.", answer:"UNIVERSITÄT", markPos:2},
+    {clue:"3. ... wenn Sie eine Flugreise machen möchten.", answer:"FLUGHAFEN", markPos:1},
+    {clue:"4. ... um Briefe und Pakete abzuschicken.", answer:"POST", markPos:2},
+    {clue:"5. ... wenn Sie krank sind oder jemanden besuchen möchten, der krank ist.", answer:"KRANKENHAUS", markPos:2},
+    {clue:"6. ... wenn Sie Wasserball spielen möchten.", answer:"SCHWIMMBAD", markPos:6},
+    {clue:"7. ... wenn Sie Geld brauchen.", answer:"BANK", markPos:2},
+    {clue:"8. ... wenn Sie Formulare brauchen.", answer:"AMT", markPos:3},
+    {clue:"9. ... um Ihre kleinen Kinder abzuholen.", answer:"KINDERGARTEN", markPos:2},
+    {clue:"10. ... wenn jemand Ihre Geldbörse weggenommen hat.", answer:"POLIZEI", markPos:2},
+    {clue:"11. ... um mit dem Zug zu fahren.", answer:"BAHNHOF", markPos:4}
+  ]
+});
+</script>
+</body>
+</html>

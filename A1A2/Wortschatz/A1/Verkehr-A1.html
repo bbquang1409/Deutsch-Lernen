@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Verkehr – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e; --teal-light:#1b5c5d; --teal-pale:#e6f0ef;
+  --orange:#e8823a; --orange-light:#fdece0; --bg:#f7f5f0; --card:#ffffff;
+  --text:#233333; --muted:#6b7c7c; --der:#2563eb; --das:#16a34a; --die:#dc2626;
+  --ok:#16a34a; --bad:#dc2626; --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.3rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);} .vocab-word.das{color:var(--das);} .vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{width:24px;height:24px;text-align:center;vertical-align:middle;border:1px solid var(--teal-pale);font-size:.8rem;font-weight:700;color:var(--teal);}
+.ws-wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;}
+.ws-word{background:var(--teal-pale);color:var(--teal);border-radius:16px;padding:5px 12px;font-size:.85rem;font-weight:600;}
+.namebar{position:sticky;top:0;z-index:30;background:var(--orange-light);border-bottom:1px solid var(--orange);padding:8px 16px;display:flex;justify-content:center;}
+.namebar input{width:100%;max-width:400px;border:1px solid var(--teal-light);border-radius:20px;padding:6px 14px;font-size:0.9rem;font-family:inherit;color:var(--text);}
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{display:flex;align-items:center;justify-content:center;width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;}
+input.letter-box{flex:0 0 28px !important;width:28px !important;height:28px !important;text-align:center;font-size:.9rem;font-weight:700;line-height:1;border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;padding:0 !important;text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);box-sizing:border-box;}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+input.letter-box.hint{background:var(--teal-pale);color:var(--teal);font-weight:700;cursor:default;}
+.loes-wrap{margin-top:16px;padding-top:14px;border-top:2px dashed #e2ded4;display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){.letter-spacer{flex:0 0 22px;width:22px;height:22px;} input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}}
+</style>
+</head>
+<body>
+
+<div class="namebar"><input type="text" id="studentName" placeholder="Name eingeben..."></div>
+
+<header>
+  <div class="badge">A1 · Modul-Wortschatz</div>
+  <h1>5&nbsp; Verkehr</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<div id="wortschatz" class="tabcontent active">
+  <div class="vn-toggle-bar"><label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label></div>
+
+  <div class="section"><h2>🚗 Autoverkehr</h2><div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">Sie müssen hier langsam fahren. Hier ist 30-km-Zone. Parken ist hier erlaubt. Hier ist Parken verboten. Vorsicht! Von rechts kommt ein Auto.</div></div>
+
+  <div class="section"><h2>🚋 Öffentlicher Verkehr</h2><div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">Ich nehme die Straßenbahn um 12.10 Uhr. Der Zug endet hier. Bitte aussteigen.</div></div>
+
+  <div class="section"><h2>🚉 Bahnhof</h2><div class="vocab-grid" id="vg3"></div>
+    <div class="scale-box">Der Zug hält heute auf Gleis 3. Der Zug fährt auf Bahnsteig 5 ab.</div></div>
+
+  <div class="section"><h2>🚶 Zu Fuß und mit dem Fahrrad</h2><div class="vocab-grid" id="vg4"></div>
+    <div class="scale-box">Rad fahren. Zu Fuß gehen. Gleich bin ich weg.</div></div>
+</div>
+
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Ordnen Sie die Sätze den Situationen zu</h2>
+    <div class="ex-instructions">Statt der Verkehrsschild-Fotos: Situationsbeschreibungen aus dem Buch.</div>
+    <div id="ex1-1"></div>
+    <button class="check-btn" data-check="selects" data-target="ex1-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex1-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>2 Kreuzworträtsel – Verkehr</h2>
+    <div class="ex-instructions">Lesen Sie die Sätze und schreiben Sie die Wörter ins Treppen-Rätsel. Finden Sie das Lösungswort.</div>
+    <ol id="cw-clues" style="font-size:.92rem;line-height:1.7;padding-left:20px;"></ol>
+    <div id="cw-body"></div>
+    <div class="loes-wrap"><span style="font-size:.9rem;"><b>🔑 Lösungswort:</b></span><div id="cw-loes" class="letterrow"></div></div>
+    <button class="check-btn" data-check="crossword">Prüfen</button>
+    <button class="check-btn" data-reset="crossword" style="background:#fff;color:var(--teal);border:2px solid var(--teal);">Zurücksetzen</button>
+    <div class="result-msg" id="res-cw-body"></div>
+  </div>
+
+  <div class="section">
+    <h2>3 Bahnhof und Bahnfahren – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Liste:</b> aussteigen · das Auto · die Bahn (2×) · der Bahnsteig · weg sein · einfach · enden · das Gleis · zurück</div>
+    <div id="ex3-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>4 In der Stadt – Ergänzen Sie</h2>
+    <div class="wordbank"><b>Liste:</b> aussteigen · der Bus · fahren · der Fuß · gehen · geradeaus · halten (2×) · laufen · links · nach · nehmen · die Straßenbahn · wo · wohin</div>
+    <div id="ex4-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex4-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>5 Silbenrätsel – Wie viele Wörter finden Sie?</h2>
+    <div class="ex-instructions">Silben: AU · BAHN · BAHN · EIN · EIN · FACH · FAH · GE · GEN · HAL · MAT · REN · RÜCK · S- · SSEN · STEI · STRA · TA · TEN · TO · XI · ZU (ß=SS). Beispiel: die S-Bahn. Nicht automatisch kontrolliert – notieren Sie Ihre Wörter auf Papier.</div>
+  </div>
+
+  <div class="section">
+    <h2>➕ Extra-Übung: Wortsuche</h2>
+    <div class="ex-instructions">Zusatzübung (nicht aus dem Buch). Nicht automatisch kontrolliert.</div>
+    <div class="ws-wrap"><div id="ws-grid"></div></div>
+    <div class="ws-wordlist" id="ws-words"></div>
+  </div>
+
+</div>
+
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Verkehr</h2>
+    <div class="ex-instructions">Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+var vocab1 = [
+ ["das","Auto, -s","damit fährt man","xe hơi"],
+ ["das","Taxi, -s","ein Auto, das man mieten kann","xe taxi"],
+ ["die","Straße, -n","dort fahren Autos","đường phố"],
+ ["die","Autobahn, -en","eine schnelle Straße","đường cao tốc"],
+ ["der","LKW, -s","kurz für Lastkraftwagen","xe tải"],
+ ["der","Fahrer, -","fährt ein Auto, einen Bus usw.","người lái xe"],
+ ["der","Platz, ¨-e","z. B. ein Parkplatz","chỗ, quảng trường"],
+ ["","hier","an diesem Ort","ở đây"],
+ ["","fahren","sich mit einem Fahrzeug bewegen","lái, đi (xe)"],
+ ["","langsam","nicht schnell","chậm"],
+ ["","(so) schnell","mit hoher Geschwindigkeit","nhanh"],
+ ["","müssen","es ist nötig","phải"],
+ ["","dürfen","es ist erlaubt","được phép"],
+ ["","sollen","es ist gewünscht/geplant","nên"],
+ ["","wollen","etwas machen möchten","muốn"],
+ ["","erlauben","sagen, dass etwas erlaubt ist","cho phép"],
+ ["","erlaubt","man darf es machen","được phép"],
+ ["","verbieten","sagen, dass etwas nicht erlaubt ist","cấm"],
+ ["","verboten","man darf es nicht machen","bị cấm"],
+ ["","wo?","an welchem Ort?","ở đâu?"],
+ ["","wohin?","zu welchem Ort?","đi đâu?"],
+ ["","geradeaus","immer in dieselbe Richtung","đi thẳng"],
+ ["","nach/von rechts","auf der rechten Seite","sang/từ bên phải"],
+ ["","links","auf der linken Seite","bên trái"],
+ ["","benutzen","etwas gebrauchen","sử dụng"],
+ ["","eigener, eigenes, eigene","nicht geliehen, selbst besessen","của riêng mình"],
+ ["","eilig","schnell, keine Zeit","gấp, vội"],
+ ["die","Information, -en","eine Auskunft","thông tin"],
+ ["die","Reparatur, -en","wenn man etwas repariert","việc sửa chữa"],
+ ["","reparieren","etwas Kaputtes wieder in Ordnung bringen","sửa chữa"],
+];
+
+var vocab2 = [
+ ["das","Flugzeug, -e","damit fliegt man, z. B. in die USA","máy bay"],
+ ["","nehmen","z. B. den Bus nehmen","đi (bằng phương tiện)"],
+ ["der","Bus, -se","ein öffentliches Verkehrsmittel","xe buýt"],
+ ["die","Straßenbahn, -en","fährt auf Schienen in der Stadt","tàu điện"],
+ ["die","S-Bahn, -en","eine Stadtbahn","tàu S-Bahn"],
+ ["die","Bahn, -en","der Zug/die Eisenbahn","tàu hỏa"],
+ ["der","Zug, ¨-e","fährt auf Schienen","đoàn tàu"],
+ ["der","ICE, -s","ein sehr schneller Zug","tàu cao tốc ICE"],
+ ["der","Bahnhof, ¨-e","dort fahren die Züge ab","nhà ga"],
+ ["die","Haltestelle, -n","dort hält der Bus/die Bahn","trạm dừng"],
+ ["","halten","stehen bleiben","dừng lại"],
+ ["","enden","aufhören, zu Ende sein","kết thúc"],
+ ["","einsteigen","in den Bus/Zug gehen","lên xe"],
+ ["","aussteigen","aus dem Bus/Zug gehen","xuống xe"],
+ ["","normal","wie immer, nichts Besonderes","bình thường"],
+];
+
+var vocab3 = [
+ ["der","Automat, -en","eine Maschine, die Tickets verkauft","máy bán vé tự động"],
+ ["die","Fahrkarte, -n","das Ticket für Bus/Bahn","vé xe"],
+ ["das","Ticket, -s","die Fahrkarte","vé"],
+ ["","einfach","nur eine Richtung (nicht hin und zurück)","một chiều"],
+ ["","hin und zurück","beide Richtungen","khứ hồi"],
+ ["das","Gleis, -e","dort fährt der Zug","đường ray"],
+ ["der","Bahnsteig, -e","dort wartet man auf den Zug","sân ga"],
+];
+
+var vocab4 = [
+ ["das","Fahrrad, ¨-er","damit fährt man mit den Füßen","xe đạp"],
+ ["","Rad fahren","mit dem Fahrrad fahren","đi xe đạp"],
+ ["","gehen","zu Fuß unterwegs sein","đi bộ"],
+ ["","laufen","schnell gehen/zu Fuß gehen","chạy, đi bộ"],
+ ["","weg sein","nicht mehr hier sein, losgehen","đi rồi, vắng mặt"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div><div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1'); renderVocab(vocab2,'vg2'); renderVocab(vocab3,'vg3'); renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]:not([readonly])');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    var ans = s.dataset.ans.split('|');
+    if(ans.indexOf(s.value) > -1){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check, target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='selects') checkGroupSelects(target);
+  });
+});
+
+/* EX1 Situationen (aus den Buch-Sätzen, ohne Fotos) */
+(function(){
+  var items = [
+    ["Achtung! Hier spielen Kinder.","Verkehrsberuhigte Zone"],
+    ["Vorsicht! Hier fährt die Straßenbahn.","Achtung Straßenbahn"],
+    ["Fahr nicht so schnell. Du musst hier Tempo 30 fahren.","Zone 30"],
+    ["Hier ist das Parken erlaubt.","Parkplatz-Schild (P)"],
+    ["Hier ist Parken verboten.","Parkverbot"],
+    ["Tickets bekommen Sie am Automat.","Fahrkartenautomat"],
+    ["Das ist eine Fußgängerzone. Hier dürfen keine Autos fahren.","Fußgängerzone"],
+    ["Rechts, rechts, du musst rechts fahren.","Pflichtrichtung rechts"],
+    ["Hier hält der Bus.","Bushaltestelle"],
+    ["Die anderen Autos haben Vorfahrt.","Vorfahrt beachten (Dreieck)"],
+  ];
+  var opts = ["Verkehrsberuhigte Zone","Achtung Straßenbahn","Zone 30","Parkplatz-Schild (P)","Parkverbot","Fahrkartenautomat","Fußgängerzone","Pflichtrichtung rechts","Bushaltestelle","Vorfahrt beachten (Dreieck)"];
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e11-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* Kreuzworträtsel-Engine */
+function renderCrossword(opts){
+  var body = document.getElementById(opts.bodyId);
+  var clues = document.getElementById(opts.cluesId);
+  clues.innerHTML = opts.words.map(function(w){ return '<li>'+w.clue+'</li>'; }).join('');
+  var targetCol = Math.max.apply(null, opts.words.map(function(w){ return w.markPos - 1; }));
+  opts.words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var hints = w.hints || [];
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      var hintPos = hints.indexOf(i+1) > -1;
+      if(hintPos && !isMarked){
+        cells += '<input type="text" maxlength="1" class="letter-box hint" value="'+w.answer[i].toUpperCase()+'" readonly data-ans="'+w.answer[i]+'">';
+      } else {
+        cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'"'+(isMarked?(' data-los="'+wi+'"'):'')+(isMarked&&hintPos?(' value="'+w.answer[i].toUpperCase()+'"'):'')+'>';
+      }
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+  var loesBox = document.getElementById(opts.loesId);
+  var loesHtml = '';
+  for(var k=0; k<opts.loesung.length; k++){
+    loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" data-ans="'+opts.loesung[k]+'" id="'+opts.bodyId+'-los-'+k+'">';
+  }
+  loesBox.innerHTML = loesHtml;
+  /* Wenn eine Hinweis-Buchstabe genau in der Lösungsspalte liegt, sofort ins Lösungswort eintragen */
+  opts.words.forEach(function(w, wi){
+    var markIndex = w.markPos - 1;
+    var hints = w.hints || [];
+    if(hints.indexOf(w.markPos) > -1){
+      var target = document.getElementById(opts.bodyId+'-los-'+wi);
+      if(target){ target.value = w.answer[markIndex].toUpperCase(); target.classList.add('correct'); }
+    }
+  });
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(opts.bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+function checkCrossword(){
+  var inputs = document.querySelectorAll('#cw-body input.letter-box:not(.loesung)');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-cw-body');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetCrossword(){
+  document.querySelectorAll('#cw-body input.letter-box, #cw-loes input.letter-box').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw-body').textContent='';
+}
+document.querySelectorAll('.check-btn[data-check="crossword"]').forEach(function(btn){ btn.addEventListener('click', checkCrossword); });
+document.querySelectorAll('.check-btn[data-reset="crossword"]').forEach(function(btn){ btn.addEventListener('click', resetCrossword); });
+
+renderCrossword({
+  bodyId:'cw-body', loesId:'cw-loes', cluesId:'cw-clues',
+  loesung:'FAHRKARTENAUTOMAT',
+  words:[
+    {clue:'1. Ich reise in die USA mit dem ...', answer:'flugzeug', markPos:1, hints:[3,6,7]},
+    {clue:'2. Sprechen Sie im Bus bitte nicht mit ihm.', answer:'fahrer', markPos:2, hints:[2,5]},
+    {clue:'3. links und ...', answer:'rechts', markPos:4, hints:[2]},
+    {clue:'4. Gehen Sie 100 Meter ... und dann links.', answer:'geradeaus', markPos:3, hints:[2,4,6,7,8]},
+    {clue:'5. Kurz für Lastkraftwagen.', answer:'lkw', markPos:2, hints:[]},
+    {clue:'6. Gehen Sie hier links und dann die 3. ... wieder links.', answer:'strasse', markPos:4, hints:[7]},
+    {clue:'7. Es ist gesund und billig, wenn man damit fährt: das ...', answer:'fahrrad', markPos:4, hints:[2,6]},
+    {clue:'8. Viele Städte haben einen Markt....', answer:'platz', markPos:4, hints:[3]},
+    {clue:'9. Bei Nr. 14 und an Haltestellen können Sie in Busse und Bahnen ....', answer:'einsteigen', markPos:1, hints:[2,6,7,9]},
+    {clue:'10. Das Gegenteil von rechts ist ....', answer:'links', markPos:3, hints:[2]},
+    {clue:'11. Erst machen Sie Nr. 9, und später müssen Sie wieder ....', answer:'aussteigen', markPos:1, hints:[2,6,7,9]},
+    {clue:'12. Es fährt kein Zug mehr. Sie müssen einen ... nehmen.', answer:'bus', markPos:2, hints:[2]},
+    {clue:'13. Es fährt kein Bus mehr. Sie müssen ein ... nehmen. Das ist teuer!', answer:'taxi', markPos:1, hints:[2,4]},
+    {clue:'14. Hier halten die Züge.', answer:'bahnhof', markPos:6, hints:[2,6]},
+    {clue:'15. Ein Ticket bekommen Sie am ....', answer:'automat', markPos:5, hints:[1,2,4,6]},
+    {clue:'16. In Deutschland darf man hier auch oft schneller als 100 km/h fahren: die ....', answer:'autobahn', markPos:1, hints:[1,2,4,6]},
+    {clue:'17. Fast alle Deutschen lieben es.', answer:'auto', markPos:3, hints:[1,2,4]},
+  ]
+});
+
+/* EX3 Bahnhof und Bahnfahren */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<div class="qline">● Ich möchte eine <b>Fahrkarte</b> 2. Klasse nach Hamburg.</div>'+
+  '<div class="qline">○ '+makeBlank('e31-0','Einfach',110)+' oder hin und '+makeBlank('e31-1','zurück',110)+'?</div>'+
+  '<div class="qline">● Von welchem '+makeBlank('e31-2','Bahnsteig',140)+' fährt der Zug nach Hamburg ab?</div>'+
+  '<div class="qline">○ Der ICE fährt von '+makeBlank('e31-3','Gleis',110)+' 3 ab.</div>'+
+  '<div class="qline">Im Zug: Wir erreichen jetzt Berlin Hauptbahnhof.</div>'+
+  '<div class="qline">Unser Zug '+makeBlank('e31-4','endet',110)+' hier.</div>'+
+  '<div class="qline">Bitte alle '+makeBlank('e31-5','aussteigen',150)+'.</div>'+
+  '<div class="qline">● Ich fahre nächste Woche nach Zürich. Ich '+makeBlank('e31-6','bin',90)+' von Montag bis Freitag '+makeBlank('e31-7','weg',90)+'.</div>'+
+  '<div class="qline">○ Mit der '+makeBlank('e31-8','Bahn',110)+' oder mit dem '+makeBlank('e31-9','Auto',110)+'?</div>'+
+  '<div class="qline">● Mit der '+makeBlank('e31-10','Bahn',110)+'.</div>';
+})();
+
+/* EX4 In der Stadt */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">Ein Verkehrstipp für Kinder: Schau <b>rechts</b> und '+makeBlank('e41-0','links',100)+' und '+makeBlank('e41-1','geradeaus',130)+', so kommst du sicher auch nach Haus.</div>'+
+  '<div class="qline">Ich fahre nie mit der '+makeBlank('e41-2','Straßenbahn',150)+' oder mit dem '+makeBlank('e41-3','Bus',110)+'.</div>'+
+  '<div class="qline">Ich fahre mit dem Fahrrad oder ich '+makeBlank('e41-4','gehe|laufe',110)+' zu '+makeBlank('e41-5','Fuß',110)+'. Das ist gesund.</div>'+
+  '<p><b>S-Bahn-Bahnhof in Berlin:</b></p>'+
+  '<div class="qline">● Entschuldigung, '+makeBlank('e41-6','wohin',110)+' fährt die S-Bahn Nr. 5?</div>'+
+  '<div class="qline">○ '+makeBlank('e41-7','Nach',100)+' Straußberg über den Alexanderplatz.</div>'+
+  '<p><b>In der S-Bahn in Berlin:</b></p>'+
+  '<div class="qline">● Ich möchte zum Fernsehturm. '+makeBlank('e41-8','Wo',80)+' muss ich da a'+makeBlank('e41-9','ussteigen',150)+'?</div>'+
+  '<div class="qline">○ '+makeBlank('e41-10','Fahren',110)+' Sie bis zum Alexanderplatz.</div>'+
+  '<div class="qline">● Entschuldigung, '+makeBlank('e41-11','hält',100)+' hier der Bus Nr. 23?</div>'+
+  '<div class="qline">○ Nein, der '+makeBlank('e41-12','hält',100)+' an der Haltestelle da vorne. '+makeBlank('e41-13','Gehen|Laufen',110)+' Sie schnell, der Bus kommt gleich.</div>'+
+  '<div class="qline">● Wann kommt deine Bahn?</div>'+
+  '<div class="qline">○ Ich '+makeBlank('e41-14','nehme',110)+' die um 8.43 Uhr.</div>';
+})();
+
+/* Extra: Wortsuche */
+(function(){
+  var grid = [
+    "WAUTOHBVDOLKQC",
+    "JBAHNHOFVQENLZ",
+    "STRASSEOMARWYJ",
+    "DUJLKGLEISNSTO",
+    "HHZUGXTLNWRPRT",
+    "RZTAXIYTZCQOME",
+    "LCSHALTENHENAI",
+    "GSREFAHRRADSPG",
+    "QOBUSACHEZOOHE",
+    "NEBFAHRENOEQNN",
+    "SBROVLINKSHNAM",
+    "CBNRECHTSUVEEO",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+  var words = ['AUTO','BAHNHOF','STRASSE','GLEIS','ZUG','TAXI','HALTEN','FAHRRAD','BUS','FAHREN','LINKS','RECHTS'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+})();
+
+/* Schnelltest */
+(function(){
+  var questions = [
+    ["Kurz für Lastkraftwagen: der ...", "LKW"],
+    ["Nicht schnell fahren heißt ... fahren.", "langsam"],
+    ["Es ist erlaubt: man ... es machen.", "darf"],
+    ["Das Gegenteil von links ist ...", "rechts"],
+    ["Immer in dieselbe Richtung fahren heißt ...", "geradeaus"],
+    ["Ein öffentliches Verkehrsmittel auf Schienen in der Stadt: die ...", "Straßenbahn"],
+    ["Dort fahren die Züge ab: der ...", "Bahnhof"],
+    ["Aus dem Bus oder Zug gehen heißt ...", "aussteigen"],
+    ["In den Bus oder Zug gehen heißt ...", "einsteigen"],
+    ["Das Ticket für Bus oder Bahn ist die ...", "Fahrkarte"],
+    ["Dort fährt der Zug: das ...", "Gleis"],
+    ["Dort wartet man auf den Zug: der ...", "Bahnsteig"],
+    ["Nur eine Richtung (nicht hin und zurück) heißt ...", "einfach"],
+    ["Mit dem Fahrrad fahren heißt ... fahren.", "Rad"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

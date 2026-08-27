@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9 Kommunikation – Freizeit – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.section h3{
+  color:var(--teal-light);
+  font-size:1rem;
+  margin-bottom:8px;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  background:#fbfaf7;
+  cursor:pointer;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{
+  margin-top:4px;
+  color:var(--teal-light);
+  font-size:0.88rem;
+}
+.vocab-vn{
+  display:none;
+  margin-top:4px;
+  color:var(--orange);
+  font-size:0.9rem;
+  font-style:italic;
+}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.vn-switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.85rem;
+  color:var(--teal);
+  cursor:pointer;
+  user-select:none;
+}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);
+  background:var(--orange-light);
+  border-radius:10px;
+  padding:10px 14px;
+  margin:10px 0;
+  font-weight:600;
+  color:var(--teal);
+  text-align:center;
+}
+.example-box{
+  background:var(--teal-pale);
+  border-left:4px solid var(--teal);
+  border-radius:8px;
+  padding:10px 14px;
+  margin:10px 0;
+  font-size:0.9rem;
+  color:var(--teal);
+  line-height:1.8;
+}
+.example-box b{color:var(--teal-light);}
+.exercise{
+  margin-bottom:22px;
+  padding-bottom:14px;
+  border-bottom:1px solid #eee;
+}
+.exercise:last-child{border-bottom:none;}
+.ex-title{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:6px;
+}
+.ex-instructions{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-bottom:10px;
+}
+.qline{
+  margin:10px 0;
+  line-height:1.9;
+}
+.qline input[type=text]{
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-size:1rem;
+  padding:2px 4px;
+  width:150px;
+  font-family:inherit;
+  color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{
+  background:var(--teal-pale);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:12px;
+  font-size:0.9rem;
+  color:var(--teal);
+}
+.wordbank b{color:var(--teal-light);}
+.matchrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  flex-wrap:wrap;
+}
+.matchrow select{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+  max-width:220px;
+}
+.illus-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin:12px 0;
+}
+@media(max-width:480px){.illus-grid{grid-template-columns:1fr;}}
+.illus-card{
+  border:1px solid #e2ded4;
+  border-radius:12px;
+  padding:10px;
+  background:#fbfaf7;
+  text-align:center;
+}
+.illus-card .illus-label{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:4px;
+}
+.illus-card svg{width:100%;max-width:140px;height:100px;}
+.illus-card select{
+  margin-top:8px;
+  width:100%;
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+}
+.dialog-p{margin:6px 0;}
+textarea.free-answer{
+  width:100%;
+  min-height:100px;
+  border:1px solid var(--teal-light);
+  border-radius:10px;
+  padding:10px;
+  font-family:inherit;
+  font-size:0.95rem;
+  color:var(--text);
+  resize:vertical;
+}
+.check-btn{
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  padding:9px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{
+  background:#fff;
+  color:var(--teal);
+  border:2px solid var(--teal);
+  border-radius:20px;
+  padding:7px 18px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+  margin-left:6px;
+}
+.result-msg{
+  margin-top:8px;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.footer-credit{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.8rem;
+  margin-top:30px;
+}
+
+/* ---- Kreuzworträtsel (Treppen-Rätsel) ---- */
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{
+  display:flex;align-items:center;justify-content:center;
+  width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;
+}
+input.letter-box{
+  flex:0 0 28px !important;
+  width:28px !important;height:28px !important;
+  text-align:center;font-size:.9rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;
+  padding:0 !important;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);
+  box-sizing:border-box;
+}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{
+  margin-top:16px;padding-top:14px;border-top:2px dashed #e2ded4;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){
+  .letter-spacer{flex:0 0 22px;width:22px;height:22px;}
+  input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}
+}
+
+/* ---- Wortsuche-Gitter (interaktiv) ---- */
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;user-select:none;}
+table.ws-table td{
+  width:24px;height:24px;text-align:center;vertical-align:middle;
+  border:1px solid var(--teal-pale);font-size:.78rem;font-weight:700;color:var(--teal);
+  cursor:pointer;transition:background .1s, color .1s;
+}
+table.ws-table td.ws-selecting{background:var(--orange);color:#fff;}
+table.ws-table td.ws-found{background:var(--ok);color:#fff;}
+table.ws-table td.ws-wrong{background:var(--bad);color:#fff;}
+.ws-status{
+  text-align:center;font-size:.9rem;font-weight:700;color:var(--teal);margin-top:10px;
+}
+.ws-mode-bar{
+  display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;justify-content:center;
+}
+.ws-mode-btn{
+  background:#fff;border:2px solid var(--teal-light);color:var(--teal);
+  border-radius:20px;padding:6px 14px;font-size:.82rem;font-weight:600;cursor:pointer;
+}
+.ws-mode-btn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+.ws-wordlist{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center;
+  min-height:34px;
+}
+.ws-word{
+  background:var(--teal-pale);color:var(--teal);border-radius:16px;
+  padding:5px 12px;font-size:.85rem;font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="badge">A1 · Modul 9 · Wortschatz</div>
+  <h1>9&nbsp; Kommunikation – Freizeit</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>📱 Telefon und Internet</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box">
+      <b>Beispiele:</b><br>
+      Ich rufe meinen Freund an.<br>
+      Ich schreibe/schicke eine SMS.<br>
+      Ich spreche auf die Mailbox.<br>
+      Ich höre die Mailbox ab.<br>
+      Ich surfe im Internet.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>👥 Freunde treffen</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>🎉 Freizeit</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="example-box">
+      <b>Beispiele:</b><br>
+      Hast du Zeit? – Nein, ich habe leider keine Zeit.<br>
+      Ich möchte dich besuchen. Bleibst du heute zu Hause?<br>
+      Bist du böse auf mich? Nein, gehst du allein ins Kino?<br>
+      Was machst du in deiner Freizeit? Ich esse gern/lieber Salat.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🎭 Kultur</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="example-box">
+      <b>Beispiele:</b><br>
+      Sind heute Abend viele Leute da?<br>
+      Das Konzert ist um 23 Uhr zu Ende.<br>
+      Zum Schluss spielt die Band mein Lieblingslied.<br>
+      Ich höre gern Musik und gehe gern tanzen.
+    </div>
+    <div class="scale-box">INFO – das Verb <b>gehen</b>: Wir gehen ins Kino. · Wie geht es dir? – Danke, gut! · Das geht heute leider nicht. · Der Drucker geht nicht mehr.</div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <!-- 1 Telefon und Kontakt -->
+  <div class="section">
+    <h2>1 Telefon und Kontakt</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Kontakt aufnehmen – Ergänzen Sie den Dialog.</div>
+      <div class="wordbank"><b>Kasten:</b> mailen · E-Mail · Handy-Nummer · Mailbox · Nachricht · SMS <i>(anrufen = Beispiel)</i></div>
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Ein Telefongespräch – Ergänzen Sie die richtigen Wörter.</div>
+      <div class="wordbank"><b>Kasten:</b> Zeit · besuchen · mitkommen · leider · bleiben · böse · gern · allein · verstehen · Wochenende <i>(gehen = Beispiel)</i></div>
+      <div id="ex1-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-2"></div>
+    </div>
+  </div>
+
+  <!-- 2 Rätsel -->
+  <div class="section">
+    <h2>2 Freizeit – Rätsel</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Kreuzworträtsel – Freizeit. Notieren Sie die Wörter und finden Sie das Lösungswort.</div>
+      <ol id="cw-clues" style="font-size:.92rem;line-height:1.7;padding-left:20px;"></ol>
+      <div id="cw-body"></div>
+      <div class="loes-wrap">
+        <span style="font-size:.9rem;"><b>🔑 Lösungswort:</b></span>
+        <div id="cw-loes" class="letterrow"></div>
+      </div>
+      <button class="check-btn" data-check="crossword">Prüfen</button>
+      <button class="reset-btn" data-reset="crossword">Zurücksetzen</button>
+      <div class="result-msg" id="res-cw-body"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Was können wir zusammen machen? Finden Sie 14 Verben im Suchrätsel.</div>
+      <div class="ex-instructions">Wählen Sie einen Modus. Ein gefundenes Wort erscheint unten in der Liste.</div>
+      <div class="ws-mode-bar">
+        <button class="ws-mode-btn active" data-mode="endpoints">1️⃣ Anfang + Ende tippen</button>
+        <button class="ws-mode-btn" data-mode="stepwise">2️⃣ Buchstabe für Buchstabe</button>
+      </div>
+      <div class="ws-wrap"><div id="ws-grid"></div></div>
+      <div class="ws-status" id="ws-status">Gefunden: 0 / 14</div>
+      <div class="ws-wordlist" id="ws-words"></div>
+    </div>
+  </div>
+
+  <!-- 3 Karin und Klaus -->
+  <div class="section">
+    <h2>3 Karin und Klaus am Wochenende</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Was passt zusammen? Ordnen Sie die Tätigkeit dem Bild zu.</div>
+      <div class="wordbank"><b>Kasten:</b> Zeitung lesen · in die Disco gehen · lange schlafen · im Bett frühstücken · 1000 m schwimmen · am Mittag aufstehen und sich anziehen · ins Schwimmbad gehen · Freunde treffen</div>
+      <div class="illus-grid" id="ex3-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Schreiben Sie 3–4 Sätze: Was macht Karin am Wochenende? Was macht Klaus am Wochenende?</div>
+      <div class="ex-instructions">Benutzen Sie mindestens vier Aktivitäten aus dem Kasten oben. Diese Aufgabe wird nicht automatisch kontrolliert – zeigen Sie Ihre Sätze der Lehrkraft.</div>
+      <textarea class="free-answer" placeholder="Am Wochenende ..."></textarea>
+    </div>
+  </div>
+
+  <!-- 4 Dialoge -->
+  <div class="section">
+    <h2>4 Freizeit – Ergänzen Sie die Dialoge</h2>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 1 – Sport und Verein</div>
+      <div class="wordbank"><b>Kasten:</b> Verein · Hobby · spiele · mitkommen · gewinnen · mitmachen <i>(Sport = Beispiel)</i></div>
+      <div id="dlg1"></div>
+      <button class="check-btn" data-check="groupci" data-target="dlg1">Kontrollieren</button>
+      <div class="result-msg" id="res-dlg1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 2 – Ausflug</div>
+      <div class="wordbank"><b>Kasten:</b> wandern · grillen · mitkommen · alle · mitbringen · lieber <i>(Ausflug = Beispiel)</i></div>
+      <div id="dlg2"></div>
+      <button class="check-btn" data-check="groupci" data-target="dlg2">Kontrollieren</button>
+      <div class="result-msg" id="res-dlg2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 3 – Kultur</div>
+      <div class="wordbank"><b>Kasten:</b> Film · Kultur · interessant · weiß · zum Schluss · Erwachsene <i>(gehe = Beispiel)</i></div>
+      <div id="dlg3"></div>
+      <button class="check-btn" data-check="groupci" data-target="dlg3">Kontrollieren</button>
+      <div class="result-msg" id="res-dlg3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 4 – Im Kino</div>
+      <div class="wordbank"><b>Kasten:</b> Jugendliche · Ausweis · jung · in Ordnung <i>(Kino = Beispiel)</i></div>
+      <div id="dlg4"></div>
+      <button class="check-btn" data-check="groupci" data-target="dlg4">Kontrollieren</button>
+      <div class="result-msg" id="res-dlg4"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialog 5 – Party und Musik</div>
+      <div class="wordbank"><b>Kasten:</b> Leute · da · Party · tanzen · Musik · Lieblingslied · zu Ende · Disco · lustig <i>(Konzert = Beispiel)</i></div>
+      <div id="dlg5"></div>
+      <button class="check-btn" data-check="groupci" data-target="dlg5">Kontrollieren</button>
+      <div class="result-msg" id="res-dlg5"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Kommunikation und Freizeit</h2>
+    <div class="ex-instructions">Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["der","Anruf, -e","wenn man jemanden mit dem Telefon kontaktiert","cuộc gọi điện thoại"],
+ ["","anrufen (+A)","jemanden mit dem Telefon kontaktieren","gọi điện cho ai"],
+ ["das","Festnetz, -e","das Telefon zu Hause, nicht das Handy","điện thoại cố định"],
+ ["das","Handy, -s","das Telefon, das man immer bei sich hat","điện thoại di động"],
+ ["das","Smartphone, -s","ein modernes Handy mit Internet","điện thoại thông minh"],
+ ["die","Mailbox, -en","der Speicher für Nachrichten, wenn man nicht ans Telefon geht","hộp thư thoại"],
+ ["der","Anrufbeantworter, -","das Gerät, das Nachrichten am Telefon speichert","máy trả lời tự động"],
+ ["die","SMS, -","eine kurze Textnachricht auf dem Handy","tin nhắn SMS"],
+ ["","schicken (+A)","etwas zu jemandem senden","gửi"],
+ ["die","Nachricht, -en","eine kurze Information für jemanden","tin nhắn, thông báo"],
+ ["die","Ansage, -n","eine Information, die man am Telefon hört","thông báo qua điện thoại"],
+ ["die","(E-)Mail, -s","eine Nachricht, die man über den Computer schickt","thư điện tử"],
+ ["","mailen (+D/A)","eine E-Mail schicken","gửi email"],
+ ["das","Internet (Sg.)","das weltweite Computernetzwerk","mạng Internet"],
+ ["","surfen","im Internet Seiten besuchen","lướt web"],
+ ["die","Homepage, -s","die Internetseite einer Person oder Firma","trang chủ"],
+ ["das","Netzwerk, -e","die Verbindung von Computern oder Menschen","mạng lưới"],
+ ["die","Community, -s","eine Gruppe von Menschen im Internet mit gleichem Interesse","cộng đồng mạng"],
+ ["der","Link, -s","eine Verbindung zu einer anderen Internetseite","đường liên kết"],
+ ["","googeln","im Internet mit Google suchen","tra Google"],
+ ["","online","mit dem Internet verbunden","trực tuyến"],
+ ["der","Chat, -s","ein Gespräch im Internet mit Text","trò chuyện trực tuyến"],
+ ["","chatten","im Internet mit Text sprechen","nhắn tin trò chuyện"],
+ ["der/das","Blog, -s","eine persönliche Internetseite mit Texten","blog, nhật ký mạng"],
+ ["","bloggen","Texte für einen Blog schreiben","viết blog"],
+ ["der/die","Blogger/in, -/-nen","eine Person, die einen Blog schreibt","người viết blog"],
+ ["","Twitter","ein soziales Netzwerk mit kurzen Nachrichten","mạng xã hội Twitter"],
+ ["","twittern","eine kurze Nachricht bei Twitter schreiben","đăng tweet"],
+];
+
+var vocab2 = [
+ ["der/die","Bekannte, -n","eine Person, die man kennt, aber kein guter Freund ist","người quen"],
+ ["","bekannt","wenn man eine Person oder Sache kennt","quen biết, nổi tiếng"],
+ ["der/die","Freund/in, -e/-nen","eine Person, die man sehr gut kennt und mag","bạn (thân)"],
+ ["der/die","Jugendliche, -n","ein junger Mensch, meistens 13 bis 17 Jahre","thanh thiếu niên"],
+ ["der/die","Erwachsene, -n","eine Person, die schon groß ist, kein Kind mehr","người trưởng thành"],
+ ["die","Leute (Pl.)","mehrere Personen","mọi người"],
+ ["","kennen (+A)","wissen, wer eine Person ist","biết, quen"],
+ ["","sich treffen (mit +D)","zusammen an einem Ort sein","gặp nhau"],
+ ["","abholen (+A)","zu einem Ort gehen oder fahren, um jemanden zu holen","đón ai đó"],
+ ["","mitnehmen (+A)","jemanden oder etwas mitbringen, wenn man weggeht","mang theo, đưa đi cùng"],
+];
+
+var vocab3 = [
+ ["die","Freizeit (Sg.)","die Zeit ohne Arbeit oder Schule","thời gian rảnh"],
+ ["","besuchen (+A)","zu jemandem gehen, um ihn zu sehen","đi thăm"],
+ ["","bleiben","an einem Ort nicht weggehen","ở lại"],
+ ["","allein","ohne andere Personen","một mình"],
+ ["","zusammen","mit anderen Personen, nicht allein","cùng nhau"],
+ ["","böse sein (auf +A)","wütend sein auf jemanden","giận ai đó"],
+ ["","leider","man ist traurig, dass etwas so ist","tiếc là, đáng tiếc"],
+ ["","jung","nicht alt","trẻ"],
+ ["","schlafen","die Augen schließen und ruhen","ngủ"],
+ ["","aufstehen","aus dem Bett gehen","thức dậy"],
+ ["","sich anziehen","Kleidung anziehen","mặc quần áo"],
+ ["das","Hobby, -s","was man in der Freizeit gern macht","sở thích"],
+ ["","fernsehen","das Fernsehprogramm ansehen","xem TV"],
+ ["die","Zeitung, -en","Papier mit Nachrichten, jeden Tag neu","báo giấy"],
+ ["","lesen","einen Text mit den Augen verstehen","đọc"],
+ ["das","Schwimmbad, ¨-er","ein Ort mit Wasser zum Schwimmen","hồ bơi"],
+ ["","schwimmen","sich im Wasser bewegen","bơi"],
+ ["der","Ausflug, ¨-e","eine kurze Reise an einen interessanten Ort","chuyến đi chơi ngắn"],
+ ["der","Verein, -e","eine Organisation von Menschen mit gleichem Interesse","câu lạc bộ, hội"],
+ ["","wandern","lange zu Fuß in der Natur gehen","đi bộ đường dài"],
+ ["der","Sport (Sg.)","eine körperliche Aktivität, zum Beispiel Fußball","thể thao"],
+ ["der","Fußball (Sg.)","ein Sport mit einem Ball und zwei Mannschaften","bóng đá"],
+ ["","gewinnen","bei einem Spiel oder Wettkampf Erster sein","chiến thắng"],
+ ["","mitkommen","mit jemandem zusammen gehen","đi cùng"],
+ ["","mitmachen","bei einer Aktivität dabei sein","tham gia cùng"],
+ ["","alle","jede Person in einer Gruppe","tất cả mọi người"],
+ ["","spielen","zum Beispiel Fußball oder ein Spiel machen","chơi"],
+ ["","grillen","Essen auf dem Grill kochen","nướng BBQ"],
+ ["","gern(e)","man mag etwas","thích"],
+ ["","lieber","man mag etwas mehr als etwas anderes","thích hơn"],
+];
+
+var vocab4 = [
+ ["die","Kultur, -en","die Kunst, Musik und Filme einer Gruppe von Menschen","văn hóa"],
+ ["","kulturell","die Kultur betreffend","thuộc về văn hóa"],
+ ["das","Kino, -s","ein Ort, an dem man Filme sieht","rạp chiếu phim"],
+ ["der","Film, -e","eine Geschichte, die man im Kino oder Fernsehen sieht","phim"],
+ ["der/die","Schauspieler/in, -/-nen","eine Person, die im Film oder Theater spielt","diễn viên"],
+ ["","wissen","Information im Kopf haben","biết (thông tin)"],
+ ["","interessant","wenn man etwas gern wissen oder sehen möchte","thú vị"],
+ ["","cool","sehr gut, modern (Umgangssprache)","ngầu, hay"],
+ ["","da sein","an einem Ort oder Ereignis anwesend sein","có mặt ở đó"],
+ ["das","Konzert, -e","ein öffentliches Vorspielen von Musik","buổi hòa nhạc"],
+ ["das","Ende (Sg.)","der letzte Moment von etwas","sự kết thúc"],
+ ["der","Schluss (Sg.)","das Ende von etwas","phần kết thúc"],
+ ["die","Party, -s","ein Fest mit Musik, Essen und Trinken","buổi tiệc"],
+ ["die","Band, -s","eine Gruppe von Musikern","ban nhạc"],
+ ["die","Disco, -s","ein Ort zum Tanzen mit Musik","vũ trường"],
+ ["","tanzen","sich zur Musik rhythmisch bewegen","nhảy múa"],
+ ["","Lieblings-","das, was man am meisten mag","yêu thích nhất"],
+ ["das","Lied, -er","ein Musikstück, das man singt","bài hát"],
+ ["die","Musik (Sg.)","rhythmisch aneinandergereihte Töne","âm nhạc"],
+ ["","lustig","wenn man darüber lachen muss","vui, hài hước"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='crossword') checkCrossword();
+  });
+});
+document.querySelectorAll('.reset-btn[data-reset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.dataset.reset==='crossword') resetCrossword();
+  });
+});
+
+/* ================= EX 1.1 Kontakt aufnehmen ================= */
+(function(){
+  var el = document.getElementById('ex1-1');
+  el.innerHTML =
+  '<div class="dialog-p">● Kann ich dich heute Abend anrufen?</div>'+
+  '<div class="dialog-p">○ Ich bin gerade im Kino, aber du kannst eine '+makeBlank('e11-0','Nachricht',140)+
+  ' auf der '+makeBlank('e11-1','Mailbox',140)+' hinterlassen oder eine '+makeBlank('e11-2','SMS',100)+' schicken.</div>'+
+  '<div class="dialog-p">● Hast du auch meine '+makeBlank('e11-3','Handy-Nummer',150)+'?</div>'+
+  '<div class="dialog-p">○ Ich glaube schon. Du kannst mir sonst auch '+makeBlank('e11-4','mailen',130)+
+  ' – ich lese meine '+makeBlank('e11-5','E-Mails|E-Mail',130)+' jeden Morgen und Abend.</div>';
+})();
+
+/* ================= EX 1.2 Ein Telefongespräch ================= */
+(function(){
+  var el = document.getElementById('ex1-2');
+  el.innerHTML =
+  '<div class="dialog-p">● Hallo Sabine! Wie geht es dir?</div>'+
+  '<div class="dialog-p">○ Nicht so gut, ich arbeite viel und habe kaum '+makeBlank('e12-0','Zeit',110)+'.</div>'+
+  '<div class="dialog-p">● Schade, ich wollte dich heute gern '+makeBlank('e12-1','besuchen',130)+'.</div>'+
+  '<div class="dialog-p">○ Tut mir leid, das geht heute leider nicht.</div>'+
+  '<div class="dialog-p">● Und heute Abend? Kommst du '+makeBlank('e12-2','mit',80)+' ins Kino oder bleibst du zu Hause?</div>'+
+  '<div class="dialog-p">○ Ich muss '+makeBlank('e12-3','leider',110)+' den ganzen Abend am Schreibtisch '+makeBlank('e12-4','bleiben',120)+
+  '. Bist du jetzt '+makeBlank('e12-5','böse',100)+' auf mich?</div>'+
+  '<div class="dialog-p">● Nein, nicht auf dich! Aber ich möchte dich '+makeBlank('e12-6','gern',100)+' sehen und nicht '+
+  makeBlank('e12-7','allein',110)+' ins Kino gehen.</div>'+
+  '<div class="dialog-p">○ Das '+makeBlank('e12-8','verstehe',120)+' ich gut. Frag doch Klaus, ob er '+
+  makeBlank('e12-9','mitkommen',130)+' möchte.</div>'+
+  '<div class="dialog-p">● Gute Idee! Wir sehen uns bestimmt am '+makeBlank('e12-10','Wochenende',140)+'.</div>';
+})();
+
+/* ================= EX 2.1 Kreuzworträtsel ================= */
+function renderCrossword(opts){
+  var body = document.getElementById(opts.bodyId);
+  var clues = document.getElementById(opts.cluesId);
+  clues.innerHTML = opts.words.map(function(w){ return '<li>'+w.clue+'</li>'; }).join('');
+
+  var targetCol = Math.max.apply(null, opts.words.map(function(w){ return w.markPos - 1; }));
+
+  opts.words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'"'+(isMarked?(' data-los="'+wi+'"'):'')+'>';
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+
+  var loesBox = document.getElementById(opts.loesId);
+  var loesHtml = '';
+  for(var k=0; k<opts.loesung.length; k++){
+    loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" data-ans="'+opts.loesung[k]+'" id="'+opts.bodyId+'-los-'+k+'">';
+  }
+  loesBox.innerHTML = loesHtml;
+
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(opts.bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+
+function checkCrossword(){
+  var inputs = document.querySelectorAll('#cw-body input.letter-box:not(.loesung)');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-cw-body');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetCrossword(){
+  document.querySelectorAll('#cw-body input.letter-box, #cw-loes input.letter-box').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw-body').textContent='';
+}
+
+renderCrossword({
+  bodyId:'cw-body', loesId:'cw-loes', cluesId:'cw-clues',
+  loesung:'FREIZEIT',
+  words:[
+    {clue:'1. Eine kurze Reise an einen interessanten Ort nennt man einen ...', answer:'ausflug', markPos:4},
+    {clue:'2. Ein Fest mit Musik, Essen und Trinken ist eine ...', answer:'party', markPos:3},
+    {clue:'3. Eine Organisation von Menschen mit gleichem Hobby ist ein ...', answer:'verein', markPos:2},
+    {clue:'4. Der Ort, an dem man Filme sieht, heißt das ...', answer:'kino', markPos:2},
+    {clue:'5. Ein öffentliches Vorspielen von Musik nennt man ein ...', answer:'konzert', markPos:4},
+    {clue:'6. Ein Musikstück, das man singt, ist ein ...', answer:'lied', markPos:3},
+    {clue:'7. Rhythmisch aneinandergereihte Töne nennt man ...', answer:'musik', markPos:4},
+    {clue:'8. Fußball und Tennis sind zum Beispiel ...', answer:'sportarten', markPos:5},
+  ]
+});
+
+/* ================= EX 2.2 Wortsuche ================= */
+function buildWordSearch(words, size){
+  var grid = [];
+  for(var i=0;i<size;i++){ grid.push(new Array(size).fill(null)); }
+  var dirs = [[0,1],[1,0],[1,1],[-1,1]];
+  function tryPlace(word){
+    for(var attempt=0; attempt<400; attempt++){
+      var dir = dirs[Math.floor(Math.random()*dirs.length)];
+      var dr=dir[0], dc=dir[1];
+      var len = word.length;
+      var startRowLow = dr===-1 ? len-1 : 0;
+      var startRowHigh = dr===1 ? size-len : size-1;
+      var startColLow = 0;
+      var startColHigh = dc===1 ? size-len : size-1;
+      if(startRowHigh < startRowLow || startColHigh < startColLow) continue;
+      var row = Math.floor(Math.random()*(startRowHigh-startRowLow+1))+startRowLow;
+      var col = Math.floor(Math.random()*(startColHigh-startColLow+1))+startColLow;
+      var ok = true;
+      for(var i=0;i<len;i++){
+        var r = row+dr*i, c = col+dc*i;
+        if(r<0||r>=size||c<0||c>=size){ ok=false; break; }
+        var existing = grid[r][c];
+        if(existing && existing!==word[i]){ ok=false; break; }
+      }
+      if(ok){
+        for(var i=0;i<len;i++){
+          var r=row+dr*i, c=col+dc*i;
+          grid[r][c]=word[i];
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+  words.forEach(function(w){ tryPlace(w.toUpperCase()); });
+  var letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(var r=0;r<size;r++){
+    for(var c=0;c<size;c++){
+      if(!grid[r][c]) grid[r][c] = letters[Math.floor(Math.random()*letters.length)];
+    }
+  }
+  return grid;
+}
+(function(){
+  var words = ['LERNEN','KOCHEN','SCHWIMMEN','TANZEN','SINGEN','SPIELEN','WANDERN','LESEN','GRILLEN','CHATTEN','SURFEN','JOGGEN','FAHREN','TREFFEN'];
+  var size = 15;
+  var grid = buildWordSearch(words, size);
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  var cellEls = [];
+  grid.forEach(function(row, r){
+    var tr = document.createElement('tr');
+    var cellRow = [];
+    row.forEach(function(ch, c){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      td.dataset.row = r;
+      td.dataset.col = c;
+      tr.appendChild(td);
+      cellRow.push(td);
+    });
+    table.appendChild(tr);
+    cellEls.push(cellRow);
+  });
+  wordEl.appendChild(table);
+
+  var found = [];
+  var statusEl = document.getElementById('ws-status');
+  var listEl = document.getElementById('ws-words');
+  var mode = 'endpoints';
+  var path = [];
+
+  function sign(n){ return n>0 ? 1 : (n<0 ? -1 : 0); }
+
+  function pathBetween(r1,c1,r2,c2){
+    var dr = r2-r1, dc = c2-c1;
+    if(dr===0 && dc===0) return null;
+    if(dr!==0 && dc!==0 && Math.abs(dr)!==Math.abs(dc)) return null;
+    var steps = Math.max(Math.abs(dr), Math.abs(dc));
+    var sr = sign(dr), sc = sign(dc);
+    var cells = [];
+    for(var i=0;i<=steps;i++){
+      cells.push({r:r1+sr*i, c:c1+sc*i});
+    }
+    return cells;
+  }
+
+  function flash(cells, cls){
+    cells.forEach(function(p){ cellEls[p.r][p.c].classList.add(cls); });
+    setTimeout(function(){
+      cells.forEach(function(p){ cellEls[p.r][p.c].classList.remove(cls); });
+    }, 400);
+  }
+
+  function clearPathHighlight(){
+    path.forEach(function(p){ cellEls[p.r][p.c].classList.remove('ws-selecting'); });
+    path = [];
+  }
+
+  function tryFinish(cells){
+    var letters = cells.map(function(p){ return grid[p.r][p.c]; }).join('');
+    var reversed = letters.split('').reverse().join('');
+    var matchWord = null;
+    words.forEach(function(w){
+      if(found.indexOf(w) === -1 && (letters===w || reversed===w)) matchWord = w;
+    });
+    if(matchWord){
+      cells.forEach(function(p){ cellEls[p.r][p.c].classList.add('ws-found'); });
+      found.push(matchWord);
+      var span = document.createElement('span');
+      span.className = 'ws-word';
+      span.textContent = matchWord;
+      listEl.appendChild(span);
+      statusEl.textContent = 'Gefunden: '+found.length+' / '+words.length;
+      if(found.length === words.length){
+        statusEl.textContent = 'Gefunden: '+found.length+' / '+words.length+' 🎉 Super gemacht!';
+      }
+      return true;
+    }
+    flash(cells, 'ws-wrong');
+    return false;
+  }
+
+  /* ---- Modus 1: Anfang antippen, dann Ende antippen ---- */
+  function handleEndpoints(td, r, c){
+    if(path.length === 0){
+      path = [{r:r, c:c}];
+      td.classList.add('ws-selecting');
+      return;
+    }
+    var start = path[0];
+    if(start.r===r && start.c===c){
+      clearPathHighlight();
+      return;
+    }
+    var cells = pathBetween(start.r, start.c, r, c);
+    clearPathHighlight();
+    if(!cells){
+      path = [{r:r, c:c}];
+      td.classList.add('ws-selecting');
+      return;
+    }
+    tryFinish(cells);
+  }
+
+  /* ---- Modus 2: jeden Buchstaben der Reihe nach antippen ---- */
+  function handleStepwise(td, r, c){
+    if(path.length === 0){
+      path = [{r:r, c:c}];
+      td.classList.add('ws-selecting');
+      return;
+    }
+    var last = path[path.length-1];
+    if(last.r===r && last.c===c){
+      clearPathHighlight();
+      return;
+    }
+    var dr = r-last.r, dc = c-last.c;
+    var validStep = Math.abs(dr)<=1 && Math.abs(dc)<=1 && !(dr===0 && dc===0);
+    var sameDirection = true;
+    if(path.length >= 2){
+      var prevDr = last.r - path[path.length-2].r;
+      var prevDc = last.c - path[path.length-2].c;
+      sameDirection = (dr===prevDr && dc===prevDc);
+    }
+    if(validStep && sameDirection){
+      path.push({r:r, c:c});
+      td.classList.add('ws-selecting');
+      if(tryFinish(path)) clearPathHighlight();
+      return;
+    }
+    clearPathHighlight();
+    path = [{r:r, c:c}];
+    td.classList.add('ws-selecting');
+  }
+
+  document.querySelectorAll('.ws-mode-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.ws-mode-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      clearPathHighlight();
+    });
+  });
+
+  table.addEventListener('click', function(e){
+    var td = e.target.closest('td');
+    if(!td) return;
+    if(td.classList.contains('ws-found')) return;
+    var r = parseInt(td.dataset.row,10), c = parseInt(td.dataset.col,10);
+    if(mode==='endpoints') handleEndpoints(td, r, c);
+    else handleStepwise(td, r, c);
+  });
+})();
+
+/* ================= EX 3.1 Karin und Klaus (mit Illustrationen) ================= */
+(function(){
+  var activities = ['Zeitung lesen','in die Disco gehen','lange schlafen','im Bett frühstücken','1000 m schwimmen','am Mittag aufstehen und sich anziehen','ins Schwimmbad gehen','Freunde treffen'];
+
+  var svgSwim = '<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">'+
+    '<circle cx="55" cy="42" r="8" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<path d="M45 52 Q55 47 65 52" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+    '<path d="M65 52 L88 38" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+    '<path d="M10 68 Q20 63 30 68 T50 68 T70 68 T90 68 T110 68" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+    '<path d="M15 78 Q25 74 35 78 T55 78 T75 78 T95 78 T115 78" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>'+
+    '</svg>';
+
+  var svgSleep = '<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">'+
+    '<rect x="15" y="55" width="90" height="28" rx="6" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<line x1="15" y1="68" x2="105" y2="68" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<circle cx="35" cy="60" r="9" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<path d="M20 74 Q50 66 90 74" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+    '<path d="M66 38 Q71 33 76 38" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '<path d="M78 28 Q83 23 88 28" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '<path d="M90 18 Q95 13 100 18" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '</svg>';
+
+  var svgNewspaper = '<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">'+
+    '<path d="M28 28 L72 24 L77 68 L33 72 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/>'+
+    '<line x1="36" y1="37" x2="66" y2="34" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<line x1="36" y1="46" x2="66" y2="43" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<line x1="36" y1="55" x2="66" y2="52" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<line x1="36" y1="64" x2="58" y2="61" stroke="#0f3d3e" stroke-width="2"/>'+
+    '<path d="M86 55 h18 v14 a9 9 0 0 1 -18 0 z" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<path d="M104 59 q8 2 0 7" stroke="#0f3d3e" stroke-width="2" fill="none"/>'+
+    '<path d="M91 47 q2 -6 0 -10" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '<path d="M98 47 q2 -6 0 -10" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '</svg>';
+
+  var svgWake = '<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">'+
+    '<rect x="12" y="60" width="60" height="20" rx="4" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<circle cx="42" cy="45" r="9" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<path d="M32 65 Q42 55 52 65" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+    '<circle cx="95" cy="55" r="14" stroke="#0f3d3e" stroke-width="3" fill="none"/>'+
+    '<line x1="95" y1="55" x2="95" y2="46" stroke="#0f3d3e" stroke-width="2" stroke-linecap="round"/>'+
+    '<line x1="95" y1="55" x2="101" y2="58" stroke="#0f3d3e" stroke-width="2" stroke-linecap="round"/>'+
+    '<circle cx="84" cy="41" r="3" stroke="#0f3d3e" stroke-width="2" fill="none"/>'+
+    '<circle cx="106" cy="41" r="3" stroke="#0f3d3e" stroke-width="2" fill="none"/>'+
+    '</svg>';
+
+  var items = [
+    ['a', svgSwim, '1000 m schwimmen'],
+    ['b', svgSleep, 'lange schlafen'],
+    ['c', svgNewspaper, 'Zeitung lesen'],
+    ['d', svgWake, 'am Mittag aufstehen und sich anziehen'],
+  ];
+  var el = document.getElementById('ex3-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = activities.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="illus-card">'+
+      '<div class="illus-label">'+it[0]+'</div>'+
+      it[1]+
+      '<select id="e31-'+i+'" data-ans="'+it[2]+'"><option value="">wählen...</option>'+optHtml+'</select>'+
+      '</div>';
+  }).join('');
+})();
+
+/* ================= DIALOG 1 ================= */
+(function(){
+  var el = document.getElementById('dlg1');
+  el.innerHTML =
+  '<div class="dialog-p">● Hallo! Was machst du in deiner Freizeit?</div>'+
+  '<div class="dialog-p">○ Ich mache gern Sport. Ich '+makeBlank('d1-0','spiele',110)+' Fußball.</div>'+
+  '<div class="dialog-p">● Spielst du in einem '+makeBlank('d1-1','Verein',120)+'?</div>'+
+  '<div class="dialog-p">○ Ja, wir trainieren zweimal pro Woche. Hast du auch ein '+makeBlank('d1-2','Hobby',110)+'?</div>'+
+  '<div class="dialog-p">● Ja, ich tanze gern. Willst du am Samstag '+makeBlank('d1-3','mitkommen',130)+' zum Training?</div>'+
+  '<div class="dialog-p">○ Gern! Aber ich will nicht immer '+makeBlank('d1-4','gewinnen',120)+', ich will einfach Spaß haben und '+makeBlank('d1-5','mitmachen',130)+'.</div>';
+})();
+
+/* ================= DIALOG 2 ================= */
+(function(){
+  var el = document.getElementById('dlg2');
+  el.innerHTML =
+  '<div class="dialog-p">● Am Samstag machen wir einen Ausflug in den Wald. Wir wollen '+makeBlank('d2-0','wandern',110)+' und dann '+makeBlank('d2-1','grillen',110)+'.</div>'+
+  '<div class="dialog-p">○ Super, kann ich '+makeBlank('d2-2','mitkommen',130)+'?</div>'+
+  '<div class="dialog-p">● Klar! Und am Sonntag treffen sich '+makeBlank('d2-3','alle',90)+' bei mir. Kannst du einen Salat '+makeBlank('d2-4','mitbringen',130)+'?</div>'+
+  '<div class="dialog-p">○ Ich bringe '+makeBlank('d2-5','lieber',100)+' Brot mit. Ist das ok?</div>';
+})();
+
+/* ================= DIALOG 3 ================= */
+(function(){
+  var el = document.getElementById('dlg3');
+  el.innerHTML =
+  '<div class="dialog-p">● Ich gehe heute ins „Welthaus". Da gibt es einen '+makeBlank('d3-0','Film',100)+' über die '+makeBlank('d3-1','Kultur',110)+' in der Türkei.</div>'+
+  '<div class="dialog-p">○ Das ist '+makeBlank('d3-2','interessant',130)+', aber ich '+makeBlank('d3-3','weiß',100)+' nicht viel darüber.</div>'+
+  '<div class="dialog-p">● Das Haus zeigt oft Filme aus anderen Ländern. '+makeBlank('d3-4','Zum Schluss',140)+' gibt es ein Gespräch mit den Gästen – auch '+makeBlank('d3-5','Erwachsene',130)+' und Jugendliche kommen dazu.</div>';
+})();
+
+/* ================= DIALOG 4 ================= */
+(function(){
+  var el = document.getElementById('dlg4');
+  el.innerHTML =
+  '<div class="dialog-p">● In welches Kino wollt ihr?</div>'+
+  '<div class="dialog-p">○ Kino 3. Der Film ist erst ab 16 Jahren für '+makeBlank('d4-0','Jugendliche',130)+'.</div>'+
+  '<div class="dialog-p">● Wir sind schon 18! Zeigst du bitte deinen '+makeBlank('d4-1','Ausweis',120)+'?</div>'+
+  '<div class="dialog-p">○ Bitte. Auf dem Foto siehst du aber sehr '+makeBlank('d4-2','jung',100)+' aus.</div>'+
+  '<div class="dialog-p">● Das ist '+makeBlank('d4-3','in Ordnung',140)+', wir gehen trotzdem rein.</div>';
+})();
+
+/* ================= DIALOG 5 ================= */
+(function(){
+  var el = document.getElementById('dlg5');
+  el.innerHTML =
+  '<div class="dialog-p">● Kommst du mit ins EASY? Da ist heute ein Konzert.</div>'+
+  '<div class="dialog-p">○ Ins EASY? Da sind immer so viele '+makeBlank('d5-0','Leute',110)+'. Ist Peter auch '+makeBlank('d5-1','da',80)+'?</div>'+
+  '<div class="dialog-p">● Nein, der geht auf eine '+makeBlank('d5-2','Party',110)+', er will '+makeBlank('d5-3','tanzen',110)+' und nette Leute treffen.</div>'+
+  '<div class="dialog-p">○ Die '+makeBlank('d5-4','Musik',100)+' im EASY ist gut und zum Schluss spielen sie immer mein '+makeBlank('d5-5','Lieblingslied',150)+'.</div>'+
+  '<div class="dialog-p">● Das Konzert ist um 23 Uhr '+makeBlank('d5-6','zu Ende',120)+'. Dann ist die '+makeBlank('d5-7','Disco',110)+' auf und wir können tanzen.</div>'+
+  '<div class="dialog-p">○ Ja, aber ohne Peter ist es nicht so '+makeBlank('d5-8','lustig',110)+'.</div>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ['Wenn man jemanden mit dem Telefon kontaktiert, nennt man das ...','anrufen'],
+    ['Eine kurze Textnachricht auf dem Handy heißt die ...','SMS'],
+    ['Wenn man nicht ans Telefon geht, kann man auf die ... sprechen.','Mailbox'],
+    ['Im Internet Seiten besuchen nennt man ...','surfen'],
+    ['Eine Person, die man kennt, aber kein guter Freund ist, ist der/die ...','Bekannte'],
+    ['Die Zeit ohne Arbeit oder Schule heißt die ...','Freizeit'],
+    ['Das Gegenteil von "zusammen" ist ...','allein'],
+    ['Wenn man wütend auf jemanden ist, ist man ... auf ihn.','böse'],
+    ['Eine Organisation von Menschen mit gleichem Interesse heißt der ...','Verein'],
+    ['Eine kurze Reise an einen interessanten Ort ist ein ...','Ausflug'],
+    ['Bei einem Spiel Erster sein nennt man ...','gewinnen'],
+    ['Der Ort, an dem man Filme sieht, heißt das ...','Kino'],
+    ['Ein öffentliches Vorspielen von Musik ist ein ...','Konzert'],
+    ['Ein Musikstück, das man singt, ist ein ...','Lied'],
+    ['Wenn man darüber lachen muss, ist es ...','lustig'],
+    ['Eine Gruppe von Musikern nennt man eine ...','Band'],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

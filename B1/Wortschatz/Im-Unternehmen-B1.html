@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11 Im Unternehmen – B1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:#fbfaf7;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{
+  border:none;border-bottom:2px solid var(--teal-light);background:transparent;
+  font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* Kreuzworträtsel (Treppen-Rätsel) */
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{display:flex;align-items:center;justify-content:center;width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;}
+input.letter-box{
+  flex:0 0 28px !important;width:28px !important;height:28px !important;
+  text-align:center;font-size:.9rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;padding:0 !important;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);box-sizing:border-box;
+}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{margin-top:16px;padding-top:14px;border-top:2px dashed #e2ded4;display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){
+  .letter-spacer{flex:0 0 22px;width:22px;height:22px;}
+  input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}
+}
+
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{width:22px;height:22px;text-align:center;vertical-align:middle;border:1px solid var(--teal-pale);font-size:.72rem;font-weight:700;color:var(--teal);}
+.ws-wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;}
+.ws-word{background:var(--teal-pale);color:var(--teal);border-radius:16px;padding:5px 12px;font-size:.85rem;font-weight:600;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">B1 · Modul-Wortschatz</div>
+  <h1>11&nbsp; Im Unternehmen</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="uebungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🗂️ Zuständigkeiten</h2>
+    <div class="vocab-grid" id="vg1"></div>
+  </div>
+
+  <div class="section">
+    <h2>💼 Arbeitsalltag</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>⚖️ Arbeitnehmerrechte</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="uebungen" class="tabcontent">
+
+  <!-- 1 Wiederholung -->
+  <div class="section">
+    <h2>1 Wiederholung</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Arbeitsorte: Lösen Sie das Rätsel und bilden Sie das Lösungswort aus den Buchstaben 1-6.</div>
+      <ol id="cw-clues" style="font-size:.92rem;line-height:1.7;padding-left:20px;"></ol>
+      <div id="cw-body"></div>
+      <div class="loes-wrap">
+        <span style="font-size:.9rem;"><b>🔑 Lösungswort:</b></span>
+        <div id="cw-loes" class="letterrow"></div>
+      </div>
+      <button class="check-btn" data-check="crossword">Prüfen</button>
+      <button class="reset-btn" data-reset="crossword">Zurücksetzen</button>
+      <div class="result-msg" id="res-cw-body"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Welche Wörter haben eine ähnliche Bedeutung? Ordnen Sie zu.</div>
+      <div id="ex1-2"></div>
+      <div class="ex-instructions">TIPP: Der/Die Angestellte ist ein Nomen, wird aber wie ein Adjektiv dekliniert. Deshalb heißt es z. B. <i>ein Angestellter</i> (m, Nominativ) oder <i>der Angestellten</i> (f, Dativ und Genitiv).</div>
+      <button class="check-btn" data-check="selects" data-target="ex1-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Ergänzen Sie das Verb als Partizip.</div>
+      <div class="wordbank"><b>Kasten:</b> beantworten · prüfen · unterschreiben · bezahlen · ausfüllen</div>
+      <div id="ex1-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-3"></div>
+    </div>
+  </div>
+
+  <!-- 2 Zuständigkeiten -->
+  <div class="section">
+    <h2>2 Zuständigkeiten</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Ergänzen Sie die kursiven Wörter durch Wörter aus dem Kasten. Denken Sie an den Artikel, wo nötig.</div>
+      <div class="wordbank"><b>Kasten:</b> Lohn · Angaben · Frist · Betrieb · Leiterin · Unterlagen</div>
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Wer ist verantwortlich? Schreiben Sie die Wörter richtig.</div>
+      <div id="ex2-2"></div>
+      <div class="ex-instructions">TIPP: Wenn Sie aus zwei Nomen ein neues Nomen machen, brauchen Sie manchmal ein -s-, um die Wörter zu verbinden: <i>Arbeitsvertrag, Urlaubsplanung, Unternehmensanwalt.</i></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Welche Wörter passen zusammen? Ordnen Sie zu.</div>
+      <div id="ex2-3"></div>
+      <button class="check-btn" data-check="selects" data-target="ex2-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">4 Eine Führung durch den Betrieb: Finden Sie fünf Wörter und ergänzen Sie diese.</div>
+      <div class="ex-instructions">Wörter im Kreis: Personalabteilung · Lager · Abteilungen · Produktion · Verwaltung</div>
+      <div id="ex2-4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-4"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">5 Welche Wörter haben eine ähnliche Bedeutung? Ordnen Sie zu.</div>
+      <div id="ex2-5"></div>
+      <button class="check-btn" data-check="selects" data-target="ex2-5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-5"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">6 Ergänzen Sie Verben in der richtigen Form.</div>
+      <div class="wordbank"><b>Kasten:</b> entlassen · erfüllen · versäumen · ausstellen · einstellen · enden</div>
+      <div id="ex2-6"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-6">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-6"></div>
+    </div>
+  </div>
+
+  <!-- 3 Arbeitsalltag -->
+  <div class="section">
+    <h2>3 Arbeitsalltag</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Arbeitsbedingungen: Ergänzen Sie die passenden Wörter aus den Silben.</div>
+      <div class="wordbank"><b>Silben:</b> Min- · Fort- · Über- · Ge- · An- · Ur- · -er- · -laubs- · -stun- · -hö- · -dest- · -bil- · -ta- · -hung · -spruch · -dung · -ge- · -lohn · -halts-</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Gesetzliche Feiertage: Finden Sie 6 Wörter und ergänzen Sie diese.</div>
+      <div class="ex-instructions">Wörter im Kreis: Neujahr · Pfingsten · Weihnachten · Silvester · Nationalfeiertag · Feiertage</div>
+      <div id="ex3-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Tätigkeiten im Arbeitsalltag: Ordnen Sie zu.</div>
+      <div id="ex3-3"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-3"></div>
+    </div>
+  </div>
+
+  <!-- 4 Arbeitnehmerrechte -->
+  <div class="section">
+    <h2>4 Arbeitnehmerrechte</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Finden Sie neun Wörter und schreiben Sie diese in der richtigen Form in die Lücken.</div>
+      <div class="ex-instructions">Hinweis: Das Gitter wurde neu erstellt (Ihr Foto war zu klein für eine pixelgenaue Übernahme), enthält aber die passenden Wörter aus dieser Lektion (in Grundform).</div>
+      <div class="ws-wrap"><div id="ws-grid"></div></div>
+      <div class="ws-wordlist" id="ws-words"></div>
+      <div id="ex4-1" style="margin-top:14px;"></div>
+      <div class="ex-instructions">TIPP: Ein <i>Betriebsrat</i> gehört zu einem bestimmten Unternehmen. Eine <i>Gewerkschaft</i> dagegen ist eine unabhängige Organisation von Arbeitnehmern und Arbeitnehmerinnen aus unterschiedlichen Unternehmen und teilweise auch aus unterschiedlichen Berufen.</div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Wie lauten die Verben zu den folgenden Nomen?</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Im Unternehmen</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","(Personal-)Abteilung, -en","ein Teilbereich eines Unternehmens, z. B. für Personalfragen","phòng ban (nhân sự)"],
+ ["die","Abteilungsleitung, -en","die Person oder Gruppe, die eine Abteilung leitet","ban lãnh đạo phòng"],
+ ["die","Angabe, -n","eine Information, die man mitteilt","thông tin cung cấp"],
+ ["die","Anstellung, -en","eine feste Arbeitsstelle","việc làm, sự tuyển dụng"],
+ ["das","Arbeitsverhältnis, -se","die rechtliche Beziehung zwischen Arbeitgeber und Arbeitnehmer","quan hệ lao động"],
+ ["der","Arbeitsvertrag, ¨-e","das Dokument, das die Bedingungen einer Anstellung regelt","hợp đồng lao động"],
+ ["der","Aufgabenbereich, -e","die Aufgaben, für die jemand zuständig ist","phạm vi công việc"],
+ ["der","Auftrag, ¨-e","eine Bestellung oder Aufgabe, die man bekommt","đơn đặt hàng, nhiệm vụ"],
+ ["der/die","Beauftragte, -n","eine Person, die für eine bestimmte Aufgabe zuständig ist","người phụ trách"],
+ ["die","(Arbeits-)Bedingung, -en","eine Voraussetzung für die Arbeit","điều kiện (làm việc)"],
+ ["der","Betrieb, -e","ein Unternehmen oder eine Firma","doanh nghiệp, xí nghiệp"],
+ ["das","Dokument, -e","ein wichtiges Schriftstück","tài liệu, giấy tờ"],
+ ["die","Entlassung, -en","das Beenden eines Arbeitsverhältnisses durch den Arbeitgeber","sự sa thải"],
+ ["die","(Lohn-/Gehalts-)Erhöhung, -en","wenn man mehr Geld für die Arbeit bekommt","sự tăng lương"],
+ ["die","Etage, -n","ein Stockwerk in einem Gebäude","tầng (nhà)"],
+ ["die","(Kündigungs-)Frist, -en","die Zeit, die man vor dem Ende eines Vertrags einhalten muss","thời hạn báo trước (nghỉ việc)"],
+ ["das","Lager, -","ein Ort, an dem Waren aufbewahrt werden","kho hàng"],
+ ["der/die","Leiter, -; Leiterin, -nen","eine Person, die etwas leitet","người lãnh đạo, quản lý"],
+ ["der","Lohn, ¨-e","das Geld, das man für Arbeit bekommt","tiền lương"],
+ ["der","Notausgang, ¨-e","ein Ausgang für den Notfall","lối thoát hiểm"],
+ ["die","Produktion, -en","das Herstellen von Waren","sự sản xuất"],
+ ["die","(Arbeits-)Sicherheit (nur Sg.)","der Schutz vor Gefahren am Arbeitsplatz","an toàn lao động"],
+ ["die","Unterlagen (hier nur Pl.)","wichtige Dokumente oder Papiere","giấy tờ, hồ sơ"],
+ ["der/die","Unternehmer, -; Unternehmerin, -nen","eine Person, die ein Unternehmen leitet oder besitzt","doanh nhân"],
+ ["die","Urlaubsplanung, -en","die Organisation der Urlaubszeiten","việc lên kế hoạch nghỉ phép"],
+ ["die","Verwaltung, -en","der Bereich, der organisatorische Aufgaben erledigt","bộ phận hành chính"],
+ ["die","Ware, -n","ein Produkt, das man kauft oder verkauft","hàng hóa"],
+ ["","aus|stellen (+A)","ein Dokument offiziell ausfertigen","cấp (giấy tờ)"],
+ ["","bearbeiten (+A)","sich mit einer Sache beschäftigen und sie erledigen","xử lý (công việc)"],
+ ["","sich beschäftigen mit (+D)","sich mit etwas befassen","bận rộn với, làm việc với"],
+ ["","ein|stellen (+A)","jemanden als Mitarbeiter anstellen","tuyển dụng"],
+ ["","enden","aufhören, zu Ende gehen","kết thúc"],
+ ["","entlassen (+A)","jemanden aus der Arbeit kündigen","sa thải"],
+ ["","erfüllen (+A)","eine Bedingung oder Anforderung ganz einhalten","đáp ứng, hoàn thành"],
+ ["","ergänzen (+A)","etwas Fehlendes hinzufügen","bổ sung"],
+ ["","hin|weisen auf (+A)","auf etwas aufmerksam machen","chỉ ra, lưu ý về"],
+ ["","versäumen (+A)","eine Frist oder Gelegenheit verpassen","bỏ lỡ (thời hạn)"],
+ ["","ganztags","den ganzen Tag","cả ngày"],
+ ["","halbtags","nur einen halben Tag","nửa ngày"],
+ ["","rechtlich","das Recht betreffend","về mặt pháp lý"],
+ ["","selbstständig","unabhängig, ohne Chef arbeitend","tự chủ, độc lập"],
+ ["","zurzeit","im Moment, gerade jetzt","hiện tại, lúc này"],
+];
+
+var vocab2 = [
+ ["der","Anspruch, ¨-e","ein Recht auf etwas","quyền được hưởng"],
+ ["die","Fortbildung, -en","ein Kurs, um beruflich mehr zu lernen","đào tạo nâng cao"],
+ ["der","Mindestlohn, ¨-e","der niedrigste Lohn, den man gesetzlich bekommen muss","lương tối thiểu"],
+ ["der","Nationalfeiertag, -e","der offizielle Feiertag eines Landes","quốc lễ"],
+ ["","Pfingsten (nur Pl.)","ein christlicher Feiertag im Frühling/Sommer","lễ Hiện Xuống"],
+ ["die","Überstunde, -n","zusätzliche Arbeitszeit über die normale Arbeitszeit hinaus","giờ làm thêm"],
+ ["der","Urlaubstag, -e","ein Tag, an dem man bezahlten Urlaub hat","ngày nghỉ phép"],
+ ["","analysieren (+A)","genau untersuchen","phân tích"],
+ ["","beachten (+A)","auf etwas achten, es befolgen","chú ý, tuân theo"],
+ ["","installieren (+A)","ein Programm oder Gerät einrichten","cài đặt"],
+ ["","sichern (+A)","etwas schützen oder speichern","bảo vệ, sao lưu"],
+ ["","unterrichten (+A)","jemandem etwas beibringen","giảng dạy"],
+ ["","veröffentlichen (+A)","etwas öffentlich zugänglich machen","xuất bản, công bố"],
+ ["","zu|bereiten (+A)","Essen fertig machen","chế biến (món ăn)"],
+ ["","gesetzlich","durch das Gesetz bestimmt","theo luật định"],
+];
+
+var vocab3 = [
+ ["die","Arbeitszeit, -en","die Zeit, die man arbeitet","thời gian làm việc"],
+ ["der","Betriebsrat, ¨-e","die gewählte Vertretung der Arbeitnehmer in einem Betrieb","hội đồng công nhân (trong doanh nghiệp)"],
+ ["die","Gewerkschaft, -en","eine Organisation, die die Interessen der Arbeitnehmer vertritt","công đoàn"],
+ ["das","Recht, -e","ein gesetzlich geschützter Anspruch","quyền lợi"],
+ ["der","Streik, -s","wenn Arbeitnehmer aus Protest nicht arbeiten","cuộc đình công"],
+ ["die","Wahl, -en","das Auswählen, z. B. eines Vertreters","cuộc bầu cử"],
+ ["die","Zustimmung, -en","das Einverständnis mit etwas","sự đồng ý"],
+ ["","fordern (+A)","etwas verlangen oder beanspruchen","yêu cầu, đòi hỏi"],
+ ["","streiken","aus Protest nicht arbeiten","đình công"],
+ ["","verlangen (+A)","etwas fordern oder erwarten","yêu cầu"],
+ ["","zu|stimmen (+D)","mit etwas einverstanden sein","đồng ý"],
+ ["","erfolgreich","mit gutem Ergebnis, Erfolg habend","thành công"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    var ansList = s.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    if(ansList.indexOf(s.value) > -1){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function checkMultiMC(containerId){
+  var container = document.getElementById(containerId);
+  var chips = container.querySelectorAll('.mc-opt');
+  var correct = 0, total = chips.length;
+  chips.forEach(function(c){
+    var isCorrect = c.dataset.correct==='1';
+    var isSelected = c.classList.contains('selected');
+    if(isCorrect){ c.classList.add('correct'); }
+    if(isSelected && !isCorrect){ c.classList.add('wrong'); }
+    if(isCorrect===isSelected) correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    var multi = g.classList.contains('mc-cloud');
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        if(multi){
+          o.classList.toggle('selected');
+        } else {
+          g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+          o.classList.add('selected');
+        }
+      });
+    });
+  });
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='multimc') checkMultiMC(target);
+    else if(kind==='crossword') checkCrossword();
+  });
+});
+document.querySelectorAll('.reset-btn[data-reset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.dataset.reset==='crossword') resetCrossword();
+  });
+});
+
+/* ================= EX 1.1 Kreuzworträtsel (Modul aus Raetsel_Vorlage.html) ================= */
+function renderCrossword(opts){
+  var body = document.getElementById(opts.bodyId);
+  var clues = document.getElementById(opts.cluesId);
+  clues.innerHTML = opts.words.map(function(w){ return '<li>'+w.clue+'</li>'; }).join('');
+  var targetCol = Math.max.apply(null, opts.words.map(function(w){ return w.markPos - 1; }));
+  opts.words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'"'+(isMarked?(' data-los="'+wi+'"'):'')+'>';
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+  var loesBox = document.getElementById(opts.loesId);
+  var loesHtml = '';
+  for(var k=0; k<opts.loesung.length; k++){
+    loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" data-ans="'+opts.loesung[k]+'" id="'+opts.bodyId+'-los-'+k+'">';
+  }
+  loesBox.innerHTML = loesHtml;
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(opts.bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+function checkCrossword(){
+  var inputs = document.querySelectorAll('#cw-body input.letter-box:not(.loesung)');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-cw-body');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetCrossword(){
+  document.querySelectorAll('#cw-body input.letter-box, #cw-loes input.letter-box').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw-body').textContent='';
+}
+
+renderCrossword({
+  bodyId:'cw-body', loesId:'cw-loes', cluesId:'cw-clues',
+  loesung:'HERBST',
+  words:[
+    {clue:'1. Hier wird geschnitten, gebraten und gebacken.', answer:'küche', markPos:4},
+    {clue:'2. Hier werden Straßen und Häuser gebaut.', answer:'baustelle', markPos:6},
+    {clue:'3. Hier werden Kranke und Verletzte hingebracht.', answer:'krankenhaus', markPos:2},
+    {clue:'4. Hier wird geplant, organisiert und geschrieben.', answer:'büro', markPos:1},
+    {clue:'5. Hier werden Sachen hergestellt und repariert.', answer:'werkstatt', markPos:5},
+    {clue:'6. Hier werden Kunden beraten und Produkte verkauft.', answer:'geschäft', markPos:8},
+  ]
+});
+
+/* ================= EX 1.2 Ähnliche Bedeutung ================= */
+(function(){
+  var items = [
+    ["der Werktag","der Arbeitstag"],
+    ["der Feiertag","ein besonderer Tag, an dem man frei hat"],
+    ["der Mitarbeiter","der Angestellte"],
+    ["der Kunde","der Käufer"],
+    ["der Vertrag","die schriftliche Vereinbarung"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex1-2');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e12-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 1.3 Partizip ================= */
+(function(){
+  var items = [
+    ["Hat der Kunde die Rechnung schon","bezahlt"],
+    ["Hat der neue Mitarbeiter den Vertrag schon","unterschrieben"],
+    ["Warum haben Sie meine E-Mail nicht","beantwortet"],
+    ["Haben Sie dieses Formular schon","ausgefüllt"],
+    ["Hat der Chef die Papiere","geprüft"],
+  ];
+  var el = document.getElementById('ex1-3');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e13-'+i, it[1], 160)+'?</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.1 Kursive Wörter ersetzen ================= */
+(function(){
+  var items = [
+    ["Frau Müller ist die Chefin/","die Leiterin"],
+    ["Es ist Ihr erster Arbeitstag. Ich zeige Ihnen erst einmal die Firma/","der Betrieb"],
+    ["Ich habe mein Gehalt/","den Lohn"],
+    ["Haben Sie mir alle Dokumente/","die Unterlagen"],
+    ["Hier müssten Sie noch einige Informationen/","Angaben"],
+    ["Das Unternehmen kann dem Arbeitgeber innerhalb einer bestimmten Zeit/","Frist"],
+  ];
+  var el = document.getElementById('ex2-1');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e21-'+i, it[1], 150)+' ...</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.2 Wer ist verantwortlich? (Anagramme) ================= */
+(function(){
+  var items = [
+    ["Die [beitsverArgeträ] bearbeite ich nicht. Dafür ist die [nallungPerabsotei] zuständig.","Arbeitsverträge|Personalabteilung"],
+    ["Die [nungUrlplaubs] gehört zum Aufgabenbereich der [teileiAblungstung]. Damit beschäftige ich mich nicht.","Urlaubsplanung|Abteilungsleitung"],
+    ["Für rechtliche Fragen sind unsere [anUnwältertemensneh] zuständig. Davon verstehe ich nichts.","Unternehmensanwälte"],
+    ["Als [aufterBetrag] für Arbeitssicherheit bin ich dafür verantwortlich, dass die [gegänausNot] frei sind.","Beauftragter|Notausgänge"],
+    ["Als Leiterin der [niktelTechablung] möchte ich Sie darauf hinweisen, dass der Strom heute für eine Stunde abgeschaltet werden muss.","Technikabteilung"],
+  ];
+  var el = document.getElementById('ex2-2');
+  el.innerHTML = items.map(function(it,i){
+    var ans = it[1].split('|');
+    var blanks = ans.map(function(a,k){ return makeBlank('e22-'+i+'-'+k, a, 190); }).join(' … ');
+    return '<div class="qline">'+(i+1)+'. '+it[0]+'<br>→ '+blanks+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.3 Komposita ================= */
+(function(){
+  var items = [
+    ["Kündigungs-","-frist"],
+    ["Arbeits-","-bedingungen"],
+    ["Gehalts-","-erhöhung"],
+    ["Abteilungs-","-leitung"],
+    ["Berufs-","-ausbildung"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex2-3');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e23-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 2.4 Führung durch den Betrieb ================= */
+(function(){
+  var el = document.getElementById('ex2-4');
+  el.innerHTML =
+  '<p>Der Betrieb hat verschiedene '+makeBlank('e24-0','Abteilungen',160)+
+  '. Auf dieser Etage sind nur Büroräume, hier sitzt die gesamte '+makeBlank('e24-1','Verwaltung',160)+
+  '. Hier sehen Sie zum Beispiel das Büro der '+makeBlank('e24-2','Personalabteilung',190)+
+  '. Die Waren werden unten hergestellt, in der '+makeBlank('e24-3','Produktion',160)+
+  '. Außerdem haben wir noch ein '+makeBlank('e24-4','Lager',150)+'. Von hier werden die Waren direkt zu den Kunden geliefert.</p>';
+})();
+
+/* ================= EX 2.5 Ähnliche Bedeutung ================= */
+(function(){
+  var items = [
+    ["der Unternehmer","der Selbstständige"],
+    ["die Entlassung","die Kündigung"],
+    ["das Arbeitsverhältnis","die Anstellung"],
+    ["die Teilzeitarbeit","die Halbtagsbeschäftigung"],
+    ["die Vollzeitarbeit","der Ganztagsjob"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex2-5');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e25-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 2.6 Verben ergänzen ================= */
+(function(){
+  var items = [
+    ["Das Arbeitsverhältnis","endet","zum 30.9."],
+    ["Das Unternehmen hat nicht genug Aufträge und muss Personal","entlassen",""],
+    ["Der Betrieb kann zurzeit keine neuen Mitarbeiter","einstellen",""],
+    ["Der Arbeitsvertrag wird nicht verlängert, da der Arbeitnehmer die Bedingungen nicht","erfüllt","hat."],
+    ["Der Arbeitgeber muss Ihnen ein Arbeitszeugnis","ausstellen",""],
+    ["Leider haben Sie die Frist","versäumt",""],
+  ];
+  var el = document.getElementById('ex2-6');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e26-'+i, it[1], 150)+' '+it[2]+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 3.1 Arbeitsbedingungen (Silben) ================= */
+(function(){
+  var items = [
+    ["Ich habe diesen Monat zehn","Überstunden","gemacht."],
+    ["Zurzeit mache ich eine einjährige","Fortbildung","im Computerbereich."],
+    ["Als Arbeitnehmer hat man","Anspruch","auf Bezahlung."],
+    ["Außerdem hat man ein Recht auf mindestens 24","Urlaubstage","."],
+    ["Der gesetzliche","Mindestlohn","gibt an, wie viel man pro Stunde mindestens verdienen muss."],
+    ["Wenn man länger in einem Betrieb arbeitet, bekommt man regelmäßig eine","Gehaltserhöhung","."],
+  ];
+  var el = document.getElementById('ex3-1');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e31-'+i, it[1], 190)+' '+it[2]+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 3.2 Feiertage ================= */
+(function(){
+  var el = document.getElementById('ex3-2');
+  el.innerHTML =
+  '<p><b>E-Mail 1:</b><br>Sehr geehrter Herr Goldau,<br>für meine Urlaubsplanung hätte ich eine Frage: Gibt es im Juni und im Oktober gesetzliche '+
+  makeBlank('e32-0','Feiertage',160)+' in Deutschland?<br>Vielen Dank im Voraus.<br>Mit freundlichen Grüßen<br>Maria Lopez</p>'+
+  '<p><b>E-Mail 2:</b><br>Sehr geehrte Frau Lopez,<br>dieses Jahr ist am 10. und 11. Juni '+makeBlank('e32-1','Pfingsten',160)+
+  '. Und am 3. Oktober ist der deutsche '+makeBlank('e32-2','Nationalfeiertag',180)+
+  '. Bitte beachten Sie auch, dass an '+makeBlank('e32-3','Weihnachten',160)+
+  ' nur der 25. und 26. Dezember Feiertage sind. Ebenso ist der 1. Januar, also '+makeBlank('e32-4','Neujahr',160)+
+  ', frei, nicht aber '+makeBlank('e32-5','Silvester',160)+' der 31. Dezember.<br>Mit freundlichen Grüßen<br>Sebastian Goldau</p>';
+})();
+
+/* ================= EX 3.3 Tätigkeiten ================= */
+(function(){
+  var items = [
+    ["ein Computerprogramm","installieren"],
+    ["Daten auf dem Computer","sichern"],
+    ["Mahlzeiten","zubereiten"],
+    ["eine Schulklasse","unterrichten"],
+    ["ein Buch","veröffentlichen"],
+    ["Fehler oder Daten","analysieren"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex3-3');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e33-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 4.1 Wortsuche + Lücken ================= */
+(function(){
+  var grid = [
+    "ONSOPFORDERUNG",
+    "EPNEGZLQRLHEYB",
+    "KUVHKQIASTREIK",
+    "GEWERKSCHAFTGI",
+    "WLTARSBEIRTEBS",
+    "TMBHCIERGLOFRE",
+    "WGTHCERCXEJWCO",
+    "NHOLLBAMSPHODB",
+    "OSELBCRRDAQWZO",
+    "ZUSTIMMENUNRIO",
+    "HJTAIOOHWNVWYG",
+    "XILXNTRKLIYSJR",
+    "DBUDZKKXIQBZRR",
+    "PGTIEZSTIEBRAH",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+  var words = ['RECHT','BETRIEBSRAT','GEWERKSCHAFT','STREIK','FORDERUNG','ARBEITSZEIT','LOHN','ZUSTIMMEN','ERFOLGREICH'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">1. Wenn ein Unternehmen mindestens fünf Arbeitnehmer hat, haben diese das '+makeBlank('e41-0','Recht',140)+
+  ', einen '+makeBlank('e41-1','Betriebsrat',160)+' zu wählen, der ihre Interessen vertritt.</div>'+
+  '<div class="qline">2. Die '+makeBlank('e41-2','Gewerkschaft',170)+' vertritt ebenfalls die Interessen der Arbeitnehmer.</div>'+
+  '<div class="qline">3. Bei einem '+makeBlank('e41-3','Streik',140)+' gehen die Angestellten an einem normalen Werktag nicht zur Arbeit.</div>'+
+  '<div class="qline">4. Sie stellen '+makeBlank('e41-4','Forderungen',160)+' an die Arbeitgeber, um ihre Arbeitsbedingungen zu verbessern.</div>'+
+  '<div class="qline">5. Häufig werden kürzere '+makeBlank('e41-5','Arbeitszeiten',170)+' oder höhere '+makeBlank('e41-6','Löhne',140)+' verlangt.</div>'+
+  '<div class="qline">6. Wenn die Arbeitgeber den Forderungen '+makeBlank('e41-7','zustimmen',160)+', war der Streik '+makeBlank('e41-8','erfolgreich',160)+'.</div>';
+})();
+
+/* ================= EX 4.2 Verben zu Nomen ================= */
+(function(){
+  var items = [
+    ["der Streik","streiken"],
+    ["die Forderung","fordern"],
+    ["die Wahl","wählen"],
+    ["die Zustimmung","zustimmen"],
+  ];
+  var el = document.getElementById('ex4-2');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' – '+makeBlank('e42-'+i, it[1], 160)+'</div>';
+  }).join('');
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Das Dokument, das die Bedingungen einer Anstellung regelt: der ...", "Arbeitsvertrag"],
+    ["Das Beenden eines Arbeitsverhältnisses durch den Arbeitgeber: die ...", "Entlassung"],
+    ["Der niedrigste Lohn, den man gesetzlich bekommen muss: der ...", "Mindestlohn"],
+    ["Zusätzliche Arbeitszeit über die normale Arbeitszeit hinaus: die ...", "Überstunde"],
+    ["Eine Organisation, die die Interessen der Arbeitnehmer vertritt: die ...", "Gewerkschaft"],
+    ["Wenn Arbeitnehmer aus Protest nicht arbeiten: der ...", "Streik"],
+    ["Die gewählte Vertretung der Arbeitnehmer in einem Betrieb: der ...", "Betriebsrat"],
+    ["Ein Ort, an dem Waren aufbewahrt werden: das ...", "Lager"],
+    ["Eine Person, die ein Unternehmen leitet oder besitzt: der ...", "Unternehmer"],
+    ["Jemanden als Mitarbeiter anstellen: ...", "einstellen"],
+    ["Eine Frist oder Gelegenheit verpassen: ...", "versäumen"],
+    ["Mit etwas einverstanden sein: ...", "zustimmen"],
+    ["Nur einen halben Tag: ...", "halbtags"],
+    ["Unabhängig, ohne Chef arbeitend: ...", "selbstständig"],
+    ["Mit gutem Ergebnis, Erfolg habend: ...", "erfolgreich"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 190)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

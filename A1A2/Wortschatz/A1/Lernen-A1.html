@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Lernen – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;
+}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;
+}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;
+  padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;
+}
+.example-box{
+  background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 14px;margin:10px 0;font-size:0.9rem;color:var(--teal);line-height:1.9;
+}
+.example-box b{color:var(--teal-light);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{
+  border:none;border-bottom:2px solid var(--teal-light);background:transparent;
+  font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;max-width:220px;}
+.dialog-p{margin:6px 0;}
+.check-btn{
+  background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;
+  cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* Illustration matching */
+.illus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:12px 0;}
+@media(max-width:480px){.illus-grid{grid-template-columns:1fr;}}
+.illus-card{border:1px solid #e2ded4;border-radius:12px;padding:10px;background:#fbfaf7;text-align:center;}
+.illus-card .illus-label{font-weight:700;color:var(--teal);margin-bottom:4px;}
+.illus-card svg{width:100%;max-width:110px;height:90px;}
+.illus-card select{
+  margin-top:8px;width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;
+}
+.illus-example{opacity:0.75;}
+
+/* Odd-one-out */
+.oddline{margin:12px 0;line-height:2;}
+.oddword{cursor:pointer;padding:2px 6px;border-radius:6px;}
+.oddword:hover{background:var(--teal-pale);}
+.oddword.selected{background:var(--orange-light);color:var(--orange);text-decoration:line-through;font-weight:700;}
+.oddword.selected.correct{background:#d1fae5;color:var(--ok);}
+.oddword.selected.wrong{background:#fde2e2;color:var(--bad);}
+
+/* TTS buttons */
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
+.pron-group{margin:14px 0;}
+.pron-playall{
+  background:var(--teal);color:#fff;border:none;border-radius:20px;padding:6px 16px;
+  font-size:.85rem;cursor:pointer;margin-bottom:8px;
+}
+.pron-playall:hover{background:var(--teal-light);}
+.pron-chip{
+  background:var(--teal-pale);color:var(--teal);padding:6px 12px;border-radius:16px;
+  font-size:.88rem;cursor:pointer;display:inline-block;margin:4px 4px 0 0;
+}
+.pron-chip:hover{background:var(--orange-light);color:var(--orange);}
+.stress-row{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;margin:6px 0;
+  background:#fbfaf7;border:1px solid #e2ded4;border-radius:10px;flex-wrap:wrap;
+}
+.sr-play{
+  background:var(--teal);color:#fff;border:none;border-radius:50%;width:30px;height:30px;
+  font-size:.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.sr-play:hover{background:var(--teal-light);}
+.sr-word{flex:1;font-size:1rem;min-width:120px;}
+.sr-unit{cursor:pointer;padding:1px 3px;border-radius:4px;color:var(--teal);font-weight:600;}
+.sr-unit:hover{background:var(--teal-pale);}
+.sr-unit.selected{color:var(--orange);}
+.sr-unit.selected::after{content:' ●';color:var(--orange);font-size:.7rem;}
+.sr-unit.correct{color:var(--ok);}
+.sr-unit.correct::after{content:' ●';color:var(--ok);font-size:.7rem;}
+.sr-unit.wrongpick{color:var(--bad);text-decoration:line-through;}
+.sr-unit.wrongpick::after{content:' ✗';color:var(--bad);font-size:.7rem;}
+.sr-loesung{
+  background:var(--orange);color:#fff;border:none;border-radius:16px;
+  padding:6px 14px;font-size:.82rem;cursor:pointer;flex-shrink:0;margin-left:auto;
+}
+.sr-loesung:hover{background:#d5722c;}
+.sr-result{font-size:.78rem;font-weight:700;color:var(--teal);flex-shrink:0;min-width:90px;text-align:right;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A1 · Modul 10 · Wortschatz</div>
+  <h1>10&nbsp; Lernen</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🏫 Unterricht</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box" id="ex-box-1"></div>
+  </div>
+
+  <div class="section">
+    <h2>📖 Texte</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>📝 Tests</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <div class="scale-box">💡 TIPP – In langen Wörtern die kurzen Wörter finden: Hausaufgabe = das Haus + die Aufgabe (eine Aufgabe, die man zu Hause macht) · der Antwortbogen = die Antwort + der Bogen (ein Bogen Papier, in den man die Antwort einträgt)</div>
+  </div>
+
+  <div class="section">
+    <h2>🗣️ Wie sprechen wir im Unterricht?</h2>
+    <div class="ex-instructions">Man sagt: <b>laut – leise</b> → sprechen &nbsp;·&nbsp; <b>gut – schlecht</b> → hören / verstehen</div>
+    <div id="info-box-2"></div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache</h2>
+    <div class="ex-instructions">Sie sprechen ein <b>kein r</b> und ein <b>schwaches a</b>. Hören Sie zu und lesen Sie laut mit.</div>
+
+    <h3>-er am Wortende</h3>
+    <div class="pron-group" id="pron-a"></div>
+
+    <h3>bei den Präfixen ver-, er-</h3>
+    <div class="pron-group" id="pron-b"></div>
+
+    <h3>r nach einem langen Vokal</h3>
+    <div class="pron-group" id="pron-c"></div>
+
+    <h3>Wortakzent: •● (schwach–stark)</h3>
+    <div class="pron-group" id="pron-d"></div>
+
+    <h3>Wortakzent: ●• (stark–schwach)</h3>
+    <div class="pron-group" id="pron-e"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Wörter im Unterricht</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Ordnen Sie das passende Wort dem Bild zu.</div>
+      <div class="wordbank"><b>Kasten:</b> ankreuzen · Papier · Wort · Bleistift · Buchstabe · Kugelschreiber · Satz · hören · schreiben <i>(die Frage = Beispiel)</i></div>
+      <div class="illus-grid" id="ex1-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Im Unterricht – Ergänzen Sie</h2>
+
+    <div class="exercise">
+      <div class="ex-title">Dialoge 1 bis 3</div>
+      <div class="wordbank"><b>Kasten:</b> aus sein · verstehen · Bleistift · erklären · beginnen · Pause · Beispiel <i>(Kuli = Beispiel)</i></div>
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Dialoge 4 bis 8</div>
+      <div class="wordbank"><b>Kasten:</b> Kurs · Schule · Text · vergessen · fehlen · lesen · wiederholen · glauben · richtig · Fehler · Klasse <i>(Hausaufgaben = Beispiel)</i></div>
+      <div id="ex2-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-2"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Prüfung</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Ergänzen Sie den Text.</div>
+      <div class="wordbank"><b>Kasten:</b> zu Ende · Aufgaben (2x) · ergänzen · Fragen · Lösungen · Antwortbogen · abgeben · richtig · ankreuzen · falsch <i>(Test = Beispiel)</i></div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Je ein Verb passt nicht. Klicken Sie das falsche Wort an.</div>
+      <div class="ex-instructions">Ein Wort in jeder Zeile passt nicht zum Satz. Klicken Sie es an – es wird durchgestrichen.</div>
+      <div id="ex3-2"></div>
+      <button class="check-btn" data-check="odd" data-target="ex3-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Wie heißt das Nomen?</div>
+      <div id="ex3-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-3"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Silbenrätsel – Finden Sie die Wörter zu den Sätzen</h2>
+    <div class="wordbank"><b>Silben:</b> ANT · AUF · BEN · BER · BO · DER · GA · GAR · GEL · GEN · HAUS · KIN · KU · PA · PIER · SCHREI · TEN · WORT</div>
+    <div class="exercise">
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+  <div class="section">
+    <h2>5 Aussprache – Wortakzent</h2>
+    <div class="ex-instructions">Schritt 1: 🔊 anhören. Schritt 2: Klicken Sie auf die Silbe, die betont ist (sie wird orange + ●). Schritt 3: „Lösung" klicken und vergleichen.</div>
+
+    <h3>be-, ver-, er-, ge- sind nicht betont</h3>
+    <div class="exercise"><div id="ex5-1"></div></div>
+
+    <h3>auf-, an-, ab-, aus- sind betont</h3>
+    <div class="exercise"><div id="ex5-2"></div></div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Lernen</h2>
+    <div class="ex-instructions">Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","Klasse, -n","eine Gruppe von Schülern, die zusammen lernt","lớp học"],
+ ["der","Kurs, -e","ein Sprachkurs oder Trainingskurs","khóa học"],
+ ["der/die","Lehrer/in, -/-nen","eine Person, die unterrichtet","giáo viên"],
+ ["","erklären (+A)","etwas verständlich machen","giải thích"],
+ ["die","Hausaufgabe, -n","eine Aufgabe, die man zu Hause macht","bài tập về nhà"],
+ ["die","Schule, -n","der Ort, an dem Kinder lernen","trường học"],
+ ["die","Grundschule / Gesamtschule, -n","die ersten Schuljahre / eine Schule für alle Niveaus","trường tiểu học / trường tổng hợp"],
+ ["die","Hauptschule / Mittelschule, -n","Schultypen in Deutschland","trường loại (Hauptschule/Mittelschule)"],
+ ["die/das","Realschule, -n / Gymnasium, -ien","weitere Schultypen in Deutschland","trường trung học / trung học phổ thông"],
+ ["der/die","Schüler/in, -/-nen","eine Person, die in die Schule geht","học sinh"],
+ ["der","Kindergarten, ¨-","ein Ort für kleine Kinder vor der Schule","nhà trẻ, mẫu giáo"],
+ ["","lernen","neues Wissen bekommen","học"],
+ ["","wissen / können","Information im Kopf haben / etwas machen können","biết / có thể"],
+ ["","wiederholen","noch einmal machen oder sagen","ôn lại, lặp lại"],
+ ["","behalten","im Kopf nicht vergessen","nhớ, giữ lại"],
+ ["","vergessen","nicht mehr wissen","quên"],
+ ["der","Unterricht (Sg.)","die Zeit, in der man in der Schule lernt","giờ học, tiết học"],
+ ["","beginnen","anfangen","bắt đầu"],
+ ["","aufhören","nicht weitermachen","dừng lại"],
+ ["","aus sein / zu Ende sein","fertig sein","kết thúc, xong"],
+ ["das","Ende (Sg.)","der letzte Moment","sự kết thúc"],
+ ["die","Pause, -n","eine kurze Zeit ohne Unterricht","giờ giải lao"],
+ ["der","Bleistift, -e","damit kann man schreiben, man kann es wegradieren","bút chì"],
+ ["der","Kugelschreiber, -","ein Stift zum Schreiben","bút bi"],
+ ["das","Papier (Sg.)","man schreibt darauf","giấy"],
+ ["das","Buch, ¨-er","viele Seiten mit Text zusammen","sách"],
+ ["das","Wörterbuch, ¨-er","ein Buch mit vielen Wörtern und ihrer Bedeutung","từ điển"],
+ ["das","Heft, -e","ein dünnes Buch zum Schreiben","vở"],
+ ["die/der","CD, -s / CD-Player, -","Geräte und Medien für Musik oder Daten","đĩa CD / đầu đĩa CD"],
+ ["die","Frage, -n / Antwort, -en","was man fragt / was man sagt, wenn man antwortet","câu hỏi / câu trả lời"],
+ ["","fragen / antworten","eine Frage stellen / eine Antwort geben","hỏi / trả lời"],
+ ["die","Aussage, -n","ein Satz mit einer Information","lời phát biểu, câu khẳng định"],
+ ["","also","ein Wort, das eine Folge einleitet","vậy thì, do đó"],
+];
+
+var vocab2 = [
+ ["der","Buchstabe, -n","ein einzelnes Zeichen im Alphabet, z. B. A, B, C","chữ cái"],
+ ["das","Wort, ¨-er","eine Gruppe von Buchstaben mit einer Bedeutung","từ (ngữ)"],
+ ["","bedeuten","die Bedeutung von etwas sein","có nghĩa là"],
+ ["der","Satz, ¨-e","mehrere Wörter zusammen mit Punkt am Ende","câu (văn)"],
+ ["der","Text, -e","mehrere Sätze zusammen","văn bản, bài đọc"],
+ ["","schreiben","Buchstaben und Wörter auf Papier machen","viết"],
+ ["","lesen","einen Text mit den Augen verstehen","đọc"],
+ ["","hören","mit den Ohren wahrnehmen","nghe"],
+ ["","verstehen","die Bedeutung von etwas wissen","hiểu"],
+ ["die","Sprache, -n","z. B. Deutsch, Englisch, Vietnamesisch","ngôn ngữ"],
+ ["","sprechen","mit dem Mund reden","nói"],
+ ["","langsam / schnell","mit wenig / mit viel Tempo","chậm / nhanh"],
+ ["das","Beispiel, -e","ein Text oder Satz, der etwas zeigt","ví dụ"],
+ ["","usw. (und so weiter)","es gibt noch mehr","vân vân"],
+];
+
+var vocab3 = [
+ ["die","Übung, -en","eine Aufgabe zum Üben","bài tập luyện"],
+ ["","üben","etwas oft machen, um es besser zu können","luyện tập"],
+ ["die","Prüfung, -en","ein Test, den man bestehen muss","kỳ thi, bài kiểm tra"],
+ ["der/die","Prüfer/in, -/-nen","eine Person, die eine Prüfung kontrolliert","giám khảo"],
+ ["der","Test, -s","eine kurze Prüfung","bài kiểm tra ngắn"],
+ ["der","Teil, -e","ein Stück von etwas Ganzem","phần"],
+ ["die","Lösung, -en","die richtige Antwort auf eine Aufgabe","đáp án, lời giải"],
+ ["der","Antwortbogen, ¨-","das Papier, auf das man die Antworten schreibt","phiếu trả lời"],
+ ["die","Aufgabe, -n","etwas, das man machen oder lösen muss","bài tập, nhiệm vụ"],
+ ["","ankreuzen","ein X in ein Kästchen machen","đánh dấu X, tích chọn"],
+ ["","ergänzen","eine Lücke füllen","điền vào chỗ trống"],
+ ["","übertragen","Information von einem Ort zu einem anderen schreiben","chuyển, chép sang"],
+ ["","abgeben","etwas zu einer Person bringen, z. B. am Ende einer Prüfung","nộp (bài)"],
+ ["der","Fehler, -","etwas, das nicht richtig ist","lỗi sai"],
+ ["","korrigieren","einen Fehler richtig machen","sửa lỗi"],
+ ["","richtig / falsch","korrekt / nicht korrekt","đúng / sai"],
+ ["","fehlen","nicht da sein, wenn man da sein sollte","vắng mặt, thiếu"],
+ ["","einmal","ein Mal","một lần"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art && art.indexOf('/')===-1 ? art+' ' : '') + word.split(',')[0].split('(')[0].split('/')[0].trim();
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button class="speak-btn" data-text="'+speakText+'">🔊</button>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= Beispiel-Box (Unterricht Zeiten) ================= */
+(function(){
+  var lines = [
+    'Der Unterricht beginnt um 8 Uhr.',
+    'Die Stunde ist um 10 Uhr aus.',
+    'Der Unterricht ist um 18 Uhr zu Ende.'
+  ];
+  var el = document.getElementById('ex-box-1');
+  el.innerHTML = '<b>Beispiele:</b><br>' + lines.map(function(l){
+    return '<span class="dialog-p">'+l+' <button class="speak-btn" data-text="'+l+'">🔊</button></span>';
+  }).join('<br>');
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+})();
+
+/* ================= INFO-Box (laut-leise / gut-schlecht) ================= */
+(function(){
+  var lines = [
+    'Sie sprechen so leise, ich verstehe Sie schlecht.',
+    'Sie sprechen laut, ich kann Sie gut hören.'
+  ];
+  var el = document.getElementById('info-box-2');
+  el.innerHTML = lines.map(function(l){
+    return '<div class="dialog-p">'+l+' <button class="speak-btn" data-text="'+l+'">🔊</button></div>';
+  }).join('');
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+})();
+
+/* ================= Aussprache-Gruppen ================= */
+function renderPronGroup(containerId, words){
+  var el = document.getElementById(containerId);
+  var chips = words.map(function(w){ return '<span class="pron-chip" data-text="'+w+'">'+w+' 🔊</span>'; }).join('');
+  el.innerHTML = '<button class="pron-playall" data-words="'+words.join('|')+'">🔊 Alle anhören</button><div>'+chips+'</div>';
+  el.querySelector('.pron-playall').addEventListener('click', function(){
+    speakDE(this.dataset.words.split('|'));
+  });
+  el.querySelectorAll('.pron-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){ speakDE(chip.dataset.text); });
+  });
+}
+renderPronGroup('pron-a', ['der Lehrer','der Schüler','der Fehler','das Papier','der Kugelschreiber']);
+renderPronGroup('pron-b', ['erklären','erlauben','verstehen','verkaufen','verheiratet sein']);
+renderPronGroup('pron-c', ['wir','die Tür','das Bier','hier']);
+renderPronGroup('pron-d', ['bedeuten','verstehen','erklären','behalten','beginnen','gehören']);
+renderPronGroup('pron-e', ['aufhören','ankreuzen','abgeben','ausfüllen']);
+
+/* ================= Aussprache-Ratespiel: kurz oder lang? ================= */
+function renderStressGuess(containerId, items){
+  var el = document.getElementById(containerId);
+  function seps(item){
+    if(item.seps) return item.seps;
+    var j = item.joiner !== undefined ? item.joiner : ' ';
+    var arr = [];
+    for(var i=0;i<item.units.length-1;i++) arr.push(j);
+    return arr;
+  }
+  function joinUnits(units, sepArr){
+    var out = units[0];
+    for(var i=1;i<units.length;i++) out += sepArr[i-1] + units[i];
+    return out;
+  }
+  el.innerHTML = items.map(function(item, ii){
+    var sepArr = seps(item);
+    var unitsHtml = item.units.map(function(u, ui){
+      var span = '<span class="sr-unit" data-item="'+ii+'" data-idx="'+ui+'">'+u+'</span>';
+      return ui===0 ? span : sepArr[ui-1]+span;
+    }).join('');
+    var fullText = joinUnits(item.units, sepArr);
+    return '<div class="stress-row" data-item="'+ii+'">'+
+      '<button class="sr-play" data-text="'+fullText+'">🔊</button>'+
+      '<span class="sr-word">'+unitsHtml+'</span>'+
+      '<button class="sr-loesung" data-item="'+ii+'">Lösung</button>'+
+      '<span class="sr-result" id="stress-res-'+containerId+'-'+ii+'"></span>'+
+      '</div>';
+  }).join('');
+
+  el.querySelectorAll('.sr-play').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.text); });
+  });
+
+  el.querySelectorAll('.sr-unit').forEach(function(u){
+    u.addEventListener('click', function(){
+      var row = u.closest('.stress-row');
+      var already = u.classList.contains('selected');
+      row.querySelectorAll('.sr-unit').forEach(function(o){ o.classList.remove('selected'); });
+      if(!already) u.classList.add('selected');
+    });
+  });
+
+  el.querySelectorAll('.sr-loesung').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var ii = parseInt(btn.dataset.item,10);
+      var item = items[ii];
+      var correctIdx = item.pattern.indexOf('lang');
+      var row = el.querySelector('.stress-row[data-item="'+ii+'"]');
+      var guessedUnit = row.querySelector('.sr-unit.selected');
+      var guessedIdx = guessedUnit ? parseInt(guessedUnit.dataset.idx,10) : -1;
+      row.querySelectorAll('.sr-unit').forEach(function(u){
+        u.classList.remove('selected','correct','wrongpick');
+        var ui = parseInt(u.dataset.idx,10);
+        if(ui===correctIdx) u.classList.add('correct');
+        else if(ui===guessedIdx) u.classList.add('wrongpick');
+      });
+      var res = document.getElementById('stress-res-'+containerId+'-'+ii);
+      if(guessedIdx===correctIdx){ res.textContent='Richtig!'; res.style.color='var(--ok)'; }
+      else { res.textContent='Leider nicht.'; res.style.color='var(--bad)'; }
+    });
+  });
+}
+renderStressGuess('ex5-1', [
+  {units:['be','deuten'], pattern:['kurz','lang'], joiner:''},
+  {units:['ver','stehen'], pattern:['kurz','lang'], joiner:''},
+  {units:['er','klären'], pattern:['kurz','lang'], joiner:''},
+  {units:['be','halten'], pattern:['kurz','lang'], joiner:''},
+  {units:['be','ginnen'], pattern:['kurz','lang'], joiner:''},
+  {units:['ge','hören'], pattern:['kurz','lang'], joiner:''},
+]);
+renderStressGuess('ex5-2', [
+  {units:['auf','hören'], pattern:['lang','kurz'], joiner:''},
+  {units:['an','kreuzen'], pattern:['lang','kurz'], joiner:''},
+  {units:['ab','geben'], pattern:['lang','kurz'], joiner:''},
+  {units:['aus','füllen'], pattern:['lang','kurz'], joiner:''},
+]);
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+function checkOdd(containerId){
+  var container = document.getElementById(containerId);
+  var lines = container.querySelectorAll('.oddline');
+  var correct = 0, total = lines.length;
+  lines.forEach(function(line){
+    var ans = line.dataset.ans;
+    var sel = line.querySelector('.oddword.selected');
+    line.querySelectorAll('.oddword').forEach(function(w){ w.classList.remove('correct','wrong'); });
+    if(sel){
+      if(sel.dataset.w===ans){ sel.classList.add('correct'); correct++; }
+      else { sel.classList.add('wrong'); }
+    }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='odd') checkOdd(target);
+  });
+});
+
+/* ================= EX 1.1 Wörter im Unterricht (Illustrationen) ================= */
+(function(){
+  var words = ['ankreuzen','das Papier','das Wort','der Bleistift','der Buchstabe','der Kugelschreiber','der Satz','hören','schreiben'];
+
+  var svgFrage = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M15 20 h70 a8 8 0 0 1 8 8 v35 a8 8 0 0 1 -8 8 h-45 l-15 15 v-15 h-10 a8 8 0 0 1 -8 -8 v-35 a8 8 0 0 1 8 -8 z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><text x="45" y="55" font-size="26" fill="#0f3d3e" font-family="Arial" font-weight="bold">?</text></svg>';
+  var svgCheck = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="25" y="25" width="50" height="50" stroke="#0f3d3e" stroke-width="4" fill="none"/><path d="M35 50 L48 63 L68 38" stroke="#0f3d3e" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var svgPaper = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M25 15 h35 l15 15 v55 h-50 z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M60 15 v15 h15" stroke="#0f3d3e" stroke-width="3" fill="none"/><line x1="33" y1="45" x2="67" y2="45" stroke="#0f3d3e" stroke-width="2"/><line x1="33" y1="55" x2="67" y2="55" stroke="#0f3d3e" stroke-width="2"/><line x1="33" y1="65" x2="60" y2="65" stroke="#0f3d3e" stroke-width="2"/></svg>';
+  var svgWord = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="30" width="70" height="35" rx="10" stroke="#0f3d3e" stroke-width="3" fill="none"/><path d="M25 65 l10 15 l5 -15" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><line x1="28" y1="47" x2="72" y2="47" stroke="#0f3d3e" stroke-width="3" stroke-linecap="round"/></svg>';
+  var svgPencil = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L65 35 L75 45 L30 90 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M65 35 L75 25 L85 35 L75 45 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><line x1="20" y1="80" x2="30" y2="90" stroke="#0f3d3e" stroke-width="3"/></svg>';
+  var svgLetter = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="60" height="60" rx="8" stroke="#0f3d3e" stroke-width="3" fill="none"/><text x="50" y="65" font-size="34" fill="#0f3d3e" font-family="Arial" font-weight="bold" text-anchor="middle">A</text></svg>';
+  var svgPen = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M25 75 L60 40 L72 52 L37 87 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M60 40 L70 30 L82 42 L72 52 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><line x1="70" y1="30" x2="78" y2="20" stroke="#0f3d3e" stroke-width="3" stroke-linecap="round"/></svg>';
+  var svgSentence = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="15" y1="30" x2="85" y2="30" stroke="#0f3d3e" stroke-width="3" stroke-linecap="round"/><line x1="15" y1="50" x2="85" y2="50" stroke="#0f3d3e" stroke-width="3" stroke-linecap="round"/><line x1="15" y1="70" x2="60" y2="70" stroke="#0f3d3e" stroke-width="3" stroke-linecap="round"/><circle cx="70" cy="70" r="4" fill="#0f3d3e"/></svg>';
+  var svgEar = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M45 20 C25 20 15 40 20 58 C24 72 38 78 42 88 C44 92 50 92 50 86 C50 80 44 78 42 70 C55 72 68 62 68 45 C68 30 58 20 45 20 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M42 45 a8 10 0 1 1 12 8" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+  var svgWriting = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="15" y1="80" x2="70" y2="80" stroke="#0f3d3e" stroke-width="3" stroke-linecap="round"/><path d="M30 75 L60 45 L70 55 L40 85 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M60 45 L68 37 L78 47 L70 55 Z" stroke="#0f3d3e" stroke-width="3" fill="none" stroke-linejoin="round"/></svg>';
+
+  var items = [
+    ['a', svgCheck, 'ankreuzen'],
+    ['b', svgPaper, 'das Papier'],
+    ['c', svgWord, 'das Wort'],
+    ['d', svgPencil, 'der Bleistift'],
+    ['e', svgLetter, 'der Buchstabe'],
+    ['f', svgPen, 'der Kugelschreiber'],
+    ['g', svgSentence, 'der Satz'],
+    ['h', svgEar, 'hören'],
+    ['i', svgWriting, 'schreiben'],
+  ];
+  var el = document.getElementById('ex1-1');
+  var exampleHtml = '<div class="illus-card illus-example"><div class="illus-label">Beispiel</div>'+svgFrage+'<div style="margin-top:8px;font-weight:700;color:var(--teal);">die Frage</div></div>';
+  el.innerHTML = exampleHtml + items.map(function(it,i){
+    var optHtml = words.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="illus-card"><div class="illus-label">'+it[0]+'</div>'+it[1]+
+      '<select id="e11-'+i+'" data-ans="'+it[2]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 2.1 Im Unterricht (Dialoge 1-3) ================= */
+(function(){
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="dialog-p">● Hast du mal einen Kuli für mich?</div>'+
+  '<div class="dialog-p">○ Nein, aber ich habe einen '+makeBlank('e21-0','Bleistift',130)+'.</div>'+
+  '<div class="dialog-p">● Frau Bürkle, ich '+makeBlank('e21-1','verstehe',120)+' das nicht. Wann steht der Dativ? Können Sie das bitte noch einmal '+makeBlank('e21-2','erklären',130)+'?</div>'+
+  '<div class="dialog-p">○ Der Dativ steht zum '+makeBlank('e21-3','Beispiel',120)+' nach den Präpositionen: von, aus, bei, mit, nach, seit, zu und nach bestimmten Verben.</div>'+
+  '<div class="dialog-p">● Wann '+makeBlank('e21-4','beginnt',120)+' morgen der Unterricht?</div>'+
+  '<div class="dialog-p">○ Um acht Uhr. Und um 12 Uhr ist er '+makeBlank('e21-5','aus',90)+'.</div>'+
+  '<div class="dialog-p">● Vier Stunden ohne '+makeBlank('e21-6','Pause',110)+'?</div>'+
+  '<div class="dialog-p">○ Doch, je 15 Minuten um 9.15 Uhr und 10.45 Uhr.</div>';
+})();
+
+/* ================= EX 2.2 Im Unterricht (Dialoge 4-8) ================= */
+(function(){
+  var el = document.getElementById('ex2-2');
+  el.innerHTML =
+  '<div class="dialog-p">● Bitte geben Sie uns bis morgen nicht so viele Hausaufgaben.</div>'+
+  '<div class="dialog-p">○ Wir gehen heute nach der '+makeBlank('e22-0','Schule',110)+' ins Theater.</div>'+
+  '<div class="dialog-p">● O.k., aber bitte '+makeBlank('e22-1','lesen',100)+' Sie die Wörter und '+makeBlank('e22-2','wiederholen',140)+' Sie den '+makeBlank('e22-3','Text',100)+' auf Seite 89. Er ist nicht lang.</div>'+
+  '<div class="dialog-p">○ Wo ist Samira?</div>'+
+  '<div class="dialog-p">● Sie '+makeBlank('e22-4','fehlt',100)+' heute. Ich '+makeBlank('e22-5','glaube',110)+', sie hat Grippe.</div>'+
+  '<div class="dialog-p">○ Ich kann das nicht. Ich habe schon wieder alles '+makeBlank('e22-6','vergessen',130)+'.</div>'+
+  '<div class="dialog-p">● Das stimmt doch gar nicht. Du hast fast die Hälfte '+makeBlank('e22-7','richtig',110)+'.</div>'+
+  '<div class="dialog-p">Und ein '+makeBlank('e22-8','Fehler',110)+' gehört nun einmal zum Lernen.</div>'+
+  '<div class="dialog-p">○ Unser '+makeBlank('e22-9','Kurs',100)+' hat nur 12 Schülerinnen. Das ist gut.</div>'+
+  '<div class="dialog-p">● Ja, mein Sohn ist in der 5. '+makeBlank('e22-10','Klasse',110)+'. Da sind 32 Schüler.</div>';
+})();
+
+/* ================= EX 3.1 Prüfung – Text ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<div class="dialog-p">Wir schreiben morgen unseren Test. Sie müssen zehn '+makeBlank('e31-0','Aufgaben',110)+' lösen.</div>'+
+  '<div class="dialog-p">Bei drei '+makeBlank('e31-1','Aufgaben',110)+' müssen Sie die richtige Antwort (X) '+makeBlank('e31-2','ankreuzen',130)+'.</div>'+
+  '<div class="dialog-p">Ist die Aussage '+makeBlank('e31-3','richtig',100)+' oder '+makeBlank('e31-4','falsch',100)+'? Bei drei Aufgaben müssen Sie Lücken in Sätzen '+makeBlank('e31-5','ergänzen',120)+'.</div>'+
+  '<div class="dialog-p">Und dann müssen Sie noch drei '+makeBlank('e31-6','Fragen',110)+' beantworten.</div>'+
+  '<div class="dialog-p">Alle '+makeBlank('e31-7','Lösungen',120)+' müssen Sie auf den '+makeBlank('e31-8','Antwortbogen',140)+' übertragen.</div>'+
+  '<div class="dialog-p">Sie haben 60 Minuten Zeit, dann ist die Prüfung '+makeBlank('e31-9','zu Ende',120)+' und Sie müssen '+makeBlank('e31-10','abgeben',110)+'.</div>';
+})();
+
+/* ================= EX 3.2 Je ein Verb passt nicht ================= */
+(function(){
+  var lines = [
+    {text:'Ich kann die neuen Wörter nicht', words:['behalten','unterrichten','lernen'], ans:'unterrichten'},
+    {text:'Können Sie die Regel', words:['erklären','wissen','wiederholen'], ans:'wissen', suffix:'?'},
+    {text:'', words:['Lesen','Schreiben','Sprechen'], ans:'Schreiben', suffix:'Sie bitte laut.'},
+    {text:'Ich', words:['kann','weiß','verstehe'], ans:'weiß', suffix:'schon ganz gut Deutsch.'},
+  ];
+  var el = document.getElementById('ex3-2');
+  el.innerHTML = lines.map(function(line,i){
+    var wordsHtml = line.words.map(function(w){
+      return '<span class="oddword" data-w="'+w+'">'+w+'</span>';
+    }).join(' • ');
+    return '<div class="oddline" data-ans="'+line.ans+'">'+(i+1)+'. '+line.text+' '+wordsHtml+' '+(line.suffix||'')+'</div>';
+  }).join('');
+  el.querySelectorAll('.oddline').forEach(function(line){
+    line.querySelectorAll('.oddword').forEach(function(w){
+      w.addEventListener('click', function(){
+        line.querySelectorAll('.oddword').forEach(function(o){ o.classList.remove('selected','correct','wrong'); });
+        w.classList.add('selected');
+      });
+    });
+  });
+})();
+
+/* ================= EX 3.3 Wie heißt das Nomen? ================= */
+(function(){
+  var items = [
+    ['sprechen','das Gespräch'],
+    ['antworten','die Antwort'],
+    ['testen','der Test'],
+    ['prüfen','die Prüfung'],
+    ['teilen','der Teil'],
+    ['unterrichten','der Unterricht'],
+  ];
+  var el = document.getElementById('ex3-3');
+  el.innerHTML = '<div class="qline">1. fragen &rarr; <b>die Frage</b> (Beispiel)</div>' +
+    items.map(function(it,i){
+      return '<div class="qline">'+(i+2)+'. '+it[0]+' &rarr; '+makeBlank('e33-'+i, it[1], 160)+'</div>';
+    }).join('');
+})();
+
+/* ================= EX 4.1 Silbenrätsel ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">1. Mein Sohn ist jetzt drei Jahre alt. Bald geht er in den '+makeBlank('e41-0','Kindergarten',170)+'.</div>'+
+  '<div class="qline">2. Ich habe heute keine Zeit zum Spielen, ich muss noch die '+makeBlank('e41-1','Hausaufgaben',170)+' für Deutsch machen.</div>'+
+  '<div class="qline">3. Bitte übertragen Sie Ihre Lösungen in den '+makeBlank('e41-2','Antwortbogen',180)+'.</div>'+
+  '<div class="qline">4. Ich habe nichts zum Schreiben dabei. Hast du einen '+makeBlank('e41-3','Kugelschreiber',180)+' und ein Blatt '+makeBlank('e41-4','Papier',120)+' für mich?</div>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ['Eine Person, die unterrichtet, ist der/die ...','Lehrer|Lehrerin'],
+    ['Eine Aufgabe, die man zu Hause macht, ist die ...','Hausaufgabe'],
+    ['Etwas verständlich machen nennt man ...','erklären'],
+    ['Das Gegenteil von "vergessen" ist ...','behalten'],
+    ['Die Zeit ohne Unterricht heißt die ...','Pause'],
+    ['Ein einzelnes Zeichen im Alphabet ist der ...','Buchstabe'],
+    ['Mehrere Wörter mit Punkt am Ende sind ein ...','Satz'],
+    ['Ein Text oder Satz, der etwas zeigt, ist ein ...','Beispiel'],
+    ['Ein X in ein Kästchen machen nennt man ...','ankreuzen'],
+    ['Die richtige Antwort auf eine Aufgabe ist die ...','Lösung'],
+    ['Das Papier, auf das man die Antworten schreibt, ist der ...','Antwortbogen'],
+    ['Etwas, das nicht richtig ist, ist ein ...','Fehler'],
+    ['Nicht da sein, wenn man da sein sollte, heißt ...','fehlen'],
+    ['Das Nomen von "prüfen" ist die ...','Prüfung'],
+    ['Ein Ort für kleine Kinder vor der Schule ist der ...','Kindergarten'],
+    ['Eine Lücke füllen nennt man ...','ergänzen'],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

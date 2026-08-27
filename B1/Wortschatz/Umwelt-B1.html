@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9 Umwelt – B1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.section h3{
+  color:var(--teal-light);
+  font-size:1rem;
+  margin-bottom:8px;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:#fbfaf7;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{
+  margin-top:4px;
+  color:var(--teal-light);
+  font-size:0.88rem;
+}
+.vocab-vn{
+  display:none;
+  margin-top:4px;
+  color:var(--orange);
+  font-size:0.9rem;
+  font-style:italic;
+}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.vn-switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.85rem;
+  color:var(--teal);
+  cursor:pointer;
+  user-select:none;
+}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);
+  background:var(--orange-light);
+  border-radius:10px;
+  padding:10px 14px;
+  margin:10px 0;
+  font-weight:600;
+  color:var(--teal);
+  text-align:center;
+}
+.exercise{
+  margin-bottom:22px;
+  padding-bottom:14px;
+  border-bottom:1px solid #eee;
+}
+.exercise:last-child{border-bottom:none;}
+.ex-title{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:6px;
+}
+.ex-instructions{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-bottom:10px;
+}
+.qline{
+  margin:10px 0;
+  line-height:1.9;
+}
+.qline input[type=text]{
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-size:1rem;
+  padding:2px 4px;
+  width:150px;
+  font-family:inherit;
+  color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{
+  border:2px solid var(--teal-light);
+  border-radius:20px;
+  padding:6px 14px;
+  cursor:pointer;
+  font-size:0.9rem;
+  background:#fff;
+}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{
+  background:var(--teal-pale);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:12px;
+  font-size:0.9rem;
+  color:var(--teal);
+}
+.wordbank b{color:var(--teal-light);}
+.matchrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  flex-wrap:wrap;
+}
+.matchrow select{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+}
+.check-btn{
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  padding:9px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{
+  background:#fff;
+  color:var(--teal);
+  border:2px solid var(--teal);
+  border-radius:20px;
+  padding:7px 18px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+  margin-left:6px;
+}
+.result-msg{
+  margin-top:8px;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.footer-credit{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.8rem;
+  margin-top:30px;
+}
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{
+  width:20px;height:20px;text-align:center;vertical-align:middle;
+  border:1px solid var(--teal-pale);font-size:.7rem;font-weight:700;color:var(--teal);
+}
+.ws-wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;}
+.ws-word{
+  background:var(--teal-pale);color:var(--teal);border-radius:16px;
+  padding:5px 12px;font-size:.85rem;font-weight:600;
+}
+.photo-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin:12px 0;}
+.photo-item{flex:0 1 150px;}
+.photo-item{text-align:center;}
+.photo-item .emoji-box{
+  font-size:2.6rem;background:var(--teal-pale);border-radius:12px;padding:14px 0;
+}
+.photo-item input{width:90%;margin-top:6px;text-align:center;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;padding:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">B1 · Modul-Wortschatz</div>
+  <h1>9&nbsp; Umwelt</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="uebungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🐾 Tiere</h2>
+    <div class="vocab-grid" id="vg1"></div>
+  </div>
+
+  <div class="section">
+    <h2>🌍 Umweltprobleme</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>🌱 Umweltfreundlich leben</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>⛈️ Wetter und Klima</h2>
+    <div class="vocab-grid" id="vg4"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="uebungen" class="tabcontent">
+
+  <!-- 1 Wiederholung -->
+  <div class="section">
+    <h2>1 Wiederholung</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Tiere. Beschriften Sie die Fotos. Notieren Sie auch den Artikel.</div>
+      <div class="photo-grid" id="ex1-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Finden Sie sechs Wörter und ordnen Sie diese zu. Notieren Sie auch den Artikel.</div>
+      <div class="ex-instructions">Wörter im Kreis: Blume · See · Fluss · Blatt · Baum · Wald</div>
+      <div id="ex1-2"></div>
+      <button class="check-btn" data-check="selects" data-target="ex1-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Wie ist das Wetter? Ordnen Sie die Sätze aus dem Kasten zu.</div>
+      <div class="wordbank"><b>Kasten:</b> Die Sonne scheint. · Es ist windig. · Es schneit. · Es gibt ein Gewitter. · Es regnet.</div>
+      <div class="photo-grid" id="ex1-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-3"></div>
+    </div>
+  </div>
+
+  <!-- 2 Tiere -->
+  <div class="section">
+    <h2>2 Tiere</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Noch mehr Tiere: Beschriften Sie die Fotos. Notieren Sie auch den Artikel.</div>
+      <div class="photo-grid" id="ex2-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Welches Tier passt nicht? Klicken Sie das falsche Wort an.</div>
+      <div id="ex2-2"></div>
+      <button class="check-btn" data-check="mc" data-target="ex2-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Welches Tier ist das? Notieren Sie das Wort mit Artikel.</div>
+      <div id="ex2-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-3"></div>
+    </div>
+  </div>
+
+  <!-- 3 Umweltprobleme -->
+  <div class="section">
+    <h2>3 Umweltprobleme</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Welche Wörter haben eine ähnliche Bedeutung? Ordnen Sie zu.</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Was läuft falsch? Finden Sie neun Verben und ergänzen Sie die Partizipien.</div>
+      <div class="ex-instructions">Verben im Kreis: produzieren · informieren · verbrauchen · reagieren · entsorgen · reduzieren · anbauen · verschmutzen · konsumieren</div>
+      <div id="ex3-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Bilden Sie aus den Verben in Aufgabe 2 Nomen.</div>
+      <div id="ex3-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">4 Ergänzen Sie je ein Nomen aus 3.</div>
+      <div id="ex3-4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-4"></div>
+    </div>
+  </div>
+
+  <!-- 3 Umweltprobleme Fortsetzung -->
+  <div class="section">
+    <h2>3 Umweltprobleme — Fortsetzung</h2>
+
+    <div class="exercise">
+      <div class="ex-title">5 Was passt zusammen? Ordnen Sie zu.</div>
+      <div id="ex3-5"></div>
+      <button class="check-btn" data-check="selects" data-target="ex3-5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-5"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">6 Zu welchen dieser Verben passt das Präfix ver-? Klicken Sie an.</div>
+      <div id="ex3-6"></div>
+      <button class="check-btn" data-check="multimc" data-target="ex3-6">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-6"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">7 Beschriften Sie die Fotos mit den Wörtern aus dem Kasten. Notieren Sie auch den Artikel.</div>
+      <div class="wordbank"><b>Kasten:</b> Ölkatastrophe · Insektensterben · Luftverschmutzung · Wasserverschmutzung · Plastikmüll · Umweltgift</div>
+      <div class="photo-grid" id="ex3-7"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-7">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-7"></div>
+    </div>
+  </div>
+
+  <!-- 4 Umweltfreundlich leben -->
+  <div class="section">
+    <h2>4 Umweltfreundlich leben</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Was passt zusammen? Ordnen Sie zu.</div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Wie kann man es besser machen? Schreiben Sie Sätze mit indem.</div>
+      <div class="wordbank"><b>Kasten:</b> ökologisches Waschmittel verwenden · <s>weniger heizen</s> · Bioprodukte kaufen · verpackungsfrei einkaufen · auf ein Auto verzichten · sich vegetarisch ernähren</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Finden Sie sieben Adjektive und ergänzen Sie diese in der richtigen Form.</div>
+      <div class="ws-wrap"><div id="ws-grid"></div></div>
+      <div class="ws-wordlist" id="ws-words"></div>
+      <div id="ex4-3" style="margin-top:14px;"></div>
+      <div class="ex-instructions">TIPP: Verwechseln Sie nicht <i>verantwortungsvoll</i> und <i>verantwortlich</i>. <i>Verantwortungsvoll</i> zu sein, ist eine innere Einstellung. Man übernimmt Verantwortung für das, was man tut, z. B. <i>ein verantwortungsvoller Umgang mit der Umwelt</i>. <i>Verantwortlich</i> sein für etwas bedeutet, dass man diese Aufgabe hat, z. B.: <i>Ich bin für die Wäsche verantwortlich, meine Frau für die Einkäufe.</i></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-3"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">4 Ökologische Landwirtschaft: Ergänzen Sie die Wörter auf den Bildern.</div>
+      <div id="ex4-4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-4"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">5 Lösen Sie das Kreuzworträtsel.</div>
+      <div class="ex-instructions">Hinweis: Im Buch ist dies ein 2D-Kreuzworträtsel mit sich kreuzenden Wörtern. Da unsere Vorlage nur einfache Listen-Rätsel unterstützt, zeigen wir hier die 9 Fragen als Lückentext. Sagen Sie Bescheid, wenn Sie das echte 2D-Gitter zum Ausdrucken brauchen!</div>
+      <div id="ex4-5"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-5"></div>
+    </div>
+  </div>
+
+  <!-- 5 Wetter und Klima -->
+  <div class="section">
+    <h2>5 Wetter und Klima</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Das Wetter: Ergänzen Sie die passenden Nomen mit Artikel.</div>
+      <div id="ex5-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Was passt zusammen? Ordnen Sie zu.</div>
+      <div id="ex5-2"></div>
+      <button class="check-btn" data-check="selects" data-target="ex5-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Das Klima verändert sich. Ergänzen Sie die Adjektive in der richtigen Form.</div>
+      <div class="wordbank"><b>Kasten:</b> hoch · niedrig · extrem · durchschnittlich · feucht · trocken</div>
+      <div id="ex5-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-3"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Umwelt</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["der","Affe, -n","ein Tier, das dem Menschen ähnlich ist und gut klettern kann","con khỉ"],
+ ["der","Bär, -en","ein großes, starkes Waldtier mit dickem Fell","con gấu"],
+ ["die","Biene, -n","ein Insekt, das Honig macht und Blumen bestäubt","con ong"],
+ ["der","Elefant, -en","das größte Landtier mit einem langen Rüssel","con voi"],
+ ["die","Ente, -n","ein Wasservogel mit einem breiten Schnabel","con vịt"],
+ ["die","Fliege, -n","ein kleines fliegendes Insekt","con ruồi"],
+ ["die","Giraffe, -n","ein Tier mit einem sehr langen Hals","hươu cao cổ"],
+ ["der","Hase, -n","ein kleines Tier mit langen Ohren, das schnell springt","con thỏ (rừng)"],
+ ["das","Huhn, ¨-er","ein Vogel, den man auf dem Bauernhof hält, legt Eier","con gà"],
+ ["das","Insekt, -en","ein kleines Tier mit sechs Beinen","côn trùng"],
+ ["das","Krokodil, -e","ein großes Reptil, das im Wasser lebt","con cá sấu"],
+ ["die","Kuh, ¨-e","ein großes Nutztier, das Milch gibt","con bò"],
+ ["der","Löwe, -n","ein großes wildes Raubtier, der König der Tiere","sư tử"],
+ ["die","Maus, ¨-e","ein kleines Nagetier","con chuột"],
+ ["die","Mücke, -n","ein kleines Insekt, das Blut trinkt","con muỗi"],
+ ["der","Pinguin, -e","ein Vogel, der nicht fliegen, aber gut schwimmen kann","chim cánh cụt"],
+ ["das","Schaf, -e","ein Nutztier mit dicker Wolle","con cừu"],
+ ["die","Schildkröte, -n","ein Reptil mit einem harten Panzer","con rùa"],
+ ["die","Schlange, -n","ein Reptil ohne Beine, das sich kriechend bewegt","con rắn"],
+];
+
+var vocab2 = [
+ ["der","Abfall, ¨-e","Müll, den man wegwirft","rác thải"],
+ ["das","Abgas, -e","schädliches Gas, das z. B. Autos produzieren","khí thải"],
+ ["der","Anbau (nur Sg.)","das Pflanzen und Ernten von Pflanzen","sự trồng trọt"],
+ ["der","Boden, ¨-","die Erde, auf der man steht oder anbaut","đất, mặt đất"],
+ ["die","Energie, -n","die Kraft, die man z. B. für Strom oder Wärme braucht","năng lượng"],
+ ["die","Entsorgung (nur Sg.)","das fachgerechte Wegwerfen von Abfall","việc xử lý rác"],
+ ["die","Erde, -n","der Planet, auf dem wir leben; auch: der Boden","trái đất; đất"],
+ ["das","Gift, -e","eine Substanz, die Lebewesen schadet oder tötet","chất độc"],
+ ["die","Industrie, -n","der Wirtschaftsbereich, der Waren produziert","công nghiệp"],
+ ["das","Insektensterben (nur Sg.)","das massenhafte Aussterben von Insekten","sự tuyệt chủng của côn trùng"],
+ ["die","Katastrophe, -n","ein sehr großes, schlimmes Unglück","thảm họa"],
+ ["der","Konsum (nur Sg.)","das Kaufen und Benutzen von Waren","sự tiêu thụ"],
+ ["die","Landwirtschaft (nur Sg.)","die Arbeit mit Feldern und Nutztieren","nông nghiệp"],
+ ["die","Luft, ¨-e","das Gasgemisch, das wir atmen","không khí"],
+ ["das","Plastik (nur Sg.)","ein künstliches Material aus der Chemie","nhựa"],
+ ["die","Produktion, -en","das Herstellen von Waren","sự sản xuất"],
+ ["die","Reaktion, -en","eine Antwort oder Handlung auf etwas","phản ứng"],
+ ["die","Reduzierung, -en","das Kleiner- oder Wenigermachen","sự giảm bớt"],
+ ["der","Strom (nur Sg.)","die Energie, die z. B. Lampen zum Leuchten bringt","điện"],
+ ["die","Umwelt (nur Sg.)","die Natur um uns herum","môi trường"],
+ ["der","Verbrauch (nur Sg.)","die Menge, die man benutzt oder verbraucht","mức tiêu thụ"],
+ ["die","Verschmutzung, -en","das Schmutzigmachen, z. B. von Wasser oder Luft","sự ô nhiễm"],
+ ["die","Ware, -n","ein Produkt, das man kauft oder verkauft","hàng hóa"],
+ ["","an|bauen (+A)","Pflanzen auf einem Feld pflanzen und wachsen lassen","trồng trọt"],
+ ["","entsorgen (+A)","Abfall fachgerecht wegwerfen","xử lý (rác)"],
+ ["","produzieren (+A)","etwas herstellen","sản xuất"],
+ ["","reagieren (auf +A)","auf etwas antworten oder handeln","phản ứng (với)"],
+ ["","reduzieren (+A)","etwas kleiner oder weniger machen","giảm bớt"],
+ ["","verbrauchen (+A)","etwas benutzen, bis es weniger wird","tiêu thụ, dùng hết"],
+ ["","vergiften (+A)","mit Gift schädlich machen","đầu độc"],
+ ["","verschmutzen (+A)","schmutzig machen","làm ô nhiễm"],
+ ["","industriell","die Industrie betreffend","thuộc công nghiệp"],
+ ["","landwirtschaftlich","die Landwirtschaft betreffend","thuộc nông nghiệp"],
+ ["","ökologisch","die Umwelt schonend, im Einklang mit der Natur","sinh thái, thân thiện môi trường"],
+ ["","umweltfreundlich","der Umwelt nicht schadend","thân thiện với môi trường"],
+];
+
+var vocab3 = [
+ ["die","Alternative, -n","eine andere Möglichkeit, etwas zu tun","sự lựa chọn thay thế"],
+ ["das","Feld, -er","ein Stück Boden, auf dem man Pflanzen anbaut","cánh đồng"],
+ ["der","Ökostrom (nur Sg.)","Strom aus erneuerbaren Energiequellen wie Sonne und Wind","điện sạch"],
+ ["","um|gehen mit (+D)","eine Sache auf eine bestimmte Weise behandeln","đối xử, xử lý với"],
+ ["","alternativ","eine andere Möglichkeit bietend","thay thế"],
+ ["","aufmerksam","genau hinschauend, konzentriert auf etwas achtend","chú ý, cẩn thận"],
+ ["","ideal","perfekt, genau richtig","lý tưởng"],
+ ["","öffentlich","für alle Menschen zugänglich","công cộng"],
+ ["","sparsam","wenig verbrauchend, vorsichtig mit Ressourcen","tiết kiệm"],
+ ["","vegetarisch","ohne Fleisch","chay (không thịt)"],
+ ["","verantwortlich","die Aufgabe oder Pflicht für etwas habend","chịu trách nhiệm"],
+ ["","wertvoll","von hohem Wert, wichtig","có giá trị"],
+];
+
+var vocab4 = [
+ ["der","Experte, -n","eine Person mit besonderem Fachwissen","chuyên gia"],
+ ["die","Gegend, -en","ein bestimmtes Gebiet, eine Region","khu vực, vùng"],
+ ["der","Hagel (nur Sg.)","kleine Eisstücke, die vom Himmel fallen","mưa đá"],
+ ["die","Hitze (nur Sg.) / Kälte (nur Sg.)","sehr hohe / sehr niedrige Temperatur","cái nóng / cái lạnh"],
+ ["der","Nebel (nur Sg.)","kleine Wassertröpfchen in der Luft, die die Sicht verschlechtern","sương mù"],
+ ["der","Niederschlag, ¨-e","Regen, Schnee oder Hagel, der vom Himmel fällt","lượng mưa (nói chung)"],
+ ["der","Sturm, ¨-e","sehr starker Wind","bão, giông"],
+ ["","blitzen","wenn ein heller Lichtblitz am Himmel erscheint","có tia chớp"],
+ ["","donnern","das laute Geräusch nach einem Blitz","có sấm"],
+ ["","sinken","niedriger werden, fallen","giảm, hạ xuống"],
+ ["","steigen","höher werden, ansteigen","tăng lên"],
+ ["","verursachen (+A)","der Grund für etwas sein","gây ra"],
+ ["","warnen (vor +D)","auf eine Gefahr aufmerksam machen","cảnh báo"],
+ ["","zerstören (+A)","völlig kaputt machen","phá hủy"],
+ ["","durchschnittlich","im Mittel, normal","trung bình"],
+ ["","extrem","sehr stark, außergewöhnlich","cực đoan, cực độ"],
+ ["","feucht","ein bisschen nass","ẩm ướt"],
+ ["","niedrig","nicht hoch","thấp"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    var ansList = s.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    if(ansList.indexOf(s.value) > -1){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+function checkMultiMC(containerId){
+  var container = document.getElementById(containerId);
+  var chips = container.querySelectorAll('.mc-opt');
+  var correct = 0, total = chips.length;
+  chips.forEach(function(c){
+    var isCorrect = c.dataset.correct==='1';
+    var isSelected = c.classList.contains('selected');
+    if(isCorrect){ c.classList.add('correct'); }
+    if(isSelected && !isCorrect){ c.classList.add('wrong'); }
+    if(isCorrect===isSelected) correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    var multi = g.classList.contains('mc-cloud');
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        if(multi){
+          o.classList.toggle('selected');
+        } else {
+          g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+          o.classList.add('selected');
+        }
+      });
+    });
+  });
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='multimc') checkMultiMC(target);
+  });
+});
+
+/* ================= EX 1.1 Tiere Fotos ================= */
+(function(){
+  var items = [
+    ['🐦','der Vogel'],
+    ['🐴🐎','das Pferd und das Fohlen'],
+    ['🐱','die Katze'],
+    ['🐟','der Fisch'],
+  ];
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="photo-item"><div class="emoji-box">'+it[0]+'</div>'+makeBlank('e11-'+i, it[1], 140)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 1.2 Landschaft/Pflanzen ================= */
+(function(){
+  var words = [
+    ["Blume","die","Pflanzen"],
+    ["Blatt","das","Pflanzen"],
+    ["Baum","der","Pflanzen"],
+    ["See","der","Landschaft"],
+    ["Fluss","der","Landschaft"],
+    ["Wald","der","Landschaft"],
+  ];
+  var cats = ['Landschaft','Pflanzen'];
+  var el = document.getElementById('ex1-2');
+  el.innerHTML = words.map(function(w,i){
+    var optHtml = cats.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+    return '<div class="matchrow">'+w[1]+' '+w[0]+' → <select id="e12-'+i+'" data-ans="'+w[2]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 1.3 Wetter ================= */
+(function(){
+  var items = [
+    ['☔','Es regnet.'],
+    ['🍃💨','Es ist windig.'],
+    ['☀️🌾','Die Sonne scheint.'],
+    ['❄️🌲','Es schneit.'],
+    ['⛈️','Es gibt ein Gewitter.'],
+  ];
+  var el = document.getElementById('ex1-3');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="photo-item"><div class="emoji-box">'+it[0]+'</div>'+makeBlank('e13-'+i, it[1], 170)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.1 Noch mehr Tiere ================= */
+(function(){
+  var items = [
+    ['🐢','die Schildkröte'],
+    ['🐝','die Biene'],
+    ['🐒','der Affe'],
+    ['🐧','der Pinguin'],
+    ['🦁','der Löwe'],
+    ['🐊','das Krokodil'],
+    ['🐍','die Schlange'],
+    ['🐇','der Hase'],
+  ];
+  var el = document.getElementById('ex2-1');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="photo-item"><div class="emoji-box">'+it[0]+'</div>'+makeBlank('e21-'+i, it[1], 140)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.2 Welches Tier passt nicht? ================= */
+(function(){
+  var data = [
+    [["die Biene","der Hase","die Fliege","die Mücke"],1],
+    [["die Ente","der Pinguin","das Huhn","der Affe"],3],
+    [["die Biene","das Krokodil","die Schlange","die Schildkröte"],0],
+    [["die Kuh","die Schlange","das Schaf","das Schwein"],1],
+    [["das Huhn","die Giraffe","der Elefant","der Löwe"],0],
+    [["die Maus","der Bär","der Affe","das Insekt"],3],
+  ];
+  var el = document.getElementById('ex2-2');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. '+mcHtml('mc22',i,d[0],d[1])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* ================= EX 2.3 Welches Tier ist das? ================= */
+(function(){
+  var items = [
+    ["Es ist ein Insekt, das Blut trinkt.","die Mücke"],
+    ["Es ist ein Vogel, der gut schwimmen und tauchen, aber nicht fliegen kann.","der Pinguin"],
+    ["Sie gibt Milch.","die Kuh"],
+    ["Sie ist sehr klein. Trotzdem haben manche Leute Angst vor ihr.","die Maus"],
+    ["Er ist sehr groß. Ein Baby kann bei der Geburt schon 100 kg wiegen.","der Elefant"],
+    ["Sie ist sehr langsam. Einige leben im Wasser, andere an Land.","die Schildkröte"],
+  ];
+  var el = document.getElementById('ex2-3');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e23-'+i, it[1], 170)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 3.1 Ähnliche Bedeutung ================= */
+(function(){
+  var items = [
+    ["der Müll","der Abfall"],
+    ["die Natur","die Umwelt"],
+    ["der Boden","die Erde"],
+    ["der Strom","die Energie"],
+    ["der Verbrauch","der Konsum"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex3-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e31-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 3.2 Partizipien ================= */
+(function(){
+  var items = [
+    ["In Haushalten und Industrie wird viel Wasser","verbraucht"],
+    ["Kleidung wird nicht ökologisch","produziert"],
+    ["Die Menge des Mülls wird nicht","reduziert"],
+    ["Flüsse und Seen werden","verschmutzt"],
+    ["Insgesamt wird zu viel gekauft und","konsumiert"],
+    ["Gemüse und Obst wird oft nicht biologisch","angebaut"],
+    ["Auf Probleme wie das Insektensterben wird nicht genug","reagiert"],
+    ["Müll wird falsch","entsorgt"],
+    ["Die Menschen werden nicht genug über ein umweltfreundliches Leben","informiert"],
+  ];
+  var el = document.getElementById('ex3-2');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e32-'+i, it[1], 150)+'.</div>';
+  }).join('');
+})();
+
+/* ================= EX 3.3 Nomen bilden ================= */
+(function(){
+  var el = document.getElementById('ex3-3');
+  el.innerHTML =
+  '<div style="display:flex;gap:20px;flex-wrap:wrap;">'+
+  '<div><b>---</b><br>'+makeBlank('e33-0','der Verbrauch',160)+'<br><br>'+makeBlank('e33-1','der Anbau',160)+'<br><br>'+makeBlank('e33-2','der Konsum',160)+'</div>'+
+  '<div><b>-tion</b><br>'+makeBlank('e33-3','die Produktion',180)+'<br><br>'+makeBlank('e33-4','die Information',180)+'<br><br>'+makeBlank('e33-5','die Reaktion',180)+'</div>'+
+  '<div><b>-ung</b><br>'+makeBlank('e33-6','die Entsorgung',180)+'<br><br>'+makeBlank('e33-7','die Reduzierung',180)+'<br><br>'+makeBlank('e33-8','die Verschmutzung',180)+'</div>'+
+  '</div>';
+})();
+
+/* ================= EX 3.4 Nomen aus 3 ergänzen ================= */
+(function(){
+  var el = document.getElementById('ex3-4');
+  el.innerHTML =
+  '<div class="qline">1. Obst- / Gemüse- / biologischer ... : '+makeBlank('e34-0','Anbau',150)+'</div>'+
+  '<div class="qline">2. Wasser- / Luft- / Umwelt- ... : '+makeBlank('e34-1','Verschmutzung',170)+'</div>'+
+  '<div class="qline">3. industrielle / landwirtschaftliche / Nahrungsmittel- ... : '+makeBlank('e34-2','Produktion',170)+'</div>';
+})();
+
+/* ================= EX 3.5 Was passt zusammen? ================= */
+(function(){
+  var items = [
+    ["Abgase aus Industrie, Verkehr, Haushalten","Luftverschmutzung"],
+    ["Gifte aus der Landwirtschaft","Boden- und Wasserverschmutzung"],
+    ["Konsum und Verpackungen","Plastikmüll in den Meeren"],
+    ["verantwortungslose Unternehmen","Öl- und andere Umweltkatastrophen"],
+    ["Verwendung von elektrischen Geräten","hoher Energieverbrauch"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex3-5');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e35-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 3.6 Präfix ver- ================= */
+(function(){
+  var chips = [
+    ["brauchen",1],["informieren",0],["schmutzen",1],["sparen",0],["giften",1],
+    ["produzieren",0],["meiden",1],["anbauen",0],["zichten",1],["konsumieren",0],
+  ];
+  var el = document.getElementById('ex3-6');
+  var opts = chips.map(function(c){ return '<span class="mc-opt" data-correct="'+c[1]+'">-'+c[0]+'</span>'; }).join('');
+  el.innerHTML = '<div class="mc-options mc-cloud" id="ex3-6-cloud">'+opts+'</div>';
+  wireMcOptions(el);
+})();
+
+/* ================= EX 3.7 Fotos Umweltprobleme ================= */
+(function(){
+  var items = [
+    ['🌊⭐','die Ölkatastrophe'],
+    ['🏭💨','die Luftverschmutzung'],
+    ['🗑️🥤','der Plastikmüll'],
+    ['🚜☠️','das Umweltgift'],
+    ['🚰🟤','die Wasserverschmutzung'],
+    ['🐝💀','das Insektensterben'],
+  ];
+  var el = document.getElementById('ex3-7');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="photo-item"><div class="emoji-box">'+it[0]+'</div>'+makeBlank('e37-'+i, it[1], 190)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 4.1 Alternativen ================= */
+(function(){
+  var items = [
+    ["alternative Energie","Ökostrom"],
+    ["alternative Ernährung","vegetarisches Essen"],
+    ["Alternativen zum Konsum","tauschen, leihen, reparieren"],
+    ["Alternative zum eigenen Auto","öffentliche Verkehrsmittel"],
+    ["alternative Lebensmittelproduktion","ökologischer Anbau"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex4-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e41-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 4.2 Sätze mit indem ================= */
+(function(){
+  var el = document.getElementById('ex4-2');
+  el.innerHTML =
+  '<div class="qline">1. Man kann Energie sparen, <i>indem man weniger heizt.</i> <span style="color:var(--muted)">(Beispiel)</span></div>'+
+  '<div class="qline">2. Man kann Müll vermeiden, indem man '+makeBlank('e42-0','verpackungsfrei einkauft',220)+'.</div>'+
+  '<div class="qline">3. Man kann die Wasserverschmutzung reduzieren, indem man '+makeBlank('e42-1','ökologisches Waschmittel verwendet',260)+'.</div>'+
+  '<div class="qline">4. Man kann die Luftverschmutzung reduzieren, indem man '+makeBlank('e42-2','auf ein Auto verzichtet',220)+'.</div>'+
+  '<div class="qline">5. Man kann den Fleischkonsum reduzieren, indem man '+makeBlank('e42-3','sich vegetarisch ernährt',220)+'.</div>'+
+  '<div class="qline">6. Man kann den ökologischen Anbau unterstützen, indem man '+makeBlank('e42-4','Bioprodukte kauft',220)+'.</div>';
+})();
+
+/* ================= EX 4.3 Wortsuche 7 Adjektive ================= */
+(function(){
+  var grid = [
+    "XFAOAWHYAXHHLJXP",
+    "VVUECECFVMRCAVTR",
+    "HNFSRRIRIIGIEHMZ",
+    "UNMPATLYTAILDOMT",
+    "TUEAKVTKAEADINVH",
+    "TXRRSORVNBCNUTMB",
+    "KNKSBLOJRQNUWBTF",
+    "UDSAWLWJEMYEWIGQ",
+    "MNAMMWTFTJARHHGV",
+    "XHMGGVNSLYAFTYAR",
+    "EXZJIPAKAQFTNOLO",
+    "VDFVADRTMFALBGDK",
+    "IGNTKYEDVROEBYPL",
+    "SCSICOVSVIPWAPCP",
+    "HDITWDMPMMEMDSMH",
+    "SVYCHEFZQHIUJCEV",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+  var words = ['SPARSAM','WERTVOLL','VERANTWORTLICH','AUFMERKSAM','ALTERNATIV','UMWELTFREUNDLICH','IDEAL'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+})();
+
+/* ================= EX 4.3b Lückentext (die 7 Adjektive einsetzen) ================= */
+(function(){
+  var el = document.getElementById('ex4-3');
+  el.innerHTML =
+  '<p>Wenn man (1) '+makeBlank('e43-0','umweltfreundlich',170)+' leben möchte, ist es wichtig, sich zu informieren. Diese Informationen kann man auch teilen und andere Menschen auf die Probleme (2) '+
+  makeBlank('e43-1','aufmerksam',170)+' machen. Zusammen ist es einfacher, (3) '+makeBlank('e43-2','alternative',170)+
+  ' Ernährungsweisen oder Einkaufsmöglichkeiten zu finden. Außerdem ist es wichtig, sich für seinen eigenen Konsum und Verbrauch (4) '+
+  makeBlank('e43-3','verantwortlich',170)+' zu fühlen. Wenn man Wasser, Energie und Nahrungsmittel als (5) '+
+  makeBlank('e43-4','wertvoll',170)+' ansieht, geht man (6) '+makeBlank('e43-5','sparsam',170)+
+  ' damit um. So ist die Welt von morgen vielleicht noch nicht (7) '+makeBlank('e43-6','ideal',170)+', aber doch ein ganzes Stück besser.</p>';
+})();
+
+/* ================= EX 4.4 Ökologische Landwirtschaft ================= */
+(function(){
+  var el = document.getElementById('ex4-4');
+  el.innerHTML =
+  '<div class="qline">1. 🥦🥕 '+makeBlank('e44-0','Gemüse',150)+' werden ohne Gift angebaut.</div>'+
+  '<div class="qline">2. Tiere wie 🐄🐖 '+makeBlank('e44-1','Kühe und Schweine',180)+' und 🐑🐓 '+makeBlank('e44-2','Schafe und Hühner',180)+' haben mehr Platz, werden besser ernährt und bekommen weniger Medikamente.</div>'+
+  '<div class="qline">3. Wilde Tiere wie 🐇🐦 '+makeBlank('e44-3','Hasen und Vögel',180)+' und 🦆 '+makeBlank('e44-4','Enten',150)+' finden auf den Feldern Orte, wo sie leben können.</div>'+
+  '<div class="qline">4. Und auch für die 🐜🐝 '+makeBlank('e44-5','Insekten',150)+' ist die ökologische Landwirtschaft gut. Sie sterben, wenn auf den Feldern Gift verwendet wird. Im Vergleich zu den 1980er Jahren gibt es 70-80% weniger Insekten in Deutschland.</div>'+
+  '<div class="qline">5. Darunter leiden auch die 🐦 '+makeBlank('e44-6','Vögel',150)+', die sich von Insekten ernähren.</div>';
+})();
+
+/* ================= EX 4.5 Kreuzworträtsel als Lückentext ================= */
+(function(){
+  var items = [
+    ["So sollte man mit Wasser und Energie umgehen.","sparsam"],
+    ["Das machen wir im Winter, aber es verbraucht viel Energie.","heizen"],
+    ["So ist unsere Umwelt.","verschmutzt"],
+    ["Das macht man mit Müll oder Abfall.","entsorgen"],
+    ["Menschen und die Wohnungen, in denen sie leben.","Haushalte"],
+    ["Das wäre eine andere Möglichkeit.","die Alternative"],
+    ["Energie aus Sonne und Wind.","der Ökostrom"],
+    ["So nennt man ein Stück Boden, auf dem Gemüse angebaut wird.","das Feld"],
+    ["So kann man große Mengen von Waren produzieren.","industriell"],
+  ];
+  var el = document.getElementById('ex4-5');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e45-'+i, it[1], 170)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 5.1 Das Wetter ================= */
+(function(){
+  var items = [
+    ["Es ist sehr heiß.","die Hitze"],
+    ["Es ist sehr kalt.","die Kälte"],
+    ["Es ist sehr windig. Es stürmt.","der Sturm"],
+    ["Es ist neblig.","der Nebel"],
+    ["Es blitzt und donnert.","das Gewitter"],
+    ["Kleine Eisstücke fallen vom Himmel.","der Hagel"],
+  ];
+  var el = document.getElementById('ex5-1');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+(i+1)+'. '+it[0]+' '+makeBlank('e51-'+i, it[1], 170)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 5.2 Was passt zusammen? ================= */
+(function(){
+  var items = [
+    ["Experten","warnen."],
+    ["Es wird wärmer. Die Temperaturen","steigen."],
+    ["Es wird trockener. Die Niederschläge","sinken."],
+    ["Naturkatastrophen","werden schlimmer."],
+    ["Stürme","zerstören Städte."],
+    ["Der Mensch","verursacht diese Veränderungen."],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex5-2');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e52-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 5.3 Klimawandel Adjektive ================= */
+(function(){
+  var el = document.getElementById('ex5-3');
+  el.innerHTML =
+  '<p>Klimaforscher warnen davor, dass das Wetter in Zukunft immer (1) '+makeBlank('e53-0','extremer',150)+
+  ' werden wird: heißer, windiger, trockener oder nasser. An besonders warmen Orten werden die Temperaturen noch (2) '+
+  makeBlank('e53-1','höher',150)+' werden, sowohl im Sommer als auch im Winter. Regenreiche Gebiete werden noch (3) '+
+  makeBlank('e53-2','feuchter',150)+' werden, sodass bestimmte Pflanzen hier nicht mehr wachsen können. Gegenden, in denen wenig Regen fällt, werden dagegen (4) '+
+  makeBlank('e53-3','trockener',150)+' werden. Die Anzahl der Regentage wird dort in Zukunft (5) '+
+  makeBlank('e53-4','niedriger',150)+' sein. Beide Entwicklungen bedeuten Schwierigkeiten für die Landwirtschaft, da sich die Bedingungen für den Anbau verändern. Weltweit werden die (6) '+
+  makeBlank('e53-5','durchschnittlichen',180)+' Temperaturen pro Jahr steigen, wodurch sich das Klima auf der Erde dauerhaft verändern wird.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Das größte Landtier mit einem langen Rüssel: der ...", "Elefant"],
+    ["Ein Insekt, das Honig macht: die ...", "Biene"],
+    ["Ein Vogel, der nicht fliegen, aber gut schwimmen kann: der ...", "Pinguin"],
+    ["Ein Reptil mit einem harten Panzer: die ...", "Schildkröte"],
+    ["Müll, den man wegwirft, nennt man auch den ...", "Abfall"],
+    ["Das massenhafte Aussterben von Insekten: das ...", "Insektensterben"],
+    ["Strom aus Sonne und Wind: der ...", "Ökostrom"],
+    ["Ein Stück Boden, auf dem man Pflanzen anbaut: das ...", "Feld"],
+    ["Wenig verbrauchend, vorsichtig mit Ressourcen: ...", "sparsam"],
+    ["Ohne Fleisch: ...", "vegetarisch"],
+    ["Kleine Eisstücke, die vom Himmel fallen: der ...", "Hagel"],
+    ["Kleine Wassertröpfchen in der Luft, die die Sicht verschlechtern: der ...", "Nebel"],
+    ["Sehr starker Wind: der ...", "Sturm"],
+    ["Höher werden, ansteigen: ...", "steigen"],
+    ["Auf eine Gefahr aufmerksam machen: ...", "warnen"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 190)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

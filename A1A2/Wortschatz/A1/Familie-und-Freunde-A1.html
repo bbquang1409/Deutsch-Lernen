@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 Familie und Freunde – A1</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);text-align:center;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* Familientafel mit Emoji */
+.famtree{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0;}
+.famcell{text-align:center;background:#fbfaf7;border:1px solid #e2ded4;border-radius:10px;padding:12px 6px;}
+.famcell .emo{display:flex;justify-content:center;align-items:flex-end;gap:4px;min-height:56px;}
+.avatar{width:46px;height:54px;display:block;}
+.famcell .lbl{font-size:0.78rem;color:var(--muted);margin-top:4px;}
+.famcell input[type=text]{margin-top:6px;width:90%;border:none;border-bottom:2px solid var(--teal-light);background:transparent;text-align:center;font-size:0.9rem;font-family:inherit;color:var(--text);}
+.famgroup-title{grid-column:1/-1;font-weight:700;color:var(--teal-light);margin:8px 0 -4px;font-size:0.9rem;}
+
+/* Possessiv-Tabelle */
+table.poss{border-collapse:collapse;width:100%;font-size:0.85rem;margin:10px 0;}
+table.poss th, table.poss td{border:1px solid #e2ded4;padding:6px 8px;text-align:center;}
+table.poss th{background:var(--teal-pale);color:var(--teal);}
+
+.ws-wrap{overflow-x:auto;margin:12px 0;}
+table.ws-table{border-collapse:collapse;margin:0 auto;font-family:'JetBrains Mono', monospace;}
+table.ws-table td{width:24px;height:24px;text-align:center;vertical-align:middle;border:1px solid var(--teal-pale);font-size:.8rem;font-weight:700;color:var(--teal);}
+.ws-wordlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center;}
+.ws-word{background:var(--teal-pale);color:var(--teal);border-radius:16px;padding:5px 12px;font-size:.85rem;font-weight:600;}
+
+.namebar{position:sticky;top:0;z-index:30;background:var(--orange-light);border-bottom:1px solid var(--orange);padding:8px 16px;display:flex;justify-content:center;}
+.namebar input{width:100%;max-width:400px;border:1px solid var(--teal-light);border-radius:20px;padding:6px 14px;font-size:0.9rem;font-family:inherit;color:var(--text);}
+</style>
+</head>
+<body>
+
+<div class="namebar">
+  <input type="text" id="studentName" placeholder="Name eingeben...">
+</div>
+
+<header>
+  <div class="badge">A1 · Modul-Wortschatz</div>
+  <h1>2&nbsp; Familie und Freunde</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>👪 Familie</h2>
+    <div class="vocab-grid" id="vg1"></div>
+  </div>
+
+  <div class="section">
+    <h2>💞 Familienleben</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">Herzlichen Glückwunsch! Ich gratuliere dir herzlich zum Geburtstag.</div>
+  </div>
+
+  <div class="section">
+    <h2>🔤 Possessivartikel</h2>
+    <div class="ex-instructions">ich → mein Bruder / meine Schwester → meine Brüder und Schwestern</div>
+    <table class="poss">
+      <tr><th>ich</th><th>du</th><th>er</th><th>sie</th><th>es</th><th>wir</th><th>ihr</th><th>sie</th><th>Sie</th></tr>
+      <tr><td>mein/e</td><td>dein/e</td><td>sein/e</td><td>ihr/e</td><td>sein/e</td><td>unser/e</td><td>euer/eure</td><td>ihr/e</td><td>Ihr/e</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <!-- 1 Familienwörter (Emoji statt Fotos wegen Copyright) -->
+  <div class="section">
+    <h2>1 Familienwörter – Schreiben Sie die Wörter</h2>
+    <div class="ex-instructions">Hinweis: Statt der Fotos aus dem Buch werden hier Emojis verwendet (Urheberrecht der Buchfotos).</div>
+
+    <div class="famtree">
+      <div class="famgroup-title">Großeltern</div>
+      <div class="famcell"><div class="emo" data-av="grandpa"></div><div class="lbl">der/mein</div><input type="text" id="f1-0" data-ans="Großvater" value="Großvater" readonly style="color:var(--ok);font-weight:600;"></div>
+      <div class="famcell"><div class="emo" data-av="grandpa,grandma"></div><div class="lbl">die/meine (Plural)</div><input type="text" id="f1-1" data-ans="Großeltern"></div>
+      <div class="famcell"><div class="emo" data-av="grandma"></div><div class="lbl">die/meine</div><input type="text" id="f1-2" data-ans="Großmutter|Oma"></div>
+
+      <div class="famgroup-title">Eltern</div>
+      <div class="famcell"><div class="emo" data-av="father"></div><div class="lbl">der/mein</div><input type="text" id="f1-3" data-ans="Vater"></div>
+      <div class="famcell"><div class="emo" data-av="father,mother"></div><div class="lbl">die/meine (Plural)</div><input type="text" id="f1-4" data-ans="Eltern" value="Eltern" readonly style="color:var(--ok);font-weight:600;"></div>
+      <div class="famcell"><div class="emo" data-av="mother"></div><div class="lbl">die/meine</div><input type="text" id="f1-5" data-ans="Mutter"></div>
+
+      <div class="famgroup-title">ICH</div>
+      <div class="famcell"><div class="emo" data-av="brother"></div><div class="lbl">mein B______</div><input type="text" id="f1-6" data-ans="Bruder"></div>
+      <div class="famcell"><div class="emo" data-av="brother,sister"></div><div class="lbl">mein Mann/meine F______</div><input type="text" id="f1-7" data-ans="Frau"></div>
+      <div class="famcell"><div class="emo" data-av="sister"></div><div class="lbl">meine S______</div><input type="text" id="f1-8" data-ans="Schwester"></div>
+
+      <div class="famgroup-title">Kinder</div>
+      <div class="famcell"><div class="emo" data-av="sonbaby"></div><div class="lbl">mein S______</div><input type="text" id="f1-9" data-ans="Sohn"></div>
+      <div class="famcell"><div class="emo" data-av="sonbaby,daughterbaby"></div><div class="lbl">meine K______</div><input type="text" id="f1-10" data-ans="Kinder"></div>
+      <div class="famcell"><div class="emo" data-av="daughterbaby"></div><div class="lbl">meine T______</div><input type="text" id="f1-11" data-ans="Tochter"></div>
+    </div>
+    <button class="check-btn" data-check="famtree">Kontrollieren</button>
+    <div class="result-msg" id="res-famtree"></div>
+  </div>
+
+  <!-- 2 Paare -->
+  <div class="section">
+    <h2>2 Paare – Ergänzen Sie bitte</h2>
+    <div id="ex2-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex2-1"></div>
+  </div>
+
+  <!-- 3 Possessivartikel und Familienwörter -->
+  <div class="section">
+    <h2>3 Possessivartikel und Familienwörter – Ergänzen Sie</h2>
+    <div class="ex-instructions">ich: mein Bruder / meine Schwester / meine Eltern (Beispiel)</div>
+    <div id="ex3-0"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex3-0">Kontrollieren</button>
+    <div class="result-msg" id="res-ex3-0"></div>
+
+    <div class="exercise" style="margin-top:16px;">
+      <div class="ex-title">Dialoge</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+  </div>
+
+  <!-- 4 Liebesgeschichten -->
+  <div class="section">
+    <h2>4 Liebesgeschichten</h2>
+    <div class="exercise">
+      <div class="ex-title">a Verbformen</div>
+      <div id="ex4-0"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-0">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-0"></div>
+    </div>
+    <div class="exercise">
+      <div class="ex-title">b Ergänzen Sie die Sätze mit den Verben in der richtigen Form</div>
+      <div class="wordbank"><b>Liste:</b> haben · heiraten · heißen · kennen · leben · lieben · mögen · sein · sein · treffen</div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+  </div>
+
+  <!-- 5 Gratulation -->
+  <div class="section">
+    <h2>5 Gratulation – Ergänzen Sie die E-Mail</h2>
+    <div id="ex5-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex5-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex5-1"></div>
+  </div>
+
+  <!-- 6 Glückwunschkarte -->
+  <div class="section">
+    <h2>6 Eine Glückwunschkarte – Ergänzen Sie</h2>
+    <div id="ex6-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex6-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex6-1"></div>
+  </div>
+
+  <!-- 7 Meine Familie -->
+  <div class="section">
+    <h2>7 Meine Familie – Ergänzen Sie den Dialog</h2>
+    <div class="wordbank"><b>Liste:</b> (der/die) Angehörige · (der) Bruder · (die) Familie · (die) Geschwister · gestorben · kümmern · (die) Schwester · tot · treffen · (der/die) Verwandte</div>
+    <div id="ex7-1"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex7-1">Kontrollieren</button>
+    <div class="result-msg" id="res-ex7-1"></div>
+  </div>
+
+  <!-- Extra: Wortsuche -->
+  <div class="section">
+    <h2>➕ Extra-Übung: Wortsuche</h2>
+    <div class="ex-instructions">Zusatzübung (nicht aus dem Buch). Suchen Sie die Wörter im Gitter. Nicht automatisch kontrolliert.</div>
+    <div class="ws-wrap"><div id="ws-grid"></div></div>
+    <div class="ws-wordlist" id="ws-words"></div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Familie und Freunde</h2>
+    <div class="ex-instructions">Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="groupci" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= AVATARE (eigene SVG-Illustrationen, keine Fotos) ================= */
+var AVATARS = {
+  grandpa: '<svg class="avatar" viewBox="0 0 60 70"><circle cx="30" cy="24" r="14" fill="#e8b98a"/><path d="M16 18 Q14 28 18 34" stroke="#c7c7c7" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M44 18 Q46 28 42 34" stroke="#c7c7c7" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="24" y="29" width="12" height="3" rx="1.5" fill="#c7c7c7"/><circle cx="25" cy="22" r="1.6" fill="#233333"/><circle cx="35" cy="22" r="1.6" fill="#233333"/><path d="M10 58 Q10 40 30 40 Q50 40 50 58 L50 66 L10 66 Z" fill="#2f5d8a"/></svg>',
+  grandma: '<svg class="avatar" viewBox="0 0 60 70"><circle cx="30" cy="24" r="14" fill="#f3d0b0"/><circle cx="30" cy="9" r="6" fill="#c7c7c7"/><path d="M16 22 Q16 8 30 8 Q44 8 44 22" fill="none" stroke="#c7c7c7" stroke-width="4"/><circle cx="25" cy="24" r="1.6" fill="#233333"/><circle cx="35" cy="24" r="1.6" fill="#233333"/><path d="M10 58 Q10 40 30 40 Q50 40 50 58 L50 66 L10 66 Z" fill="#e8a23a"/></svg>',
+  father: '<svg class="avatar" viewBox="0 0 60 70"><circle cx="30" cy="24" r="14" fill="#c98a5b"/><path d="M15 18 Q30 2 45 18 L45 12 Q30 0 15 12 Z" fill="#5b4636"/><circle cx="25" cy="25" r="1.6" fill="#233333"/><circle cx="35" cy="25" r="1.6" fill="#233333"/><path d="M10 58 Q10 40 30 40 Q50 40 50 58 L50 66 L10 66 Z" fill="#4c5b8f"/></svg>',
+  mother: '<svg class="avatar" viewBox="0 0 60 70"><path d="M14 14 Q14 4 30 4 Q46 4 46 14 L46 34 Q42 30 42 20 Q42 10 30 10 Q18 10 18 20 Q18 30 14 34 Z" fill="#6b4226"/><circle cx="30" cy="25" r="13" fill="#e8b98a"/><circle cx="25" cy="26" r="1.6" fill="#233333"/><circle cx="35" cy="26" r="1.6" fill="#233333"/><path d="M10 58 Q10 40 30 40 Q50 40 50 58 L50 66 L10 66 Z" fill="#7c9885"/></svg>',
+  brother: '<svg class="avatar" viewBox="0 0 60 70"><circle cx="30" cy="24" r="14" fill="#c98a5b"/><path d="M15 18 Q30 2 45 18 L45 13 Q30 1 15 13 Z" fill="#2b2b2b"/><circle cx="25" cy="25" r="1.6" fill="#233333"/><circle cx="35" cy="25" r="1.6" fill="#233333"/><path d="M10 58 Q10 40 30 40 Q50 40 50 58 L50 66 L10 66 Z" fill="#5b7fa6"/></svg>',
+  sister: '<svg class="avatar" viewBox="0 0 60 70"><path d="M14 14 Q14 4 30 4 Q46 4 46 14 L46 34 Q42 30 42 20 Q42 10 30 10 Q18 10 18 20 Q18 30 14 34 Z" fill="#a3502b"/><circle cx="30" cy="25" r="13" fill="#f3d0b0"/><circle cx="25" cy="26" r="1.6" fill="#233333"/><circle cx="35" cy="26" r="1.6" fill="#233333"/><path d="M10 58 Q10 40 30 40 Q50 40 50 58 L50 66 L10 66 Z" fill="#9fb8a8"/></svg>',
+  sonbaby: '<svg class="avatar" viewBox="0 0 60 70"><circle cx="30" cy="30" r="15" fill="#e8b98a"/><path d="M28 12 Q30 6 32 12" stroke="#5b4636" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="25" cy="31" r="1.6" fill="#233333"/><circle cx="35" cy="31" r="1.6" fill="#233333"/><path d="M12 58 Q12 46 30 46 Q48 46 48 58 L48 66 L12 66 Z" fill="#5b7fa6"/></svg>',
+  daughterbaby: '<svg class="avatar" viewBox="0 0 60 70"><circle cx="30" cy="30" r="15" fill="#f3d0b0"/><path d="M28 12 Q30 6 32 12" stroke="#a3502b" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="36" cy="10" r="3" fill="#e8a23a"/><circle cx="25" cy="31" r="1.6" fill="#233333"/><circle cx="35" cy="31" r="1.6" fill="#233333"/><path d="M12 58 Q12 46 30 46 Q48 46 48 58 L48 66 L12 66 Z" fill="#9fb8a8"/></svg>'
+};
+document.querySelectorAll('[data-av]').forEach(function(el){
+  var keys = el.dataset.av.split(',');
+  el.innerHTML = keys.map(function(k){ return AVATARS[k] || ''; }).join('');
+});
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA (aus dem Buch, Seite 2) ================= */
+var vocab1 = [
+ ["die","Familie, -n","alle Verwandten zusammen","gia đình"],
+ ["","(sich) treffen","Ich sehe meinen Freund am Wochenende.","gặp nhau"],
+ ["der/die","Angehörige, -n (meistens Pl.)","Menschen aus der eigenen Familie","người thân"],
+ ["der/die","Verwandte, -n","Menschen aus der eigenen Familie","người họ hàng"],
+ ["","haben","Ich habe hier keine Angehörigen.","có"],
+ ["die","Gruppe, -n","mehrere Menschen zusammen","nhóm"],
+ ["der","Mann, ¨-er","erwachsene männliche Person","đàn ông"],
+ ["die","Frau, -en","erwachsene weibliche Person","phụ nữ"],
+ ["die","Ehe","die offizielle Verbindung von zwei Menschen","hôn nhân"],
+ ["der","Ehemann, ¨-er","der Mann in der Ehe","chồng"],
+ ["die","Ehefrau, -en","die Frau in der Ehe","vợ"],
+ ["der","Ehepartner, -","der Mann in der Ehe","người bạn đời (nam)"],
+ ["die","Ehepartnerin, -nen","die Frau in der Ehe","người bạn đời (nữ)"],
+ ["der","Freund, -e","ein Mann, den man gut kennt und mag","bạn (nam)"],
+ ["die","Freundin, -nen","eine Frau, die man gut kennt und mag","bạn (nữ)"],
+ ["die","Eltern (nur Pl.)","Vater und Mutter","bố mẹ"],
+ ["die","Großeltern (nur Pl.)","Großvater und Großmutter","ông bà"],
+ ["der","Vater, ¨-","der männliche Elternteil","bố"],
+ ["die","Mutter, ¨-","die weibliche Elternteil","mẹ"],
+ ["der","Opa, -s","der Großvater","ông"],
+ ["die","Oma, -s","die Großmutter","bà"],
+ ["der","Großvater, ¨-","der Vater von Vater oder Mutter","ông"],
+ ["die","Großmutter, ¨-","die Mutter von Vater oder Mutter","bà"],
+ ["der","Onkel, -","der Bruder von Vater oder Mutter","chú/bác/cậu"],
+ ["die","Tante, -n","die Schwester von Vater oder Mutter","cô/dì"],
+ ["das","Kind, -er","Junge oder Mädchen","con, trẻ em"],
+ ["das","Baby, -s","ein ganz kleines Kind","em bé"],
+ ["der","Junge, -n","ein männliches Kind","cậu bé"],
+ ["das","Mädchen, -","ein weibliches Kind","cô bé"],
+ ["der","Sohn, ¨-e","das männliche Kind","con trai"],
+ ["die","Tochter, ¨-","das weibliche Kind","con gái"],
+ ["der","Bruder, ¨-","der männliche Geschwisterteil","anh/em trai"],
+ ["die","Schwester, -n","die weibliche Geschwisterteil","chị/em gái"],
+ ["der","Cousin, -s","der Sohn von Onkel oder Tante","anh em họ (nam)"],
+ ["die","Cousine, -n","die Tochter von Onkel oder Tante","chị em họ (nữ)"],
+ ["die","Geschwister (nur Pl.)","Bruder und Schwester zusammen","anh chị em"],
+ ["","sehen","Ich sehe meinen Freund nur am Wochenende.","gặp, thấy"],
+ ["","kennen","Kennst du viele Leute hier?","biết, quen"],
+ ["","mögen","Magst du deinen Bruder?","thích"],
+ ["","lieben","Ich liebe meine Schwester.","yêu"],
+ ["","ja","Antwort: Ja","có, vâng"],
+ ["","nein","Antwort: Nein","không"],
+ ["","vorstellen","jemanden bekannt machen","giới thiệu"],
+];
+
+var vocab2 = [
+ ["das","Leben","z. B. das Familienleben","cuộc sống"],
+ ["","leben","Wo leben Sie?","sống"],
+ ["das","Glück (nur Sg.)","ein gutes Gefühl","niềm hạnh phúc"],
+ ["","glücklich","voller Glück","hạnh phúc"],
+ ["der","Glückwunsch, ¨-e","Herzlichen Glückwunsch!","lời chúc mừng"],
+ ["","gratulieren","Ich gratuliere dir zum Geburtstag.","chúc mừng"],
+ ["der","Geburtstag, -e","der Tag, an dem man geboren ist","sinh nhật"],
+ ["der","Gruß, ¨-e","z. B. Liebe Grüße","lời chào"],
+ ["die","Hochzeit, -en","das Fest, wenn man heiratet","đám cưới"],
+ ["","heiraten","offiziell ein Paar werden","kết hôn"],
+ ["","gestorben","Partizip von sterben","đã qua đời (tính từ)"],
+ ["","tot","nicht mehr am Leben","đã chết"],
+ ["","sich kümmern um","für jemanden sorgen","chăm sóc"],
+ ["","glauben","etwas für wahr halten / denken","tin, nghĩ"],
+];
+
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]:not([readonly])');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+/* central dispatch */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='famtree') checkFamtree();
+  });
+});
+
+function checkFamtree(){
+  var inputs = document.querySelectorAll('.famtree input[type=text]:not([readonly])');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim().toLowerCase(); });
+    if(ans.indexOf(inp.value.trim().toLowerCase()) > -1){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else{ inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-famtree');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+/* ================= EX 2.1 Paare (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex2-1');
+  el.innerHTML =
+  '<div class="qline">der Ehemann | die '+makeBlank('e21-0','Ehefrau',150)+'</div>'+
+  '<div class="qline">der '+makeBlank('e21-1','Opa',150)+' | die Oma</div>'+
+  '<div class="qline">der Partner | die '+makeBlank('e21-2','Partnerin',150)+'</div>'+
+  '<div class="qline">der '+makeBlank('e21-3','Junge',150)+' – das '+makeBlank('e21-4','Mädchen',150)+'</div>'+
+  '<div class="qline">der '+makeBlank('e21-5','Mann',150)+' | die '+makeBlank('e21-6','Frau',150)+'</div>'+
+  '<div class="qline">der '+makeBlank('e21-7','Vater',150)+' – die '+makeBlank('e21-8','Mutter',150)+'</div>';
+})();
+
+/* ================= EX 3.0 Possessivartikel-Tabelle (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex3-0');
+  el.innerHTML =
+  '<div class="qline">ich: <b>mein Bruder</b> / <b>meine Schwester</b> / <b>meine Eltern</b> (Beispiel)</div>'+
+  '<div class="qline">du: '+makeBlank('e30-0','dein',90)+' Bruder / '+makeBlank('e30-1','deine',90)+' Schwester / '+makeBlank('e30-2','deine',90)+' Eltern</div>'+
+  '<div class="qline">er: '+makeBlank('e30-3','sein',90)+' Bruder / '+makeBlank('e30-4','seine',90)+' Schwester / '+makeBlank('e30-5','seine',90)+' Eltern</div>'+
+  '<div class="qline">sie: '+makeBlank('e30-6','ihr',90)+' Bruder / '+makeBlank('e30-7','ihre',90)+' Schwester / '+makeBlank('e30-8','ihre',90)+' Eltern</div>';
+})();
+
+/* ================= EX 3.1 Dialoge (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<p><b>Dialog 1</b></p>'+
+  '<div class="qline">● Wohnen '+makeBlank('e31-0','Ihre',110)+' Eltern bei Ihnen?</div>'+
+  '<div class="qline">○ Nein, '+makeBlank('e31-1','unsere',110)+' Eltern wohnen noch in ihrer Wohnung.</div>'+
+  '<p><b>Dialog 2</b></p>'+
+  '<div class="qline">● Mein Bruder heißt Kevin.</div>'+
+  '<div class="qline">○ Und '+makeBlank('e31-2','deine',110)+' Schwester?</div>'+
+  '<div class="qline">● '+makeBlank('e31-3','Meine',110)+' Schwester heißt Ava.</div>'+
+  '<p><b>Dialog 3</b></p>'+
+  '<div class="qline">● Wo arbeiten '+makeBlank('e31-4','eure',110)+' Eltern?</div>'+
+  '<div class="qline">○ '+makeBlank('e31-5','Unsere',110)+' Eltern sind Lehrer. Sie unterrichten beide in der Hölderlin-Realschule.</div>'+
+  '<p><b>Dialog 4</b></p>'+
+  '<div class="qline">● Meine Freundin Linda ist 56, '+makeBlank('e31-6','ihre',110)+' Mutter ist 88. Aber '+makeBlank('e31-7','ihr',110)+' Vater ist schon gestorben.</div>'+
+  '<div class="qline">○ Mein Freund ist 45. Er hat noch '+makeBlank('e31-8','seine',110)+' Großmutter. Sie ist 99.</div>';
+})();
+
+/* ================= EX 4.0 Verbformen (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex4-0');
+  el.innerHTML =
+  '<div class="qline">mögen: ich mag, du magst</div>'+
+  '<div class="qline">treffen: ich treffe, du triffst, er/sie '+makeBlank('e40-0','trifft',100)+'</div>'+
+  '<div class="qline">sein: ich bin, du '+makeBlank('e40-1','bist',100)+'</div>';
+})();
+
+/* ================= EX 4.1 Liebesgeschichte (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<p>Ich <b>heiße</b> (1) Mario Stamm und ich '+makeBlank('e41-0','bin',80)+' (2) 26 Jahre alt. Meine Freundin '+makeBlank('e41-1','heißt',90)+' (3) Marta. Ich '+makeBlank('e41-2','liebe',90)+' (4) sie sehr. Wir '+makeBlank('e41-3','heiraten',110)+' (5) im Juli.</p>'+
+  '<p>Wir '+makeBlank('e41-4','leben',90)+' (6) schon seit zwei Jahren zusammen. Ich '+makeBlank('e41-5','habe',90)+' (7) einen Bruder. Ich '+makeBlank('e41-6','mag',80)+' (8) ihn sehr. Mein Bruder '+makeBlank('e41-7','kennt',90)+' (9) viele Leute. Er '+makeBlank('e41-8','ist',70)+' (10) in drei Vereinen. Wir '+makeBlank('e41-9','treffen',100)+' (11) unsere Freunde am Wochenende.</p>';
+})();
+
+/* ================= EX 5.1 Gratulation E-Mail (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<p>'+makeBlank('e51-0','Liebe',100)+' Ana,</p>'+
+  '<p>du hast heute '+makeBlank('e51-1','Geburtstag',150)+'!</p>'+
+  '<p>Und du bist erst 22 Jahre jung! '+makeBlank('e51-2','Herzlichen',130)+' '+makeBlank('e51-3','Glückwunsch',150)+'!</p>'+
+  '<p>'+makeBlank('e51-4','Liebe',100)+' '+makeBlank('e51-5','Grüße',100)+'</p>'+
+  '<p>Ludger</p>'+
+  '<p>PS: Mario und Marta wollen '+makeBlank('e51-6','heiraten',130)+'! Die '+makeBlank('e51-7','Hochzeit',150)+' ist am 11. Juli. Toll, was?</p>';
+})();
+
+/* ================= EX 6.1 Glückwunschkarte (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex6-1');
+  el.innerHTML =
+  '<p>'+makeBlank('e61-0','Lieber',110)+' Mario,</p>'+
+  '<p>'+makeBlank('e61-1','liebe',110)+' Marta,</p>'+
+  '<p>wir '+makeBlank('e61-2','gratulieren',150)+' euch</p>'+
+  '<p>ganz herzlich zu eurer '+makeBlank('e61-3','Hochzeit',150)+'</p>'+
+  '<p>und wünschen euch viel '+makeBlank('e61-4','Glück',110)+'</p>'+
+  '<p>für das Leben zu zweit.</p>'+
+  '<p>Alles Liebe,<br>Ludger und Martin</p>';
+})();
+
+/* ================= EX 7.1 Meine Familie – Dialog (aus dem Buch) ================= */
+(function(){
+  var el = document.getElementById('ex7-1');
+  el.innerHTML =
+  '<div class="qline">● Hast du viele <b>Angehörige</b> (1), Orest?</div>'+
+  '<div class="qline">○ Ja, meine '+makeBlank('e71-0','Familie',130)+' (2) ist sehr groß.</div>'+
+  '<div class="qline">● Leben deine Verwandten hier?</div>'+
+  '<div class="qline">○ Nein, die meisten leben in Ghana.</div>'+
+  '<div class="qline">Mein Vater lebt in Ghana, aber meine Mutter ist schon '+makeBlank('e71-1','tot',90)+' (3).</div>'+
+  '<div class="qline">Sie ist vor zwei Jahren '+makeBlank('e71-2','gestorben',150)+' (4).</div>'+
+  '<div class="qline">● Wie oft '+makeBlank('e71-3','triffst',110)+' (5) du deine '+makeBlank('e71-4','Verwandten',150)+' (6)?</div>'+
+  '<div class="qline">○ Meist nur einmal im Jahr.</div>'+
+  '<div class="qline">● Wer '+makeBlank('e71-5','kümmert',130)+' (7) sich um deinen Vater?</div>'+
+  '<div class="qline">○ Ich habe sechs '+makeBlank('e71-6','Geschwister',150)+' (8).</div>'+
+  '<div class="qline">Drei '+makeBlank('e71-7','Schwestern',150)+' (9) und ein '+makeBlank('e71-8','Bruder',130)+' (10) leben noch in Ghana.</div>'+
+  '<div class="qline">Meine anderen '+makeBlank('e71-9','Brüder',130)+' (Pl.) (11) und ich überweisen jeden Monat Geld.</div>';
+})();
+
+/* ================= EXTRA: Wortsuche ================= */
+(function(){
+  var grid = [
+    "WFAMILIEHBDOLK",
+    "JVATERMVQENLZO",
+    "MUTTEROMARWYJT",
+    "GESCHWISTERXYZ",
+    "HHEPEOXTLNWRPY",
+    "RZBRUDERHYTZCQ",
+    "LCSCHWESTERHEN",
+    "GSREENKELGGWSP",
+    "QOTANTEACHEZOO",
+    "NEBFREUNDBOEQN",
+    "SBROVKINDCHNAM",
+    "CBNHOCHZEITUVE",
+  ];
+  var wordEl = document.getElementById('ws-grid');
+  var table = document.createElement('table');
+  table.className = 'ws-table';
+  grid.forEach(function(row){
+    var tr = document.createElement('tr');
+    row.split('').forEach(function(ch){
+      var td = document.createElement('td');
+      td.textContent = ch;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  wordEl.appendChild(table);
+
+  var words = ['FAMILIE','VATER','MUTTER','GESCHWISTER','BRUDER','SCHWESTER','ENKEL','TANTE','FREUND','KIND','HOCHZEIT'];
+  document.getElementById('ws-words').innerHTML = words.map(function(w){ return '<span class="ws-word">'+w+'</span>'; }).join('');
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Vater und Mutter zusammen sind die ...", "Eltern"],
+    ["Der Vater von Vater oder Mutter ist der ...", "Großvater"],
+    ["Der Bruder von Vater oder Mutter ist der ...", "Onkel"],
+    ["Die Schwester von Vater oder Mutter ist die ...", "Tante"],
+    ["Der Sohn von Onkel oder Tante ist der ...", "Cousin"],
+    ["Bruder und Schwester zusammen sind die ...", "Geschwister"],
+    ["Die offizielle Verbindung von zwei Menschen ist die ...", "Ehe"],
+    ["Offiziell ein Paar werden heißt ...", "heiraten"],
+    ["Das Fest, wenn man heiratet, ist die ...", "Hochzeit"],
+    ["Ich gratuliere dir zum ...", "Geburtstag"],
+    ["Nicht mehr am Leben sein heißt ...", "tot"],
+    ["Für jemanden sorgen heißt sich ... um jemanden.", "kümmern"],
+    ["Menschen aus der eigenen Familie nennt man Angehörige oder ...", "Verwandte"],
+    ["Ein gutes Gefühl ist das ...", "Glück"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
