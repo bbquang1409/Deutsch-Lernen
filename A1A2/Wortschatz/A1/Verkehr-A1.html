@@ -51,6 +51,12 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
 .matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
 .check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
 .check-btn:hover{background:#d5722c;}
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
 .result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
 .footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
 .ws-wrap{overflow-x:auto;margin:12px 0;}
@@ -174,6 +180,23 @@ input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background
 <div class="footer-credit">Made with ♥ by Bảo Quang</div>
 
 <script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
 document.querySelectorAll('.tabbtn').forEach(function(btn){
   btn.addEventListener('click', function(){
     var id = btn.dataset.tab;
@@ -259,11 +282,23 @@ function renderVocab(list, targetId){
     var art = item[0], word = item[1], de = item[2], vn = item[3];
     var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
     var label = art ? (art+' '+word) : word;
+    var speakText = (art && art.indexOf('/')===-1 ? art+' ' : '') + word.split(',')[0].split('(')[0].split('/')[0].trim();
     return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
-      '<div class="vocab-de">'+de+'</div><div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+      '<button class="speak-btn" data-text="'+speakText+'">🔊</button>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
   }).join('');
   el.querySelectorAll('.vocab-card').forEach(function(card){
-    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
   });
 }
 renderVocab(vocab1,'vg1'); renderVocab(vocab2,'vg2'); renderVocab(vocab3,'vg3'); renderVocab(vocab4,'vg4');
@@ -323,17 +358,17 @@ document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
 (function(){
   var items = [
     ["Achtung! Hier spielen Kinder.","Verkehrsberuhigte Zone"],
-    ["Vorsicht! Hier fährt die Straßenbahn.","Achtung Straßenbahn"],
+    ["Vorsicht! Hier fährt die Straßenbahn.","Zone 30"],
     ["Fahr nicht so schnell. Du musst hier Tempo 30 fahren.","Zone 30"],
     ["Hier ist das Parken erlaubt.","Parkplatz-Schild (P)"],
     ["Hier ist Parken verboten.","Parkverbot"],
     ["Tickets bekommen Sie am Automat.","Fahrkartenautomat"],
-    ["Das ist eine Fußgängerzone. Hier dürfen keine Autos fahren.","Fußgängerzone"],
+    ["Das ist eine Fußgängerzone. Hier dürfen keine Autos fahren.","Ende der Fußgängerzone"],
     ["Rechts, rechts, du musst rechts fahren.","Pflichtrichtung rechts"],
     ["Hier hält der Bus.","Bushaltestelle"],
     ["Die anderen Autos haben Vorfahrt.","Vorfahrt beachten (Dreieck)"],
   ];
-  var opts = ["Verkehrsberuhigte Zone","Achtung Straßenbahn","Zone 30","Parkplatz-Schild (P)","Parkverbot","Fahrkartenautomat","Fußgängerzone","Pflichtrichtung rechts","Bushaltestelle","Vorfahrt beachten (Dreieck)"];
+  var opts = ["Verkehrsberuhigte Zone","Zone 30","Parkplatz-Schild (P)","Parkverbot","Fahrkartenautomat","Ende der Fußgängerzone","Pflichtrichtung rechts","Bushaltestelle","Vorfahrt beachten (Dreieck)"];
   var el = document.getElementById('ex1-1');
   el.innerHTML = items.map(function(it,i){
     var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');

@@ -54,6 +54,12 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
 .wordbank b{color:var(--teal-light);}
 .check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
 .check-btn:hover{background:#d5722c;}
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
 .result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
 .footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
 .swatch{display:inline-block;width:22px;height:22px;border-radius:5px;border:1px solid #999;vertical-align:middle;margin:0 4px;}
@@ -221,6 +227,23 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
 <div class="footer-credit">Made with ♥ by Bảo Quang</div>
 
 <script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
 document.querySelectorAll('.tabbtn').forEach(function(btn){
   btn.addEventListener('click', function(){
     var id = btn.dataset.tab;
@@ -346,11 +369,23 @@ function renderVocab(list, targetId){
     var art = item[0], word = item[1], de = item[2], vn = item[3];
     var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
     var label = art ? (art+' '+word) : word;
+    var speakText = (art && art.indexOf('/')===-1 ? art+' ' : '') + word.split(',')[0].split('(')[0].split('/')[0].trim();
     return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
-      '<div class="vocab-de">'+de+'</div><div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+      '<button class="speak-btn" data-text="'+speakText+'">🔊</button>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
   }).join('');
   el.querySelectorAll('.vocab-card').forEach(function(card){
-    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
   });
 }
 renderVocab(vocab1,'vg1'); renderVocab(vocab2,'vg2'); renderVocab(vocab3,'vg3');

@@ -72,6 +72,12 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
   cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;
 }
 .check-btn:hover{background:#d5722c;}
+.speak-btn{
+  background:var(--teal-pale);border:none;color:var(--teal);border-radius:50%;
+  width:24px;height:24px;font-size:.8rem;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;
+}
+.speak-btn:hover{background:var(--orange-light);color:var(--orange);}
 .result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
 .footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
 .houses-wrap{margin:14px 0;text-align:center;}
@@ -234,6 +240,23 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
 <div class="footer-credit">Made with ♥ by Bảo Quang</div>
 
 <script>
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(input){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var words = Array.isArray(input) ? input : [input];
+  var i = 0;
+  function next(){
+    if(i>=words.length) return;
+    var u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'de-DE';
+    u.rate = 0.85;
+    u.onend = function(){ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
 /* ================= TAB SWITCHING ================= */
 document.querySelectorAll('.tabbtn').forEach(function(btn){
   btn.addEventListener('click', function(){
@@ -330,11 +353,21 @@ function renderGram(list, targetId){
   var el = document.getElementById(targetId);
   el.innerHTML = list.map(function(item){
     return '<div class="gram-card"><span class="gram-word">'+item[0]+'</span>'+
+      '<button class="speak-btn" data-text="'+item[0]+'">🔊</button>'+
       '<div class="gram-ex">'+item[1]+'</div>'+
       '<div class="gram-vn">🇻🇳 '+item[2]+'</div></div>';
   }).join('');
   el.querySelectorAll('.gram-card').forEach(function(card){
-    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+    card.addEventListener('click', function(e){
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+  el.querySelectorAll('.speak-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakDE(btn.dataset.text);
+    });
   });
 }
 renderGram(gram1,'vg1');
@@ -571,7 +604,7 @@ document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
 (function(){
   var starts = ['Ich möchte noch','Aber ich möchte','Es schmeckt','Kann ich noch','In Deutschland isst'];
   var ends = ['alles super.','etwas trinken, bitte.','man gerne Wurst.','nichts mehr, danke.','mehr haben?'];
-  var answers = ['etwas trinken, bitte.','nichts mehr, danke.','alles super.','mehr haben?','man gerne Wurst.'];
+  var answers = ['nichts mehr, danke.','etwas trinken, bitte.','alles super.','mehr haben?','man gerne Wurst.'];
   var el = document.getElementById('ex8-1');
   el.innerHTML = starts.map(function(s,i){
     var optHtml = ends.map(function(e){ return '<option value="'+e+'">'+e+'</option>'; }).join('');
