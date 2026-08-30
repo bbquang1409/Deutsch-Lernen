@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8 Wirtschaft und Politik</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.35rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);}
+.scale-box div{margin:3px 0;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.matchrow select{padding:5px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;min-width:170px;}
+.matchrow select.correct{border-color:var(--ok);background:#eafaf0;}
+.matchrow select.wrong{border-color:var(--bad);background:#fdecec;}
+.matchrow .mw-label{min-width:150px;font-weight:600;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.note-box{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.note-box textarea{width:100%;min-height:44px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+.hoer-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.hoer-word{font-weight:700;color:var(--teal);min-width:150px;}
+.tts-btn{background:var(--teal-light);color:#fff;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.85rem;font-weight:600;}
+.tts-btn:hover{background:var(--teal);}
+.tts-btn:disabled{opacity:0.6;cursor:default;}
+.ff-box{border:1px solid var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:0.88rem;color:var(--teal);}
+.ff-box b{color:var(--orange);}
+.cluster-card{border:1px solid #e2ded4;border-radius:10px;padding:12px 14px;margin-bottom:14px;background:#fbfaf7;}
+.cluster-card h4{margin:0 0 8px;color:var(--teal);font-size:0.98rem;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Wortschatz</div>
+  <h1>8&nbsp; Wirtschaft und Politik</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🏭 Industrie</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">Wir stellen Waren von hoher <b>Qualität</b> her.</div>
+  </div>
+
+  <div class="section">
+    <h2>👷 Arbeitsleben</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">
+      <div>Die Firma <b>entlässt</b> 50 Arbeitnehmer.</div>
+      <div>Ralf hat <b>gekündigt</b>.</div>
+      <div>Meine Kollegin <b>ärgert</b> mich.</div>
+      <div>Jeden Tag habe ich <b>Ärger</b> mit ihr.</div>
+      <div><b>Schade</b>, dass ihr euch nicht besser versteht.</div>
+      <div>Ich arbeite nur <b>stundenweise</b>.</div>
+      <div>Meine Arbeit macht mir meistens <b>Freude</b>.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>💶 Bezahlung</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>🧓 Leistungen</h2>
+    <div class="vocab-grid" id="vg4"></div>
+  </div>
+
+  <div class="section">
+    <h2>🏛️ Politik</h2>
+    <div class="vocab-grid" id="vg5"></div>
+    <div class="scale-box">
+      <div>Berlin hat 3,4 Mio. <b>Einwohner</b>.</div>
+      <div><b>Krieg</b> und <b>Frieden</b></div>
+      <div>Keine <b>Gewalt</b>!</div>
+      <div>Alle Bürgerinnen und Bürger haben <b>Rechte</b> und Pflichten.</div>
+      <div>Du hast <b>recht</b>.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache</h2>
+    <div class="ex-instructions">Hören Sie und sprechen Sie nach. Bei diesen Wörtern spricht man das End-<i>er</i> wie ein kurzes <i>a</i>, nicht wie ein r.</div>
+    <div id="hoer-r"></div>
+    <div class="ex-instructions" style="margin-top:14px;">Hören Sie: welchen Laut hören Sie — <b>ie</b> (langes i) oder <b>ai</b> (Diphthong)?</div>
+    <div id="hoer-ieai"></div>
+    <button class="check-btn" data-check="mc" data-target="hoer-ieai">Kontrollieren</button>
+    <div class="result-msg" id="res-hoer-ieai"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Was kenne ich schon?</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Welche Wörter aus dem Bereich Wirtschaft, Arbeit, Beruf … kennen Sie bereits?</div>
+      <div class="ex-instructions">Schreiben Sie sie in eine Tabelle. Notieren Sie auch die Artikel und die Pluralformen bzw. die Verbformen. Diese Aufgabe wird nicht automatisch kontrolliert.</div>
+      <div class="wordbank"><b>Liste:</b> anfangen, er fängt an, hat angefangen · die Arbeit (hier Sg.) · arbeiten als … · arbeitslos · der Arbeitsplatz, ¨-e · die Arbeitswoche, -n · der Beruf, -e · das Büro, -s · der Chef, -s · die Chefin, -nen · der Feierabend Sg. · die Firma, Firmen · gut · der Job, -s · leicht · der Plan, ¨-e · das Praktikum, Praktika · schlecht · selbstständig · schwer · die Stelle, -n · der Termin, -e · der Urlaub, ¨-e · verdienen</div>
+      <div class="note-box">Nomen<br><textarea placeholder="z. B. der Urlaub, -e ..."></textarea></div>
+      <div class="note-box">Adjektive<br><textarea placeholder="z. B. arbeitslos ..."></textarea></div>
+      <div class="note-box">Verben<br><textarea placeholder="z. B. anfangen, er fängt an, hat angefangen ..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Wortschatz-Cluster</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Ordnen Sie die passenden Wörter aus der Liste den drei Bereichen zu.</div>
+      <div class="ex-instructions">Wählen Sie für jedes Wort den passenden Bereich aus.</div>
+      <div class="cluster-card"><h4>🏭 Herstellung von Waren</h4><span class="ex-instructions">(Beispiel: herstellen und verkaufen)</span></div>
+      <div class="cluster-card"><h4>⚖️ Arbeitnehmer und Arbeitgeber</h4><span class="ex-instructions">(Beispiel: der Streik, die Gewerkschaft)</span></div>
+      <div class="cluster-card"><h4>💶 Geld</h4><span class="ex-instructions">(Beispiel: der Tarif)</span></div>
+      <div id="ex2-cluster"></div>
+      <button class="check-btn" data-check="select" data-target="ex2-cluster">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-cluster"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Definitionen und Wortbildung</h2>
+
+    <div class="exercise">
+      <div class="ex-title">3 Definitionen – Schreiben Sie das passende Wort dazu.</div>
+      <div id="ex3-def"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-def">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-def"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">4 Wie heißen die Nomen oder Verben?</div>
+      <div id="ex4-nv"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-nv">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-nv"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">5 Wie heißt das Gegenteil?</div>
+      <div id="ex5-opp"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5-opp">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-opp"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Wirtschaft</h2>
+    <div class="exercise">
+      <div class="ex-title">6 Wirtschaft – Ergänzen Sie die Texte.</div>
+      <div id="ex6-texts"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex6-texts">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6-texts"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Im Betrieb</h2>
+    <div class="exercise">
+      <div class="ex-title">7 Im Betrieb – Ergänzen Sie die Sätze.</div>
+      <div class="wordbank"><b>Kasten:</b> pensioniert · der Betriebsrat · die Sozialhilfe · ärgern · die Gewerkschaft · die Rente · niedrig · endlich · genug · die Schicht · die Versichertenkarte · der Betrieb</div>
+      <div id="ex7-betrieb"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex7-betrieb">Kontrollieren</button>
+      <div class="result-msg" id="res-ex7-betrieb"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Politik und Recht</h2>
+    <div class="exercise">
+      <div class="ex-title">8 Politik und Recht – Ergänzen Sie die Sätze.</div>
+      <div class="wordbank"><b>Kasten:</b> die Partei · das Recht · wählen · die Gewalt · recht haben</div>
+      <div id="ex8-politik"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex8-politik">Kontrollieren</button>
+      <div class="result-msg" id="res-ex8-politik"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7 Beispielsätze und Englisch/Deutsch</h2>
+
+    <div class="exercise">
+      <div class="ex-title">9 Ergänzen Sie die Beispielsätze mit dem passenden Wort.</div>
+      <div id="ex9-beispiel"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex9-beispiel">Kontrollieren</button>
+      <div class="result-msg" id="res-ex9-beispiel"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">10 Englisch/Deutsch – Finden Sie das passende deutsche Wort.</div>
+      <div class="ex-instructions">Wörter mit ⚠️ sind falsche Freunde: Sie sehen englisch aus, bedeuten aber im Deutschen etwas anderes!</div>
+      <div id="ex10-engl"></div>
+      <button class="check-btn" data-check="select" data-target="ex10-engl">Kontrollieren</button>
+      <div class="result-msg" id="res-ex10-engl"></div>
+      <div class="ff-box">
+        <b>⚠️ Falsche Freunde:</b><br>
+        • <i>fabric</i> (Stoff/Gewebe) sieht aus wie <b>die Fabrik</b> (= factory)<br>
+        • <i>rent</i> (Miete) sieht aus wie <b>die Rente</b> (= pension)<br>
+        • <i>tariff</i> (Einfuhrzoll) sieht aus wie <b>der Tarif</b> (= Lohn-/Preisstufe, z. B. Handytarif)
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Wirtschaft und Politik</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [ // Industrie
+ ["die","Industrie (meistens Sg.)","der Wirtschaftsbereich, in dem Waren in Fabriken hergestellt werden","công nghiệp"],
+ ["der","Betrieb, -e","eine Firma oder ein Unternehmen, in dem man arbeitet","cơ sở/xí nghiệp"],
+ ["die","Fabrik, -en","ein Gebäude, in dem Waren maschinell hergestellt werden","nhà máy"],
+ ["das","Produkt, -e","eine Ware, die hergestellt und verkauft wird","sản phẩm"],
+ ["die","Ware, -n","ein Gegenstand, der verkauft oder gekauft wird","hàng hóa"],
+ ["","herstellen, hat hergestellt","ein Produkt produzieren","sản xuất"],
+ ["die","Qualität (meistens Sg.)","wie gut etwas gemacht ist","chất lượng"],
+ ["der","Export, -e","der Verkauf von Waren ins Ausland","xuất khẩu"],
+ ["der","Import, -e","der Kauf von Waren aus dem Ausland","nhập khẩu"],
+ ["der","Kunde, -n","eine Person, die etwas kauft (weiblich: die Kundin)","khách hàng"],
+ ["","verkaufen, hat verkauft","eine Ware gegen Geld weitergeben","bán"],
+];
+
+var vocab2 = [ // Arbeitsleben
+ ["die","Gewerkschaft, -en","eine Organisation, die die Interessen der Arbeitnehmer vertritt","công đoàn"],
+ ["der","Betriebsrat, ¨-e","eine gewählte Gruppe von Arbeitnehmern, die die Interessen der Kollegen im Betrieb vertritt","hội đồng công nhân"],
+ ["der","Streik, -s","wenn Arbeitnehmer aus Protest nicht mehr arbeiten","đình công"],
+ ["","streiken, hat gestreikt","aus Protest nicht mehr arbeiten","đình công (động từ)"],
+ ["","entlassen, hat entlassen","einem Arbeitnehmer kündigen (vom Arbeitgeber)","sa thải"],
+ ["die","Kündigung, -en","das offizielle Ende eines Arbeitsvertrags","đơn/thông báo thôi việc"],
+ ["","kündigen, hat gekündigt","den Arbeitsvertrag offiziell beenden","xin nghỉ việc / sa thải"],
+ ["der","Ärger (Sg.)","ein negatives Gefühl, wenn man wütend ist","sự bực bội"],
+ ["","sich ärgern, hat sich geärgert","wütend oder verärgert sein","bực mình"],
+ ["","schade","ein Ausdruck des Bedauerns","tiếc quá"],
+ ["die","Freude (Sg.)","ein positives, glückliches Gefühl","niềm vui"],
+ ["","sich freuen, hat sich gefreut","ein positives Gefühl haben, glücklich sein","vui mừng"],
+ ["die","Schicht, -en","ein festgelegter Arbeitsabschnitt, z. B. Frühschicht, Nachtschicht","ca làm việc"],
+ ["die","Überstunde, -n","Arbeitszeit über die normale Arbeitszeit hinaus","giờ làm thêm"],
+ ["die","Teilzeit (Sg.)","Arbeit mit weniger als der vollen Arbeitszeit","làm bán thời gian"],
+ ["die","Vollzeit (Sg.)","Arbeit mit der vollen, normalen Arbeitszeit","làm toàn thời gian"],
+ ["","stundenweise","für einzelne Stunden, nicht den ganzen Tag","theo giờ"],
+];
+
+var vocab3 = [ // Bezahlung
+ ["der","Tarif, -e","ein vereinbarter Lohn oder Preis, z. B. per Vertrag zwischen Gewerkschaft und Arbeitgeber","mức lương/giá theo thỏa thuận"],
+ ["der","Lohn, ¨-e","das Geld, das man für seine Arbeit bekommt","tiền lương"],
+ ["","niedrig","nicht viel, wenig (Gegenteil: hoch)","thấp"],
+ ["","hoch","viel, groß (bei Zahlen, Preisen)","cao"],
+ ["die","Steuer, -n","Geld, das man an den Staat zahlen muss","thuế"],
+ ["die","Mehrwertsteuer, -n","eine Steuer auf Waren und Dienstleistungen","thuế giá trị gia tăng"],
+ ["die","Lohnsteuer, -n","die Steuer, die man auf sein Gehalt zahlt","thuế thu nhập (từ lương)"],
+ ["die","Wirtschaft","der Bereich von Produktion, Handel und Finanzen in einem Land","kinh tế"],
+ ["","netto","der Betrag nach Abzug von Steuern","tiền ròng (sau thuế)"],
+ ["","brutto","der Betrag vor Abzug von Steuern","tiền gộp (trước thuế)"],
+ ["","genug","eine ausreichende Menge","đủ"],
+];
+
+var vocab4 = [ // Leistungen
+ ["die","Rente, -n","Geld, das man im Alter regelmäßig vom Staat bekommt","lương hưu"],
+ ["","pensioniert","im Ruhestand, nicht mehr berufstätig (meist bei Beamten)","đã nghỉ hưu"],
+ ["der","Rentner, -","eine Person, die eine Rente bekommt (weiblich: die Rentnerin)","người hưu trí"],
+ ["","endlich","nach langer Zeit, zuletzt","cuối cùng"],
+ ["die","Senioren (Pl.)","ältere Menschen","người cao tuổi"],
+ ["die","Versichertenkarte, -n","eine Karte, die zeigt, dass man krankenversichert ist","thẻ bảo hiểm y tế"],
+ ["die","Sozialhilfe (Sg.)","staatliche finanzielle Unterstützung für Menschen ohne genug Einkommen","trợ cấp xã hội"],
+];
+
+var vocab5 = [ // Politik
+ ["der","Einwohner, -","eine Person, die in einer Stadt oder einem Land lebt (weiblich: die Einwohnerin)","cư dân"],
+ ["die","Partei, Parteien","eine politische Organisation mit gemeinsamen Zielen","đảng phái"],
+ ["die","Regierung","die Gruppe, die ein Land politisch leitet","chính phủ"],
+ ["","wählen, hat gewählt","seine Stimme bei einer Wahl abgeben","bầu cử"],
+ ["der","Krieg, -e","ein bewaffneter Konflikt zwischen Ländern oder Gruppen","chiến tranh"],
+ ["der","Frieden (Sg.)","ein Zustand ohne Krieg oder Gewalt","hòa bình"],
+ ["die","Gewalt (Sg.)","körperliche Kraft, die benutzt wird, um jemandem zu schaden","bạo lực"],
+ ["","reich","mit sehr viel Geld","giàu"],
+ ["","arm","mit sehr wenig Geld","nghèo"],
+ ["das","Recht, -e","etwas, das einem gesetzlich zusteht","quyền lợi"],
+ ["","recht haben, hat recht gehabt","mit seiner Meinung richtig liegen","có lý"],
+];
+
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+renderVocab(vocab5,'vg5');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= TTS ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkSelect(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(sel){
+    if(sel.value === sel.dataset.ans){
+      sel.classList.add('correct'); sel.classList.remove('wrong'); correct++;
+    } else {
+      sel.classList.add('wrong'); sel.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='select') checkSelect(target);
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+function selectRow(label, id, options, ans, width){
+  var opts = '<option value="">– wählen –</option>'+options.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+  return '<div class="matchrow"><span class="mw-label">'+label+'</span>'+
+    '<select id="'+id+'" data-ans="'+ans+'"'+(width?(' style="min-width:'+width+'px;"'):'')+'>'+opts+'</select></div>';
+}
+
+/* ================= AUSSPRACHE: -er wie a ================= */
+(function(){
+  var words = ["die Steuer","der Einwohner","der Ärger","sich ärgern","verkaufen","herstellen"];
+  var el = document.getElementById('hoer-r');
+  el.innerHTML = words.map(function(w,i){
+    return '<div class="hoer-row"><span class="hoer-word">'+w+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+w.replace(/"/g,'&quot;')+'">🔊 Anhören</button></div>';
+  }).join('');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= AUSSPRACHE: ie vs ai ================= */
+(function(){
+  var items = [
+    ["die Industrie",0], ["der Betrieb",0], ["pensioniert",0], ["die Regierung",0],
+    ["streiken",1], ["die Partei",1], ["die Teilzeitarbeit",1], ["reich",1], ["stundenweise",1]
+  ];
+  var el = document.getElementById('hoer-ieai');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="hoer-row">'+
+      '<span class="hoer-word">'+it[0]+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+it[0].replace(/"/g,'&quot;')+'">🔊 Anhören</button>'+
+      mcHtml('mcv',i,['ie','ai'],it[1])+
+    '</div>';
+  }).join('');
+  wireMcOptions(el);
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= EX 2: Cluster-Zuordnung ================= */
+(function(){
+  var cats = ['Herstellung von Waren','Arbeitnehmer und Arbeitgeber','Geld'];
+  var words = [
+    ["die Fabrik","Herstellung von Waren"],
+    ["der Betrieb","Herstellung von Waren"],
+    ["das Produkt","Herstellung von Waren"],
+    ["die Ware","Herstellung von Waren"],
+    ["der Export","Herstellung von Waren"],
+    ["der Import","Herstellung von Waren"],
+    ["die Gewerkschaft","Arbeitnehmer und Arbeitgeber"],
+    ["der Betriebsrat","Arbeitnehmer und Arbeitgeber"],
+    ["entlassen","Arbeitnehmer und Arbeitgeber"],
+    ["die Kündigung","Arbeitnehmer und Arbeitgeber"],
+    ["die Überstunde","Arbeitnehmer und Arbeitgeber"],
+    ["die Teilzeit","Arbeitnehmer und Arbeitgeber"],
+    ["der Lohn","Geld"],
+    ["die Steuer","Geld"],
+    ["die Mehrwertsteuer","Geld"],
+    ["netto","Geld"],
+    ["brutto","Geld"],
+    ["die Rente","Geld"],
+  ];
+  var el = document.getElementById('ex2-cluster');
+  el.innerHTML = words.map(function(w,i){
+    return selectRow(w[0], 'e2c-'+i, cats, w[1], 240);
+  }).join('');
+})();
+
+/* ================= EX 3: Definitionen ================= */
+(function(){
+  var el = document.getElementById('ex3-def');
+  el.innerHTML =
+  '<div class="qline">1. Diese Organisation vertritt die Interessen der Arbeitnehmer. '+makeBlank('e3-0','die Gewerkschaft',180)+'</div>'+
+  '<div class="qline">2. In diesem Gebäude stellt man Produkte her. '+makeBlank('e3-1','die Fabrik',150)+'</div>'+
+  '<div class="qline">3. Wenn man weniger als die normale Arbeitszeit arbeitet. '+makeBlank('e3-2','die Teilzeit',150)+'</div>'+
+  '<div class="qline">4. Der Chef sagt: Sie können hier nicht mehr arbeiten. '+makeBlank('e3-3','die Kündigung|die Entlassung',180)+'</div>'+
+  '<div class="qline">5. Diese Organisation vertritt eine politische Meinung. '+makeBlank('e3-4','die Partei',140)+'</div>'+
+  '<div class="qline">6. Sie hat die Macht im Land und bestimmt die Politik. '+makeBlank('e3-5','die Regierung',160)+'</div>'+
+  '<div class="qline">7. Wenn man alt ist und nicht mehr arbeitet, bekommt man das. '+makeBlank('e3-6','die Rente',140)+'</div>'+
+  '<div class="qline">8. Wenn die Arbeitnehmer mehr Geld wollen, dann müssen sie das manchmal tun. '+makeBlank('e3-7','streiken',140)+'</div>'+
+  '<div class="qline">9. Diese Steuer ist auf jedem Produkt und jeder Dienstleistung. '+makeBlank('e3-8','die Mehrwertsteuer',200)+'</div>'+
+  '<div class="qline">10. Die Karte zeigt, dass man versichert ist. '+makeBlank('e3-9','die Versichertenkarte',210)+'</div>';
+})();
+
+/* ================= EX 4: Nomen/Verben ================= */
+(function(){
+  var el = document.getElementById('ex4-nv');
+  el.innerHTML =
+  '<div class="qline">die Entlassung → '+makeBlank('e4-0','entlassen',150)+'</div>'+
+  '<div class="qline">'+makeBlank('e4-1','die Produktion',180)+' → produzieren</div>'+
+  '<div class="qline">die Kündigung → '+makeBlank('e4-2','kündigen',150)+'</div>'+
+  '<div class="qline">'+makeBlank('e4-3','der Import',150)+' → importieren</div>'+
+  '<div class="qline">die Herstellung → '+makeBlank('e4-4','herstellen',150)+'</div>'+
+  '<div class="qline">'+makeBlank('e4-5','der Streik',150)+' → streiken</div>'+
+  '<div class="qline">die Wahl → '+makeBlank('e4-6','wählen',150)+'</div>';
+})();
+
+/* ================= EX 5: Gegenteil ================= */
+(function(){
+  var el = document.getElementById('ex5-opp');
+  el.innerHTML =
+  '<div class="qline">der Verkäufer ↔ '+makeBlank('e5-0','der Käufer',150)+'</div>'+
+  '<div class="qline">die Teilzeit ↔ '+makeBlank('e5-1','die Vollzeit',150)+'</div>'+
+  '<div class="qline">der Frieden ↔ <i>der Krieg</i> (Beispiel)</div>'+
+  '<div class="qline">hoch ↔ '+makeBlank('e5-2','niedrig',150)+'</div>'+
+  '<div class="qline">der Import ↔ '+makeBlank('e5-3','der Export',150)+'</div>'+
+  '<div class="qline">netto ↔ '+makeBlank('e5-4','brutto',150)+'</div>'+
+  '<div class="qline">reich ↔ '+makeBlank('e5-5','arm',150)+'</div>'+
+  '<div class="qline">kaufen ↔ '+makeBlank('e5-6','verkaufen',150)+'</div>';
+})();
+
+/* ================= EX 6: Wirtschaft Texte ================= */
+(function(){
+  var el = document.getElementById('ex6-texts');
+  el.innerHTML =
+  '<p><b>1.</b> In Deutschland gibt es in der Arbeitswelt viele Organisationen. Die meisten Arbeitgeber sind in Arbeitgeberverbänden, und viele Arbeitnehmer sind Mitglied in einer '+makeBlank('e6-0','Gewerkschaft',150)+'. Arbeitgeberverbände und Gewerkschaften machen Verträge. In diesen Verträgen regelt man den '+makeBlank('e6-1','Lohn',110)+', die '+makeBlank('e6-2','Arbeitszeit',140)+' und andere Arbeitsbedingungen.</p>'+
+  '<p><b>2.</b> Viele Arbeitnehmer arbeiten heute '+makeBlank('e6-3','Teilzeit',120)+' oder '+makeBlank('e6-4','stundenweise',130)+', also nur einen Teil der tariflich festgelegten '+makeBlank('e6-5','Vollzeit',120)+'. Wenn Arbeitnehmer mehr als die normale Arbeitszeit arbeiten, dann sind das '+makeBlank('e6-6','Überstunden',150)+'. Dafür gibt es normalerweise mehr Geld.</p>'+
+  '<p><b>3.</b> Ein Arbeitgeber kann einen Arbeitnehmer '+makeBlank('e6-7','entlassen',130)+', wenn es z. B. nicht genug Arbeit gibt. Dabei muss er aber die '+makeBlank('e6-8','Rechte',110)+' der Arbeitnehmer beachten. Die stehen in Gesetzen und in den '+makeBlank('e6-9','Tarif',110)+'-verträgen. In größeren '+makeBlank('e6-10','Betrieben',130)+' gibt es meistens einen '+makeBlank('e6-11','Betriebsrat',140)+'. Dieser vereinbart mit der Geschäftsleitung die Arbeitsbedingungen im konkreten '+makeBlank('e6-12','Betrieb',120)+'. Wenn es bei den Tarifverhandlungen Probleme gibt, dann dürfen die Arbeitnehmer '+makeBlank('e6-13','streiken',120)+'.</p>'+
+  '<p><b>4.</b> Alle Einwohner Deutschlands, die Geld verdienen, müssen '+makeBlank('e6-14','Steuern',120)+' bezahlen. Die Arbeitnehmer zahlen die '+makeBlank('e6-15','Lohnsteuer',140)+'. Eine andere wichtige Steuer ist die '+makeBlank('e6-16','Mehrwertsteuer',160)+'. Sie ist bei allen Produkten und Dienstleistungen dabei, die man kauft. Sie beträgt zurzeit 19 %. Bei Lebensmitteln und Büchern z. B. beträgt sie aber nur 7 %.</p>'+
+  '<p><b>5.</b> Wer gearbeitet hat, bekommt im Alter eine '+makeBlank('e6-17','Rente',110)+'. Früher bekam man sie ab 65 Jahren, heute ist das Eintrittsalter immer wieder in der Diskussion. Die meisten Deutschen werden aber auch heute noch vor dem 65. Lebensjahr verrentet bzw. '+makeBlank('e6-18','pensioniert',150)+'. Beamte bekommen eine '+makeBlank('e6-19','Pension',130)+'.</p>';
+})();
+
+/* ================= EX 7: Im Betrieb ================= */
+(function(){
+  var el = document.getElementById('ex7-betrieb');
+  el.innerHTML =
+  '<div class="qline">1. Ich gehe zum Chef. Frau Weiß '+makeBlank('e7-0','ärgert',110)+' mich jeden Tag. Ich halte das nicht mehr aus. Ich habe nur Probleme mit ihr.</div>'+
+  '<div class="qline">2. Ich suche mir einen neuen Job. Ich verdiene hier nicht '+makeBlank('e7-1','genug',100)+'. Und ich möchte nicht mehr in '+makeBlank('e7-2','Schichten',130)+' arbeiten. Ich möchte einen Job, bei dem ich immer um 8 anfange und um 5 aufhöre.</div>'+
+  '<div class="qline">3. Schade, dass es dir hier nicht gefällt. Ich finde den '+makeBlank('e7-3','Betrieb',120)+' sehr angenehm.</div>'+
+  '<div class="qline">4. ● Nächste Woche müssen wir den neuen '+makeBlank('e7-4','Betriebsrat',150)+' wählen. Wen wählst du?</div>'+
+  '<div class="qline">5. ○ Ich bin für die Leute von der '+makeBlank('e7-5','Gewerkschaft',150)+'.</div>'+
+  '<div class="qline">6. Ich bin seit einem Jahr '+makeBlank('e7-6','pensioniert',140)+'. Aber ich arbeite noch ein bisschen. Meine '+makeBlank('e7-7','Rente',110)+' ist nicht sehr hoch. Sie ist sogar sehr '+makeBlank('e7-8','niedrig',110)+'.</div>'+
+  '<div class="qline">7. Ich warte darauf, dass ich '+makeBlank('e7-9','endlich',110)+' in Rente gehen kann. Ich bin müde und kann nicht mehr so viel arbeiten.</div>'+
+  '<div class="qline">8. Wenn du zum Arzt gehst, musst du die '+makeBlank('e7-10','Versichertenkarte',200)+' mitnehmen.</div>'+
+  '<div class="qline">9. Roman ist jetzt schon über ein Jahr arbeitslos. Erst hat er Arbeitslosengeld bekommen, und jetzt bekommt er '+makeBlank('e7-11','Sozialhilfe',150)+', also Arbeitslosengeld II.</div>';
+})();
+
+/* ================= EX 8: Politik und Recht ================= */
+(function(){
+  var el = document.getElementById('ex8-politik');
+  el.innerHTML =
+  '<div class="qline">1. Die Bundesrepublik Deutschland ist eine demokratische Gesellschaft. Ein wichtiges Element sind die politischen '+makeBlank('e8-0','Parteien',130)+'.</div>'+
+  '<div class="qline">2. Alle vier Jahre '+makeBlank('e8-1','wählen',110)+' die Bürger den Bundestag. Fast alle Bundestagsabgeordneten sind Mitglied einer '+makeBlank('e8-2','Partei',120)+'. Der Bundestag ist in Berlin.</div>'+
+  '<div class="qline">3. Ein wichtiges Ziel in einer Demokratie ist es, dass man Konflikte im Gespräch löst und nicht mit '+makeBlank('e8-3','Gewalt',120)+'.</div>'+
+  '<div class="qline">4. Alle Bürgerinnen und Bürger haben '+makeBlank('e8-4','Rechte',110)+' und Pflichten. Wenn es Probleme gibt, entscheiden am Ende die Gerichte, wer '+makeBlank('e8-5','recht hat',130)+' und wer nicht.</div>';
+})();
+
+/* ================= EX 9: Beispielsätze ergänzen ================= */
+(function(){
+  var el = document.getElementById('ex9-beispiel');
+  el.innerHTML =
+  '<div class="qline">1. Die Firma '+makeBlank('e9-0','entlässt',120)+' 50 Arbeitnehmer.</div>'+
+  '<div class="qline">2. Ralf hat '+makeBlank('e9-1','gekündigt',130)+'.</div>'+
+  '<div class="qline">3. Meine Kollegin '+makeBlank('e9-2','ärgert',110)+' mich.</div>'+
+  '<div class="qline">4. Jeden Tag habe ich '+makeBlank('e9-3','Ärger',100)+' mit ihr.</div>'+
+  '<div class="qline">5. '+makeBlank('e9-4','Schade',100)+', dass ihr euch nicht besser versteht.</div>'+
+  '<div class="qline">6. Ich arbeite nur '+makeBlank('e9-5','stundenweise',140)+'.</div>'+
+  '<div class="qline">7. Meine Arbeit macht mir meistens '+makeBlank('e9-6','Freude',110)+'.</div>'+
+  '<div class="qline">8. Berlin hat 3,4 Mio. '+makeBlank('e9-7','Einwohner',140)+'.</div>'+
+  '<div class="qline">9. '+makeBlank('e9-8','Krieg',100)+' und '+makeBlank('e9-9','Frieden',110)+'</div>'+
+  '<div class="qline">10. Keine '+makeBlank('e9-10','Gewalt',110)+'!</div>'+
+  '<div class="qline">11. Alle Bürgerinnen und Bürger haben '+makeBlank('e9-11','Rechte',110)+' und Pflichten.</div>'+
+  '<div class="qline">12. Du hast '+makeBlank('e9-12','recht',100)+'.</div>';
+})();
+
+/* ================= EX 10: Englisch/Deutsch ================= */
+(function(){
+  var el = document.getElementById('ex10-engl');
+  var pool = ['die Industrie','der Stoff','der Export','die Fabrik','der Import','die Vollzeit','die Teilzeit','die Überstunde','die Rente','das Produkt','die Partei','die Politik','die Qualität','der Rentner','die Sozialversicherung','der Streik','die Miete','der Tarif'];
+  var items = [
+    ["industry","die Industrie"],
+    ["fabric ⚠️","der Stoff"],
+    ["export","der Export"],
+    ["factory","die Fabrik"],
+    ["import","der Import"],
+    ["full-time","die Vollzeit"],
+    ["part-time","die Teilzeit"],
+    ["overtime","die Überstunde"],
+    ["pension","die Rente"],
+    ["product","das Produkt"],
+    ["party","die Partei"],
+    ["politics","die Politik"],
+    ["quality","die Qualität"],
+    ["senior citizen","der Rentner"],
+    ["social security","die Sozialversicherung"],
+    ["strike","der Streik"],
+    ["rent ⚠️","die Miete"],
+    ["tariff ⚠️","der Tarif"],
+  ];
+  el.innerHTML = items.map(function(it,i){
+    return selectRow(it[0], 'e10-'+i, pool, it[1], 220);
+  }).join('');
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Ein Gebäude, in dem Waren maschinell hergestellt werden: die ...", "Fabrik"],
+    ["Ein Produkt produzieren: ...", "herstellen"],
+    ["Eine Organisation, die die Interessen der Arbeitnehmer vertritt: die ...", "Gewerkschaft"],
+    ["Wenn Arbeitnehmer aus Protest nicht mehr arbeiten: der ...", "Streik"],
+    ["Einem Arbeitnehmer kündigen (vom Arbeitgeber): ...", "entlassen"],
+    ["Ein positives, glückliches Gefühl: die ...", "Freude"],
+    ["Arbeitszeit über die normale Arbeitszeit hinaus: die ...", "Überstunde"],
+    ["Das Geld, das man für seine Arbeit bekommt: der ...", "Lohn"],
+    ["Der Betrag vor Abzug von Steuern: ...", "brutto"],
+    ["Geld, das man im Alter regelmäßig vom Staat bekommt: die ...", "Rente"],
+    ["Staatliche finanzielle Unterstützung für Menschen ohne genug Einkommen: die ...", "Sozialhilfe"],
+    ["Eine Person, die in einer Stadt oder einem Land lebt: der ...", "Einwohner"],
+    ["Seine Stimme bei einer Wahl abgeben: ...", "wählen"],
+    ["Ein Zustand ohne Krieg oder Gewalt: der ...", "Frieden"],
+    ["Etwas, das einem gesetzlich zusteht: das ...", "Recht"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

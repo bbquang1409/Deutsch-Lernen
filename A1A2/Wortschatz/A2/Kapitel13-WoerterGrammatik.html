@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 Wörter und Grammatik</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.2rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.wchip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.wchip{border:1px solid #e2ded4;border-radius:10px;padding:8px 10px;cursor:pointer;background:#fbfaf7;min-width:110px;}
+.wchip:hover{background:var(--teal-pale);}
+.wchip-word-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:2px 8px;font-size:0.74rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.wchip-word{font-weight:600;}
+.wchip-de{margin-top:3px;color:var(--teal-light);font-size:0.8rem;}
+.wchip-vn{display:none;color:var(--orange);font-size:0.82rem;font-style:italic;margin-top:3px;}
+.wchip.open .wchip-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.note-box{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.note-box textarea{width:100%;min-height:44px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+.matchrow-wrap{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
+.matchrow{display:inline-flex;align-items:center;gap:6px;background:#fbfaf7;border:1px solid #e2ded4;border-radius:8px;padding:5px 8px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Wörter &amp; Grammatik</div>
+  <h1>13&nbsp; Zeit – Ort – Art und Weise</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🕒 Zeit</h2>
+    <div class="wchip-grid" id="vg-zeit"></div>
+  </div>
+
+  <div class="section">
+    <h2>📍 Ort</h2>
+    <div class="wchip-grid" id="vg-ort"></div>
+  </div>
+
+  <div class="section">
+    <h2>🎭 Art und Weise</h2>
+    <div class="wchip-grid" id="vg-art"></div>
+  </div>
+
+  <div class="section">
+    <h2>🔗 Und anderes</h2>
+    <h3>Pronomen</h3>
+    <div class="wchip-grid" id="vg-pron"></div>
+    <h3 style="margin-top:14px;">Pronominaladverbien</h3>
+    <div class="wchip-grid" id="vg-pronadv"></div>
+    <h3 style="margin-top:14px;">Satzverbindungen</h3>
+    <div class="wchip-grid" id="vg-satz"></div>
+    <h3 style="margin-top:14px;">Präpositionen</h3>
+    <div class="wchip-grid" id="vg-prap"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Präpositionen</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Ergänzen Sie die Präpositionen.</div>
+      <div class="wordbank"><b>Kasten:</b> in · unter · hinter · neben · auf · an · zwischen · vor · <s>über</s></div>
+      <div class="ex-instructions">Bild: eine Brücke über einen Fluss, ein Ausflugsboot, ein Maler mit Staffelei, ein Wohnwagen auf einem Parkplatz. <br><i>Beispiel: die Brücke geht über den Fluss</i></div>
+      <div class="note-box"><textarea placeholder="z. B. Das Boot ist unter der Brücke. Der Maler sitzt neben dem Wohnwagen ..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Zahlen und Datum</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Schreiben Sie die Zahlen, Maße und Gewichte.</div>
+      <div id="ex2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Datum – Schreiben Sie die Daten und ergänzen Sie bei 1. bis 3. die Namen der Feste.</div>
+      <div id="ex3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Tageszeiten</h2>
+    <div class="exercise">
+      <div class="ex-title">4 Tageszeiten – Ergänzen Sie wie im Beispiel.</div>
+      <div class="ex-instructions">Beispiel 7.00: der Morgen / am Morgen / morgens</div>
+      <div id="ex4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Häufigkeit</h2>
+    <div class="exercise">
+      <div class="ex-title">6 Wie oft machen Sie was? Ordnen Sie die Wörter von oft bis selten und schreiben Sie einen Satz.</div>
+      <div class="wordbank"><b>Kasten:</b> stündlich · monatlich · täglich · jährlich · wöchentlich</div>
+      <div id="ex6"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex6">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6"></div>
+      <div class="note-box" style="margin-top:10px;"><b>Beispielsatz (frei, nicht kontrolliert):</b><br><textarea placeholder="Ich gehe wöchentlich einmal schwimmen."></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Zeitwörter</h2>
+    <div class="exercise">
+      <div class="ex-title">7 Ergänzen Sie die Wörter.</div>
+      <div class="wordbank"><b>Kasten:</b> gestern · heute · morgen · übermorgen · vorgestern</div>
+      <div id="ex7"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex7">Kontrollieren</button>
+      <div class="result-msg" id="res-ex7"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">8 Wie heißt das Gegenteil?</div>
+      <div id="ex8"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex8">Kontrollieren</button>
+      <div class="result-msg" id="res-ex8"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Dialoge</h2>
+    <div class="exercise">
+      <div class="ex-title">9 Ergänzen Sie die Dialoge.</div>
+
+      <div class="wordbank"><b>Dialog 1:</b> hoffentlich · ziemlich · vielleicht · wahrscheinlich</div>
+      <div id="ex9-d1"></div>
+
+      <div class="wordbank" style="margin-top:14px;"><b>Dialog 2:</b> erst · selbst · vorher</div>
+      <div id="ex9-d2"></div>
+
+      <div class="wordbank" style="margin-top:14px;"><b>Dialog 3:</b> davon · direkt · kaum · neulich · darüber · neben · ein paar</div>
+      <div id="ex9-d3"></div>
+
+      <div class="wordbank" style="margin-top:14px;"><b>Dialog 4:</b> wieder · nämlich · nirgends · nichts · außer · doch · etwas · mal</div>
+      <div id="ex9-d4"></div>
+
+      <button class="check-btn" data-check="ex9combo" data-target="ex9">Kontrollieren</button>
+      <div class="result-msg" id="res-ex9"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7 Sätze verbinden</h2>
+    <div class="exercise">
+      <div class="ex-title">10 Verbinden Sie die Sätze.</div>
+      <div class="ex-instructions">Schreiben Sie den Buchstaben (a–g) zum passenden Satzanfang.</div>
+      <div id="ex10"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex10">Kontrollieren</button>
+      <div class="result-msg" id="res-ex10"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">11 Welche Satzverbindungen passen? Es gibt z. T. mehrere Möglichkeiten.</div>
+      <div class="wordbank"><b>Kasten:</b> dass · deshalb · ob · weil · wenn</div>
+      <div id="ex11"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex11">Kontrollieren</button>
+      <div class="result-msg" id="res-ex11"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Zeit, Ort, Art und Weise</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel.</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= WORT-CHIP DATA ================= */
+var wZeit = [
+ ["vorgestern","der Tag vor gestern","cách đây 2 ngày (hôm kia)"],
+ ["gestern","der Tag vor heute","hôm qua"],
+ ["heute","dieser Tag, jetzt","hôm nay"],
+ ["morgen","der Tag nach heute","ngày mai"],
+ ["übermorgen","der Tag nach morgen","ngày kia"],
+ ["montags","jeden Montag","vào các thứ Hai"],
+ ["dienstags","jeden Dienstag","vào các thứ Ba"],
+ ["mittwochs","jeden Mittwoch","vào các thứ Tư"],
+ ["donnerstags","jeden Donnerstag","vào các thứ Năm"],
+ ["freitags","jeden Freitag","vào các thứ Sáu"],
+ ["samstags/sonnabends","jeden Samstag","vào các thứ Bảy"],
+ ["sonntags","jeden Sonntag","vào các Chủ nhật"],
+ ["morgens","jeden Morgen, am Morgen","vào buổi sáng"],
+ ["vormittags","am Vormittag","vào buổi sáng (trước trưa)"],
+ ["mittags","am Mittag","vào buổi trưa"],
+ ["nachmittags","am Nachmittag","vào buổi chiều"],
+ ["abends","am Abend","vào buổi tối"],
+ ["nachts","in der Nacht","vào ban đêm"],
+ ["stündlich","jede Stunde","hằng giờ"],
+ ["täglich","jeden Tag","hằng ngày"],
+ ["wöchentlich","jede Woche","hằng tuần"],
+ ["monatlich","jeden Monat","hằng tháng"],
+ ["jährlich","jedes Jahr","hằng năm"],
+ ["Weihnachten","das Fest am 24./25. Dezember","lễ Giáng sinh"],
+ ["Silvester","der letzte Tag des Jahres, 31. Dezember","đêm giao thừa"],
+ ["Neujahr","der erste Tag des Jahres, 1. Januar","Tết dương lịch"],
+ ["Ostern","das Frühlingsfest der Christen","lễ Phục sinh"],
+ ["vorher","zeitlich davor","trước đó"],
+ ["nachher","zeitlich danach","sau đó"],
+ ["neulich","vor Kurzem","gần đây, hôm nọ"],
+ ["zuerst","als Erstes","đầu tiên"],
+ ["zuletzt","als Letztes","cuối cùng"],
+ ["erst","nicht früher als, nur","chỉ mới (thời gian)"],
+ ["dann","danach, im Anschluss","rồi thì"],
+ ["früh","zu einem frühen Zeitpunkt","sớm"],
+ ["spät","zu einem späten Zeitpunkt","muộn"],
+ ["immer","zu jeder Zeit","luôn luôn"],
+ ["oft","viele Male","thường xuyên"],
+ ["meistens","in den meisten Fällen","phần lớn"],
+ ["manchmal","ab und zu","thỉnh thoảng"],
+ ["selten","nicht oft","hiếm khi"],
+ ["nie","zu keiner Zeit","không bao giờ"],
+ ["tagsüber","während des Tages","trong ngày (ban ngày)"],
+ ["wieder","noch einmal","lại (lần nữa)"],
+ ["vor","zeitlich davor (bei Zeitangaben)","trước"],
+ ["nach","zeitlich danach (bei Zeitangaben)","sau"],
+];
+var wOrt = [
+ ["neben","seitlich von etwas","bên cạnh"],
+ ["hinter","auf der Rückseite von etwas","phía sau"],
+ ["vor","auf der Vorderseite von etwas","phía trước"],
+ ["direkt","ohne Umweg","trực tiếp, ngay"],
+ ["indirekt","mit Umweg, nicht direkt","gián tiếp"],
+ ["hinein","nach innen","đi vào"],
+ ["hinaus","nach außen","đi ra"],
+ ["nirgends","an keinem Ort","không nơi nào"],
+ ["überall","an jedem Ort","khắp mọi nơi"],
+];
+var wArt = [
+ ["vielleicht","möglicherweise","có lẽ"],
+ ["wahrscheinlich","mit hoher Sicherheit","có khả năng"],
+ ["ziemlich","relativ, ganz schön","khá là"],
+ ["hoffentlich","so hofft man","hy vọng là"],
+ ["kaum","fast nicht","hầu như không"],
+ ["fast","beinahe","gần như"],
+ ["nämlich","das heißt, und zwar","đó là vì / cụ thể là"],
+];
+var wPron = [
+ ["jemand","eine unbestimmte Person","ai đó"],
+ ["niemand","keine Person","không ai"],
+ ["etwas","eine unbestimmte Sache","điều gì đó"],
+ ["nichts","keine Sache","không có gì"],
+ ["ein paar","eine kleine Anzahl","vài"],
+ ["selbst","man selbst, persönlich","chính bản thân"],
+];
+var wPronAdv = [
+ ["darauf","auf diese Sache","về điều đó (lên trên)"],
+ ["darüber","über diese Sache","về điều đó (phía trên)"],
+ ["davon","von dieser Sache","về điều đó (khỏi đó)"],
+];
+var wSatz = [
+ ["ob","leitet eine Ja/Nein-Frage ein","liệu có... không"],
+ ["aber","drückt einen Gegensatz aus","nhưng"],
+ ["wenn","drückt eine Bedingung aus","nếu, khi"],
+ ["weil","drückt einen Grund aus","bởi vì"],
+ ["deshalb","drückt eine Folge aus","vì vậy"],
+ ["sonst","andernfalls","nếu không thì"],
+ ["doch","trotzdem, im Gegensatz zur Erwartung","tuy vậy"],
+];
+var wPrap = [
+ ["wegen","aus einem bestimmten Grund","vì, do"],
+ ["außer","ausgenommen, mit Ausnahme von","ngoại trừ"],
+];
+
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderChips(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    return '<div class="wchip"><div class="wchip-word-row">'+
+      '<span class="wchip-word">'+item[0]+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+ttsCleanWord(item[0]).replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="wchip-de">'+item[1]+'</div>'+
+      '<div class="wchip-vn">🇻🇳 '+item[2]+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.wchip').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+renderChips(wZeit,'vg-zeit');
+renderChips(wOrt,'vg-ort');
+renderChips(wArt,'vg-art');
+renderChips(wPron,'vg-pron');
+renderChips(wPronAdv,'vg-pronadv');
+renderChips(wSatz,'vg-satz');
+renderChips(wPrap,'vg-prap');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.wchip').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+  return [correct,total];
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='ex9combo'){
+      var c=0,t=0;
+      ['ex9-d1','ex9-d2','ex9-d3','ex9-d4'].forEach(function(id){
+        var r = checkGroup(id,true);
+        c+=r[0]; t+=r[1];
+      });
+      var res=document.getElementById('res-ex9');
+      res.textContent=c+' / '+t+' richtig';
+      res.style.color=(c===t)?'var(--ok)':'var(--teal)';
+    }
+  });
+});
+
+/* ================= EX 2: Zahlen, Maße, Gewichte ================= */
+(function(){
+  var el = document.getElementById('ex2');
+  var left = [["11","elf"],["12","zwölf"],["13","dreizehn"],["16","sechzehn"],["20","zwanzig"],["21","einundzwanzig"],["30","dreißig"]];
+  var right = [["60","sechzig"],["70","siebzig"],["3 kg","drei Kilo|drei Kilogramm"],["100 g","hundert Gramm"],["1 %","ein Prozent"],["30 km","dreißig Kilometer"],["16 m","sechzehn Meter"]];
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:30px;">';
+  html += '<div>'+left.map(function(p,i){ return '<div class="qline">'+p[0]+' → '+makeBlank('e2l-'+i,p[1],160)+'</div>'; }).join('')+'</div>';
+  html += '<div>'+right.map(function(p,i){ return '<div class="qline">'+p[0]+' → '+makeBlank('e2r-'+i,p[1],160)+'</div>'; }).join('')+'</div>';
+  html += '</div>';
+  el.innerHTML = html;
+})();
+
+/* ================= EX 3: Datum ================= */
+(function(){
+  var el = document.getElementById('ex3');
+  el.innerHTML =
+  '<div class="qline">1. 24.12. → '+makeBlank('e3-0','vierundzwanzigster Dezember|der vierundzwanzigste Dezember',260)+', '+makeBlank('e3-1','Heiligabend',150)+'</div>'+
+  '<div class="qline">2. 31.12. → '+makeBlank('e3-2','einunddreißigster Dezember|der einunddreißigste Dezember',280)+', '+makeBlank('e3-3','Silvester',130)+'</div>'+
+  '<div class="qline">3. 1.1. → '+makeBlank('e3-4','erster Januar|der erste Januar',210)+', '+makeBlank('e3-5','Neujahr',120)+'</div>'+
+  '<div class="qline">4. 1.5. → '+makeBlank('e3-6','erster Mai|der erste Mai',180)+' <i>(Tag der Arbeit)</i></div>'+
+  '<div class="qline">5. 3.10. → '+makeBlank('e3-7','dritter Oktober|der dritte Oktober',210)+' <i>(Tag der Deutschen Einheit)</i></div>';
+})();
+
+/* ================= EX 4: Tageszeiten ================= */
+(function(){
+  var el = document.getElementById('ex4');
+  var items = [
+    ["10.00","der Vormittag","am Vormittag","vormittags"],
+    ["12.00","der Mittag","am Mittag","mittags"],
+    ["17.00","der Nachmittag","am Nachmittag","nachmittags"],
+    ["20.00","der Abend","am Abend","abends"],
+    ["23.00","die Nacht","in der Nacht","nachts"],
+  ];
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline"><b>'+it[0]+'</b>: '+makeBlank('e4-'+i+'-a',it[1],150)+' / '+makeBlank('e4-'+i+'-b',it[2],150)+' / '+makeBlank('e4-'+i+'-c',it[3],130)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 6: Häufigkeit ordnen ================= */
+(function(){
+  var el = document.getElementById('ex6');
+  el.innerHTML =
+  '<div class="qline">oft → '+makeBlank('e6-0','stündlich',140)+' → '+makeBlank('e6-1','täglich',120)+' → '+makeBlank('e6-2','wöchentlich',150)+' → '+makeBlank('e6-3','monatlich',140)+' → '+makeBlank('e6-4','jährlich',120)+' → selten</div>';
+})();
+
+/* ================= EX 7: Zeitwörter ================= */
+(function(){
+  var el = document.getElementById('ex7');
+  el.innerHTML =
+  '<div class="qline">'+makeBlank('e7-0','Vorgestern',140)+' habe ich die Wörter gelernt,</div>'+
+  '<div class="qline">aber '+makeBlank('e7-1','gestern',110)+' konnte ich davon fast keins mehr.</div>'+
+  '<div class="qline">'+makeBlank('e7-2','Heute',100)+' wiederhole ich die Wörter und</div>'+
+  '<div class="qline">'+makeBlank('e7-3','morgen',110)+' wiederhole ich noch einmal und</div>'+
+  '<div class="qline">'+makeBlank('e7-4','übermorgen',140)+' kann ich sie dann hoffentlich alle.</div>';
+})();
+
+/* ================= EX 8: Gegenteil ================= */
+(function(){
+  var el = document.getElementById('ex8');
+  el.innerHTML =
+  '<div class="qline">zuerst ↔ '+makeBlank('e8-0','zuletzt',120)+'</div>'+
+  '<div class="qline">nachher ↔ '+makeBlank('e8-1','vorher',120)+'</div>'+
+  '<div class="qline">etwas ↔ '+makeBlank('e8-2','nichts',110)+'</div>'+
+  '<div class="qline">früh ↔ '+makeBlank('e8-3','spät',100)+'</div>'+
+  '<div class="qline">überall ↔ '+makeBlank('e8-4','nirgends',130)+'</div>'+
+  '<div class="qline">jemand ↔ '+makeBlank('e8-5','niemand',120)+'</div>'+
+  '<div class="qline">vor ↔ '+makeBlank('e8-6','nach',100)+'</div>'+
+  '<div class="qline">hinaus ↔ '+makeBlank('e8-7','hinein',110)+'</div>';
+})();
+
+/* ================= EX 9: Dialoge ================= */
+(function(){
+  document.getElementById('ex9-d1').innerHTML =
+  '<p>● Was ist denn passiert?</p>'+
+  '<p>○ Was passiert ist? '+makeBlank('e9a-0','Vielleicht',130)+' hat Leon sich das Bein gebrochen.</p>'+
+  '<p>● '+makeBlank('e9a-1','Wahrscheinlich',150)+' ist der Bruch nicht kompliziert.</p>'+
+  '<p>○ Ich bin '+makeBlank('e9a-2','ziemlich',120)+' sicher, dass er einige Zeit im Krankenhaus bleiben muss.</p>'+
+  '<p>● '+makeBlank('e9a-3','Hoffentlich',150)+' kommt er ja doch schon nach einer Woche raus.</p>'+
+  '<p>○ Da bin ich nicht sicher.</p>';
+
+  document.getElementById('ex9-d2').innerHTML =
+  '<p>● Was machst du heute Abend?</p>'+
+  '<p>○ Ich gehe ins Kino, aber '+makeBlank('e9b-0','vorher',120)+' muss ich noch duschen. Ich bin jetzt '+makeBlank('e9b-1','erst',100)+' nach Hause gekommen.</p>'+
+  '<p>● Ich bin '+makeBlank('e9b-2','selbst',110)+' auch gerade nach Hause gekommen.</p>';
+
+  document.getElementById('ex9-d3').innerHTML =
+  '<p>● '+makeBlank('e9c-0','Neulich',120)+' habe ich Sandro getroffen.</p>'+
+  '<p>○ Wann?</p>'+
+  '<p>● Vor '+makeBlank('e9c-1','ein paar',120)+' Tagen. Er sieht gut aus. Er hat sich '+makeBlank('e9c-2','kaum',100)+' verändert.</p>'+
+  '<p>○ Und was sagt er über seinen neuen Job?</p>'+
+  '<p>● '+makeBlank('e9c-3','Davon',110)+' haben wir nicht gesprochen. Aber er ist jetzt verheiratet.</p>'+
+  '<p>○ Was? '+makeBlank('e9c-4','Darüber',130)+' musst du mir mehr erzählen. Wo wohnt er jetzt?</p>'+
+  '<p>● In München, '+makeBlank('e9c-5','direkt',110)+' im Stadtzentrum. '+makeBlank('e9c-6','Neben',110)+' dem Hofbräuhaus.</p>';
+
+  document.getElementById('ex9-d4').innerHTML =
+  '<p>● Wo warst du in den Ferien?</p>'+
+  '<p>○ Überall und '+makeBlank('e9d-0','nirgends',130)+'.</p>'+
+  '<p>● Was hast du gemacht?</p>'+
+  '<p>○ Fast '+makeBlank('e9d-1','nichts',110)+'.</p>'+
+  '<p>● Du musst doch '+makeBlank('e9d-2','etwas',110)+' gemacht haben!</p>'+
+  '<p>○ '+makeBlank('e9d-3','Außer',110)+' ein bisschen Sport eigentlich nichts.</p>'+
+  '<p>● Wie langweilig.</p>'+
+  '<p>○ Na ja, ich war '+makeBlank('e9d-4','mal',90)+' im Schwimmbad. Dann hab ich '+makeBlank('e9d-5','wieder',110)+' mit dem Joggen angefangen.</p>'+
+  '<p>● Na, das ist doch schon etwas.</p>'+
+  '<p>○ Ich will '+makeBlank('e9d-6','nämlich',120)+' den Berlin-Marathon laufen.</p>'+
+  '<p>● Das schaffst du '+makeBlank('e9d-7','doch',100)+' nie.</p>';
+})();
+
+/* ================= EX 10: Sätze verbinden ================= */
+(function(){
+  var el = document.getElementById('ex10');
+  var pairs = [
+    ["1. Ich kann nicht kommen","f"],
+    ["2. Ich kann nicht kommen, weil","g"],
+    ["3. Ich bin erkältet, deshalb","d"],
+    ["4. Ich bin erkältet, aber","b"],
+    ["5. Wenn ich noch erkältet bin,","c"],
+    ["6. Ich komme nicht,","e"],
+    ["7. Ich weiß nicht,","a"],
+  ];
+  var options = [
+    "a) ob ich kommen soll.",
+    "b) ich komme kurz bei dir vorbei.",
+    "c) kann ich nicht kommen.",
+    "d) komme ich nicht.",
+    "e) sonst wirst du auch noch krank.",
+    "f) wegen meiner Erkältung.",
+    "g) ich erkältet bin.",
+  ];
+  var html = '<div class="wordbank"><b>Optionen:</b><br>'+options.join('<br>')+'</div>';
+  html += pairs.map(function(p,i){
+    return '<div class="qline">'+p[0]+' → '+makeBlank('e10-'+i, p[1], 60)+'</div>';
+  }).join('');
+  el.innerHTML = html;
+})();
+
+/* ================= EX 11: Satzverbindungen ================= */
+(function(){
+  var el = document.getElementById('ex11');
+  el.innerHTML =
+  '<div class="qline">1. Ich will einen guten Job, '+makeBlank('e11-0','weil',110)+' ich genug Deutsch kann.</div>'+
+  '<div class="qline">2. Ich habe keine Zeit, '+makeBlank('e11-1','weil',110)+' ich noch Wörter lernen muss.</div>'+
+  '<div class="qline">3. Ich möchte wissen, '+makeBlank('e11-2','ob',90)+' ich die Prüfung jetzt schon machen kann.</div>'+
+  '<div class="qline">4. Ich glaube, '+makeBlank('e11-3','dass',100)+' ich schon gut Deutsch kann, '+makeBlank('e11-4','deshalb',120)+' will ich die Prüfung versuchen.</div>'+
+  '<div class="qline">5. Ich möchte die Prüfung machen, '+makeBlank('e11-5','deshalb',120)+' lerne ich jeden Tag.</div>'+
+  '<div class="qline">6. Ich gehe lieber sonntags ins Kino, '+makeBlank('e11-6','weil',110)+' ich werktags immer spät nach Hause komme.</div>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Der Tag vor gestern: ...", "vorgestern"],
+    ["Der Tag nach morgen: ...", "übermorgen"],
+    ["Jede Stunde: ...", "stündlich"],
+    ["Nicht sicher, aber möglich: ...", "vielleicht"],
+    ["Sehr wahrscheinlich, mit hoher Sicherheit: ...", "wahrscheinlich"],
+    ["Fast gar nicht: ...", "kaum"],
+    ["An keinem Ort: ...", "nirgends"],
+    ["An jedem Ort: ...", "überall"],
+    ["Eine unbekannte Person: ...", "jemand"],
+    ["Keine Person: ...", "niemand"],
+    ["Nichts Bestimmtes, eine Sache: ...", "etwas"],
+    ["Grund/Ursache anzeigendes Wort: ...", "weil"],
+    ["Bedingung anzeigendes Wort (falls): ...", "wenn"],
+    ["Folge anzeigendes Wort: ...", "deshalb"],
+    ["Frage nach ja/nein einleitendes Wort: ...", "ob"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

@@ -118,6 +118,9 @@
   .art-der{color:var(--accent-blue);font-weight:700;}
   .art-die{color:var(--accent-pink);font-weight:700;}
   .art-das{color:var(--accent-green);font-weight:700;}
+  .word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .vocab-tts-btn{flex:0 0 auto;background:var(--teal);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+  .vocab-tts-btn:hover{background:var(--teal-dark);}
   .word{font-weight:700;}
   .plural{color:var(--muted);font-weight:400;}
   .dede{
@@ -759,16 +762,52 @@ function artClass(a){
   return "";
 }
 
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
 function renderVocab(list, containerId){
   const el = document.getElementById(containerId);
   el.innerHTML = list.map(([art,word,de,vn])=>{
     const artHtml = art ? `<span class="${artClass(art)}">${art}</span> ` : "";
+    const speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
     return `<div class="word-card">
-      <div>${artHtml}<span class="word">${word}</span></div>
+      <div class="word-row">
+        <div>${artHtml}<span class="word">${word}</span></div>
+        <button type="button" class="vocab-tts-btn" data-word="${speakText.replace(/"/g,'&quot;')}">🔊</button>
+      </div>
       <div class="dede">${de}</div>
       <div class="vn">🇻🇳 ${vn}</div>
     </div>`;
   }).join("");
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
 }
 renderVocab(vocabArbeitswelten,"wg-arbeitswelten");
 renderVocab(vocabBewerben,"wg-bewerben");

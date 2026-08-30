@@ -38,6 +38,9 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
 .vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
 .vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
 .vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
 .vocab-word{font-weight:600;font-size:1rem;}
 .vocab-word.der{color:var(--der);}
 .vocab-word.das{color:var(--das);}
@@ -256,19 +259,56 @@ var vocab3 = [
  ["","mailen (+D)","jemandem eine E-Mail schicken","gửi email"],
 ];
 
+function ttsCleanWord(word){
+  // remove plural/parenthetical notation for cleaner pronunciation, e.g. "Nudel, -n" -> "Nudel"
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
 function renderVocab(list, targetId){
   var el = document.getElementById(targetId);
   el.innerHTML = list.map(function(item){
     var art = item[0], word = item[1], de = item[2], vn = item[3];
     var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
     var label = art ? (art+' '+word) : word;
-    return '<div class="vocab-card"><span class="vocab-word '+cls+'">'+label+'</span>'+
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
       '<div class="vocab-de">'+de+'</div>'+
       '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
   }).join('');
   el.querySelectorAll('.vocab-card').forEach(function(card){
     card.addEventListener('click', function(){ card.classList.toggle('open'); });
   });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
 }
 renderVocab(vocab1,'vg1');
 renderVocab(vocab2,'vg2');

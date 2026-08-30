@@ -158,6 +158,9 @@
   .vocab-list{display:flex;flex-direction:column;}
   .vocab-item{padding:8px 2px;border-bottom:1px dashed #e2f3f1;}
   .vocab-item .term{font-weight:700;color:var(--ink);font-size:.92rem;}
+  .vocab-item .word-row{display:flex;align-items:center;gap:8px;}
+  .vocab-tts-btn{flex:0 0 auto;background:var(--teal);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+  .vocab-tts-btn:hover{background:var(--teal-light);}
   .vocab-item .de-def{color:var(--muted);font-size:.83rem;margin-left:2px;}
   .vocab-item .vi-def{
     display:none;color:#9a3412;font-size:.83rem;margin-top:4px;
@@ -591,15 +594,51 @@ function toggleVI(){
 }
 
 /* ---------- VOCAB DATA (Deutsch–Deutsch + Vietnamesisch) ---------- */
+function ttsCleanTerm(term){
+  var w = term.replace(/\|/g,'');
+  w = w.replace(/\([^)]*\)/g,'');
+  w = w.replace(/\s+/g,' ').trim();
+  return w;
+}
 function renderVocab(containerId, items){
   const box = document.getElementById(containerId);
   if(!box) return;
   box.innerHTML = items.map(it=>`
     <div class="vocab-item">
-      <span class="term">${it.term}</span>
+      <div class="word-row">
+        <span class="term">${it.term}</span>
+        <button type="button" class="vocab-tts-btn" data-word="${ttsCleanTerm(it.term).replace(/"/g,'&quot;')}">🔊</button>
+      </div>
       <span class="de-def">– ${it.de}</span>
       <div class="vi-def">🇻🇳 ${it.vi}</div>
     </div>`).join('');
+  box.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
 }
 
 renderVocab('vocab-bio', [

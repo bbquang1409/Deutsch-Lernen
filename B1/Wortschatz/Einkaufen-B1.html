@@ -64,6 +64,9 @@
     padding:8px 6px; border-bottom:1px solid #eee; gap:10px;
   }
   .vocab-item .de{font-weight:600; color:var(--teal-dark);}
+  .word-row{display:flex; align-items:center; gap:8px;}
+  .vocab-tts-btn{flex:0 0 auto; background:var(--teal); color:#fff; border:none; border-radius:16px; padding:3px 10px; font-size:0.78rem; cursor:pointer;}
+  .vocab-tts-btn:hover{background:var(--teal-dark);}
   .vocab-item .vi{color:#888; font-size:.9em; display:none;}
   body.show-vi .vocab-item .vi{display:inline;}
   body.show-vi .vi-inline{display:inline !important;}
@@ -401,14 +404,46 @@ const vocab2 = [
 ["topmodern","sehr modern, auf dem neuesten Stand","cực kỳ hiện đại"],
 ["unbezahlbar","so wertvoll, dass man dafür keinen Preis nennen kann","vô giá"],
 ];
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
 function renderVocab(id, arr){
   const box = document.getElementById(id);
   arr.forEach(([de,erk,vi])=>{
     const d = document.createElement('div');
     d.className='vocab-item';
-    d.innerHTML = `<div style="width:100%;"><span class="de">${de}</span><div style="color:#555; font-size:.85em; font-style:italic; margin:2px 0 2px;">${erk}</div><span class="vi">${vi}</span></div>`;
+    d.innerHTML = `<div style="width:100%;"><div class="word-row"><span class="de">${de}</span><button type="button" class="vocab-tts-btn" data-word="${ttsCleanWord(de).replace(/"/g,'&quot;')}">🔊</button></div><div style="color:#555; font-size:.85em; font-style:italic; margin:2px 0 2px;">${erk}</div><span class="vi">${vi}</span></div>`;
     box.appendChild(d);
   });
+  box.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
 }
 renderVocab('vocab1', vocab1);
 renderVocab('vocab2', vocab2);

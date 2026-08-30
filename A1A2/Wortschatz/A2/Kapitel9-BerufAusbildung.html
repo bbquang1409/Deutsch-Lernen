@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9 Beruf und Ausbildung</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.35rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);}
+.scale-box div{margin:3px 0;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.matchrow select{padding:5px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;min-width:170px;}
+.matchrow select.correct{border-color:var(--ok);background:#eafaf0;}
+.matchrow select.wrong{border-color:var(--bad);background:#fdecec;}
+.matchrow .mw-label{min-width:150px;font-weight:600;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.note-box{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.note-box textarea{width:100%;min-height:44px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+.hoer-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.hoer-word{font-weight:700;color:var(--teal);min-width:150px;}
+.tts-btn{background:var(--teal-light);color:#fff;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.85rem;font-weight:600;}
+.tts-btn:hover{background:var(--teal);}
+.tts-btn:disabled{opacity:0.6;cursor:default;}
+.pair-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.pair-item{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--teal);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Wortschatz</div>
+  <h1>9&nbsp; Beruf und Ausbildung</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🎓 Ausbildung</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">
+      <div>Ich habe die <b>Prüfung bestanden</b>!</div>
+      <div>Ich konnte alle Aufgaben <b>lösen</b>.</div>
+      <div>Sie müssen die Texte dem Bild <b>zuordnen</b>.</div>
+      <div>Die <b>Einführung dauert</b> nur zehn Minuten.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🏢 Büro</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">
+      <div>einen Namen <b>notieren/aufschreiben</b></div>
+      <div>eine <b>Notiz</b> schreiben, sich <b>Notizen</b> machen</div>
+      <div>Ich habe den <b>Zettel</b> verloren!</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>👩‍🔧 Beruf</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache</h2>
+
+    <div class="ex-instructions"><b>1.</b> Sprechen Sie die Wörter laut. Alle enden auf <i>-ung</i>.</div>
+    <div id="hoer-ung"></div>
+
+    <div class="ex-instructions" style="margin-top:16px;"><b>2.</b> Unterscheiden Sie: Sprechen Sie ein <b>r</b>, oder sprechen Sie kein r, sondern ein <b>a</b>?</div>
+    <div id="hoer-ar"></div>
+    <button class="check-btn" data-check="mc" data-target="hoer-ar">Kontrollieren</button>
+    <div class="result-msg" id="res-hoer-ar"></div>
+
+    <div class="ex-instructions" style="margin-top:16px;"><b>3.</b> Sprechen Sie die Wortpaare (männlich/weiblich) und hören Sie den Unterschied.</div>
+    <div id="hoer-paare"></div>
+
+    <div class="ex-instructions" style="margin-top:16px;"><b>4.</b> Wortbildung – Nomen mit der Endung <i>-ung</i> sind immer feminin. Ergänzen Sie das Nomen zum Verb.</div>
+    <div id="ex-ung-bildung"></div>
+    <button class="check-btn" data-check="groupci" data-target="ex-ung-bildung">Kontrollieren</button>
+    <div class="result-msg" id="res-ex-ung-bildung"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Lernen</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Lernen – Ergänzen Sie die passenden Wörter.</div>
+      <div class="wordbank"><b>Kasten:</b> behalten · lesen · die Übung · schreiben · der Bleistift · das Papier · das Buch · schreiben · verstehen · wiederholen · der Kugelschreiber · hören · lernen</div>
+      <div id="ex1-lernen"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1-lernen">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-lernen"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Im Kurs</h2>
+    <div class="exercise">
+      <div class="ex-title">3 Im Kurs – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> verstehen · der Unterricht · das Beispiel · buchstabieren · erklären · wiederholen · bedeuten · der Test</div>
+      <div id="ex2-kurs"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-kurs">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-kurs"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Mein Beruf</h2>
+    <div class="exercise">
+      <div class="ex-title">4 Arbeit und Beruf – Schreiben Sie ein Porträt wie im Beispiel.</div>
+      <div class="ex-instructions">Diese Aufgabe wird nicht automatisch kontrolliert – schreiben Sie frei.</div>
+      <div class="wordbank"><b>Kasten:</b> arbeiten als · der Feierabend · von Beruf … sein · selbstständig sein · verdienen · das Geld · lang/kurz · schwer/leicht · der Arbeitstag · die Arbeitswoche · der Urlaub · das Wochenende · von … bis · einen Job haben · ein Praktikum machen · im Büro · in der Firma · viel/wenig · arbeiten bei · in der Woche · am Tag · arbeitslos sein · zu Hause</div>
+      <div class="note-box">1. Beruf/Arbeit?<br><textarea placeholder="Ich bin ... von Beruf."></textarea></div>
+      <div class="note-box">2. Arbeitsplatz?<br><textarea placeholder="Ich arbeite in/bei ..."></textarea></div>
+      <div class="note-box">3. Arbeitszeit?<br><textarea placeholder="Ich arbeite von ... bis ..."></textarea></div>
+      <div class="note-box">4. Geld?<br><textarea placeholder="Ich verdiene ..."></textarea></div>
+      <div class="note-box">5. Freizeit?<br><textarea placeholder="Am Wochenende ..."></textarea></div>
+      <div class="note-box">Ganzer Text<br><textarea style="min-height:90px;" placeholder="Schreiben Sie jetzt einen zusammenhängenden Text ..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Im Büro</h2>
+    <div class="exercise">
+      <div class="ex-title">5 Im Büro – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> zuordnen · speichern · der Zettel · nervös · die Sekretärin · notieren · die Notiz · aufschreiben · die Einführung · lösen · der Unterschied · das Büro</div>
+      <div id="ex4-buero"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-buero">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-buero"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">6 Interviews – Ergänzen Sie. Sie brauchen Hilfe? Die Liste kann helfen.</div>
+      <div class="ex-instructions">Achtung: In diesen Interviews sind nur die Wortanfänge gegeben – ergänzen Sie die vollständigen Wörter im Kontext.</div>
+      <div id="ex5-interviews"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5-interviews">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-interviews"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Beim Friseur</h2>
+    <div class="exercise">
+      <div class="ex-title">7 Beim Friseur – Ergänzen Sie die Sätze.</div>
+      <div class="wordbank"><b>Kasten:</b> die Erfahrung · dauern · das Gegenteil · der Friseur · lassen · das Haar · langweilig · praktisch · schneiden · trocken · waschen (2×)</div>
+      <div id="ex6-friseur"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex6-friseur">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6-friseur"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Beruf und Ausbildung</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [ // Ausbildung
+ ["der/die","Azubi, -s (= Auszubildende/r)","eine Person, die eine Berufsausbildung macht","học viên học nghề"],
+ ["die","Ausbildung, -en","das Lernen eines Berufs, meist mit Theorie und Praxis","đào tạo nghề"],
+ ["","abschließen, hat abgeschlossen","etwas zu Ende bringen, fertig machen","hoàn thành"],
+ ["die","Lehre, -n","eine praktische Berufsausbildung in einem Betrieb","học nghề (thực hành)"],
+ ["die","Universität, -en","eine Hochschule, an der man studiert","đại học"],
+ ["die","Bewerbung, -en","ein Antrag, mit dem man sich um eine Stelle bemüht","đơn xin việc"],
+ ["die","Kenntnisse (Pl.)","das Wissen und Können, das man in einem Bereich hat","kiến thức, hiểu biết"],
+ ["die","Erfahrung, -en","das, was man durch eigenes Erleben gelernt hat","kinh nghiệm"],
+ ["das","Zeugnis, -se","ein offizielles Dokument mit den Noten oder Ergebnissen","học bạ, bảng điểm"],
+ ["die","Note, -n","eine Bewertung, z. B. in der Schule oder Prüfung","điểm số"],
+ ["die","Prüfung, -en","ein Test, mit dem man Wissen oder Können zeigt","kỳ thi"],
+ ["","bestehen, hat bestanden","eine Prüfung erfolgreich abschließen","đỗ, vượt qua"],
+ ["","lösen, hat gelöst","eine Aufgabe erfolgreich bearbeiten","giải quyết"],
+ ["","zuordnen, hat zugeordnet","etwas einer bestimmten Sache oder Gruppe zuweisen","gán, sắp xếp cho đúng"],
+ ["","nervös","unruhig, aufgeregt, ängstlich","hồi hộp, lo lắng"],
+ ["","ruhig","ohne Aufregung, entspannt","bình tĩnh"],
+ ["die","Angst, ¨-e","ein Gefühl von Furcht","nỗi sợ"],
+ ["der","Unterschied, -e","das, was zwei Dinge voneinander trennt oder unterscheidet","sự khác biệt"],
+ ["","denken, hat gedacht","eine Meinung oder einen Gedanken haben","nghĩ"],
+ ["die","Einführung, -en","der erste Teil, der in ein Thema einleitet","phần giới thiệu, nhập môn"],
+ ["","dauern, hat gedauert","eine bestimmte Zeit lang sein","kéo dài"],
+ ["","(sich) erinnern, hat (sich) erinnert","etwas aus der Vergangenheit im Gedächtnis behalten","nhớ lại"],
+ ["","zurechtkommen, ist zurechtgekommen","mit einer Situation gut umgehen können","xoay xở được"],
+];
+
+var vocab2 = [ // Büro
+ ["das","Büro, -s","ein Raum, in dem man administrativ arbeitet","văn phòng"],
+ ["der","Sekretär, -e","eine Person, die im Büro organisiert und Termine plant (weiblich: die Sekretärin)","thư ký"],
+ ["","notieren, hat notiert","etwas kurz schriftlich festhalten","ghi chú"],
+ ["","aufschreiben, hat aufgeschrieben","etwas schriftlich festhalten","viết lại, ghi lại"],
+ ["","speichern, hat gespeichert","Daten auf einem Gerät sichern","lưu (dữ liệu)"],
+ ["die","Notiz, -en","eine kurze schriftliche Aufzeichnung","ghi chú, mẩu note"],
+ ["der","Zettel, -","ein kleines Stück Papier","mẩu giấy"],
+ ["","verlieren, hat verloren","etwas nicht mehr finden können, nicht mehr besitzen","làm mất"],
+];
+
+var vocab3 = [ // Beruf
+ ["der","Kollege, -n","eine Person, mit der man zusammenarbeitet (weiblich: die Kollegin)","đồng nghiệp"],
+ ["der","Mechaniker, -","eine Person, die Maschinen repariert (weiblich: die Mechanikerin)","thợ máy"],
+ ["der","Techniker, -","eine Person mit einer technischen Ausbildung (weiblich: die Technikerin)","kỹ thuật viên"],
+ ["der","Handwerker, -","eine Person mit einem praktischen, handwerklichen Beruf (weiblich: die Handwerkerin)","thợ thủ công"],
+ ["der","Architekt, -en","eine Person, die Gebäude plant (weiblich: die Architektin)","kiến trúc sư"],
+ ["der","Praktikant, -en","eine Person, die ein Praktikum macht (weiblich: die Praktikantin)","thực tập sinh"],
+ ["der","Ingenieur, -e","eine Person mit einer technischen Hochschulausbildung (weiblich: die Ingenieurin)","kỹ sư"],
+ ["der","Journalist, -en","eine Person, die für Zeitung, Radio oder Fernsehen schreibt/berichtet (weiblich: die Journalistin)","nhà báo"],
+ ["das","Praktikum, die Praktika","eine zeitlich begrenzte praktische Arbeitserfahrung","kỳ thực tập"],
+ ["die","Aushilfe, -n","eine Person, die vorübergehend hilft, z. B. bei viel Arbeit","người làm thêm/tạm thời"],
+ ["das","Gegenteil, -e","das genaue Gegenstück von etwas","điều ngược lại"],
+ ["","langweilig","ohne Interesse, uninteressant","nhàm chán"],
+ ["","interessant","mit viel Interesse, spannend","thú vị"],
+ ["der","Friseur, -e","eine Person, die Haare schneidet und stylt (weiblich: die Friseurin)","thợ làm tóc"],
+ ["","waschen, hat gewaschen","etwas mit Wasser reinigen","gội, rửa, giặt"],
+ ["","trocken","nicht nass, ohne Feuchtigkeit","khô"],
+ ["","nass","feucht, mit Wasser","ướt"],
+ ["","schneiden, hat geschnitten","mit einer Schere oder einem Messer teilen","cắt"],
+ ["","lassen, hat gelassen (hat + Infinitiv + lassen)","jemand anderen etwas für einen tun lassen","nhờ ai đó làm gì"],
+];
+
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  w = w.split('/')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art.split('/')[0]+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= TTS ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+
+/* ================= AUSSPRACHE 1: -ung Wörter ================= */
+(function(){
+  var words = ["die Ausbildung","die Prüfung","die Einführung","die Bewerbung","die Erfahrung"];
+  var el = document.getElementById('hoer-ung');
+  el.innerHTML = words.map(function(w){
+    return '<div class="hoer-row"><span class="hoer-word">'+w+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+w.replace(/"/g,'&quot;')+'">🔊 Anhören</button></div>';
+  }).join('');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= AUSSPRACHE 2: a oder r ================= */
+(function(){
+  var items = [
+    ["dauern",0], ["erinnern",0], ["speichern",0], ["der Mechaniker",0], ["der Handwerker",0], ["der Friseur",0],
+    ["notieren",1], ["verlieren",1], ["die Handwerkerin",1], ["die Mechanikerin",1], ["die Friseurin",1]
+  ];
+  var el = document.getElementById('hoer-ar');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="hoer-row">'+
+      '<span class="hoer-word">'+it[0]+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+it[0].replace(/"/g,'&quot;')+'">🔊 Anhören</button>'+
+      mcHtml('mcar',i,['a','r'],it[1])+
+    '</div>';
+  }).join('');
+  wireMcOptions(el);
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= AUSSPRACHE 3: Wortpaare ================= */
+(function(){
+  var pairs = [
+    ["der Handwerker","die Handwerkerin"],
+    ["der Mechaniker","die Mechanikerin"],
+    ["der Friseur","die Friseurin"],
+    ["der Bäcker","die Bäckerin"],
+  ];
+  var el = document.getElementById('hoer-paare');
+  el.innerHTML = pairs.map(function(p){
+    return '<div class="pair-row">'+
+      '<span class="pair-item">'+p[0]+' <button type="button" class="tts-btn" data-word="'+p[0]+'">🔊</button></span>'+
+      '<span style="color:var(--muted);">↔</span>'+
+      '<span class="pair-item">'+p[1]+' <button type="button" class="tts-btn" data-word="'+p[1]+'">🔊</button></span>'+
+      '</div>';
+  }).join('');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= AUSSPRACHE 4: Wortbildung -ung ================= */
+(function(){
+  var el = document.getElementById('ex-ung-bildung');
+  el.innerHTML =
+  '<div class="qline">ausbilden → die '+makeBlank('wb-0','Ausbildung',150)+'</div>'+
+  '<div class="qline">prüfen → die '+makeBlank('wb-1','Prüfung',130)+'</div>'+
+  '<div class="qline">einführen → die '+makeBlank('wb-2','Einführung',150)+'</div>'+
+  '<div class="qline">(sich) bewerben → die '+makeBlank('wb-3','Bewerbung',150)+'</div>'+
+  '<div class="qline">erfahren → die '+makeBlank('wb-4','Erfahrung',150)+'</div>';
+})();
+
+/* ================= EX 1: Lernen ================= */
+(function(){
+  var el = document.getElementById('ex1-lernen');
+  el.innerHTML =
+  '<div class="qline">Man schreibt mit einem B'+makeBlank('e1-0','Bleistift',120)+' oder mit einem K'+makeBlank('e1-1','Kugelschreiber',140)+'.</div>'+
+  '<div class="qline">Sie schreiben die Ü'+makeBlank('e1-2','Übung',110)+' auf das P'+makeBlank('e1-3','Papier',110)+' oder direkt ins B'+makeBlank('e1-4','Buch',100)+'.</div>'+
+  '<div class="qline">Einen Text können Sie s'+makeBlank('e1-5','schreiben',130)+', l'+makeBlank('e1-6','lesen',110)+', h'+makeBlank('e1-7','hören',110)+', v'+makeBlank('e1-8','verstehen',130)+'.</div>'+
+  '<div class="qline">Wörter können Sie l'+makeBlank('e1-9','lernen',110)+', w'+makeBlank('e1-10','wiederholen',140)+', s'+makeBlank('e1-11','schreiben',130)+', b'+makeBlank('e1-12','behalten',120)+'.</div>';
+})();
+
+/* ================= EX 2: Im Kurs ================= */
+(function(){
+  var el = document.getElementById('ex2-kurs');
+  el.innerHTML =
+  '<div class="qline">Was '+makeBlank('e2-0','bedeutet',120)+' dieses Wort?</div>'+
+  '<div class="qline">Bitte '+makeBlank('e2-1','wiederholen',150)+' Sie die Hausaufgabe. noch einmal.</div>'+
+  '<div class="qline">Können Sie bitte ein '+makeBlank('e2-2','Beispiel',130)+' geben?</div>'+
+  '<div class="qline">Können wir die Grammatik '+makeBlank('e2-3','erklären',130)+'?</div>'+
+  '<div class="qline">Wann schreiben wir den '+makeBlank('e2-4','Test',100)+'?</div>'+
+  '<div class="qline">Bitte '+makeBlank('e2-5','buchstabieren',160)+' Sie diesen Namen.</div>'+
+  '<div class="qline">Wann ist der '+makeBlank('e2-6','Unterricht',140)+' zu Ende?</div>'+
+  '<div class="qline">Das '+makeBlank('e2-7','verstehe',130)+' ich nicht.</div>';
+})();
+
+/* ================= EX 4: Im Büro ================= */
+(function(){
+  var el = document.getElementById('ex4-buero');
+  el.innerHTML =
+  '<p><b>Dialog 1</b></p>'+
+  '<p>● Guten Morgen, ich suche Frau Sutter. Ist sie nicht in ihrem '+makeBlank('e4-0','Büro',110)+'?</p>'+
+  '<p>○ Nein, einen Moment bitte, ich frage Frau Dietzel, das ist ihre '+makeBlank('e4-1','Sekretärin',150)+'.</p>'+
+  '<p><b>Dialog 2</b></p>'+
+  '<p>● Können Sie mir einen '+makeBlank('e4-2','Zettel',110)+' geben? Ich möchte mir den Termin '+makeBlank('e4-3','notieren',130)+'.</p>'+
+  '<p>○ Gerne. Soll ich Herrn Bensch eine '+makeBlank('e4-4','Notiz',110)+' schreiben, dass Sie hier waren?</p>'+
+  '<p><b>Dialog 3</b></p>'+
+  '<p>● Haben wir Ihre Telefonnummer schon '+makeBlank('e4-5','notiert',120)+'?</p>'+
+  '<p>○ Ich weiß es nicht, ich kann sie Ihnen aber noch einmal '+makeBlank('e4-6','aufschreiben',150)+'.</p>'+
+  '<p><b>Ankündigung</b></p>'+
+  '<p>Unser Büro arbeitet mit einem neuen Computerprogramm. Um 8.30 Uhr findet eine '+makeBlank('e4-7','Einführung',150)+' statt. Sie brauchen nicht '+makeBlank('e4-8','nervös',120)+' zu sein, das Training ist sehr nah an der Praxis. Herr Mauscher gibt Ihnen Aufgaben aus Ihrem Büroalltag, die Sie mit Kollegen gemeinsam '+makeBlank('e4-9','lösen',110)+'. Der Kursleiter zeigt Ihnen die '+makeBlank('e4-10','Unterschiede',150)+' zu dem alten Programm und hilft Ihnen, dass Sie die neuen Funktionen richtig '+makeBlank('e4-11','zuordnen',140)+' und selbst '+makeBlank('e4-12','speichern',140)+' können.</p>';
+})();
+
+/* ================= EX 5: Interviews ================= */
+(function(){
+  var el = document.getElementById('ex5-interviews');
+  el.innerHTML =
+  '<p><b>Interview 1</b></p>'+
+  '<p>● Wie viele '+makeBlank('e5-0','Angestellten|Angestellte',160)+' arbeiten in der '+makeBlank('e5-1','Firma',110)+'?</p>'+
+  '<p>○ Im Moment '+makeBlank('e5-2','sind',90)+' wir mit mir fünf '+makeBlank('e5-3','Kollegen',130)+': '+makeBlank('e5-4','Wir',90)+' haben zwei '+makeBlank('e5-5','Angestellte',150)+' und einen '+makeBlank('e5-6','Azubi',110)+', der im '+makeBlank('e5-7','nächsten',130)+' Jahr seine '+makeBlank('e5-8','Lehre',110)+' abschließt. Im '+makeBlank('e5-9','Moment',120)+' gibt es '+makeBlank('e5-10','viel',90)+' Arbeit, deshalb '+makeBlank('e5-11','habe',100)+' ich noch eine '+makeBlank('e5-12','Aushilfe',130)+'. Seit '+makeBlank('e5-13','Anfang',120)+' Juni haben '+makeBlank('e5-14','wir',90)+' auch einen '+makeBlank('e5-15','Praktikanten',160)+', Peter. Peter möchte im '+makeBlank('e5-16','nächsten',130)+' Jahr eine '+makeBlank('e5-17','Lehre',110)+' bei uns machen. Er '+makeBlank('e5-18','möchte',120)+' eine Ausbildung als '+makeBlank('e5-19','Mechaniker',150)+' machen.</p>'+
+
+  '<p><b>Interview 2</b></p>'+
+  '<p>● Wie lange '+makeBlank('e5-20','dauert',110)+' die '+makeBlank('e5-21','Ausbildung',150)+'? Haben die '+makeBlank('e5-22','jungen',110)+' Menschen die '+makeBlank('e5-23','Möglichkeit',150)+', anschließend in '+makeBlank('e5-24','Ihrer',100)+' Firma zu '+makeBlank('e5-25','arbeiten',130)+'?</p>'+
+  '<p>○ Die Ausbildung dauert drei '+makeBlank('e5-26','Jahre',110)+', und wir machen sehr gute '+makeBlank('e5-27','Erfahrungen',160)+' mit '+makeBlank('e5-28','unseren',120)+' Azubis. Leider sind '+makeBlank('e5-29','wir',90)+' nur ein kleiner '+makeBlank('e5-30','Betrieb',130)+' und können unsere '+makeBlank('e5-31','Azubis',120)+' nach der '+makeBlank('e5-32','Ausbildung',150)+' meistens nicht '+makeBlank('e5-33','übernehmen',160)+'.</p>'+
+  '<p>Die meisten '+makeBlank('e5-34','verlassen',130)+' uns aber mit '+makeBlank('e5-35','sehr',90)+' guten '+makeBlank('e5-36','Kenntnissen',160)+'. Für eine '+makeBlank('e5-37','Bewerbung',150)+' ist ein '+makeBlank('e5-38','Zeugnis',130)+' mit guten '+makeBlank('e5-39','Noten',110)+' wichtig. Das Wichtigste ist aber, dass der '+makeBlank('e5-40','Beruf',110)+' den jungen Menschen '+makeBlank('e5-41','Spaß',100)+' macht, dann werden sie auch in anderen '+makeBlank('e5-42','Betrieben',150)+' '+makeBlank('e5-43','zurechtkommen',170)+'.</p>'+
+
+  '<p><b>Interview 3</b></p>'+
+  '<p>● Haben Ihre Azubis nach der '+makeBlank('e5-44','Lehre',110)+' einen '+makeBlank('e5-45','Arbeitsplatz',160)+' in ihrem neuen Beruf bekommen?</p>'+
+  '<p>○ Viele ja, aber nicht '+makeBlank('e5-46','alle',100)+'. Manche arbeiten als selbstständige '+makeBlank('e5-47','Handwerker',150)+', manche gehen weiter '+makeBlank('e5-48','zur',90)+' Schule, machen '+makeBlank('e5-49','Praktika',130)+' und gehen zur '+makeBlank('e5-50','Universität',160)+'.</p>'+
+  '<p>Ich '+makeBlank('e5-51','erinnere',130)+' mich zum Beispiel an Robert. Der hat bei mir vor vier '+makeBlank('e5-52','Jahren',110)+' gelernt und hat in diesem Jahr sein '+makeBlank('e5-53','Abschlusszeugnis',190)+' mit der Note 2,1 '+makeBlank('e5-54','bestanden',150)+'. Ich '+makeBlank('e5-55','denke',110)+', er geht jetzt zur Universität.</p>';
+})();
+
+/* ================= EX 6: Beim Friseur ================= */
+(function(){
+  var el = document.getElementById('ex6-friseur');
+  el.innerHTML =
+  '<p>● Ich gehe heute zum '+makeBlank('e6-0','Friseur',120)+'.</p>'+
+  '<p>○ Und? Was macht er?</p>'+
+  '<p>● Nicht viel. Ich lasse mir nur die Haare etwas '+makeBlank('e6-1','schneiden',140)+'.</p>'+
+  '<p>○ Wir wollten uns doch in einer Stunde im Café treffen.</p>'+
+  '<p>● Ja, bei mir '+makeBlank('e6-2','dauert',110)+' es nicht lange.</p>'+
+  '<p>Ich '+makeBlank('e6-3','lasse',100)+' mir die Haare immer '+makeBlank('e6-4','trocken',120)+' schneiden</p>'+
+  '<p>und '+makeBlank('e6-5','wasche',110)+' sie dann später zu Hause. Das ist billiger und '+makeBlank('e6-6','praktisch',140)+'.</p>'+
+  '<p>Damit habe ich die besten '+makeBlank('e6-7','Erfahrungen',150)+' gemacht.</p>'+
+  '<p>○ Mit deinen '+makeBlank('e6-8','Haaren',110)+' hast du wirklich Glück! Du siehst nie '+makeBlank('e6-9','langweilig',150)+' aus. Meine Haare sind das '+makeBlank('e6-10','Gegenteil',140)+' – dünn und immer fettig. Ich muss sie jeden Tag '+makeBlank('e6-11','waschen',130)+'.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Eine praktische Berufsausbildung in einem Betrieb: die ...", "Lehre"],
+    ["Eine Prüfung erfolgreich abschließen: ...", "bestehen"],
+    ["Ein offizielles Dokument mit den Noten: das ...", "Zeugnis"],
+    ["Unruhig, aufgeregt, ängstlich: ...", "nervös"],
+    ["Mit einer Situation gut umgehen können: ...", "zurechtkommen"],
+    ["Ein Antrag, mit dem man sich um eine Stelle bemüht: die ...", "Bewerbung"],
+    ["Ein kleines Stück Papier: der ...", "Zettel"],
+    ["Daten auf einem Gerät sichern: ...", "speichern"],
+    ["Etwas nicht mehr finden können: ...", "verlieren"],
+    ["Eine Person, die Gebäude plant: der ...", "Architekt"],
+    ["Eine zeitlich begrenzte praktische Arbeitserfahrung: das ...", "Praktikum"],
+    ["Ohne Interesse, uninteressant: ...", "langweilig"],
+    ["Eine Person, die Haare schneidet und stylt: der ...", "Friseur"],
+    ["Nicht nass, ohne Feuchtigkeit: ...", "trocken"],
+    ["Etwas einer bestimmten Sache zuweisen: ...", "zuordnen"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

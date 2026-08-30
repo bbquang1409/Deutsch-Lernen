@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6 Auto und Verkehr – A2</title>
+<style>
+:root{
+  --teal:#0f3d3e;--teal-light:#1b5c5d;--teal-pale:#e6f0ef;
+  --orange:#e8823a;--orange-light:#fdece0;--bg:#f7f5f0;--card:#ffffff;
+  --text:#233333;--muted:#6b7c7c;--der:#2563eb;--das:#16a34a;--die:#dc2626;
+  --ok:#16a34a;--bad:#dc2626;--radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.example-box{border-left:4px solid var(--orange);background:var(--orange-light);border-radius:8px;padding:10px 14px;margin:10px 0 0;font-size:0.88rem;color:var(--teal);line-height:1.7;}
+.example-box b{color:var(--orange);}
+.tipp-box{border-left:4px solid var(--teal-light);background:var(--teal-pale);border-radius:8px;padding:10px 14px;margin:10px 0 0;font-size:0.85rem;color:var(--teal);line-height:1.6;}
+.tipp-box b{color:var(--teal-light);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.matchrow{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap;}
+.matchrow select{padding:4px 8px;border-radius:8px;border:1px solid var(--teal-light);font-family:inherit;}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* TTS */
+.tts-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;border:1.5px solid var(--teal-light);
+  background:#fff;color:var(--teal-light);cursor:pointer;font-size:.85rem;margin-left:6px;flex-shrink:0;
+}
+.tts-btn:hover{background:var(--teal-pale);}
+.tts-line{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:4px 0;}
+
+/* Sortier-Tabelle (Wortschatz-Kategorien) */
+.sort-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:10px;}
+.sort-table th{background:var(--teal);color:#fff;padding:8px 6px;text-align:left;border-radius:6px 6px 0 0;}
+.sort-word{padding:4px 0;}
+.sort-word select{width:100%;padding:4px;border-radius:6px;border:1px solid var(--teal-light);font-family:inherit;font-size:.82rem;}
+
+/* Kreuzworträtsel (echtes Gitter) */
+.cw2-clues-wrap{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:14px;font-size:.9rem;}
+.cw2-clues-wrap b{color:var(--teal);}
+.cw2-cluelist{margin:6px 0 0;padding-left:20px;line-height:1.7;}
+.cw2-scroll{overflow-x:auto;padding-bottom:6px;}
+.cw2-grid{display:inline-grid;gap:0;background:transparent;}
+.cw2-cell{position:relative;width:28px;height:28px;}
+.cw2-cell input{
+  width:28px !important;height:28px !important;text-align:center;font-size:.85rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;border-radius:0 !important;padding:0 !important;margin:0;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);box-sizing:border-box;
+}
+.cw2-cell input:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+.cw2-cell input.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+.cw2-cell input.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+.cw2-cell input.marked{border:2px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;}
+.cw2-num{position:absolute;top:0;left:2px;font-size:.55rem;font-weight:700;color:var(--teal);z-index:3;pointer-events:none;}
+@media(max-width:400px){.cw2-cell{width:23px;height:23px;}.cw2-cell input{width:23px !important;height:23px !important;font-size:.72rem;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Miteinander! · Kapitel 6</div>
+  <h1>6&nbsp; Auto und Verkehr</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🚗 Auto</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Rückwärts einparken. Gib acht! Die Kreuzung ist gefährlich.</div>
+  </div>
+
+  <div class="section">
+    <h2>🛣️ Verkehr</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>🧾 Autokauf</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>🚆 Bahnverkehr</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Der Zug hat fünf Minuten Verspätung. An der Haltestelle müssen Sie umsteigen. Ich habe den Bus verpasst. Deshalb erreiche ich jetzt den Zug um 9 Uhr nicht mehr.</div>
+  </div>
+
+  <div class="section">
+    <h2>🗣️ Aussprache</h2>
+    <div class="ex-instructions">Klicken Sie auf 🔊, um die Wörter laut vorlesen zu lassen.</div>
+    <div class="tipp-box">
+      <b>ts:</b>
+      <div class="tts-line" id="tts-ts"></div>
+      <b>sch / schp / scht:</b>
+      <div class="tts-line" id="tts-sch"></div>
+    </div>
+    <div class="tipp-box">
+      <b>ch als ks:</b>
+      <div class="tts-line" id="tts-ks"></div>
+      <b>ch als ich-Laut:</b>
+      <div class="tts-line" id="tts-ich"></div>
+      <b>ch als ach-Laut:</b>
+      <div class="tts-line" id="tts-ach"></div>
+      <div style="margin-top:8px;">sechs (ks) aber: sechzehn, sechzig (ich)</div>
+    </div>
+    <div class="example-box">
+      <div class="tts-line" id="tts-ex1"></div>
+      <div class="tts-line" id="tts-ex2"></div>
+      <div class="tts-line" id="tts-ex3"></div>
+      <div class="tts-line" id="tts-ex4"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Wortschatz sortieren</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Ordnen Sie die Wörter den Kategorien zu.</div>
+      <div class="ex-instructions">Welche Kategorie passt zu jedem Wort?</div>
+      <table class="sort-table">
+        <tr><th>Wort</th><th>Kategorie</th></tr>
+      </table>
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Kreuzworträtsel – Auto und Verkehr</h2>
+    <div class="exercise">
+      <div class="ex-instructions">Lösen Sie das Kreuzworträtsel.</div>
+      <div class="cw2-clues-wrap">
+        <div><b>Waagerecht →</b><ol id="cw2-across" class="cw2-cluelist"></ol></div>
+        <div><b>Senkrecht ↓</b><ol id="cw2-down" class="cw2-cluelist"></ol></div>
+      </div>
+      <div class="cw2-scroll"><div id="cw2-grid" class="cw2-grid"></div></div>
+      <button class="check-btn" data-check="grid2">Prüfen</button>
+      <button class="reset-btn" data-reset="grid2">Zurücksetzen</button>
+      <div class="result-msg" id="res-cw2-grid"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Silbenrätsel – Abkürzungen</h2>
+    <div class="exercise">
+      <div class="ex-title">Was bedeuten die Abkürzungen TÜV, Pkw, Kfz?</div>
+      <div class="wordbank"><b>Silben:</b> BER · EIN · ER · FAHR · GEN · KRAFT · KRAFT · NEN · NISCH · PER · SO · TECH · Ü · UNGS · VER · WA · WACH · ZEUG</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Angst im Verkehr</h2>
+    <div class="exercise">
+      <div class="ex-title">Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> achtgeben · aufpassen · gefährlich · (die) Ampel · (die) Kontrolle · vorsichtig</div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Was passiert hier?</h2>
+    <div class="exercise">
+      <div class="ex-title">Ergänzen Sie.</div>
+      <div id="ex5-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex5-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Dialog: Verspätung</h2>
+    <div class="exercise">
+      <div class="ex-title">Ergänzen Sie den Dialog.</div>
+      <div id="ex6-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex6-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6-1"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Auto und Verkehr</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= TTS (Web Speech API) ================= */
+function speakDE(text){
+  if(!('speechSynthesis' in window)) { alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+function ttsLine(containerId, words){
+  var el = document.getElementById(containerId);
+  el.innerHTML = words.map(function(w){
+    return '<span>'+w+'</span><button class="tts-btn" data-say="'+w.replace(/"/g,'&quot;')+'">🔊</button>';
+  }).join(' &nbsp;·&nbsp; ');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakDE(btn.dataset.say); });
+  });
+}
+ttsLine('tts-ts', ['das Benzin','die Kreuzung','zeigen','vorwärts','rückwärts']);
+ttsLine('tts-sch', ['der Schalter','die Verspätung','die Tankstelle','umsteigen']);
+ttsLine('tts-ks', ['wechseln','sechs']);
+ttsLine('tts-ich', ['das Kennzeichen','erreichen','gefährlich']);
+ttsLine('tts-ach', ['Gib acht!','gebraucht']);
+ttsLine('tts-ex1', ['Kannst du einen Reifen wechseln?']);
+ttsLine('tts-ex2', ['Welches Kennzeichen hast du?']);
+ttsLine('tts-ex3', ['Gib acht bei gebrauchten Autos!']);
+ttsLine('tts-ex4', ['Mein Kennzeichen ist B-KM 166.']);
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["das","Kfz, - (= Kraftfahrzeug)","allgemeiner Begriff für ein motorisiertes Fahrzeug","xe cơ giới"],
+ ["der","Wagen, -","ein Auto","xe hơi"],
+ ["der","Motor, -en","der Teil, der das Auto antreibt","động cơ"],
+ ["die","Batterie, -n","speichert den Strom fürs Auto","bình ắc quy"],
+ ["der","Pkw, -s (= Personenkraftwagen)","ein Auto für Personen","xe con"],
+ ["der","Reifen, -","der runde Gummiteil am Rad","lốp xe"],
+ ["","wechseln","austauschen","thay đổi"],
+ ["","bremsen","das Fahrzeug langsamer machen","phanh, thắng"],
+ ["die","Tankstelle, -n","der Ort, wo man tankt","trạm xăng"],
+ ["","tanken","Benzin/Diesel einfüllen","đổ xăng"],
+ ["das","Benzin (Sg.)","der Kraftstoff für Autos","xăng"],
+ ["der","Diesel (Sg.)","ein anderer Kraftstoff, oft für Lastwagen","dầu diesel"],
+ ["die","Panne, -n","ein technischer Defekt am Auto","sự cố xe hỏng"],
+ ["die","Werkstatt, \"-en","der Ort, wo man das Auto reparieren lässt","xưởng sửa xe"],
+ ["das","Werkzeug, -e","Geräte zum Reparieren","dụng cụ"],
+];
+
+var vocab2 = [
+ ["die","Brücke, -n","eine Konstruktion über einen Fluss/eine Straße","cây cầu"],
+ ["die","Kreuzung, -en","der Punkt, wo Straßen sich treffen","ngã tư"],
+ ["","parken","das Auto abstellen","đỗ xe"],
+ ["","vorwärts","in Fahrtrichtung nach vorne","tiến"],
+ ["","rückwärts","in die entgegengesetzte Richtung","lùi"],
+ ["","zeigen","auf etwas hinweisen","chỉ ra"],
+ ["","vorbei","an etwas entlang, vorüber","đi qua"],
+ ["","vorn","am Anfang, vorne","phía trước"],
+ ["","hinten","am Ende, dahinter","phía sau"],
+ ["der","Verkehr (Sg.)","alle Fahrzeuge auf der Straße","giao thông"],
+ ["die","Ampel, -n","die Verkehrslichter (rot/gelb/grün)","đèn giao thông"],
+ ["","vorsichtig","aufmerksam, achtsam","cẩn thận"],
+ ["","unvorsichtig","nicht vorsichtig","bất cẩn"],
+ ["","aufpassen","aufmerksam sein","chú ý, cẩn thận"],
+ ["","achtgeben","aufpassen","để ý, cẩn thận"],
+ ["","gefährlich","mit Risiko verbunden","nguy hiểm"],
+ ["","ungefährlich","ohne Risiko","không nguy hiểm"],
+ ["der","Unfall, \"-e","ein plötzliches, schlimmes Ereignis im Verkehr","tai nạn"],
+];
+
+var vocab3 = [
+ ["der","Vertrag, \"-e","eine schriftliche Vereinbarung","hợp đồng"],
+ ["","verkaufen","gegen Geld weggeben","bán"],
+ ["","neu","nicht gebraucht","mới"],
+ ["","gebraucht","schon benutzt, nicht neu","đã qua sử dụng"],
+ ["die","Zulassung, -en","die offizielle Registrierung eines Autos","đăng ký xe"],
+ ["das","Kennzeichen, -","die Nummer am Auto","biển số xe"],
+ ["der","TÜV (= Technischer Überwachungsverein)","die technische Kontrolle des Autos","cơ quan kiểm định xe"],
+ ["der","Führerschein, -e","das Dokument zum Autofahren","bằng lái xe"],
+];
+
+var vocab4 = [
+ ["der","Fahrplan, \"-e","die Übersicht über Abfahrts-/Ankunftszeiten","lịch trình tàu xe"],
+ ["die","Verbindung, -en","die Route/Strecke zwischen zwei Orten","tuyến kết nối"],
+ ["die","Verspätung, -en","zu spät ankommen/abfahren","sự trễ giờ"],
+ ["(sich)","beeilen","schneller machen","vội, nhanh lên"],
+ ["die","Haltestelle, -n","der Ort, wo Bus/Bahn hält","trạm dừng"],
+ ["","umsteigen","in ein anderes Fahrzeug wechseln","đổi chuyến"],
+ ["","erreichen","rechtzeitig ankommen bei","đến kịp, bắt kịp"],
+ ["","verpassen","zu spät kommen und etwas verlieren","lỡ (chuyến)"],
+ ["der","Schalter, -","der Ort zum Kaufen von Tickets","quầy vé"],
+ ["die","Monatskarte, -n","ein Ticket, das einen Monat gilt","vé tháng"],
+ ["die","U-Bahn, -en","die U-Bahn (unterirdisch)","tàu điện ngầm"],
+ ["die","Kontrolle, -n","die Überprüfung (z.B. der Fahrkarte)","sự kiểm tra"],
+];
+
+function ttsCleanWord(word){
+  // remove plural/parenthetical notation for cleaner pronunciation, e.g. "Nudel, -n" -> "Nudel"
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+function checkGroup(containerId){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ans.map(normalize).indexOf(normalize(val)) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='grid2') checkGrid2();
+  });
+});
+document.querySelectorAll('.reset-btn[data-reset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.dataset.reset==='grid2') resetGrid2();
+  });
+});
+
+/* ================= EX 1.1 Wortschatz sortieren (statt der unübersichtlichen Buchtabelle) ================= */
+(function(){
+  var categories = ['Verkehr und Verkehrsmittel','Orte in der Stadt','Reisegepäck','Reiseaktivitäten / Unterkunft'];
+  var items = [
+    ["das Taxi", 0],["die Straßenbahn", 0],["der Bus", 0],["das Auto fahren", 0],
+    ["die Kreuzung", 1],["der Bahnhof", 1],["der Platz", 1],["die Ampel", 1],
+    ["der Koffer", 2],["der Rucksack", 2],["die Tasche", 2],["die Kleidung", 2],
+    ["die Halbpension", 3],["die Jugendherberge", 3],["die Führung", 3],["einsteigen", 3],
+  ];
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = categories.map(function(cat,ci){ return '<option value="'+ci+'">'+cat+'</option>'; }).join('');
+    return '<div class="matchrow">'+it[0]+' → <select id="e11-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 2 Kreuzworträtsel (echtes Gitter, aus Skript validiert) ================= */
+var CW2_WORDS = [
+  {num:2,  dir:'A', row:11, col:9,  answer:'WERKSTATT',  clue:'Hier kann man das Auto reparieren lassen.'},
+  {num:1,  dir:'D', row:3,  col:17, answer:'GEBRAUCHT',  clue:'Die meisten Leute kaufen ihr Auto nicht neu, sondern ...'},
+  {num:6,  dir:'D', row:4,  col:10, answer:'BATTERIE',   clue:'Man braucht sie, damit das Auto startet.'},
+  {num:5,  dir:'A', row:13, col:12, answer:'BENZIN',     clue:'Ohne diese Flüssigkeit fährt das Auto nicht.'},
+  {num:3,  dir:'D', row:11, col:14, answer:'TANKEN',     clue:'Das muss man tun, wenn man kein Benzin/Diesel mehr im Auto hat.'},
+  {num:9,  dir:'A', row:15, col:8,  answer:'TANKSTELLE', clue:'Hier kann man Benzin oder Diesel kaufen.'},
+  {num:4,  dir:'D', row:8,  col:1,  answer:'DIESEL',     clue:'Lastwagen fahren fast immer mit dieser Flüssigkeit.'},
+  {num:10, dir:'A', row:6,  col:15, answer:'VERTRAG',    clue:'Wenn Sie ein Auto kaufen oder verkaufen, dann unterschreiben Sie das.'},
+  {num:7,  dir:'D', row:14, col:9,  answer:'PARKEN',     clue:'Ich fahre immer mit der Straßenbahn in die Stadt. Ein Auto kann man ja fast nirgends mehr ...'},
+  {num:11, dir:'A', row:6,  col:8,  answer:'MOTOR',      clue:'Findet man meistens vorne im Auto. Braucht Benzin/Diesel, damit er funktioniert.'},
+  {num:15, dir:'D', row:18, col:11, answer:'RADIO',      clue:'Man kann damit Musik und auch die Verkehrsnachrichten hören.'},
+  {num:13, dir:'A', row:19, col:8,  answer:'UNFALL',     clue:'Gestern hatte ich einen ... Mir ist jemand reingefahren. Gott sei Dank nur Blechschaden.'},
+  {num:12, dir:'D', row:0,  col:21, answer:'PANNE',      clue:'Wenn man das hat, dann kann man nicht mehr weiterfahren.'},
+  {num:14, dir:'A', row:8,  col:3,  answer:'VERKAUFEN',  clue:'Ich will mein Auto ... Was meinst du, wie viel ich dafür noch bekomme?'},
+  {num:16, dir:'D', row:6,  col:19, answer:'REIFEN',     clue:'Ein Auto hat vier Räder und darauf sind ...'},
+  {num:17, dir:'A', row:10, col:0,  answer:'WECHSELN',   clue:'Ralf hat letzte Woche eine Panne auf der Autobahn gehabt. Er musste den Reifen ...'},
+  {num:8,  dir:'D', row:6,  col:4,  answer:'BREMSEN',    clue:'Du musst ...! Siehst du nicht, dass die Ampel rot ist?'},
+  {num:18, dir:'A', row:4,  col:16, answer:'WERKZEUG',   clue:'Man braucht das, um etwas zu reparieren.'},
+];
+
+function renderGrid2(containerId, words){
+  var grid = document.getElementById(containerId);
+  var cellData = {};
+  var maxRow=0, maxCol=0, minRow=99999, minCol=99999;
+
+  words.forEach(function(w){
+    for(var i=0;i<w.answer.length;i++){
+      var r = w.row + (w.dir==='D' ? i : 0);
+      var c = w.col + (w.dir==='A' ? i : 0);
+      var key = r+'_'+c;
+      if(!cellData[key]) cellData[key] = {letter:w.answer[i], owners:[], numLabel:null};
+      cellData[key].owners.push(w.num);
+      if(i===0) cellData[key].numLabel = w.num;
+      maxRow = Math.max(maxRow, r); maxCol = Math.max(maxCol, c);
+      minRow = Math.min(minRow, r); minCol = Math.min(minCol, c);
+    }
+  });
+
+  grid.style.gridTemplateColumns = 'repeat('+(maxCol-minCol+1)+', 28px)';
+  grid.style.gridTemplateRows = 'repeat('+(maxRow-minRow+1)+', 28px)';
+  grid.innerHTML='';
+
+  Object.keys(cellData).forEach(function(key){
+    var parts = key.split('_'); var r=+parts[0], c=+parts[1];
+    var d = cellData[key];
+    var isHint = d.owners.length > 1;
+    var cell = document.createElement('div');
+    cell.className='cw2-cell';
+    cell.style.gridRow = (r-minRow+1); cell.style.gridColumn = (c-minCol+1);
+    var numHtml = d.numLabel ? '<span class="cw2-num">'+d.numLabel+'</span>' : '';
+    cell.innerHTML = numHtml+'<input type="text" maxlength="1" data-ans="'+d.letter+'"'+
+      (isHint ? ' readonly value="'+d.letter+'" class="marked"' : '') + '>';
+    grid.appendChild(cell);
+  });
+
+  grid.querySelectorAll('input:not([readonly])').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+    });
+  });
+
+  var acrossEl = document.getElementById('cw2-across');
+  var downEl = document.getElementById('cw2-down');
+  acrossEl.innerHTML = words.filter(function(w){return w.dir==='A';})
+    .sort(function(a,b){return a.num-b.num;})
+    .map(function(w){ return '<li><b>'+w.num+'.</b> '+w.clue+'</li>'; }).join('');
+  downEl.innerHTML = words.filter(function(w){return w.dir==='D';})
+    .sort(function(a,b){return a.num-b.num;})
+    .map(function(w){ return '<li><b>'+w.num+'.</b> '+w.clue+'</li>'; }).join('');
+}
+function checkGrid2(){
+  var inputs = document.querySelectorAll('#cw2-grid input:not([readonly])');
+  var correct=0, total=inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-cw2-grid');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetGrid2(){
+  document.querySelectorAll('#cw2-grid input:not([readonly])').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw2-grid').textContent='';
+}
+renderGrid2('cw2-grid', CW2_WORDS);
+
+/* ================= EX 3.1 Abkürzungen ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<p>TÜV: '+makeBlank('e31-0','Technischer Überwachungsverein',260)+'</p>'+
+  '<p>Pkw: '+makeBlank('e31-1','Personenkraftwagen',220)+'</p>'+
+  '<p>Kfz: '+makeBlank('e31-2','Kraftfahrzeug',180)+'</p>';
+})();
+
+/* ================= EX 4.1 Angst im Verkehr ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<p>Fahr '+makeBlank('e41-0','vorsichtig',110)+'! Die Kreuzung ist '+makeBlank('e41-1','gefährlich',110)+' und um die Ecke ist eine Schule.</p>'+
+  '<p>Kannst du nicht '+makeBlank('e41-2','aufpassen',110)+'! Fast hättest du den Radfahrer umgefahren!</p>'+
+  '<p>Halt an! Die '+makeBlank('e41-3','Ampel',90)+' ist rot. Bist du blind?</p>'+
+  '<p>'+makeBlank('e41-4','Achtgeben',110)+', da vorn steht die Polizei, das ist bestimmt eine '+makeBlank('e41-5','Kontrolle',110)+'.</p>';
+})();
+
+/* ================= EX 5.1 Was passiert hier ================= */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<p>'+makeBlank('e51-0','Rückwärts',120)+' – BUMMM!</p>'+
+  '<p>'+makeBlank('e51-1','Vorwärts',110)+' – BUMMM!</p>'+
+  '<p>Jetzt ist das Auto ge'+makeBlank('e51-2','schrottet|kaputt',150)+'.</p>';
+})();
+
+/* ================= EX 6.1 Dialog Verspätung ================= */
+(function(){
+  var el = document.getElementById('ex6-1');
+  el.innerHTML =
+  '<p>● Schatz, tut mir leid, aber ich komme erst um 9 nach Hause. Ich habe den Zug '+makeBlank('e61-0','verpasst',120)+' und nach dem '+makeBlank('e61-1','Schalter',110)+' kommt der nächste erst in einer Stunde.</p>'+
+  '<p>○ Macht nichts, Liebling. Timo ist gerade hier und wir unterhalten uns prima.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Der Teil, der das Auto antreibt, ist der ...", "Motor"],
+    ["Der runde Gummiteil am Rad heißt der ...", "Reifen"],
+    ["Der Ort, wo man tankt, ist die ...", "Tankstelle"],
+    ["Der Kraftstoff für Autos ist das ...", "Benzin"],
+    ["Ein technischer Defekt am Auto ist eine ...", "Panne"],
+    ["Der Ort, wo man das Auto reparieren lässt, ist die ...", "Werkstatt"],
+    ["Der Punkt, wo Straßen sich treffen, ist die ...", "Kreuzung"],
+    ["Ein plötzliches, schlimmes Ereignis im Verkehr ist ein ...", "Unfall"],
+    ["Aufmerksam, achtsam sein heißt ...", "vorsichtig"],
+    ["Das Dokument zum Autofahren ist der ...", "Führerschein"],
+    ["Die Nummer am Auto ist das ...", "Kennzeichen"],
+    ["Zu spät ankommen/abfahren nennt man die ...", "Verspätung"],
+    ["Der Ort, wo Bus/Bahn hält, ist die ...", "Haltestelle"],
+    ["In ein anderes Fahrzeug wechseln heißt ...", "umsteigen"],
+    ["Ein Ticket, das einen Monat gilt, ist die ...", "Monatskarte"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

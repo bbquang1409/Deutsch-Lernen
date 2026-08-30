@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 Familie – Eigenschaften – Personen – A2</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:#fbfaf7;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{
+  margin-top:4px;
+  color:var(--teal-light);
+  font-size:0.88rem;
+}
+.vocab-vn{
+  display:none;
+  margin-top:4px;
+  color:var(--orange);
+  font-size:0.9rem;
+  font-style:italic;
+}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.vn-switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.85rem;
+  color:var(--teal);
+  cursor:pointer;
+  user-select:none;
+}
+.vn-switch input{transform:scale(1.2);}
+.example-box{
+  border-left:4px solid var(--orange);
+  background:var(--orange-light);
+  border-radius:8px;
+  padding:10px 14px;
+  margin:10px 0 0;
+  font-size:0.88rem;
+  color:var(--teal);
+  line-height:1.7;
+}
+.example-box b{color:var(--orange);}
+.tipp-box{
+  border-left:4px solid var(--teal-light);
+  background:var(--teal-pale);
+  border-radius:8px;
+  padding:10px 14px;
+  margin:10px 0 0;
+  font-size:0.85rem;
+  color:var(--teal);
+  line-height:1.6;
+}
+.tipp-box b{color:var(--teal-light);}
+.exercise{
+  margin-bottom:22px;
+  padding-bottom:14px;
+  border-bottom:1px solid #eee;
+}
+.exercise:last-child{border-bottom:none;}
+.ex-title{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:6px;
+}
+.ex-instructions{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-bottom:10px;
+}
+.qline{
+  margin:10px 0;
+  line-height:1.9;
+}
+.qline input[type=text]{
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-size:1rem;
+  padding:2px 4px;
+  width:150px;
+  font-family:inherit;
+  color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{
+  background:var(--teal-pale);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:12px;
+  font-size:0.9rem;
+  color:var(--teal);
+}
+.wordbank b{color:var(--teal-light);}
+.matchrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  flex-wrap:wrap;
+}
+.matchrow select{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+}
+.check-btn{
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  padding:9px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.result-msg{
+  margin-top:8px;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.footer-credit{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.8rem;
+  margin-top:30px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Miteinander! · Kapitel 2</div>
+  <h1>2&nbsp; Familie – Eigenschaften – Personen</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>👪 Familie</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Kontakt haben mit ... Ich habe viel Kontakt zu meinen Verwandten. Das ist bei uns anders. Meine Eltern leben getrennt.</div>
+  </div>
+
+  <div class="section">
+    <h2>👁️ Aussehen</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Er hat blonde/dunkle Haare.</div>
+  </div>
+
+  <div class="section">
+    <h2>✨ Eigenschaften</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="tipp-box"><b>Tipp:</b> Viele Adjektive im Deutschen haben ein Gegenteil mit <b>un-</b>: höflich – unhöflich. Aber das funktioniert nicht immer: dumm – intelligent/schlau ...</div>
+    <div class="tipp-box"><b>Tipp – falsche Freunde:</b> Deutsch <i>sympathisch</i> ≠ Englisch <i>sympathetic</i> (= mitfühlend). <i>Handy</i> ist nur Deutsch; Englisch: <i>mobile phone</i>, amerikanisch: <i>cell phone</i>.</div>
+  </div>
+
+  <div class="section">
+    <h2>💗 Gefühle</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Wie fühlst du dich? – Es geht. Ich bin froh/traurig. Warum weinst du?</div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Interview – Persönliche Angaben</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Ergänzen Sie die Fragen und beantworten Sie sie.</div>
+      <div class="wordbank"><b>Kasten:</b> verheiratet · alt · (die) Adresse · (die) Straße · (die) Stadt · (die) Postleitzahl · (die) Telefonnummer · (der) Beruf · (das) Geburtsjahr · geboren · heißen · kommen · wohnen · (der) Geburtstag · geschieden</div>
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Eigenschaften</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Wie heißt das Gegenteil? Ordnen Sie zu.</div>
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Aussehen und Gefühle</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Ergänzen Sie die Sätze.</div>
+      <div class="wordbank"><b>Kasten:</b> toll · (der) Kontakt · hässlich · froh · blond · dunkel · verwandt · aussehen · fühlen · weinen</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Familie, Eigenschaften, Personen</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","Heimat (Sg.)","der Ort, wo man geboren ist oder sich zu Hause fühlt","quê hương"],
+ ["der","Kontakt, -e","die Verbindung zu einer Person","liên lạc, mối quan hệ"],
+ ["","anders","nicht gleich, verschieden","khác"],
+ ["der/die","Verwandte, -n","eine Person aus der Familie","người thân, họ hàng"],
+ ["","verwandt","zur gleichen Familie gehörend","có quan hệ họ hàng"],
+ ["der/die","Enkel, - / Enkelin, -nen","das Kind der eigenen Kinder","cháu (nội/ngoại)"],
+ ["","ledig","nicht verheiratet","độc thân"],
+ ["","getrennt","nicht mehr zusammen, aber noch verheiratet","ly thân"],
+ ["","geschieden","offiziell nicht mehr verheiratet","đã ly hôn"],
+ ["","getrennt leben","nicht mehr zusammenwohnen","sống ly thân"],
+ ["","zusammenleben","in einer Wohnung/einem Haus zusammen leben","sống chung"],
+];
+
+var vocab2 = [
+ ["","aussehen","einen bestimmten optischen Eindruck machen","trông như thế nào"],
+ ["","hübsch","schön, gut aussehend","xinh, đẹp"],
+ ["","hässlich","nicht schön","xấu"],
+ ["","blond","mit heller, gelblicher Haarfarbe","tóc vàng"],
+ ["","dunkel","mit dunkler Farbe","tối, sẫm màu"],
+ ["","toll","sehr gut, super","tuyệt vời"],
+];
+
+var vocab3 = [
+ ["","freundlich","nett und höflich zu anderen","thân thiện"],
+ ["","unfreundlich","nicht nett, nicht höflich","không thân thiện"],
+ ["","höflich","mit gutem Benehmen","lịch sự"],
+ ["","unhöflich","ohne gutes Benehmen","bất lịch sự"],
+ ["","sympathisch","jemand, den man gern mag","dễ mến"],
+ ["","unsympathisch","jemand, den man nicht mag","khó ưa"],
+ ["","fleißig","viel und gern arbeitend","chăm chỉ"],
+ ["","faul","nicht gern arbeitend","lười biếng"],
+ ["","intelligent","klug, gut im Denken","thông minh"],
+ ["","dumm","nicht klug","ngu ngốc"],
+ ["","neugierig","gern alles wissen wollend","tò mò"],
+ ["","nett","freundlich und sympathisch","dễ thương, tốt bụng"],
+];
+
+var vocab4 = [
+ ["(sich)","fühlen","einen bestimmten körperlichen oder seelischen Zustand haben","cảm thấy"],
+ ["","traurig","unglücklich, mit Kummer","buồn"],
+ ["","froh","glücklich, zufrieden","vui, hạnh phúc"],
+ ["","nervös","unruhig, angespannt","hồi hộp, lo lắng"],
+ ["","ruhig","ohne Aufregung, entspannt","bình tĩnh"],
+ ["","weinen","Tränen zeigen, wenn man traurig ist","khóc"],
+];
+
+function ttsCleanWord(word){
+  // remove plural/parenthetical notation for cleaner pronunciation, e.g. "Nudel, -n" -> "Nudel"
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ans.map(normalize).indexOf(normalize(val)) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target);
+    else if(kind==='selects') checkGroupSelects(target);
+  });
+});
+
+/* ================= EX 1.1 Interview ================= */
+(function(){
+  var el = document.getElementById('ex1-1');
+  el.innerHTML =
+  '<p>● Wie <b>heißen</b> Sie? &nbsp; ○ Mein Name ist ____________.</p>'+
+  '<p>● Wie '+makeBlank('e1-0','alt',110)+' (1) sind Sie? &nbsp; ○ ____ Jahre alt.</p>'+
+  '<p>● Wann sind Sie '+makeBlank('e1-1','geboren',130)+' (2)? Nennen Sie bitte den '+makeBlank('e1-2','Geburtstag',150)+' (3) und das '+makeBlank('e1-3','Geburtsjahr',150)+' (4).</p>'+
+  '<p>○ ____, ____, ____. (Tag, Monat, Jahr)</p>'+
+  '<p>● Wo '+makeBlank('e1-4','wohnen',110)+' (5) Sie? Nennen Sie bitte die genaue '+makeBlank('e1-5','Adresse',130)+' (6): die '+makeBlank('e1-6','Straße',110)+' (7), die '+makeBlank('e1-7','Postleitzahl',140)+' (8) und die '+makeBlank('e1-8','Stadt',110)+' (9).</p>'+
+  '<p>○ Ich wohne in ____________.</p>'+
+  '<p>● Wie ist Ihre '+makeBlank('e1-9','Telefonnummer',150)+' (10)?</p>'+
+  '<p>○ Die Vorwahl ist ____ und die Nummer ist ____.</p>'+
+  '<p>● Woher '+makeBlank('e1-10','kommen',110)+' (11) Sie? Nennen Sie bitte das Land und die '+makeBlank('e1-11','Stadt',110)+' (12).</p>'+
+  '<p>○ Ich komme aus ____________. Das liegt in ____________.</p>'+
+  '<p>● Sind Sie v'+makeBlank('e1-12','verheiratet',150)+' (13)?</p>'+
+  '<p>○ Nein, ich bin '+makeBlank('e1-13','geschieden',130)+' (14).</p>'+
+  '<p>● Was sind Sie von '+makeBlank('e1-14','Beruf',110)+' (15)?</p>'+
+  '<p>○ Ich arbeite als ____________. / Ich bin ____________.</p>';
+})();
+
+/* ================= EX 2.1 Gegenteile ================= */
+(function(){
+  var items = [
+    ["faul","fleißig"],
+    ["hässlich","hübsch"],
+    ["dunkel","blond"],
+    ["unhöflich","höflich"],
+    ["unsympathisch","sympathisch"],
+    ["traurig","froh"],
+    ["geschieden","verheiratet"],
+    ["ruhig","nervös"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex2-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' ↔ <select id="e21-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 3.1 Sätze ergänzen ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<p>1. ● Wie '+makeBlank('e31-0','fühlst',110)+' du dich heute?</p>'+
+  '<p>○ Es geht mir wieder besser. Ich bin nicht mehr so traurig wie letzte Woche. Ich bin froh, dass ich mich von Martin getrennt habe.</p>'+
+  '<p>2. ● Warum '+makeBlank('e31-1','weinst',110)+' du?</p>'+
+  '<p>○ Ich habe gerade gehört, dass mein Bruder sehr krank ist.</p>'+
+  '<p>● Das tut mir leid. Kann ich dir helfen?</p>'+
+  '<p>3. ● Ist der Typ mit den '+makeBlank('e31-2','dunklen',110)+' Haaren Jitkas Freund?</p>'+
+  '<p>○ Nein, der doch nicht. Jitkas Freund ist groß und hat '+makeBlank('e31-3','blonde',110)+' Haare.</p>'+
+  '<p>4. ● Seid ihr '+makeBlank('e31-4','verwandt',110)+'?</p>'+
+  '<p>○ Ja, sie ist meine Schwester.</p>'+
+  '<p>5. ● Hast du noch '+makeBlank('e31-5','Kontakt',110)+' mit deinem Ex-Mann?</p>'+
+  '<p>○ Nein, ich bin '+makeBlank('e31-6','froh',100)+', wenn ich ihn nicht sehe.</p>'+
+  '<p>6. ● Und, wie '+makeBlank('e31-7','siehst',100)+' ich '+makeBlank('e31-8','aus',80)+'?</p>'+
+  '<p>○ Total '+makeBlank('e31-9','hässlich',120)+'! Nein, war nur Spaß. Du siehst '+makeBlank('e31-10','toll',90)+' aus. Echt super.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Der Ort, wo man geboren ist oder sich zu Hause fühlt, ist die ...", "Heimat"],
+    ["Eine Person aus der Familie nennt man einen/eine ...", "Verwandten|Verwandte"],
+    ["Nicht verheiratet zu sein heißt ...", "ledig"],
+    ["Offiziell nicht mehr verheiratet zu sein heißt ...", "geschieden"],
+    ["In einer Wohnung zusammen wohnen: ...", "zusammenleben"],
+    ["Das Gegenteil von hübsch ist ...", "hässlich"],
+    ["Das Gegenteil von faul ist ...", "fleißig"],
+    ["Das Gegenteil von unsympathisch ist ...", "sympathisch"],
+    ["Gern alles wissen wollen heißt ...", "neugierig"],
+    ["Unglücklich, mit Kummer sein heißt ...", "traurig"],
+    ["Das Gegenteil von traurig ist ...", "froh"],
+    ["Unruhig und angespannt sein heißt ...", "nervös"],
+    ["Tränen zeigen, wenn man traurig ist: ...", "weinen"],
+    ["Einen bestimmten optischen Eindruck machen: ...", "aussehen"],
+    ["Freundlich und sympathisch sein heißt ...", "nett"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

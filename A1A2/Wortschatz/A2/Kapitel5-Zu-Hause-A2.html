@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Zu Hause – A2</title>
+<style>
+:root{
+  --teal:#0f3d3e;--teal-light:#1b5c5d;--teal-pale:#e6f0ef;
+  --orange:#e8823a;--orange-light:#fdece0;--bg:#f7f5f0;--card:#ffffff;
+  --text:#233333;--muted:#6b7c7c;--der:#2563eb;--das:#16a34a;--die:#dc2626;
+  --ok:#16a34a;--bad:#dc2626;--radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.example-box{border-left:4px solid var(--orange);background:var(--orange-light);border-radius:8px;padding:10px 14px;margin:10px 0 0;font-size:0.88rem;color:var(--teal);line-height:1.7;}
+.example-box b{color:var(--orange);}
+.tipp-box{border-left:4px solid var(--teal-light);background:var(--teal-pale);border-radius:8px;padding:10px 14px;margin:10px 0 0;font-size:0.85rem;color:var(--teal);line-height:1.6;}
+.tipp-box b{color:var(--teal-light);}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:20px;padding:7px 18px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;margin-left:6px;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+
+/* ---- Wortsuche (klickbares Buchstabengitter) ---- */
+.ws-row{display:flex;flex-wrap:wrap;margin-bottom:2px;}
+.ws-cell{
+  width:24px;height:28px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.95rem;font-family:'Consolas',monospace;
+  background:#fff;border:1px solid #e2ded4;cursor:pointer;user-select:none;color:var(--text);
+}
+.ws-cell:hover{background:var(--teal-pale);}
+.ws-cell.selecting{background:var(--orange-light);border-color:var(--orange);color:var(--orange);}
+.ws-cell.found{background:#dcfce7;border-color:var(--ok);color:var(--ok);}
+.ws-cell.wrong{background:#fee2e2;border-color:var(--bad);color:var(--bad);}
+.ws-found-list{margin-top:14px;padding-top:10px;border-top:1px dashed #e2ded4;font-size:.9rem;color:var(--teal);}
+.ws-found-list span.chip{display:inline-block;background:var(--teal-pale);color:var(--teal);border-radius:14px;padding:3px 10px;margin:3px 4px 3px 0;font-weight:600;}
+@media(max-width:400px){.ws-cell{width:20px;height:24px;font-size:.8rem;}}
+
+/* ---- Treppen-Kreuzworträtsel (wiederverwendet) ---- */
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{display:flex;align-items:center;justify-content:center;width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;}
+input.letter-box{
+  flex:0 0 28px !important;width:28px !important;height:28px !important;
+  text-align:center;font-size:.9rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;padding:0 !important;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);box-sizing:border-box;
+}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{margin-top:18px;padding-top:14px;border-top:2px dashed #e2ded4;display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){.letter-spacer{flex:0 0 22px;width:22px;height:22px;}input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Miteinander! · Kapitel 5</div>
+  <h1>5&nbsp; Zu Hause</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🧹 Haushalt</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Bitte, bring den Mantel in die Reinigung. Das Brot ist alt. Kann ich es wegwerfen? Gleich fällt das Glas auf den Boden.</div>
+  </div>
+
+  <div class="section">
+    <h2>🍳 In der Küche</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Das Rezept ist kompliziert. Ich koche sonntags auf keinen Fall.</div>
+    <div class="tipp-box"><b>Komposita:</b> putzen + das Mittel = das Putzmittel · waschen + das Mittel = das Waschmittel · spülen + das Mittel = das Spülmittel</div>
+  </div>
+
+  <div class="section">
+    <h2>🎧 Hören und sehen</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>💬 Gespräche im Haus</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Mach dir keine Sorgen. Das musst du positiv sehen! Sei nicht so neugierig! Männer und Frauen sind verschieden.</div>
+  </div>
+
+  <div class="section">
+    <h2>🐾 Haustiere</h2>
+    <div class="vocab-grid" id="vg5"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Habt ihr ein Haustier? – Ja, eine Katze.</div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Silbenrätsel – Musik</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Kombinieren Sie die Silben zu Wörtern zum Thema „Musik".</div>
+      <div class="wordbank"><b>Silben:</b> SPIE · GEN · MU · SIN · KON · <s>LIED</s> · LINGS · SIK · LIEB · TY · ZEN · REN · PAR · ZERT · TAN · <s>LEN</s> · HÖ</div>
+      <div class="ex-instructions">Beispiel: spielen: er hat gespielt / Lied: das Lied, die Lieder (schon gelöst)</div>
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Wortsuche – Einladung</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Welche Wörter zum Thema „Einladung" finden Sie? Klicken Sie den ersten und den letzten Buchstaben eines Wortes an.</div>
+      <div id="ws-grid"></div>
+      <div class="ws-found-list"><b>Gefundene Wörter (<span id="ws-count">0</span>/14):</b><div id="ws-found"></div></div>
+      <button class="reset-btn" id="ws-reset" style="margin-left:0;">Zurücksetzen</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Kreuzworträtsel – Telefon und Computer</h2>
+    <div class="exercise">
+      <div class="ex-title">Lösen Sie das Rätsel. Jede Zeile ergibt einen Buchstaben des Lösungswortes.</div>
+      <ol id="cw-clues" style="font-size:.92rem;line-height:1.7;padding-left:20px;"></ol>
+      <div id="cw-body"></div>
+      <div class="loes-wrap">
+        <span style="font-size:.9rem;"><b>🔑 Lösungswort:</b></span>
+        <div id="cw-loes" class="letterrow"></div>
+      </div>
+      <button class="check-btn" data-check="crossword">Prüfen</button>
+      <button class="reset-btn" data-reset="crossword">Zurücksetzen</button>
+      <div class="result-msg" id="res-cw-body"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Rollenklischees? Männer und Frauen im Haushalt</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Frauensicht – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> backen · (das) Handtuch · putzen · (die) Reinigung · <s>spülen</s> · (die) Wäsche</div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+    <div class="exercise">
+      <div class="ex-title">2 Männersicht – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> (der) MP3-Spieler · (die) Musik · <s>positiv</s> · (die) Mülltonne · (die) Katze · (die) Nachrichten · (der) DVD-Spieler · (das) Radio · (der) Müll · (der) Briefkasten · (die) Kamera · negativ · verschieden</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="group" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Gemeinsam essen</h2>
+    <div class="exercise">
+      <div class="ex-title">a Dialoge in der Küche 1 – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> (das) Streichholz · prima · (die) Gabel · heiß · sauber · (der) Hunger · probieren · (der) Löffel · (das) Messer · anmachen · (das) Feuerzeug · schmutzig · (der) Teller</div>
+      <div id="ex5-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex5-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-1"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Zu Hause</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["der","Haushalt, -e","alles rund um Wohnung und Familie organisieren","việc nhà"],
+ ["","spülen","Geschirr mit Wasser reinigen","rửa (bát)"],
+ ["das","Handtuch, \"-er","ein Tuch zum Abtrocknen","khăn tắm"],
+ ["die","Reinigung (meistens Sg.)","der Ort, wo Kleidung professionell gewaschen wird","tiệm giặt khô"],
+ ["die","Wäsche (Sg.)","schmutzige oder gewaschene Kleidung","đồ giặt"],
+ ["","sauber","nicht schmutzig","sạch"],
+ ["","schmutzig","nicht sauber","bẩn"],
+ ["","putzen","sauber machen","lau dọn"],
+ ["das","Mittel, -","ein Produkt zum Reinigen","chất tẩy rửa"],
+ ["das","Waschmittel, -","ein Mittel zum Wäschewaschen","bột giặt"],
+ ["das","Feuerzeug, -e","ein kleines Gerät zum Anzünden","bật lửa"],
+ ["das","Streichholz, \"-er","ein kleines Holzstück zum Anzünden","que diêm"],
+ ["der","Müll (Sg.)","Abfall","rác"],
+ ["die","Mülltonne, -n","ein Behälter für Müll","thùng rác"],
+ ["","wegwerfen","in den Müll tun","vứt bỏ"],
+ ["","fallen","nach unten kommen ohne Kontrolle","rơi, ngã"],
+ ["der","Briefkasten, \"-","ein Kasten für die Post","hộp thư"],
+];
+
+var vocab2 = [
+ ["das","Geschirr (Sg.)","Teller, Tassen usw. zum Essen","chén bát"],
+ ["der","Teller, -","ein flaches Geschirrteil zum Essen","cái đĩa"],
+ ["die","Tasse, -n","ein Gefäß mit Henkel für Getränke","cái tách"],
+ ["das","Messer, -","ein Besteckteil zum Schneiden","con dao"],
+ ["die","Gabel, -n","ein Besteckteil mit Zinken","cái nĩa"],
+ ["der","Löffel, -","ein Besteckteil zum Löffeln","cái muỗng"],
+ ["der","Topf, \"-e","ein Gefäß zum Kochen","nồi"],
+ ["die","Kanne, -n","ein Gefäß mit Ausguss, z.B. für Kaffee","bình (cà phê/trà)"],
+ ["das","Rezept, -e","eine Kochanleitung","công thức nấu ăn"],
+ ["","probieren","etwas testen (z.B. Essen)","thử (nếm)"],
+ ["","backen","im Ofen Kuchen/Brot zubereiten","nướng (bánh)"],
+ ["","braten","in der Pfanne mit Fett zubereiten","chiên, rán"],
+ ["","kompliziert","schwierig, nicht einfach","phức tạp"],
+ ["","einfach","nicht kompliziert","đơn giản"],
+ ["","versuchen","probieren, etwas zu tun","cố gắng, thử"],
+ ["","auf keinen Fall","unter keinen Umständen","tuyệt đối không"],
+];
+
+var vocab3 = [
+ ["die","Musik (Sg.)","Töne, die man hört (Lieder usw.)","âm nhạc"],
+ ["der","MP3-Spieler, -","ein Gerät zum Abspielen von Musikdateien","máy nghe nhạc MP3"],
+ ["die","CD, -s","eine runde Scheibe zum Speichern von Musik","đĩa CD"],
+ ["die","DVD, -s","eine Scheibe für Filme","đĩa DVD"],
+ ["das","Video, -s","eine Filmaufnahme","video"],
+ ["das","Radio, -s","ein Gerät zum Hören von Sendungen","radio"],
+ ["die","Nachricht, -en","eine Information/Meldung","tin nhắn, tin tức"],
+ ["der","Fotoapparat, -e","ein Gerät zum Fotografieren","máy ảnh"],
+ ["das","Foto, -s","ein Bild von einer Kamera","ảnh chụp"],
+ ["die","Kamera, -s","ein Gerät zum Fotografieren/Filmen","camera"],
+];
+
+var vocab4 = [
+ ["die","Sorge, -n","ein unangenehmes Gefühl der Angst um etwas","sự lo lắng"],
+ ["","positiv","gut, optimistisch","tích cực"],
+ ["","negativ","schlecht, pessimistisch","tiêu cực"],
+ ["","prima","sehr gut","tuyệt, tốt"],
+ ["","neugierig","gern alles wissen wollend","tò mò"],
+ ["","verschieden","nicht gleich, unterschiedlich","khác nhau"],
+ ["","gleich","identisch, nicht verschieden","giống nhau"],
+];
+
+var vocab5 = [
+ ["das","Tier, -e","ein Lebewesen (kein Mensch/keine Pflanze)","động vật"],
+ ["die","Katze, -n","ein kleines Haustier, das miaut","con mèo"],
+ ["der","Hund, -e","ein Haustier, das bellt","con chó"],
+];
+
+function ttsCleanWord(word){
+  // remove plural/parenthetical notation for cleaner pronunciation, e.g. "Nudel, -n" -> "Nudel"
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+renderVocab(vocab5,'vg5');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+function checkGroup(containerId){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ans.map(normalize).indexOf(normalize(val)) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target);
+    else if(kind==='crossword') checkCrossword();
+  });
+});
+document.querySelectorAll('.reset-btn[data-reset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.dataset.reset==='crossword') resetCrossword();
+  });
+});
+
+/* ================= EX 1.1 Silbenrätsel ================= */
+(function(){
+  var el = document.getElementById('ex1-1');
+  var items = [
+    ["spielen: er hat gespielt (Beispiel)",null],
+    ["Lied: das Lied, die Lieder (Beispiel)",null],
+    ["Wort 3", "Musik"],
+    ["Wort 4", "singen"],
+    ["Wort 5", "Konzert"],
+    ["Wort 6", "Lieblings-"],
+    ["Wort 7", "Party"],
+    ["Wort 8", "tanzen"],
+    ["Wort 9", "hören"],
+  ];
+  el.innerHTML = items.map(function(it,i){
+    if(it[1]===null) return '<div class="qline">'+it[0]+'</div>';
+    return '<div class="qline">'+it[0]+': '+makeBlank('e11-'+i, it[1], 160)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2 Wortsuche (klickbares Gitter) ================= */
+(function(){
+  var lines = [
+    "ANBIETENAUSSEHENGETRÄNKDURSTEINLADENEINLADUNG",
+    "GASTGESCHENKHUNGERMÖGENNEHMENPÜNKTLICH",
+    "SCHMECKENTRINKEN"
+  ];
+  var targetWords = [
+    "anbieten","aussehen","Getränk","Durst","einladen","Einladung",
+    "Gast","Geschenk","Hunger","mögen","nehmen","pünktlich",
+    "schmecken","trinken"
+  ];
+  var foundSet = {};
+  var grid = document.getElementById('ws-grid');
+  var foundEl = document.getElementById('ws-found');
+  var countEl = document.getElementById('ws-count');
+  var selStart = null;
+
+  function render(){
+    grid.innerHTML = lines.map(function(line, r){
+      var cells = '';
+      for(var c=0;c<line.length;c++){
+        cells += '<div class="ws-cell" data-row="'+r+'" data-col="'+c+'">'+line[c]+'</div>';
+      }
+      return '<div class="ws-row">'+cells+'</div>';
+    }).join('');
+    grid.querySelectorAll('.ws-cell').forEach(function(cell){
+      cell.addEventListener('click', onCellClick);
+    });
+  }
+
+  function clearSelecting(){
+    grid.querySelectorAll('.ws-cell.selecting').forEach(function(c){ c.classList.remove('selecting'); });
+  }
+
+  function onCellClick(e){
+    var cell = e.currentTarget;
+    var row = +cell.dataset.row, col = +cell.dataset.col;
+    if(cell.classList.contains('found')) return;
+
+    if(!selStart){
+      selStart = {row:row, col:col};
+      clearSelecting();
+      cell.classList.add('selecting');
+      return;
+    }
+
+    if(selStart.row !== row || col < selStart.col){
+      clearSelecting();
+      selStart = {row:row, col:col};
+      cell.classList.add('selecting');
+      return;
+    }
+
+    var line = lines[row];
+    var word = line.substring(selStart.col, col+1);
+    var match = targetWords.find(function(w){ return w.toUpperCase() === word.toUpperCase(); });
+
+    if(match && !foundSet[match]){
+      foundSet[match] = true;
+      for(var c=selStart.col; c<=col; c++){
+        var target = grid.querySelector('.ws-cell[data-row="'+row+'"][data-col="'+c+'"]');
+        target.classList.remove('selecting');
+        target.classList.add('found');
+      }
+      updateFoundList();
+    } else {
+      for(var c2=selStart.col; c2<=col; c2++){
+        var target2 = grid.querySelector('.ws-cell[data-row="'+row+'"][data-col="'+c2+'"]');
+        target2.classList.remove('selecting');
+        target2.classList.add('wrong');
+      }
+      setTimeout(function(){
+        grid.querySelectorAll('.ws-cell.wrong').forEach(function(c3){ c3.classList.remove('wrong'); });
+      }, 500);
+    }
+    selStart = null;
+  }
+
+  function updateFoundList(){
+    var found = Object.keys(foundSet);
+    countEl.textContent = found.length;
+    foundEl.innerHTML = found.map(function(w){ return '<span class="chip">'+w+'</span>'; }).join('');
+  }
+
+  document.getElementById('ws-reset').addEventListener('click', function(){
+    foundSet = {}; selStart = null; updateFoundList(); render();
+  });
+
+  render();
+})();
+
+/* ================= EX 3 Kreuzworträtsel (Treppen-Engine) ================= */
+function renderCrossword(opts){
+  var body = document.getElementById(opts.bodyId);
+  var clues = document.getElementById(opts.cluesId);
+  clues.innerHTML = opts.words.map(function(w){ return '<li>'+w.clue+'</li>'; }).join('');
+  var targetCol = Math.max.apply(null, opts.words.map(function(w){ return w.markPos - 1; }));
+  opts.words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'"'+(isMarked?(' data-los="'+wi+'"'):'')+'>';
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+  var loesBox = document.getElementById(opts.loesId);
+  var loesHtml = '';
+  for(var k=0; k<opts.loesung.length; k++){
+    loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" data-ans="'+opts.loesung[k]+'" id="'+opts.bodyId+'-los-'+k+'">';
+  }
+  loesBox.innerHTML = loesHtml;
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(opts.bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.prototype.slice.call(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+function checkCrossword(){
+  var inputs = document.querySelectorAll('#cw-body input.letter-box:not(.loesung)');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-cw-body');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetCrossword(){
+  document.querySelectorAll('#cw-body input.letter-box, #cw-loes input.letter-box').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw-body').textContent='';
+}
+renderCrossword({
+  bodyId:'cw-body', loesId:'cw-loes', cluesId:'cw-clues',
+  loesung:'TELEFONNUMMER',
+  words:[
+    {clue:'1. Das ... geht heute nicht. Ich kann keine E-Mails verschicken.', answer:'internet', markPos:3},
+    {clue:'2. Ich teile Ihnen meine Adresse per ... mit.', answer:'email', markPos:1},
+    {clue:'3. Lass uns morgen ..., dann weiß ich, wann ich Zeit habe.', answer:'telefonieren', markPos:3},
+    {clue:'4. Du kannst mir eine SMS ... .', answer:'schreiben', markPos:5},
+    {clue:'5. Mein Sohn will am liebsten nur noch im Internet ...', answer:'surfen', markPos:4},
+    {clue:'6. Du kannst mir eine Nachricht auf meiner ... hinterlassen.', answer:'mailbox', markPos:6},
+    {clue:'7. Ich möchte gern persönlich mit Ihnen sprechen. Kann ich Sie morgen früh ...?', answer:'anrufen', markPos:2},
+    {clue:'8. Ist dein Telefon kaputt? Ich verstehe die ... nicht.', answer:'verbindung', markPos:6},
+    {clue:'9. Funktioniert der ...? – Ja, ich habe den Brief schon ausgedruckt.', answer:'drucker', markPos:3},
+    {clue:'10. Kannst du schnell den ... anmachen? Ich möchte eine Mail schreiben.', answer:'computer', markPos:3},
+    {clue:'11. Ich weiß nicht, wann ich das Handy anhabe. Schicke mir am besten eine ...', answer:'sms', markPos:2},
+    {clue:'12. Ich habe seine Nummer in meinem ...', answer:'telefon', markPos:2},
+    {clue:'13. Ich habe eine ... auf der Mailbox hinterlassen.', answer:'nachricht', markPos:5},
+  ]
+});
+
+/* ================= EX 4.1 Frauensicht ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<p>1. Warum <b>spült</b> er nie das Geschirr? (Beispiel)</p>'+
+  '<p>2. Warum wechselt er nie die '+makeBlank('e41-0','Handtücher',130)+'?</p>'+
+  '<p>3. Warum '+makeBlank('e41-1','backt',100)+' er nie einen Kuchen?</p>'+
+  '<p>4. Warum '+makeBlank('e41-2','putzt',100)+' er nie das Bad?</p>'+
+  '<p>5. Warum hängt er nie die '+makeBlank('e41-3','Wäsche',110)+' auf?</p>'+
+  '<p>6. Warum bringt er seine Hosen nicht selbst zur '+makeBlank('e41-4','Reinigung',130)+'?</p>';
+})();
+
+/* ================= EX 4.2 Männersicht ================= */
+(function(){
+  var el = document.getElementById('ex4-2');
+  el.innerHTML =
+  '<p>1. Das sehen wir <b>positiv</b>! (Beispiel)</p>'+
+  '<p>2. Warum denken Frauen oft so '+makeBlank('e42-0','negativ',100)+'?</p>'+
+  '<p>3. Wir bringen den '+makeBlank('e42-1','Müll',90)+' weg.</p>'+
+  '<p>4. Wir stellen immer die '+makeBlank('e42-2','Mülltonne',120)+' an die Straße.</p>'+
+  '<p>5. Wir holen jeden Morgen die Zeitung aus dem '+makeBlank('e42-3','Briefkasten',140)+'.</p>'+
+  '<p>6. Wir gehen mit der '+makeBlank('e42-4','Katze',100)+' zum Tierarzt.</p>'+
+  '<p>7. Wir informieren sie gerne über die neuesten '+makeBlank('e42-5','Nachrichten',130)+'.</p>'+
+  '<p>8. Wir programmieren den '+makeBlank('e42-6','MP3-Spieler',130)+' oder das '+makeBlank('e42-7','Radio',100)+'.</p>'+
+  '<p>9. Wir erklären ihr die '+makeBlank('e42-8','Musik',100)+' und den '+makeBlank('e42-9','DVD-Spieler',140)+'.</p>'+
+  '<p>10. Wir laden die '+makeBlank('e42-10','Kamera',100)+' aus dem Internet herunter.</p>'+
+  '<p>11. Wir lieben unsere Frauen!</p>'+
+  '<p>12. Fazit: Männer und Frauen sind sehr '+makeBlank('e42-11','verschieden',130)+'!</p>';
+})();
+
+/* ================= EX 5.1 Dialoge in der Küche ================= */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<p><b>Dialog 1</b></p>'+
+  '<p>● Was gibt es heute? Ich habe '+makeBlank('e51-0','Hunger',100)+'!</p>'+
+  '<p>○ Kartoffelsuppe.</p>'+
+  '<p>● '+makeBlank('e51-1','Prima',90)+'! Mein Lieblingsessen. Darf ich mal '+makeBlank('e51-2','probieren',110)+'?</p>'+
+  '<p>○ Ja, aber pass auf, die Suppe ist '+makeBlank('e51-3','heiß',90)+'.</p>'+
+  '<p><b>Dialog 2</b></p>'+
+  '<p>● Kannst du bitte den Tisch decken? Es gibt Spaghetti mit Schinken und dann noch Käse. Wir brauchen '+makeBlank('e51-4','Teller',100)+', '+makeBlank('e51-5','Gabeln',100)+' und '+makeBlank('e51-6','Löffel',100)+'. Und ein '+makeBlank('e51-7','Messer',100)+' für den Käse.</p>'+
+  '<p>○ Soll ich die Kerze auch '+makeBlank('e51-8','anmachen',110)+'?</p>'+
+  '<p>● Ja, bitte. Das '+makeBlank('e51-9','Feuerzeug',110)+' ist in meiner Tasche.</p>'+
+  '<p>○ Ich nehme lieber die '+makeBlank('e51-10','Streichhölzer',140)+'.</p>'+
+  '<p><b>Dialog 3</b></p>'+
+  '<p>● Bitte wasch dir noch die Hände.</p>'+
+  '<p>○ Warum? Die sind doch '+makeBlank('e51-11','sauber',100)+'.</p>'+
+  '<p>● Vielleicht sind sie nicht '+makeBlank('e51-12','schmutzig',110)+', aber vor dem Essen bitte die Hände waschen.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Alles rund um Wohnung und Familie organisieren nennt man den ...", "Haushalt"],
+    ["Ein Produkt zum Reinigen ist das ...", "Mittel"],
+    ["Abfall nennt man den ...", "Müll"],
+    ["Ein Behälter für Müll ist die ...", "Mülltonne"],
+    ["Ein Besteckteil zum Schneiden ist das ...", "Messer"],
+    ["Eine Kochanleitung ist das ...", "Rezept"],
+    ["Schwierig, nicht einfach heißt ...", "kompliziert"],
+    ["Ein Gerät zum Abspielen von Musikdateien ist der ...", "MP3-Spieler"],
+    ["Ein unangenehmes Gefühl der Angst um etwas ist die ...", "Sorge"],
+    ["Gern alles wissen wollen heißt ...", "neugierig"],
+    ["Nicht gleich, unterschiedlich heißt ...", "verschieden"],
+    ["Ein kleines Haustier, das miaut, ist die ...", "Katze"],
+    ["Sauber machen heißt ...", "putzen"],
+    ["In den Müll tun heißt ...", "wegwerfen"],
+    ["Ein Gefäß zum Kochen ist der ...", "Topf"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

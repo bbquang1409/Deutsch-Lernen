@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11 Freizeit und Unterhaltung</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.3rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);}
+.scale-box div{margin:3px 0;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.note-box{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.note-box textarea{width:100%;min-height:44px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+.hoer-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.hoer-word{font-weight:700;color:var(--teal);min-width:150px;}
+.tts-btn{background:var(--teal-light);color:#fff;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.85rem;font-weight:600;}
+.tts-btn:hover{background:var(--teal);}
+.hint-btn{background:#fdece0;color:var(--orange);border:1px solid var(--orange);border-radius:14px;padding:3px 10px;font-size:0.78rem;font-weight:600;cursor:pointer;}
+.hint-btn:hover{background:var(--orange);color:#fff;}
+.hint-text{display:block;font-size:0.82rem;color:var(--orange);font-style:italic;margin-top:4px;opacity:0;max-height:0;overflow:hidden;transition:opacity 0.3s;}
+.hint-text.show{opacity:1;max-height:80px;}
+.pic-card{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.pic-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pic-emoji-sm{font-size:1.6rem;background:#fff;border:1px solid #e2ded4;border-radius:8px;padding:4px 8px;line-height:1;}
+.pic-card textarea{width:100%;min-height:50px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.pic-card textarea:focus{outline:none;border-bottom-color:var(--orange);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Wortschatz</div>
+  <h1>11&nbsp; Freizeit und Unterhaltung</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🍽️ Ausgehen</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">
+      <div>Hast du das <b>Kinoprogramm</b>?</div>
+      <div>Der Eintritt ist <b>kostenlos</b>.</div>
+      <div>Herr <b>Ober</b>!</div>
+      <div>ein <b>Stück</b> Kuchen/Pizza</div>
+      <div>Geld <b>ausgeben</b></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🌳 Freizeit draußen</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">
+      <div>Das macht <b>Spaß</b>.</div>
+      <div>einen <b>Spaziergang</b> machen</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🤝 Treffen</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="scale-box">
+      <div>Ich bin heute <b>verabredet</b>.</div>
+      <div>Hast du unseren Termin <b>vergessen</b>?</div>
+      <div>Willst du etwas <b>unternehmen</b>?</div>
+      <div>Das ist eine gute <b>Idee</b>!</div>
+      <div>keine <b>Lust</b> haben</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache</h2>
+    <div class="ex-instructions"><b>Vokale:</b> Hören Sie und entscheiden Sie – kurz oder lang?</div>
+    <div id="hoer-vokal"></div>
+    <button class="check-btn" data-check="mc" data-target="hoer-vokal">Kontrollieren</button>
+    <div class="result-msg" id="res-hoer-vokal"></div>
+
+    <div class="ex-instructions" style="margin-top:16px;"><b>h oder kein h:</b> Sprechen Sie ein h, oder ist das h stumm?</div>
+    <div id="hoer-h"></div>
+    <button class="check-btn" data-check="mc" data-target="hoer-h">Kontrollieren</button>
+    <div class="result-msg" id="res-hoer-h"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Restaurant</h2>
+    <div class="exercise">
+      <div class="ex-title">1 Restaurant – Schreiben Sie Wörter, Sätze und Dialoge.</div>
+      <div class="ex-instructions">Drei Situationen im Restaurant. Diese Aufgabe wird nicht automatisch kontrolliert.</div>
+      <div class="wordbank" id="ex1-databank"><b>Databank zum Reinziehen:</b> der Kellner/die Kellnerin · der Ober · reservieren · sich setzen · die Speisekarte · das Gericht · scharf/mild · die Portion · das Stück · bestellen · Guten Appetit! · Schmeckt es Ihnen? · Die Rechnung, bitte. · das Trinkgeld · bezahlen · Herr Ober!</div>
+
+      <div class="pic-card">
+        <div class="pic-card-head"><span class="pic-emoji-sm">🙋‍♂️🍽️</span><b>1. einen Platz suchen</b></div>
+        <textarea placeholder="z. B. Haben Sie einen Tisch für zwei Personen frei? Wir möchten am Fenster sitzen ..."></textarea>
+      </div>
+
+      <div class="pic-card">
+        <div class="pic-card-head"><span class="pic-emoji-sm">📋🍷</span><b>2. ein Menü auswählen/bestellen</b></div>
+        <textarea placeholder="z. B. Ich hätte gern die Pizza Margherita. Was empfehlen Sie? Ich nehme ein Glas Rotwein ..."></textarea>
+      </div>
+
+      <div class="pic-card">
+        <div class="pic-card-head"><span class="pic-emoji-sm">💳🧾</span><b>3. bezahlen</b></div>
+        <textarea placeholder="z. B. Die Rechnung, bitte. Zahlen Sie zusammen oder getrennt? Ich bezahle mit Karte ..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Einladung</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Einladung. Schreiben Sie Dialoge / einen Dialog.</div>
+      <div class="ex-instructions">Benutzen Sie möglichst viele der vorgeschlagenen Wörter und Redemittel. Diese Aufgabe wird nicht automatisch kontrolliert.</div>
+      <div class="wordbank"><b>Kasten:</b> zum Frühstück/Abendessen einladen · mögen · essen · Schmeckt es Ihnen? · Hast du Hunger? · wunderbar · aussehen · Herzlich willkommen! · Ich mag keinen Salat. · Das ist mein Lieblingsessen! · Vielen Dank für die Einladung. · kochen · Bitte nehmen Sie noch Reis/Gemüse/Fleisch/Salat! · Möchten Sie etwas trinken? · Bitte geben Sie mir das Salz / noch etwas Wasser. · Nein danke. · Ja gerne.</div>
+      <div class="note-box">
+        <span id="ex2-hint-wrap"><button type="button" class="hint-btn" data-target="ex2-hint" data-hint="Beispiel-Start: 'Herzlich willkommen! Hast du Hunger? Ich habe Reis mit Gemüse gekocht.'">💡 Hint</button><span class="hint-text" id="ex2-hint"></span></span>
+        <textarea style="min-height:100px;margin-top:8px;" placeholder="Schreiben Sie hier Ihren Dialog ..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Freizeit-Porträts</h2>
+    <div class="exercise">
+      <div class="ex-title">3 Freizeit. Schreiben Sie Porträts.</div>
+      <div class="ex-instructions">Was haben die Personen als Kinder in ihrer Freizeit gemacht? Was machen sie heute? Diese Aufgabe wird nicht automatisch kontrolliert.</div>
+      <div class="wordbank"><b>Liste:</b> Freunde treffen · Tennis spielen · schwimmen · ein Konzert besuchen · zu Hause bleiben · Zeitung lesen · einen Ausflug machen · grillen · Sport machen · kochen · ins Kino/Konzert gehen · Musik hören · zusammen Filme angucken/tanzen · einkaufen · reisen · Auto reparieren · Fahrrad fahren · auf Partys gehen</div>
+      <div class="note-box">
+        <b>Beispiel:</b> Als Kind hat sie gern ferngesehen und Freunde getroffen. Heute schläft sie gern lange, liest Zeitung und macht Sport.
+      </div>
+      <div class="note-box">
+        <span><button type="button" class="hint-btn" data-target="ex3-hint" data-hint="Wählen Sie 2-3 Wörter aus der Liste für 'Als Kind' und 2-3 andere für 'Heute'.">💡 Hint</button><span class="hint-text" id="ex3-hint"></span></span>
+        <br><b>Als Kind habe/bin ich ...</b><br><textarea placeholder="Als Kind habe ich gern ..."></textarea>
+        <br><b>Heute ...</b><br><textarea placeholder="Heute ..."></textarea>
+      </div>
+      <div class="note-box">
+        <b>Früher hat/ist mein Vater/meine Mutter ...</b><br><textarea placeholder="Früher hat mein Vater/meine Mutter ..."></textarea>
+        <br><b>Heute ...</b><br><textarea placeholder="Heute ..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Dialoge</h2>
+    <div class="exercise">
+      <div class="ex-title">4 Dialoge – Ergänzen Sie.</div>
+
+      <div class="wordbank"><b>Dialog 1:</b> vereinbaren · reservieren · vergessen · kostenlos · sich verabreden · das Programm · der Kalender · feiern · das Theater · teilnehmen</div>
+      <div id="ex4-d1"></div>
+
+      <div class="wordbank" style="margin-top:16px;"><b>Dialog 2:</b> sammeln · der Flohmarkt · der Park · der Besuch · unternehmen · die Idee · ausgeben · der Bescheid · der Spaziergang · die Kneipe · sparen</div>
+      <div id="ex4-d2"></div>
+
+      <div class="wordbank" style="margin-top:16px;"><b>Dialog 3:</b> schenken · das Fest · stattfinden · der Alkohol · kennenlernen · betrunken · singen · schwanger</div>
+      <div id="ex4-d3"></div>
+
+      <button class="check-btn" data-check="groupci" data-target="ex4-all">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-all"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Im Restaurant</h2>
+    <div class="exercise">
+      <div class="ex-title">5 Im Restaurant – Wie heißen die Wörter?</div>
+      <div id="ex5"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Zu Hause</h2>
+    <div class="exercise">
+      <div class="ex-title">6 Zu Hause – Ergänzen Sie.</div>
+
+      <div class="wordbank"><b>Dialog 1:</b> die Lust · sich unterhalten · der Spaß · ausruhen · wünschen · das Kino</div>
+      <div id="ex6-d1"></div>
+
+      <div class="wordbank" style="margin-top:16px;"><b>Dialog 2:</b> interessieren · der Pizza-Service · die Idee · sich setzen · umziehen · das Tennis · spazieren gehen</div>
+      <div id="ex6-d2"></div>
+
+      <div class="wordbank" style="margin-top:16px;"><b>Dialog 3:</b> dabei sein · das Stück · der Hund · stehen bleiben · der Spaziergang · sich interessieren</div>
+      <div id="ex6-d3"></div>
+
+      <button class="check-btn" data-check="groupci" data-target="ex6-all">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6-all"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Freizeit und Unterhaltung</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [ // Ausgehen
+ ["das","Programm, -e","der Plan eines Veranstalters, z. B. im Kino oder Theater","chương trình"],
+ ["die","Zeitschrift, -en","ein regelmäßig erscheinendes Heft mit Artikeln","tạp chí"],
+ ["das","Theater, -","ein Ort, an dem Schauspieler ein Stück aufführen","nhà hát"],
+ ["","(sich) unterhalten, hat (sich) unterhalten","miteinander sprechen, plaudern","trò chuyện"],
+ ["","kostenlos","ohne Bezahlung","miễn phí"],
+ ["der","Spaß, ¨-e","Freude, Vergnügen","niềm vui"],
+ ["","teilnehmen, hat teilgenommen","bei etwas mitmachen","tham gia"],
+ ["","stattfinden, hat stattgefunden","zu einem bestimmten Zeitpunkt geschehen","diễn ra"],
+ ["der","Alkohol (Sg.)","ein Getränk wie Bier oder Wein mit berauschender Wirkung","rượu bia"],
+ ["","betrunken sein, ist betrunken gewesen","zu viel Alkohol getrunken haben","say rượu"],
+ ["","dabei sein, ist dabei gewesen","an etwas teilnehmen, anwesend sein","có mặt, tham gia"],
+ ["","wünschen, hat gewünscht","einen Wunsch haben","mong muốn"],
+ ["","(sich) interessieren, hat (sich) interessiert","Interesse an etwas haben","quan tâm"],
+ ["","singen, hat gesungen","mit der Stimme Musik machen","hát"],
+ ["die","Kneipe, -n","ein einfaches Lokal, in dem man trinkt (auch: das Lokal)","quán rượu bình dân"],
+ ["das","Café, -s","ein Ort, an dem man Kaffee und Kuchen bekommt","quán cà phê"],
+ ["das","Trinkgeld, -er","zusätzliches Geld für den Kellner","tiền boa"],
+ ["der","Kellner, -","eine Person, die im Restaurant bedient (weiblich: die Kellnerin)","bồi bàn"],
+ ["der","Ober, - (nur maskulin)","eine höfliche Anrede für den Kellner","ông phục vụ"],
+ ["","reservieren, hat reserviert","einen Platz im Voraus buchen","đặt trước"],
+ ["","(sich) setzen, hat (sich) gesetzt","sich hinsetzen","ngồi xuống"],
+ ["die","Speisekarte, -en","die Liste der Gerichte in einem Restaurant","thực đơn"],
+ ["das","Gericht, -e","eine zubereitete Speise","món ăn"],
+ ["","scharf","mit viel Chili/Gewürz, intensiv im Geschmack","cay"],
+ ["","mild","nicht scharf, sanft im Geschmack","dịu, nhẹ"],
+ ["die","Portion, -en","die Menge Essen für eine Person","phần ăn"],
+ ["das","Stück, -e","ein Teil von etwas, z. B. Kuchen","miếng, phần"],
+ ["der","(Pizza-)Service (Sg.)","ein Lieferdienst, z. B. für Pizza","dịch vụ giao (pizza)"],
+ ["","ausgeben, hat ausgegeben","Geld für etwas bezahlen","chi tiêu"],
+];
+
+var vocab2 = [ // Freizeit draußen
+ ["das","Tennis (Sg.)","eine Sportart mit Schläger und Ball","quần vợt"],
+ ["der","Flohmarkt, ¨-e","ein Markt für gebrauchte Sachen","chợ đồ cũ"],
+ ["","sammeln, hat gesammelt","Dinge zusammentragen, z. B. als Hobby","sưu tầm"],
+ ["der","Park, -s","eine große Grünfläche in der Stadt","công viên"],
+ ["der","Spaziergang, ¨-e","ein entspannter Fußweg an der frischen Luft","cuộc dạo bộ"],
+ ["","spazieren gehen, ist spazieren gegangen","langsam zu Fuß gehen, um sich zu entspannen","đi dạo"],
+ ["","stehen bleiben, ist stehen geblieben","aufhören zu gehen, an einer Stelle bleiben","dừng lại"],
+];
+
+var vocab3 = [ // Treffen
+ ["der","Besuch, -e","der Vorgang, jemanden zu besuchen, oder eine Person, die kommt","cuộc thăm viếng"],
+ ["","Bescheid sagen, hat Bescheid gesagt","jemandem eine wichtige Information geben","báo cho biết"],
+ ["der","Kalender, -","ein Hilfsmittel zur Übersicht über Tage und Termine","lịch"],
+ ["","verabredet","mit einem festen Termin/Treffen","đã hẹn"],
+ ["","vereinbaren, hat vereinbart","gemeinsam etwas festlegen, z. B. einen Termin","thỏa thuận, hẹn"],
+ ["","vergessen, hat vergessen","etwas nicht mehr im Gedächtnis haben","quên"],
+ ["","verschieben, hat verschoben","einen Termin auf später legen","hoãn lại"],
+ ["","sich ausruhen, hat sich ausgeruht","sich erholen, Pause machen","nghỉ ngơi"],
+ ["","sich umziehen, hat sich umgezogen","andere Kleidung anziehen","thay đồ"],
+ ["","etwas unternehmen, hat etwas unternommen","eine Aktivität machen, z. B. mit anderen","làm gì đó (hoạt động)"],
+ ["","kennenlernen, hat kennengelernt","jemanden zum ersten Mal treffen","làm quen"],
+ ["das","Fest, -e","eine Feier, z. B. Geburtstag oder Hochzeit","tiệc, lễ hội"],
+ ["das","Festival, -s","eine größere, oft mehrtägige Veranstaltung, z. B. mit Musik","lễ hội (âm nhạc...)"],
+ ["","feiern, hat gefeiert","ein Fest begehen","ăn mừng"],
+ ["","schenken, hat geschenkt","jemandem etwas als Geschenk geben","tặng"],
+ ["die","Idee, -n","ein Gedanke, ein Vorschlag","ý tưởng"],
+ ["die","Lust (Sg.)","der Wunsch, etwas zu tun","hứng thú, muốn"],
+];
+
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  w = w.split('/')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art.split('/')[0]+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= TTS ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(target==='ex4-all'){
+      checkGroup('ex4-d1',true); checkGroup('ex4-d2',true); checkGroup('ex4-d3',true);
+      var t=0,c=0;
+      ['ex4-d1','ex4-d2','ex4-d3'].forEach(function(id){
+        var box=document.getElementById(id);
+        var inputs=box.querySelectorAll('input[type=text]');
+        t+=inputs.length;
+        inputs.forEach(function(i){ if(i.classList.contains('correct')) c++; });
+      });
+      var res=document.getElementById('res-ex4-all');
+      res.textContent=c+' / '+t+' richtig';
+      res.style.color=(c===t)?'var(--ok)':'var(--teal)';
+      return;
+    }
+    if(target==='ex6-all'){
+      checkGroup('ex6-d1',true); checkGroup('ex6-d2',true); checkGroup('ex6-d3',true);
+      var t2=0,c2=0;
+      ['ex6-d1','ex6-d2','ex6-d3'].forEach(function(id){
+        var box=document.getElementById(id);
+        var inputs=box.querySelectorAll('input[type=text]');
+        t2+=inputs.length;
+        inputs.forEach(function(i){ if(i.classList.contains('correct')) c2++; });
+      });
+      var res2=document.getElementById('res-ex6-all');
+      res2.textContent=c2+' / '+t2+' richtig';
+      res2.style.color=(c2===t2)?'var(--ok)':'var(--teal)';
+      return;
+    }
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+function wireHints(root){
+  root.querySelectorAll('.hint-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var span = document.getElementById(btn.dataset.target);
+      span.textContent = btn.dataset.hint;
+      span.classList.add('show');
+      clearTimeout(span._t);
+      span._t = setTimeout(function(){ span.classList.remove('show'); }, 3000);
+    });
+  });
+}
+wireHints(document);
+
+/* ================= AUSSPRACHE: Vokale kurz/lang ================= */
+(function(){
+  var items = [
+    ["stattfinden",0],["der Kalender",0],["singen",0],["kostenlos",0],["die Lust",0],["wünschen",0],
+    ["der Spaß",1],["die Idee",1],["der Spaziergang",1],["Herr Ober",1],["der Besuch",1],["süß",1]
+  ];
+  var el = document.getElementById('hoer-vokal');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="hoer-row"><span class="hoer-word">'+it[0]+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+it[0].replace(/"/g,'&quot;')+'">🔊 Anhören</button>'+
+      mcHtml('mcv',i,['kurz','lang'],it[1])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= AUSSPRACHE: h / kein h ================= */
+(function(){
+  var items = [
+    ["der Hund",0],["haben",0],["unterhalten",0],["der Alkohol",0],["Herr Ober",0],
+    ["unternehmen",1],["stehen bleiben",1],["sich ausruhen",1],["das Theater",1],["teilnehmen",1],["der Flohmarkt",1]
+  ];
+  var el = document.getElementById('hoer-h');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="hoer-row"><span class="hoer-word">'+it[0]+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+it[0].replace(/"/g,'&quot;')+'">🔊 Anhören</button>'+
+      mcHtml('mch',i,['h','kein h'],it[1])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= EX 4: Dialoge ================= */
+(function(){
+  document.getElementById('ex4-d1').innerHTML =
+  '<p>● Kommst du am Samstag mit ins '+makeBlank('e4a-0','Theater',120)+'? Für dich ist der Eintritt '+makeBlank('e4a-1','kostenlos',130)+'. Ich lade dich ein! Ich habe vier Plätze '+makeBlank('e4a-2','reserviert',140)+'.</p>'+
+  '<p>○ Das ist sehr nett, aber ich habe mich schon '+makeBlank('e4a-3','verabredet',150)+'. Ich muss an einem Computerkurs '+makeBlank('e4a-4','teilnehmen',150)+'.</p>'+
+  '<p>● Schade, das '+makeBlank('e4a-5','Programm',130)+' ist fantastisch. Sie spielen „Romeo und Julia“.</p>'+
+  '<p>○ Das nächste Mal müssen wir einen festen Termin '+makeBlank('e4a-6','vereinbaren',150)+'. Ich hole mal meinen '+makeBlank('e4a-7','Kalender',130)+'.</p>'+
+  '<p>● Erinnerst du dich? Unseren letzten Termin hast du '+makeBlank('e4a-8','vergessen',140)+'.</p>'+
+  '<p>○ Hmm, ja, hmm … Stimmt, da haben wir die ganze Nacht '+makeBlank('e4a-9','gefeiert',130)+'.</p>';
+
+  document.getElementById('ex4-d2').innerHTML =
+  '<p>● Morgen bekomme ich '+makeBlank('e4b-0','Besuch',120)+' von meiner Schwester und Freitag arbeite ich in der '+makeBlank('e4b-1','Kneipe',120)+'.</p>'+
+  '<p>○ Was machst du heute? Wollen wir jetzt etwas '+makeBlank('e4b-2','unternehmen',150)+'?</p>'+
+  '<p>● Gute '+makeBlank('e4b-3','Idee',100)+', in der Innenstadt ist '+makeBlank('e4b-4','Flohmarkt',140)+', da gibt es billige Sachen.</p>'+
+  '<p>○ Super, da gehen wir hin. Ich habe im letzten Jahr zu viel Geld '+makeBlank('e4b-5','ausgegeben',150)+' und muss jetzt '+makeBlank('e4b-6','sparen',120)+'.</p>'+
+  '<p>● Ja, vielleicht. '+makeBlank('e4b-7','Sammelst',130)+' du immer noch alte Kaffeekannen?</p>'+
+  '<p>○ Natürlich! Ich rufe Maria an und sage ihr '+makeBlank('e4b-8','Bescheid',130)+', dass ich später komme.</p>'+
+  '<p>● O.k. Sollen wir durch den '+makeBlank('e4b-9','Park',110)+' gehen? Dann können wir gleich einen '+makeBlank('e4b-10','Spaziergang',150)+' machen.</p>';
+
+  document.getElementById('ex4-d3').innerHTML =
+  '<p>● Hast du Maria eigentlich schon '+makeBlank('e4c-0','kennengelernt',170)+'?</p>'+
+  '<p>○ Ja, sie war auch auf dem '+makeBlank('e4c-1','Fest',110)+' von Boris und Sabine.</p>'+
+  '<p>● O ja, das Fest! Ich erinnere mich, da gab es viel '+makeBlank('e4c-2','Alkohol',130)+', aber niemand war '+makeBlank('e4c-3','betrunken',140)+'.</p>'+
+  '<p>○ Nur Max, der hat ziemlich laut '+makeBlank('e4c-4','gesungen',130)+' – ein Hochzeitslied.</p>'+
+  '<p>● Stimmt – aber er ist Musiker und er hat Boris und Sabine das Lied '+makeBlank('e4c-5','geschenkt',140)+'.</p>'+
+  '<p>○ Haben die beiden schon geheiratet?</p>'+
+  '<p>● Nein, aber die Hochzeit soll im Sommer '+makeBlank('e4c-6','stattfinden',150)+'. Sabine ist '+makeBlank('e4c-7','schwanger',140)+' und im September kommt das Kind.</p>';
+})();
+
+/* ================= EX 5: Im Restaurant ================= */
+(function(){
+  var el = document.getElementById('ex5');
+  el.innerHTML =
+  '<div class="qline">1. Dies ist ein Ort, wo man Kaffee trinken und Kuchen essen kann. Das ist das '+makeBlank('e5-0','Café',110)+'.</div>'+
+  '<div class="qline">2. Sie bezahlen die Rechnung und geben dem Kellner etwas Geld extra. Das ist das '+makeBlank('e5-1','Trinkgeld',140)+'.</div>'+
+  '<div class="qline">3. Die Person arbeitet im Restaurant oder Café. Das ist ein '+makeBlank('e5-2','Kellner',120)+' oder eine '+makeBlank('e5-3','Kellnerin',140)+'.</div>'+
+  '<div class="qline">4. Sie sind zu Hause und möchten Pizza essen. Sie bestellen die Pizza beim Pizza-'+makeBlank('e5-4','Service',120)+'.</div>'+
+  '<div class="qline">5. Sie möchten wissen, was man in dem Restaurant essen kann. Sie fragen nach der '+makeBlank('e5-5','Speisekarte',160)+'.</div>'+
+  '<div class="qline">6. Sie sitzen im Restaurant und rufen nach dem Kellner. Sie sagen: '+makeBlank('e5-6','Herr Ober',140)+'!</div>'+
+  '<div class="qline">7. Sie möchten Pommes frites/Reis für eine Person bestellen. Sie bestellen eine '+makeBlank('e5-7','Portion',130)+' Pommes frites/Reis.</div>'+
+  '<div class="qline">8. Sie möchten ein vegetarisches Essen bestellen. Sie bestellen ein vegetarisches '+makeBlank('e5-8','Gericht',130)+'.</div>'+
+  '<div class="qline">9. In der Suppe ist zu viel Chili. Die Suppe ist zu '+makeBlank('e5-9','scharf',110)+'.</div>';
+})();
+
+/* ================= EX 6: Zu Hause ================= */
+(function(){
+  document.getElementById('ex6-d1').innerHTML =
+  '<p>● Pablo und Marek gehen heute Abend ins '+makeBlank('e6a-0','Kino',110)+'. Wollen wir mitgehen? Das macht bestimmt '+makeBlank('e6a-1','Spaß',100)+', die beiden sind immer lustig.</p>'+
+  '<p>○ Heute Abend? Nein, ich habe keine '+makeBlank('e6a-2','Lust',100)+'. Ich bin ziemlich müde und möchte mich lieber '+makeBlank('e6a-3','ausruhen',140)+'. Ich '+makeBlank('e6a-4','wünsche',120)+' mir einfach einen ruhigen Abend mit dir und dass wir uns etwas '+makeBlank('e6a-5','unterhalten',150)+'. Mehr nicht.</p>';
+
+  document.getElementById('ex6-d2').innerHTML =
+  '<p>● O.k. '+makeBlank('e6b-0','Setz',90)+' dich in den Sessel und leg die Beine hoch. Im Fernsehen kommt '+makeBlank('e6b-1','Tennis',110)+'. Das '+makeBlank('e6b-2','interessiert',150)+' dich bestimmt. Ich rufe den '+makeBlank('e6b-3','Pizza-Service',170)+' an und dann essen wir vor dem Fernseher. Später können wir ja noch etwas '+makeBlank('e6b-4','spazieren gehen',180)+'.</p>'+
+  '<p>○ Das ist eine gute '+makeBlank('e6b-5','Idee',100)+'. Zuerst muss ich mich aber '+makeBlank('e6b-6','umziehen',140)+'.</p>';
+
+  document.getElementById('ex6-d3').innerHTML =
+  '<p>● Nehmen wir den '+makeBlank('e6c-0','Hund',100)+' mit?</p>'+
+  '<p>○ Na klar, Bello muss '+makeBlank('e6c-1','dabei sein',150)+', auch wenn wir an jeder Ecke und an jedem Baum '+makeBlank('e6c-2','stehen bleiben',180)+'. Er ist alt und '+makeBlank('e6c-3','interessiert',150)+' sich nicht mehr für andere Hunde, am liebsten läuft er mit einem '+makeBlank('e6c-4','Stück',110)+' Holz neben mir.</p>'+
+  '<p>● Genau so einen '+makeBlank('e6c-5','Spaziergang',150)+' mit Bello und dir wünsche ich mir heute Abend!</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Ohne Bezahlung: ...", "kostenlos"],
+    ["Freude, Vergnügen: der ...", "Spaß"],
+    ["Zu einem bestimmten Zeitpunkt geschehen: ...", "stattfinden"],
+    ["Ein einfaches Lokal, in dem man trinkt: die ...", "Kneipe"],
+    ["Zusätzliches Geld für den Kellner: das ...", "Trinkgeld"],
+    ["Die Liste der Gerichte in einem Restaurant: die ...", "Speisekarte"],
+    ["Ein Markt für gebrauchte Sachen: der ...", "Flohmarkt"],
+    ["Langsam zu Fuß gehen, um sich zu entspannen: ...", "spazieren gehen"],
+    ["Gemeinsam etwas festlegen, z. B. einen Termin: ...", "vereinbaren"],
+    ["Sich erholen, Pause machen: sich ...", "ausruhen"],
+    ["Jemanden zum ersten Mal treffen: ...", "kennenlernen"],
+    ["Eine Feier, z. B. Geburtstag oder Hochzeit: das ...", "Fest"],
+    ["Jemandem etwas als Geschenk geben: ...", "schenken"],
+    ["Ein Gedanke, ein Vorschlag: die ...", "Idee"],
+    ["Der Wunsch, etwas zu tun: die ...", "Lust"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

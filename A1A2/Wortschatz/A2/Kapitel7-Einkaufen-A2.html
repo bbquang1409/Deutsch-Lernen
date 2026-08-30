@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7 Einkaufen – A2</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.section h3{
+  color:var(--teal-light);
+  font-size:1rem;
+  margin-bottom:8px;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:#fbfaf7;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.vocab-tts-btn{
+  flex:0 0 auto;
+  background:var(--teal-light);
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  padding:3px 10px;
+  font-size:0.78rem;
+  cursor:pointer;
+}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{
+  margin-top:4px;
+  color:var(--teal-light);
+  font-size:0.88rem;
+}
+.vocab-vn{
+  display:none;
+  margin-top:4px;
+  color:var(--orange);
+  font-size:0.9rem;
+  font-style:italic;
+}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.vn-switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.85rem;
+  color:var(--teal);
+  cursor:pointer;
+  user-select:none;
+}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{
+  border:1px dashed var(--orange);
+  background:var(--orange-light);
+  border-radius:10px;
+  padding:10px 14px;
+  margin:10px 0;
+  font-weight:600;
+  color:var(--teal);
+  text-align:center;
+}
+.exercise{
+  margin-bottom:22px;
+  padding-bottom:14px;
+  border-bottom:1px solid #eee;
+}
+.exercise:last-child{border-bottom:none;}
+.ex-title{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:6px;
+}
+.ex-instructions{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-bottom:10px;
+}
+.qline{
+  margin:10px 0;
+  line-height:1.9;
+}
+.qline input[type=text]{
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-size:1rem;
+  padding:2px 4px;
+  width:150px;
+  font-family:inherit;
+  color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{
+  border:2px solid var(--teal-light);
+  border-radius:20px;
+  padding:6px 14px;
+  cursor:pointer;
+  font-size:0.9rem;
+  background:#fff;
+}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{
+  background:var(--teal-pale);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:12px;
+  font-size:0.9rem;
+  color:var(--teal);
+}
+.wordbank b{color:var(--teal-light);}
+.matchrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  flex-wrap:wrap;
+}
+.matchrow select{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+}
+.check-btn{
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  padding:9px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{
+  background:#fff;
+  color:var(--teal);
+  border:2px solid var(--teal);
+  border-radius:20px;
+  padding:7px 18px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+  margin-left:6px;
+}
+.result-msg{
+  margin-top:8px;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.footer-credit{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.8rem;
+  margin-top:30px;
+}
+.note-box{
+  border:1px dashed #c9c2b2;
+  border-radius:10px;
+  padding:10px 14px;
+  margin:10px 0;
+  background:#fbfaf7;
+}
+.note-box textarea{
+  width:100%;
+  min-height:44px;
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-family:inherit;
+  font-size:0.95rem;
+  padding:6px 2px;
+  resize:vertical;
+}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+
+/* ---- Hören / TTS ---- */
+.hoer-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:10px 0;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#fbfaf7;
+  border:1px solid #e2ded4;
+}
+.hoer-word{font-weight:700;color:var(--teal);min-width:120px;}
+.tts-btn{
+  background:var(--teal-light);
+  color:#fff;
+  border:none;
+  border-radius:20px;
+  padding:6px 14px;
+  cursor:pointer;
+  font-size:0.85rem;
+  font-weight:600;
+}
+.tts-btn:hover{background:var(--teal);}
+.tts-btn:disabled{opacity:0.6;cursor:default;}
+
+/* ---- Wortsuche-Gitter (Buchstabenkette) ---- */
+.letter-chain{
+  font-family:'JetBrains Mono', monospace;
+  font-weight:700;
+  letter-spacing:1px;
+  background:var(--teal-pale);
+  color:var(--teal);
+  border-radius:10px;
+  padding:12px 14px;
+  line-height:1.9;
+  word-break:break-all;
+  font-size:0.95rem;
+  margin-bottom:10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Wortschatz</div>
+  <h1>7&nbsp; Einkaufen: Lebensmittel, Kleidung, andere Produkte</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🍎 Lebensmittel</h2>
+    <div class="vocab-grid" id="vg1"></div>
+  </div>
+
+  <div class="section">
+    <h2>🛒 Einkaufen</h2>
+    <div class="vocab-grid" id="vg2"></div>
+  </div>
+
+  <div class="section">
+    <h2>👗 Kleidung</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache: Vokale lang oder kurz</h2>
+    <div class="ex-instructions">Klicken Sie auf 🔊 Anhören und entscheiden Sie: wird der Vokal <b>kurz</b> oder <b>lang</b> gesprochen?</div>
+    <div id="hoer-vokale"></div>
+    <button class="check-btn" data-check="mc" data-target="hoer-vokale">Kontrollieren</button>
+    <div class="result-msg" id="res-hoer-vokale"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <!-- 1 Essen und Trinken -->
+  <div class="section">
+    <h2>1 Essen und Trinken</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Essen und Trinken – Notieren Sie ins Heft.</div>
+      <div class="ex-instructions">Sie brauchen Hilfe? Die Liste unten hilft. Diese Aufgabe wird nicht automatisch kontrolliert – schreiben Sie Ihre Ideen in die Felder.</div>
+      <div class="wordbank"><b>Liste:</b> die Sahne · der Salat · das Salz · der Tee · das Wasser · der Wein · der Apfel · die Banane · das Bier · die Birne · das Brot · das Brötchen · das Gemüse · die Getränke · das Hähnchen · die Kartoffel · der Kaffee · der Fisch · das Fleisch · die Milch · das Öl · die Olive · das Obst · der Reis</div>
+      <div class="note-box">1. Sie möchten einen Salat machen. Was kaufen Sie ein?<br><textarea placeholder="z. B. Kopfsalat, Essig ..."></textarea></div>
+      <div class="note-box">2. Sie machen ein großes Fest. Welche Getränke brauchen Sie? Welche Getränke kaufen Sie nicht?<br><textarea></textarea></div>
+      <div class="note-box">3. Sie sind in einer Bäckerei. Was können Sie dort kaufen?<br><textarea></textarea></div>
+      <div class="note-box">4. Sie sind in einer Metzgerei. Was können Sie dort kaufen?<br><textarea></textarea></div>
+      <div class="note-box">5. Welches Obst können Sie in Deutschland kaufen?<br><textarea></textarea></div>
+    </div>
+  </div>
+
+  <!-- 2 Zahlen und Geld -->
+  <div class="section">
+    <h2>2 Zahlen und Geld</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Was kostet das? Schreiben Sie die Beträge in Worten.</div>
+      <div class="qline">32,25 € → <i>zweiunddreißig Euro und fünfundzwanzig Cent</i></div>
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Im Supermarkt. Ergänzen Sie den Dialog.</div>
+      <div class="wordbank"><b>Kasten:</b> die Kreditkarte · das Geld · die Kasse · bezahlen · machen · das Angebot · kosten · billig · das Pfund · das Kilo · außerdem</div>
+      <div id="ex2-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Farben – Ergänzen Sie die Adjektive in der richtigen Form.</div>
+      <div class="wordbank"><b>Kasten:</b> grün · blau · rot · gelb</div>
+      <div id="ex2-3"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-3"></div>
+    </div>
+  </div>
+
+  <!-- 3 Im Supermarkt: Brief -->
+  <div class="section">
+    <h2>3 Einkaufen – ein Brief</h2>
+
+    <div class="exercise">
+      <div class="ex-title">4 Einkaufen – Ergänzen Sie. Sie brauchen Hilfe? Die Wörter unten helfen.</div>
+      <div class="wordbank"><b>Kasten:</b> dringend · eng · fett · frisch · geöffnet · der Käse (Sg.) · das Kleid, -er · leer · der Mantel, ¨- · der Markt, ¨-e · offen · passen · preiswert · probieren · das Produkt, -e · der Rabatt, -e · das Rind, -er · der Schlussverkauf, ¨-e · das Schwein, -e · das Sonderangebot, -e · sparen · der Supermarkt, ¨-e · vergleichen · das Zentrum, Zentren</div>
+      <div id="ex3-1" style="line-height:2.1;"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+  </div>
+
+  <!-- 4 Wortschatz-Rätsel -->
+  <div class="section">
+    <h2>4 Wortschatz-Rätsel</h2>
+
+    <div class="exercise">
+      <div class="ex-title">5 Finden Sie die Wörter und ergänzen Sie.</div>
+      <div class="ex-instructions">In der Buchstabenkette stecken 11 Wörter zum Thema Essen. Finden Sie sie und ergänzen Sie damit die Sätze.</div>
+      <div class="letter-chain">BOHNENKOMISCHORANGENZUCKERSAUEREISSCHOKOLADESALATZITRONESÜSSFETT</div>
+      <div id="ex4-1"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">6 Ein Quiz – Wie heißen die Antworten?</div>
+      <div id="ex4-2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4-2"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">7 Was passt nicht? Klicken Sie das falsche Wort an. Notieren Sie anschließend die Pluralformen der restlichen vier Nomen.</div>
+      <div id="ex4-3"></div>
+      <button class="check-btn" data-check="mc" data-target="ex4-3">Kontrollieren (falsches Wort)</button>
+      <div class="result-msg" id="res-ex4-3"></div>
+      <div id="ex4-3-plural" style="margin-top:14px;"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4-3-plural">Kontrollieren (Plural)</button>
+      <div class="result-msg" id="res-ex4-3-plural"></div>
+    </div>
+  </div>
+
+  <!-- 5 Beim Einkaufen -->
+  <div class="section">
+    <h2>5 Beim Einkaufen</h2>
+
+    <div class="exercise">
+      <div class="ex-title">8 Beim Einkaufen – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> die Hose · weich · passen · der Kinderwagen · der Katalog · die Qualität · die Garantie · das Material · das Lager · modern · der Mantel · der Stoff · eng · ändern · die Quittung</div>
+      <div id="ex5-1" style="line-height:2.1;"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5-1"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Einkaufen</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["der","Käse (Sg.)","ein Milchprodukt, das fest oder weich sein kann","phô mai"],
+ ["die","Nudel, -n","eine Speise aus Mehl und Wasser, lang oder in Formen","mì sợi, nui"],
+ ["die","Orange, -n","eine runde, orangefarbene Südfrucht","quả cam"],
+ ["die","Suppe, -n","eine warme, flüssige Speise, die man mit dem Löffel isst","súp"],
+ ["die","Bohne, -n","eine kleine, meist grüne oder braune Hülsenfrucht","đậu"],
+ ["die","Zitrone, -n","eine gelbe, saure Zitrusfrucht","chanh vàng"],
+ ["der","Zucker (Sg.)","eine süße, weiße Substanz zum Süßen von Speisen","đường"],
+ ["die","Schokolade (Sg.)","eine süße Süßigkeit aus Kakao","sô-cô-la"],
+ ["das","Eis (Sg.)","eine kalte, süße, gefrorene Süßspeise","kem"],
+ ["","sauer","ein Geschmack wie bei Zitronen","chua"],
+ ["","süß","ein Geschmack wie bei Zucker","ngọt"],
+ ["das","Rind, -er","ein großes Tier, von dem man Rindfleisch bekommt","bò"],
+ ["das","Schwein, -e","ein Tier, von dem man Schweinefleisch bekommt","lợn"],
+ ["die","Wurst, ¨-e","ein Fleischprodukt in länglicher Form","xúc xích"],
+ ["","fett","mit viel Fett","béo, nhiều mỡ"],
+ ["","mager","mit wenig Fett","nạc, ít mỡ"],
+ ["","frisch","neu, nicht alt, gerade gemacht oder gekauft","tươi"],
+ ["","probieren, hat probiert","etwas zum ersten Mal essen oder trinken, um es zu testen","nếm thử"],
+ ["","komisch","seltsam, nicht normal","kỳ lạ"],
+ ["die","Dose, -n","ein Behälter aus Metall, z. B. für Lebensmittel","lon, hộp kim loại"],
+ ["die","Tüte, -n","ein Behälter aus Papier oder Plastik zum Tragen","túi giấy/nhựa"],
+ ["","tragen, hat getragen","etwas mit den Händen oder am Körper halten und bewegen","mang, mặc, xách"],
+ ["das","Pfund, -e","eine Maßeinheit, etwa 500 Gramm","pao (~500g)"],
+ ["","außerdem","zusätzlich, dazu","ngoài ra"],
+ ["","leer","ohne Inhalt, nichts darin","trống rỗng"],
+ ["die","Brieftasche, -n","ein kleiner Behälter für Geld und Karten (auch: die Geldbörse)","ví tiền"],
+ ["","circa (ca.)","ungefähr","khoảng chừng"],
+];
+
+var vocab2 = [
+ ["das","Zentrum, Zentren","die Mitte einer Stadt, oder ein Einkaufszentrum","trung tâm"],
+ ["der","Markt, ¨-e","ein Ort, meist im Freien, wo man Lebensmittel kauft","chợ"],
+ ["der","Supermarkt, ¨-e","ein großes Geschäft mit vielen verschiedenen Lebensmitteln","siêu thị"],
+ ["","geöffnet","offen, man kann hineingehen","đang mở cửa"],
+ ["","offen","nicht geschlossen","mở"],
+ ["das","Produkt, -e","eine Ware, die man kaufen kann","sản phẩm"],
+ ["der","Kinderwagen, -","ein Wagen, in dem man ein kleines Kind schiebt","xe đẩy em bé"],
+ ["das","Sonderangebot, -e","eine Ware, die für kurze Zeit besonders billig ist","hàng khuyến mãi"],
+ ["der","Rabatt, -e","ein Preisnachlass","tiền giảm giá"],
+ ["die","Rate, -n","ein Teil einer Zahlung, den man in mehreren Schritten bezahlt","khoản trả góp"],
+ ["der","Schlussverkauf, ¨-e","ein Verkauf am Ende einer Saison mit sehr günstigen Preisen","đợt giảm giá cuối mùa"],
+ ["","sparen, hat gespart","Geld nicht ausgeben, sondern behalten","tiết kiệm"],
+ ["","preiswert","mit einem guten Preis, nicht teuer","giá hời"],
+ ["","vergleichen, hat verglichen","zwei oder mehr Dinge miteinander prüfen","so sánh"],
+ ["das","Lager, -","ein Ort, an dem Waren aufbewahrt werden","kho hàng"],
+ ["der","Katalog, -e","ein Heft mit Bildern und Informationen zu Produkten","sách/danh mục hàng hóa"],
+ ["die","Garantie, -n","ein Versprechen, dass ein Produkt repariert oder ersetzt wird, wenn es kaputtgeht","bảo hành"],
+ ["die","Quittung, -en","ein Papier, das beweist, dass man bezahlt hat","hóa đơn, biên lai"],
+];
+
+var vocab3 = [
+ ["das","Hemd, -en","ein Kleidungsstück für den Oberkörper mit Kragen und Knöpfen","áo sơ mi"],
+ ["die","Hose, -n","ein Kleidungsstück für die Beine","quần"],
+ ["das","Kleid, -er","ein Kleidungsstück für Frauen, in einem Stück","váy liền thân"],
+ ["der","Anzug, ¨-e","formelle Kleidung für Männer, Jacke und Hose","bộ vest"],
+ ["der","Mantel, ¨-","ein langes, warmes Kleidungsstück über der anderen Kleidung","áo khoác dài"],
+ ["der","Pullover, -","ein warmes Kleidungsstück ohne Knöpfe, über den Kopf gezogen","áo len chui đầu"],
+ ["der","Rock, ¨-e","ein Kleidungsstück für Frauen, um die Hüfte","chân váy"],
+ ["die","Bluse, -n","ein leichtes Oberteil für Frauen","áo cánh (nữ)"],
+ ["das","T-Shirt, -s","ein leichtes Oberteil mit kurzen Ärmeln","áo phông"],
+ ["das","Loch, ¨-er","eine offene, kaputte Stelle in einem Material","lỗ thủng"],
+ ["","eng","nicht viel Platz, sehr nah am Körper","chật, bó sát"],
+ ["","weit","viel Platz, nicht eng","rộng"],
+ ["","passen, hat gepasst","die richtige Größe haben","vừa vặn"],
+ ["","ändern, hat geändert","etwas anders machen","thay đổi, sửa"],
+ ["die","Mode, -n","der aktuelle Stil bei Kleidung","thời trang"],
+ ["","modern","aktuell, nach der neuesten Mode","hiện đại, mốt"],
+ ["die","Qualität, -en","wie gut etwas gemacht ist","chất lượng"],
+ ["das","Material, Materialien","der Stoff, aus dem etwas gemacht ist","chất liệu"],
+ ["der","Stoff, -e","das Material für Kleidung, z. B. Baumwolle","vải"],
+ ["die","Kette, -n","ein Schmuckstück, das man um den Hals trägt","dây chuyền"],
+ ["","weich","nicht hart, angenehm zum Anfassen","mềm"],
+ ["","hart","nicht weich, fest","cứng"],
+];
+
+function ttsCleanWord(word){
+  // remove plural/parenthetical notation for cleaner pronunciation, e.g. "Nudel, -n" -> "Nudel", "Käse (Sg.)" -> "Käse"
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  var html = '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+  return html;
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+
+/* ================= HÖREN: Vokale lang/kurz ================= */
+(function(){
+  var items = [
+    ["alt",0], ["fett",0], ["frisch",0], ["offen",0], ["das Produkt",0], ["geöffnet",0], ["ändern",0], ["müssen",0],
+    ["tragen",1], ["leer",1], ["sieben",1], ["die Dose",1], ["die Bluse",1], ["hören",1], ["der Käse",1], ["die Tüte",1]
+  ];
+  var el = document.getElementById('hoer-vokale');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="hoer-row">'+
+      '<span class="hoer-word">'+it[0]+'</span>'+
+      '<button type="button" class="tts-btn" data-word="'+it[0].replace(/"/g,'&quot;')+'">🔊 Anhören</button>'+
+      mcHtml('mcv',i,['kurz','lang'],it[1])+
+    '</div>';
+  }).join('');
+  wireMcOptions(el);
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= EX 2.1 Zahlen ================= */
+(function(){
+  var items = [
+    ["6,99 €","sechs Euro und neunundneunzig Cent"],
+    ["58,39 €","achtundfünfzig Euro und neununddreißig Cent"],
+    ["93,17 €","dreiundneunzig Euro und siebzehn Cent"],
+    ["124,21 €","hundertvierundzwanzig Euro und einundzwanzig Cent|einhundertvierundzwanzig Euro und einundzwanzig Cent"],
+  ];
+  var el = document.getElementById('ex2-1');
+  el.innerHTML = items.map(function(it,i){
+    return '<div class="qline">'+it[0]+' → '+makeBlank('e21-'+i, it[1], 420)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 2.2 Im Supermarkt ================= */
+(function(){
+  var el = document.getElementById('ex2-2');
+  el.innerHTML =
+  '<p>● Was k'+makeBlank('e22-0','kosten',90)+' die Tomaten?</p>'+
+  '<p>○ Ein K'+makeBlank('e22-1','Kilo',90)+' kostet 1,29 Euro.</p>'+
+  '<p>● Das ist sehr b'+makeBlank('e22-2','billig',90)+'.</p>'+
+  '<p>○ Ja, die Tomaten sind heute im A'+makeBlank('e22-3','Angebot',110)+'.</p>'+
+  '<p>● Ein Kilo ist mir zu viel, ich nehme ein P'+makeBlank('e22-4','Pfund',90)+'.</p>'+
+  '<p>○ Möchten Sie a'+makeBlank('e22-5','außerdem',110)+' noch etwas?</p>'+
+  '<p>● Nein, danke. Wo muss ich das b'+makeBlank('e22-6','bezahlen',110)+'?</p>'+
+  '<p>○ Bitte alles an der K'+makeBlank('e22-7','Kasse',90)+' zahlen.</p>'+
+  '<p>■ Das m'+makeBlank('e22-8','macht',90)+' 65 Cent.</p>'+
+  '<p>● Oh, ich habe mein G'+makeBlank('e22-9','Geld',90)+' vergessen.</p>'+
+  '<p>■ Sie müssen nicht b'+makeBlank('e22-10','bar',80)+' bezahlen. Sie können auch mit K'+makeBlank('e22-11','Kreditkarte',130)+' zahlen.</p>'+
+  '<p>● 65 Cent?</p>';
+})();
+
+/* ================= EX 2.3 Farben ================= */
+(function(){
+  var el = document.getElementById('ex2-3');
+  el.innerHTML =
+  '<div class="qline">1. Ich möchte gerne die r'+makeBlank('e23-0','rote',100)+' Paprika, die g'+makeBlank('e23-1','grüne',100)+' mag ich nicht.</div>'+
+  '<div class="qline">2. Bitte geben Sie mir eine r'+makeBlank('e23-2','rote',100)+' Tomate und ein Kilo g'+makeBlank('e23-3','gelbe',100)+' Bananen.</div>'+
+  '<div class="qline">3. Von g'+makeBlank('e23-4','grünen',100)+' Birnen bekomme ich immer Bauchschmerzen.</div>'+
+  '<div class="qline">4. B'+makeBlank('e23-5','Blaue',100)+' Lebensmittel gibt es ganz selten.</div>'+
+  '<div class="qline">5. Wenn man Blaubeeren isst, bekommt man einen ganz b'+makeBlank('e23-6','blauen',100)+' Mund.</div>';
+})();
+
+/* ================= EX 3.1 Brief ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<p>Liebe Susanne,</p>'+
+  '<p>du fragst, wie mein Alltag im Essen ist? Wichtig ist das Essen hier!!</p>'+
+  '<p>Meine Lebensmittel kaufe ich meistens im Sup'+makeBlank('e31-0','Supermarkt',140)+'. Der hat bis 20 Uhr geö'+makeBlank('e31-1','geöffnet',110)+'.</p>'+
+  '<p>Da gibt es immer Son'+makeBlank('e31-2','Sonderangebote',150)+' und die Pr'+makeBlank('e31-3','Produkte',120)+' sind o.k. Da kaufe ich auch manchmal Fleisch, meistens Geflügel. Wurst esse ich selten, es gibt nur welche vom Schw'+makeBlank('e31-4','Schwein',110)+' oder vom Ri'+makeBlank('e31-5','Rind',100)+', und die ist ziemlich f'+makeBlank('e31-6','fett',90)+'. Am Wochenende ist hier Ma'+makeBlank('e31-7','Markt',100)+'. Da kaufe ich am liebsten ein, weil alles so fr'+makeBlank('e31-8','frisch',100)+' und gesund aussieht. Das Gemüse ist aber nicht sehr pre'+makeBlank('e31-9','preiswert',130)+', und man muss die Preise ver'+makeBlank('e31-10','vergleichen',130)+'.</p>'+
+  '<p>Beim Griechen gibt es guten Kä'+makeBlank('e31-11','Käse',100)+' und Oliven, da darf man pr'+makeBlank('e31-12','probieren',120)+', und meistens bekommt man auch Ra'+makeBlank('e31-13','Rabatt',110)+' – kein Geld, aber vielleicht ein paar Oliven extra.</p>'+
+  '<p>Wenn ich nachts merke, dass der Kühlschrank ganz l'+makeBlank('e31-14','leer',90)+' ist, dann gehe ich zur Tankstelle, die ist Tag und Nacht o'+makeBlank('e31-15','offen',90)+'.</p>'+
+  '<p>Leider habe ich 6 Kilo zugenommen! Nichts pa'+makeBlank('e31-16','passt',100)+' mir richtig, alles ist zu e'+makeBlank('e31-17','eng',90)+'! Am Wochenende gehe ich ins Ze'+makeBlank('e31-18','Zentrum',120)+', da ist Schl'+makeBlank('e31-19','Schlussverkauf',150)+', und ich brauche dri'+makeBlank('e31-20','dringend',120)+' ein paar Sachen für den Winter.</p>'+
+  '<p>Vielleicht finde ich dort einen Ma'+makeBlank('e31-21','Mantel',110)+'. Aber eigentlich will ich auch kein Geld ausgeben.</p>'+
+  '<p>Ich muss sp'+makeBlank('e31-22','sparen',110)+', weil der Umzug so teuer war. Ich sollte weniger essen, dann gebe ich weniger Geld aus und brauche keine neuen Kl'+makeBlank('e31-23','Kleider',110)+'!</p>'+
+  '<p>Wir telefonieren nächste Woche!</p>'+
+  '<p>Petra</p>';
+})();
+
+/* ================= EX 4.1 Buchstabenkette ================= */
+(function(){
+  var el = document.getElementById('ex4-1');
+  el.innerHTML =
+  '<div class="qline">1. Viele Deutsche sind so dick, weil sie zu '+makeBlank('e41-0','fett',110)+' und zu viel '+makeBlank('e41-1','Zucker',110)+' essen.</div>'+
+  '<div class="qline">2. Anna isst alles gern, was '+makeBlank('e41-2','süß',90)+' ist – '+makeBlank('e41-3','Schokolade',130)+', '+makeBlank('e41-4','Eis',80)+' und Kuchen.</div>'+
+  '<div class="qline">3. Katharina mag am liebsten '+makeBlank('e41-5','Salat',100)+' mit Olivenöl und '+makeBlank('e41-6','Zitrone',110)+'.</div>'+
+  '<div class="qline">4. Michael isst gern Obst, am liebsten '+makeBlank('e41-7','Orangen',120)+'.</div>'+
+  '<div class="qline">5. ● Magst du Gemüsesuppe? ○ Es geht, aber ohne '+makeBlank('e41-8','Bohnen',110)+'. Am liebsten esse ich aber Nudeln.</div>'+
+  '<div class="qline">6. ● Die Milch schmeckt '+makeBlank('e41-9','komisch',110)+'. Probier mal, ist sie '+makeBlank('e41-10','sauer',100)+'?</div>';
+})();
+
+/* ================= EX 4.2 Quiz ================= */
+(function(){
+  var el = document.getElementById('ex4-2');
+  el.innerHTML =
+  '<div class="qline">1. Diese Frucht wächst nicht in Deutschland. Sie braucht viel Sonne: die '+makeBlank('e42-0','Banane',110)+'.</div>'+
+  '<div class="qline">2. Diese Frucht ist gelb und sauer: die '+makeBlank('e42-1','Zitrone',110)+'.</div>'+
+  '<div class="qline">3. Tomaten kann man frisch kaufen oder in der '+makeBlank('e42-2','Dose',90)+'.</div>'+
+  '<div class="qline">4. In Schokolade, Eis und Kuchen ist viel '+makeBlank('e42-3','Zucker',100)+'.</div>'+
+  '<div class="qline">5. Wenn man Preise vergleicht, '+makeBlank('e42-4','spart',90)+' man Geld.</div>'+
+  '<div class="qline">6. Wie heißt das Gegenteil? voll – '+makeBlank('e42-5','leer',80)+' &nbsp;·&nbsp; hart – '+makeBlank('e42-6','weich',80)+' &nbsp;·&nbsp; süß – '+makeBlank('e42-7','sauer',80)+'</div>'+
+  '<div class="qline">7. Ich kaufe ein Auto und zahle jeden Monat 350 Euro. Das heißt, ich zahle in '+makeBlank('e42-8','Raten',100)+'.</div>';
+})();
+
+/* ================= EX 4.3 Was passt nicht ================= */
+(function(){
+  // [options, oddIndex, [ [Nomen, Plural], ... für die 4 übrigen Wörter ]]
+  var data = [
+    [["die Wurst","das Fleisch","das Schwein","das Rind","die Katze"],4,
+      [["die Wurst","die Würste"],["das Fleisch","–|-|kein Plural"],["das Schwein","die Schweine"],["das Rind","die Rinder"]]],
+    [["das Loch","die Bluse","der Rock","das Kleid","der Anzug"],0,
+      [["die Bluse","die Blusen"],["der Rock","die Röcke"],["das Kleid","die Kleider"],["der Anzug","die Anzüge"]]],
+    [["der Anzug","das Hemd","die Bluse","die Hose","der Mann"],4,
+      [["der Anzug","die Anzüge"],["das Hemd","die Hemden"],["die Bluse","die Blusen"],["die Hose","die Hosen"]]],
+    [["die Frau","das Hemd","das Kleid","der Pullover","der Rock"],0,
+      [["das Hemd","die Hemden"],["das Kleid","die Kleider"],["der Pullover","die Pullover"],["der Rock","die Röcke"]]],
+    [["die Schokolade","die Zitrone","das Eis","der Kuchen","der Zucker"],1,
+      [["die Schokolade","die Schokoladen"],["das Eis","–|-|kein Plural"],["der Kuchen","die Kuchen"],["der Zucker","–|-|kein Plural"]]],
+    [["das Glas","die Dose","die Flasche","das Kilo","die Packung"],3,
+      [["das Glas","die Gläser"],["die Dose","die Dosen"],["die Flasche","die Flaschen"],["die Packung","die Packungen"]]],
+  ];
+  var el = document.getElementById('ex4-3');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. '+mcHtml('mc43',i,d[0],d[1])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+
+  var pEl = document.getElementById('ex4-3-plural');
+  pEl.innerHTML = data.map(function(d,i){
+    var pairs = d[2];
+    var line = pairs.map(function(p,j){
+      return p[0]+' → '+makeBlank('e43p-'+i+'-'+j, p[1], 130);
+    }).join(' &nbsp;·&nbsp; ');
+    return '<div class="qline">'+(i+1)+'. '+line+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 5.1 Beim Einkaufen – Dialoge ================= */
+(function(){
+  var el = document.getElementById('ex5-1');
+  el.innerHTML =
+  '<p><b>Dialog 1</b></p>'+
+  '<p>● Ich habe Ihren '+makeBlank('e51-0','Katalog',120)+' im Briefkasten gehabt. Haben Sie diese Schuhe noch?</p>'+
+  '<p>○ Ich weiß es nicht. Ich schau mal im '+makeBlank('e51-1','Lager',110)+'.</p>'+
+  '<p>● Danke.</p>'+
+  '<p><b>Dialog 2</b></p>'+
+  '<p>● Ich habe vor zwei Wochen diese Schuhe gekauft, und einer ist schon kaputt. Die Schuhe waren nicht billig, aber die '+makeBlank('e51-2','Qualität',130)+' ist sehr schlecht.</p>'+
+  '<p>○ Haben Sie die '+makeBlank('e51-3','Quittung',120)+' noch?</p>'+
+  '<p>● Hier, bitte. Wie lange gibt es denn '+makeBlank('e51-4','Garantie',120)+' auf den Kauf?</p>'+
+  '<p>○ Das weiß ich nicht, da muss ich den Chef fragen.</p>'+
+  '<p><b>Dialog 3</b></p>'+
+  '<p>● Dieser Schuh '+makeBlank('e51-5','passt',100)+' nicht so gut. Der ist vorne etwas '+makeBlank('e51-6','eng',90)+'.</p>'+
+  '<p>○ Das ist jetzt '+makeBlank('e51-7','modern',100)+'. Das '+makeBlank('e51-8','Material',110)+' ist aber '+makeBlank('e51-9','weich',90)+', vielleicht laufen Sie mal ein wenig.</p>'+
+  '<p><b>Dialog 4</b></p>'+
+  '<p>● Der '+makeBlank('e51-10','Mantel',100)+' ist zu lang. Kann man den hier auch '+makeBlank('e51-11','ändern',110)+'?</p>'+
+  '<p>○ Natürlich, das kostet 35 Euro.</p>'+
+  '<p><b>Dialog 5</b></p>'+
+  '<p>● Ich brauche eine '+makeBlank('e51-12','Hose',100)+' für meine Tochter. Größe 104.</p>'+
+  '<p>○ Wie gefällt Ihnen diese? Das ist eine sehr gute Qualität, und der '+makeBlank('e51-13','Stoff',100)+' ist sehr weich.</p>'+
+  '<p>● Die kostet ja 65 Euro! Das ist mir zu teuer. Meine Tochter sitzt ja meistens im '+makeBlank('e51-14','Kinderwagen',140)+'.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Ein Milchprodukt, fest oder weich: der ...", "Käse"],
+    ["Ein Tier, von dem man Rindfleisch bekommt: das ...", "Rind"],
+    ["Ein Fleischprodukt in länglicher Form: die ...", "Wurst"],
+    ["Etwas zum ersten Mal essen, um es zu testen: ...", "probieren"],
+    ["Ein Behälter aus Metall für Lebensmittel: die ...", "Dose"],
+    ["Ohne Inhalt, nichts darin: ...", "leer"],
+    ["Eine Ware, die für kurze Zeit besonders billig ist: das ...", "Sonderangebot"],
+    ["Zwei Dinge miteinander prüfen, um Unterschiede zu finden: ...", "vergleichen"],
+    ["Ein Papier, das beweist, dass man bezahlt hat: die ...", "Quittung"],
+    ["Ein Versprechen, dass ein Produkt repariert wird, wenn es kaputtgeht: die ...", "Garantie"],
+    ["Die richtige Größe haben: ...", "passen"],
+    ["Nicht viel Platz, sehr nah am Körper: ...", "eng"],
+    ["Der Stil, der gerade aktuell ist: die ...", "Mode"],
+    ["Das Material für Kleidung, z. B. Baumwolle: der ...", "Stoff"],
+    ["Nicht hart, angenehm zum Anfassen: ...", "weich"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

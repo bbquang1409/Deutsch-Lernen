@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 Reisen und Natur</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.3rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);}
+.scale-box div{margin:3px 0;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{border:2px solid var(--teal-light);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.9rem;background:#fff;}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.note-box{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.note-box textarea{width:100%;min-height:44px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+.hoer-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.hoer-word{font-weight:700;color:var(--teal);min-width:150px;}
+.tts-btn{background:var(--teal-light);color:#fff;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.85rem;font-weight:600;}
+.tts-btn:hover{background:var(--teal);}
+.prefix-group{margin-bottom:14px;}
+.prefix-tag{display:inline-block;background:var(--teal);color:#fff;border-radius:8px;padding:2px 10px;font-weight:700;font-size:0.85rem;margin-bottom:6px;}
+.pair-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.pair-item{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--teal);}
+.matchrow-wrap{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
+.matchrow{display:inline-flex;align-items:center;gap:6px;background:#fbfaf7;border:1px solid #e2ded4;border-radius:8px;padding:5px 8px;}
+.matchrow select{padding:4px 6px;border-radius:6px;border:1px solid var(--teal-light);font-family:inherit;min-width:60px;font-size:0.88rem;}
+.matchrow select.correct{border-color:var(--ok);background:#eafaf0;}
+.matchrow select.wrong{border-color:var(--bad);background:#fdecec;}
+.matchrow .mw-label{font-size:0.92rem;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Wortschatz</div>
+  <h1>12&nbsp; Reisen und Natur</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>✈️ Reisen</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">
+      <div>Mein größter <b>Wunsch</b> ist eine Weltreise.</div>
+      <div>Meine Ferien waren <b>toll</b>!</div>
+      <div>Ich reise gern in einer <b>Gruppe</b>.</div>
+      <div>Da sind eine <b>Menge</b> Leute.</div>
+      <div>Ich muss heute meine <b>Sachen</b> packen.</div>
+      <div>Kannst du mich um 6 <b>wecken</b>?</div>
+      <div>Wir <b>gehen</b> heute 7 Uhr <b>weg</b>.</div>
+      <div>Schreibst du mir <b>wenigstens</b> eine Karte?</div>
+      <div>Ich möchte <b>mindestens</b> drei Wochen verreisen.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🏨 Unterkunft</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">
+      <div>Das Hotel ist <b>voll</b>.</div>
+      <div>Ich wohne am liebsten <b>privat</b>.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🏞️ Landschaft</h2>
+    <div class="vocab-grid" id="vg3"></div>
+  </div>
+
+  <div class="section">
+    <h2>🌦️ Wetter</h2>
+    <div class="vocab-grid" id="vg4"></div>
+    <div class="scale-box">
+      <div>Es ist <b>kühl</b> draußen.</div>
+      <div>Die Wolken hängen <b>tief</b>. Gleich regnet es.</div>
+      <div><b>Plötzlich</b> hat ein Gewitter angefangen.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Aussprache</h2>
+    <div class="ex-instructions">Achten Sie auf die Aussprache von <b>b, d, g</b> am Wortende! Klicken Sie auf 🔊, um zuzuhören.</div>
+    <div id="hoer-tkp"></div>
+
+    <div class="ex-instructions" style="margin-top:16px;">Wortpaare: Übern Sie die Vokale (Singular/Plural). Klicken Sie auf 🔊.</div>
+    <div id="hoer-paare"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Urlaub</h2>
+    <div class="exercise">
+      <div class="ex-title">1a/b Notieren Sie die Artikel. Was passt nicht?</div>
+      <div class="ex-instructions">Wählen Sie zuerst für jedes Wort den richtigen Artikel. Klicken Sie dann auf das Wort, das nicht passt.</div>
+      <div id="ex1"></div>
+      <button class="check-btn" data-check="ex1combo" data-target="ex1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Datum</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Monate, Jahreszeiten, Datum – Schreiben Sie.</div>
+      <div class="ex-instructions">Beispiel: 1.4. → der erste April (Frühling)</div>
+      <div id="ex2"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Sätze schreiben</h2>
+    <div class="exercise">
+      <div class="ex-title">3 Was können Sie sagen/fragen? Schreiben Sie Sätze zu den Stichwörtern.</div>
+      <div class="ex-instructions">Diese Aufgabe wird nicht automatisch kontrolliert.</div>
+      <div class="note-box"><b>1. Am Bahnhof:</b> Zugverbindung: Berlin / Datum: 17.3. ab 10.00 Uhr / Abfahrt: Wo? Wann?<br><textarea placeholder="z. B. Wann fährt der nächste Zug nach Berlin?"></textarea></div>
+      <div class="note-box"><b>2. Im Hotel:</b> Zimmer: 1-2 Personen? Dusche/Bad/Balkon/Preis? / Übernachtung von ... bis ...<br><textarea placeholder="z. B. Haben Sie noch ein Einzelzimmer mit Dusche frei?"></textarea></div>
+      <div class="note-box"><b>3. Allgemeine Informationen:</b> Touristeninformation, Prospekt, Ausflug, Sehenswürdigkeit, Eintritt, Stadtplan, Führung<br><textarea placeholder="z. B. Haben Sie einen Stadtplan für mich?"></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4 Verben</h2>
+    <div class="exercise">
+      <div class="ex-title">4 Wie heißen die Verben? Schreiben Sie den Infinitiv und die 3. Person Singular.</div>
+      <div id="ex4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Wünsche und Träume</h2>
+    <div class="exercise">
+      <div class="ex-title">5 Wünsche und Träume für die Ferien – Ergänzen Sie.</div>
+      <div class="wordbank"><b>Kasten:</b> das Schiff · toll · der Tourist · der Strand · der Wunsch · kennenlernen · die Ferien · die Menge · reich · der Schnee · die Landschaft · mindestens · weggehen · die Gruppe · der Berg</div>
+      <div id="ex5"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Minidialoge</h2>
+
+    <div class="exercise">
+      <div class="ex-title">Reisevorbereitungen</div>
+      <div class="wordbank"><b>Kasten:</b> der Schirm · wecken · die Sachen · nass · wach</div>
+      <div id="ex6-a"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Wetter</div>
+      <div class="wordbank"><b>Kasten:</b> der Wald · der Nebel · der Berg · kühl · die Wolke · das Gewitter · wenigstens · heiß · die Luft · das Wetter</div>
+      <div id="ex6-b"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Mit dem Fahrrad unterwegs</div>
+      <div class="wordbank"><b>Kasten:</b> plötzlich · die Natur · die Ferien · das Schiff · voll · der Fluss · der Weg</div>
+      <div id="ex6-c"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">Urlaub</div>
+      <div class="wordbank"><b>Kasten:</b> die Natur · die Luft · buchen · privat · der Wald · die Kirche · die Pension · das Blatt · die Grenze · die Unterkunft · das Museum · verreisen · der Turm · der Vogel</div>
+      <div id="ex6-d"></div>
+      <button class="check-btn" data-check="ex6combo" data-target="ex6">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Reisen und Natur</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [ // Reisen
+ ["der","Wunsch, ¨-e","etwas, das man gerne haben oder erleben möchte","điều mong ước"],
+ ["der","Tourist, -en","eine Person, die zum Vergnügen reist (weiblich: die Touristin)","khách du lịch"],
+ ["die","Ferien (Pl.)","die freie Zeit ohne Schule/Arbeit","kỳ nghỉ"],
+ ["","toll","sehr gut, super","tuyệt vời"],
+ ["","langweilig","ohne Interesse, uninteressant","nhàm chán"],
+ ["","schrecklich","sehr schlecht, furchtbar","kinh khủng"],
+ ["die","Gruppe, -n","mehrere Personen, die zusammen etwas machen","nhóm"],
+ ["die","Menge, -n","eine große Anzahl","số lượng lớn"],
+ ["der","Strand, ¨-e","der sandige oder steinige Rand am Meer","bãi biển"],
+ ["der","Tipp, -s","ein nützlicher Hinweis (auch: der Rat)","lời khuyên, mẹo"],
+ ["der","Rat (Sg.)","ein nützlicher Hinweis (auch: der Tipp)","lời khuyên"],
+ ["der","Rundgang, ¨-e","ein Spaziergang, bei dem man sich alles ansieht","chuyến đi tham quan vòng quanh"],
+ ["die","Sache, -n","ein Gegenstand oder eine Angelegenheit","đồ vật, việc"],
+ ["","wecken, hat geweckt","jemanden aus dem Schlaf holen","đánh thức"],
+ ["","weggehen, ist weggegangen","einen Ort verlassen","rời đi"],
+ ["","abholen, hat abgeholt","jemanden/etwas an einem Ort holen","đón, lấy về"],
+ ["","wenigstens","zumindest, mindestens","ít nhất là"],
+ ["","buchen, hat gebucht","etwas offiziell reservieren, z. B. eine Reise","đặt (chỗ, vé)"],
+ ["","mindestens","nicht weniger als","tối thiểu"],
+ ["das","Schiff, -e","ein großes Wasserfahrzeug","tàu thủy"],
+ ["die","Fähre, -n","ein Schiff, das Menschen/Autos über Wasser transportiert","phà"],
+ ["die","Grenze, -n","die Linie zwischen zwei Ländern","biên giới"],
+ ["die","Kirche, -n","ein Gebäude für christliche Gottesdienste","nhà thờ"],
+ ["der","Turm, ¨-e","ein hohes, schmales Bauwerk","tháp"],
+ ["das","Schloss, ¨-er","ein großes, prächtiges Gebäude, z. B. für einen König","lâu đài"],
+ ["das","Museum, Museen","ein Ort, an dem Kunst/Geschichte ausgestellt wird","bảo tàng"],
+ ["die","Kunst, ¨-e","kreatives, künstlerisches Schaffen","nghệ thuật"],
+ ["der","Künstler, -","eine Person, die Kunst macht (weiblich: die Künstlerin)","nghệ sĩ"],
+];
+
+var vocab2 = [ // Unterkunft
+ ["die","Pension, -en","eine kleine, private Unterkunft für Reisende","nhà trọ nhỏ"],
+ ["die","Unterkunft, ¨-e","ein Ort, an dem man übernachtet","chỗ ở"],
+ ["","voll","ohne freien Platz mehr","đầy, hết chỗ"],
+ ["","privat","persönlich, nicht öffentlich/offiziell","riêng tư"],
+];
+
+var vocab3 = [ // Landschaft
+ ["die","Landschaft, -en","ein Stück Natur, wie man es sieht","phong cảnh"],
+ ["der","Berg, -e","eine hohe Erhebung in der Natur","núi"],
+ ["der","Fluss, ¨-e","ein fließendes Gewässer","dòng sông"],
+ ["die","Natur (Sg.)","die Umwelt ohne menschlichen Einfluss","thiên nhiên"],
+ ["der","Vogel, ¨-","ein fliegendes Tier mit Federn","con chim"],
+ ["der","Wald, ¨-er","ein großes Gebiet mit vielen Bäumen","rừng"],
+ ["","hell","mit viel Licht","sáng"],
+ ["","dunkel","mit wenig oder keinem Licht","tối"],
+ ["das","Blatt, ¨-er","der grüne Teil einer Pflanze/eines Baumes","chiếc lá"],
+ ["der","Weg, -e","eine Strecke zum Gehen oder Fahren","con đường"],
+];
+
+var vocab4 = [ // Wetter
+ ["die","Luft (Sg.)","das, was man atmet","không khí"],
+ ["der","Nebel (Sg.)","dichte, feuchte Luft, die die Sicht einschränkt","sương mù"],
+ ["das","Gewitter, -","starker Regen mit Blitz und Donner","dông bão"],
+ ["die","Wolke, -n","eine sichtbare Ansammlung von Wasserdampf am Himmel","đám mây"],
+ ["","plötzlich","unerwartet, auf einmal","đột nhiên"],
+ ["der","Schnee (Sg.)","weiße, gefrorene Niederschlagsflocken","tuyết"],
+ ["","schneien, hat geschneit","wenn Schnee fällt","có tuyết rơi"],
+ ["der","Schirm, -e","ein Gegenstand zum Schutz vor Regen","cây dù/ô"],
+ ["","nass","feucht, mit Wasser","ướt"],
+ ["","trocken","nicht nass, ohne Feuchtigkeit","khô"],
+ ["","kühl","etwas kalt, aber nicht sehr kalt","mát"],
+ ["","warm","mit angenehmer Wärme","ấm"],
+ ["","tief","weit unten, das Gegenteil von hoch","thấp, sâu"],
+ ["","hoch","weit oben","cao"],
+ ["","schrecklich","sehr schlimm","khủng khiếp"],
+ ["","schön","angenehm, gut aussehend","đẹp"],
+];
+
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  w = w.split('/')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art.split('/')[0]+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+renderVocab(vocab4,'vg4');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= TTS ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+  return [correct,total];
+}
+function checkMCin(container){
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  return [correct,total];
+}
+function checkSelectIn(container){
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(sel){
+    if(sel.value === sel.dataset.ans){
+      sel.classList.add('correct'); sel.classList.remove('wrong'); correct++;
+    } else {
+      sel.classList.add('wrong'); sel.classList.remove('correct');
+    }
+  });
+  return [correct,total];
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='ex1combo'){
+      var box = document.getElementById('ex1');
+      var r1 = checkGroup('ex1', true);
+      var r2 = checkMCin(box);
+      var c=r1[0]+r2[0], t=r1[1]+r2[1];
+      var res=document.getElementById('res-ex1');
+      res.textContent=c+' / '+t+' richtig';
+      res.style.color=(c===t)?'var(--ok)':'var(--teal)';
+    }
+    else if(kind==='ex6combo'){
+      var c2=0,t2=0;
+      ['ex6-a','ex6-b','ex6-c','ex6-d'].forEach(function(id){
+        var r = checkGroup(id,true);
+        c2+=r[0]; t2+=r[1];
+      });
+      var res2=document.getElementById('res-ex6');
+      res2.textContent=c2+' / '+t2+' richtig';
+      res2.style.color=(c2===t2)?'var(--ok)':'var(--teal)';
+    }
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+function selectRow(label, id, options, ans, width){
+  var opts = '<option value="">–</option>'+options.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+  return '<div class="matchrow"><span class="mw-label">'+label+'</span>'+
+    '<select id="'+id+'" data-ans="'+ans+'"'+(width?(' style="min-width:'+width+'px;"'):'')+'>'+opts+'</select></div>';
+}
+
+/* ================= AUSSPRACHE: t/k/p am Wortende ================= */
+(function(){
+  var groups = [
+    ['t (b/d klingt wie t)', ["das Blatt","der Tourist","die Unterkunft","der Wald","der Strand","und"]],
+    ['k (g klingt wie k)', ["Weck mich bitte!","der Rucksack","der Berg","der Weg","mittags"]],
+    ['p (b klingt wie p)', ["Stopp!","der Tipp","der Betrieb","der Urlaub","Habt ihr noch Urlaub?"]],
+  ];
+  var el = document.getElementById('hoer-tkp');
+  el.innerHTML = groups.map(function(g){
+    return '<div class="prefix-group"><span class="prefix-tag">'+g[0]+'</span>'+
+      g[1].map(function(w){
+        return '<div class="hoer-row"><span class="hoer-word">'+w+'</span>'+
+          '<button type="button" class="tts-btn" data-word="'+w.replace(/"/g,'&quot;')+'">🔊 Anhören</button></div>';
+      }).join('')+'</div>';
+  }).join('');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= AUSSPRACHE: Wortpaare Singular/Plural ================= */
+(function(){
+  var pairs = [
+    ["der Fluss","die Flüsse"], ["der Vogel","die Vögel"],
+    ["der Wunsch","die Wünsche"], ["der Strand","die Strände"],
+    ["der Turm","die Türme"], ["das Blatt","die Blätter"],
+  ];
+  var el = document.getElementById('hoer-paare');
+  el.innerHTML = pairs.map(function(p){
+    return '<div class="pair-row">'+
+      '<span class="pair-item">'+p[0]+' <button type="button" class="tts-btn" data-word="'+p[0]+'">🔊</button></span>'+
+      '<span style="color:var(--muted);">↔</span>'+
+      '<span class="pair-item">'+p[1]+' <button type="button" class="tts-btn" data-word="'+p[1]+'">🔊</button></span>'+
+      '</div>';
+  }).join('');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+})();
+
+/* ================= EX 1: Urlaub Artikel + Was passt nicht ================= */
+(function(){
+  var arts = ['der','die','das'];
+  var rows = [
+    [["Gepäck","das"],["Koffer","der"],["Rucksack","der"],["Tasche","die"],["Jacke","die"]],
+    [["Hotel","das"],["Rezeption","die"],["Ausflug","der"],["Zimmer","das"],["Halbpension","die"],["Anmeldung","die"]],
+    [["Hotelzimmer","das"],["Einzelzimmer","das"],["Rucksack","der"],["Balkon","der"],["Übernachtung","die"],["Dusche","die"]],
+    [["Sehenswürdigkeit","die"],["Dom","der"],["Ausflug","der"],["Stadtplan","der"],["Jugendherberge","die"],["Führung","die"]],
+    [["Flug","der"],["Flugzeug","das"],["Ticket","das"],["Zoll","der"],["Gleise","die"],["Flughafen","der"]],
+    [["Durchsage","die"],["Zug","der"],["Abfahrt","die"],["Fahrkarte","die"],["Eintritt","der"],["Bahnhof","der"]],
+    [["Meer","das"],["Sonne","die"],["Wetter","das"],["Wind","der"],["Regen","der"]],
+  ];
+  var odd = [4,2,2,4,4,4,0]; // Index des Wortes, das nicht passt
+  var el = document.getElementById('ex1');
+  var html = '';
+  rows.forEach(function(row,ri){
+    html += '<div style="margin-bottom:16px;"><b>'+(ri+1)+'.</b>';
+    html += '<div class="matchrow-wrap">';
+    row.forEach(function(w,wi){
+      html += '<span class="matchrow">'+makeBlank('e1-'+ri+'-'+wi, w[1], 46)+' '+w[0]+'</span>';
+    });
+    html += '</div>';
+    html += '<div class="ex-instructions" style="margin:4px 0 0;">Was passt nicht?</div>';
+    html += mcHtml('e1mc', ri, row.map(function(w){return w[0];}), odd[ri]);
+    html += '</div>';
+  });
+  el.innerHTML = html;
+  wireMcOptions(el);
+})();
+
+/* ================= EX 2: Datum ================= */
+(function(){
+  var el = document.getElementById('ex2');
+  el.innerHTML =
+  '<div class="qline">1.4. → der erste April <i>(Frühling)</i> <span style="color:var(--ok);">✓ Beispiel</span></div>'+
+  '<div class="qline">7.7. → '+makeBlank('e2-0','der siebte Juli',180)+' (Sommer)</div>'+
+  '<div class="qline">31.12. → '+makeBlank('e2-1','der einunddreißigste Dezember',280)+' (Winter)</div>'+
+  '<div class="qline">24.10. → '+makeBlank('e2-2','der vierundzwanzigste Oktober',280)+' (Herbst)</div>'+
+  '<div class="qline">13.8. → '+makeBlank('e2-3','der dreizehnte August',220)+' (Sommer)</div>';
+})();
+
+/* ================= EX 4: Verben ================= */
+(function(){
+  var el = document.getElementById('ex4');
+  var rows = [
+    ["die Ankunft","ankommen","Sie kommt an.", true],
+    ["die Abfahrt","abfahren","Sie fährt ab.", false],
+    ["die Anmeldung","sich anmelden","Sie meldet sich an.", false],
+    ["der Abflug","abfliegen","Sie fliegt ab.", false],
+    ["die Reise","reisen","Sie reist.", false],
+    ["die Übernachtung","übernachten","Sie übernachtet.", false],
+    ["der Regen","regnen","Es regnet.", false],
+    ["der Fahrer","fahren","Sie fährt.", false],
+    ["das Ende","enden","Es endet.", false],
+  ];
+  el.innerHTML = rows.map(function(r,i){
+    if(r[3]){
+      return '<div class="qline">'+r[0]+' → <i>'+r[1]+'</i> — <i>'+r[2]+'</i> <span style="color:var(--ok);">✓ Beispiel</span></div>';
+    }
+    return '<div class="qline">'+r[0]+' → '+makeBlank('e4-'+i+'-a', r[1], 160)+' — '+makeBlank('e4-'+i+'-b', r[2], 160)+'</div>';
+  }).join('');
+})();
+
+/* ================= EX 5: Wünsche und Träume ================= */
+(function(){
+  var el = document.getElementById('ex5');
+  el.innerHTML =
+  '<p><b>Paul:</b> Mein größter '+makeBlank('e5-0','Wunsch',110)+' ist eine Weltreise. Ich möchte '+makeBlank('e5-1','mindestens',130)+' ein Jahr unterwegs sein. Zwei Jahre wären besser.</p>'+
+  '<p><b>Maria:</b> Ich möchte China '+makeBlank('e5-2','kennenlernen',160)+', aber nicht als '+makeBlank('e5-3','Tourist',120)+', am liebsten würde ich dort eine Zeit leben und arbeiten. Aber leider kann ich nicht einfach aus Deutschland '+makeBlank('e5-4','weggehen',140)+', meine Familie würde das nicht verstehen.</p>'+
+  '<p><b>Peter:</b> Ich fahre in den '+makeBlank('e5-5','Ferien',110)+' gerne ans Meer, am liebsten im Sommer und nicht alleine, sondern mit einer '+makeBlank('e5-6','Gruppe',120)+'. Das finde ich '+makeBlank('e5-7','toll',100)+'. Abends feiert man am '+makeBlank('e5-8','Strand',120)+' und man trifft eine '+makeBlank('e5-9','Menge',110)+' Leute.</p>'+
+  '<p><b>Katrin:</b> Wenn ich '+makeBlank('e5-10','reich',100)+' wäre, würde ich mit einem '+makeBlank('e5-11','Schiff',110)+' an den Nordpol fahren! Ich liebe '+makeBlank('e5-12','den Schnee|der Schnee',150)+' und Eis. Ich bin im Winter am liebsten in den '+makeBlank('e5-13','Bergen',120)+'. Wenn es geschneit hat, ist die '+makeBlank('e5-14','Landschaft',150)+' ganz ruhig.</p>';
+})();
+
+/* ================= EX 6: Minidialoge ================= */
+(function(){
+  document.getElementById('ex6-a').innerHTML =
+  '<p>● Unser Zug geht sehr früh. Kannst du mich bitte um 5.30 Uhr '+makeBlank('e6a-0','wecken',120)+'?</p>'+
+  '<p>○ Na klar, dann bin ich bestimmt schon '+makeBlank('e6a-1','wach',100)+'. Ich muss noch ein paar '+makeBlank('e6a-2','Sachen',120)+' packen.</p>'+
+  '<p>● Morgen soll es regnen. Denkst du an den '+makeBlank('e6a-3','Schirm',120)+'? Ich möchte nicht '+makeBlank('e6a-4','nass',100)+' werden.</p>';
+
+  document.getElementById('ex6-b').innerHTML =
+  '<p>● Wie ist das '+makeBlank('e6b-0','Wetter',120)+' in den Bergen? In der Sonne ist es bestimmt '+makeBlank('e6b-1','heiß',100)+' und abends wird es '+makeBlank('e6b-2','kühl',100)+'.</p>'+
+  '<p>○ Am Wochenende soll das Wetter schlechter sein. Bis mittags gibt es '+makeBlank('e6b-3','Nebel',110)+' und die '+makeBlank('e6b-4','Wolken',120)+' bleiben. Vielleicht gehen wir jetzt noch auf den '+makeBlank('e6b-5','Berg',110)+'. Ich brauche frische '+makeBlank('e6b-6','Luft',100)+'.</p>'+
+  '<p>● Frau Schmidt sagt, dass es nach einem '+makeBlank('e6b-7','Gewitter',130)+' aussieht. Lass uns lieber einen Spaziergang im '+makeBlank('e6b-8','Wald',110)+' machen, das ist '+makeBlank('e6b-9','wenigstens',130)+' nicht so weit.</p>';
+
+  document.getElementById('ex6-c').innerHTML =
+  '<p>● Meine letzten '+makeBlank('e6c-0','Ferien',110)+' waren super. Wir sind mit dem Fahrrad den „Elbe-Radweg" gefahren, immer am '+makeBlank('e6c-1','Fluss',110)+' entlang.</p>'+
+  '<p>○ Konnte man auf dem '+makeBlank('e6c-2','Weg',100)+' gut fahren?</p>'+
+  '<p>● Kein Problem. Eine Strecke sind wir auch mit dem '+makeBlank('e6c-3','Schiff',110)+' gefahren, denn es hat '+makeBlank('e6c-4','plötzlich',130)+' schrecklich geregnet. Aber es war auch sehr laut, weil das Schiff so '+makeBlank('e6c-5','voll',100)+' war. Da ist mir die '+makeBlank('e6c-6','Natur',110)+' lieber, auch bei Regen.</p>';
+
+  document.getElementById('ex6-d').innerHTML =
+  '<p>● Ich '+makeBlank('e6d-0','verreise',130)+' am liebsten in Europa. Da gibt es keine Probleme an der '+makeBlank('e6d-1','Grenze',120)+' und man bezahlt fast überall mit Euros.</p>'+
+  '<p>○ Das ist mir nicht so wichtig. Ich brauche eine gute '+makeBlank('e6d-2','Unterkunft',150)+', am liebsten '+makeBlank('e6d-3','privat',110)+', und Sehenswürdigkeiten. Ich möchte '+makeBlank('e6d-4','Museen',120)+' besichtigen und von den '+makeBlank('e6d-5','Türmen',120)+' über die ganze Stadt sehen. Und in großen Städten gehe ich immer in die wichtigsten '+makeBlank('e6d-6','Kirchen',130)+'.</p>'+
+  '<p>● Fahrt ihr dieses Jahr wieder nach Österreich?</p>'+
+  '<p>○ Ja, wir '+makeBlank('e6d-7','buchen',110)+' seit 15 Jahren immer dieselbe '+makeBlank('e6d-8','Pension',120)+' und immer im September. Die '+makeBlank('e6d-9','Natur',110)+' ist wunderbar. Ich liebe den '+makeBlank('e6d-10','Wald',100)+' und die bunten '+makeBlank('e6d-11','Blätter',120)+', die frische '+makeBlank('e6d-12','Luft',100)+', und ich mag es, wenn die '+makeBlank('e6d-13','Vögel',110)+' mich wecken.</p>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Etwas, das man gerne haben oder erleben möchte: der ...", "Wunsch"],
+    ["Ein nützlicher Hinweis: der ...", "Tipp"],
+    ["Jemanden aus dem Schlaf holen: ...", "wecken"],
+    ["Etwas offiziell reservieren, z. B. eine Reise: ...", "buchen"],
+    ["Die Linie zwischen zwei Ländern: die ...", "Grenze"],
+    ["Ein Ort, an dem man übernachtet: die ...", "Unterkunft"],
+    ["Ohne freien Platz mehr: ...", "voll"],
+    ["Eine hohe Erhebung in der Natur: der ...", "Berg"],
+    ["Ein großes Gebiet mit vielen Bäumen: der ...", "Wald"],
+    ["Dichte, feuchte Luft, die die Sicht einschränkt: der ...", "Nebel"],
+    ["Starker Regen mit Blitz und Donner: das ...", "Gewitter"],
+    ["Unerwartet, auf einmal: ...", "plötzlich"],
+    ["Weiße, gefrorene Niederschlagsflocken: der ...", "Schnee"],
+    ["Feucht, mit Wasser: ...", "nass"],
+    ["Weit unten, das Gegenteil von hoch: ...", "tief"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

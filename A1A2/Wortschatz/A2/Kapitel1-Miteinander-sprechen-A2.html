@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1 Miteinander sprechen – A2</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:60px;
+}
+header{
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff;
+  padding:22px 16px 16px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+header h1{margin:0;font-size:1.4rem;}
+header .badge{
+  display:inline-block;
+  background:var(--orange);
+  color:#fff;
+  border-radius:20px;
+  padding:3px 14px;
+  font-size:0.85rem;
+  margin-bottom:6px;
+}
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin-top:10px;
+}
+.tabbtn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.4);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:0.2s;
+}
+.tabbtn.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  font-weight:bold;
+}
+.container{
+  max-width:820px;
+  margin:0 auto;
+  padding:16px;
+}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.section h2{
+  color:var(--teal);
+  border-bottom:2px solid var(--orange-light);
+  padding-bottom:6px;
+  margin-top:0;
+  font-size:1.15rem;
+}
+.section h3{
+  color:var(--teal-light);
+  font-size:1rem;
+  margin-bottom:8px;
+}
+.vocab-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.vocab-card{
+  border:1px solid #e2ded4;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  background:#fbfaf7;
+}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{
+  margin-top:4px;
+  color:var(--teal-light);
+  font-size:0.88rem;
+}
+.vocab-vn{
+  display:none;
+  margin-top:4px;
+  color:var(--orange);
+  font-size:0.9rem;
+  font-style:italic;
+}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+.vn-switch{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.85rem;
+  color:var(--teal);
+  cursor:pointer;
+  user-select:none;
+}
+.vn-switch input{transform:scale(1.2);}
+.example-box{
+  border-left:4px solid var(--orange);
+  background:var(--orange-light);
+  border-radius:8px;
+  padding:10px 14px;
+  margin:10px 0 0;
+  font-size:0.88rem;
+  color:var(--teal);
+  line-height:1.7;
+}
+.example-box b{color:var(--orange);}
+.exercise{
+  margin-bottom:22px;
+  padding-bottom:14px;
+  border-bottom:1px solid #eee;
+}
+.exercise:last-child{border-bottom:none;}
+.ex-title{
+  font-weight:700;
+  color:var(--teal);
+  margin-bottom:6px;
+}
+.ex-instructions{
+  color:var(--muted);
+  font-size:0.9rem;
+  margin-bottom:10px;
+}
+.qline{
+  margin:10px 0;
+  line-height:1.9;
+}
+.qline input[type=text]{
+  border:none;
+  border-bottom:2px solid var(--teal-light);
+  background:transparent;
+  font-size:1rem;
+  padding:2px 4px;
+  width:150px;
+  font-family:inherit;
+  color:var(--text);
+}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.mc-options{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 12px;}
+.mc-opt{
+  border:2px solid var(--teal-light);
+  border-radius:20px;
+  padding:6px 14px;
+  cursor:pointer;
+  font-size:0.9rem;
+  background:#fff;
+}
+.mc-opt.selected{background:var(--teal-light);color:#fff;}
+.mc-opt.correct{background:var(--ok)!important;border-color:var(--ok);color:#fff;}
+.mc-opt.wrong{background:var(--bad)!important;border-color:var(--bad);color:#fff;}
+.wordbank{
+  background:var(--teal-pale);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:12px;
+  font-size:0.9rem;
+  color:var(--teal);
+}
+.wordbank b{color:var(--teal-light);}
+.matchrow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+  flex-wrap:wrap;
+}
+.matchrow select{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--teal-light);
+  font-family:inherit;
+}
+.check-btn{
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  padding:9px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+}
+.check-btn:hover{background:#d5722c;}
+.reset-btn{
+  background:#fff;
+  color:var(--teal);
+  border:2px solid var(--teal);
+  border-radius:20px;
+  padding:7px 18px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+  margin-top:8px;
+  margin-left:6px;
+}
+.result-msg{
+  margin-top:8px;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.footer-credit{
+  text-align:center;
+  color:var(--muted);
+  font-size:0.8rem;
+  margin-top:30px;
+}
+
+/* ---- Kreuzworträtsel (Treppen-Rätsel) ---- */
+.word-row{margin:12px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 28px;width:28px;height:28px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{
+  display:flex;align-items:center;justify-content:center;
+  width:20px;font-size:.8rem;font-weight:700;color:var(--teal);flex-shrink:0;
+}
+input.letter-box{
+  flex:0 0 28px !important;
+  width:28px !important;height:28px !important;
+  text-align:center;font-size:.9rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;
+  padding:0 !important;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);
+  box-sizing:border-box;
+}
+input.letter-box:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{
+  margin-top:16px;padding-top:14px;border-top:2px dashed #e2ded4;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+}
+input.letter-box.loes-box{border:1.5px solid var(--orange) !important;background:var(--orange-light);color:var(--orange);}
+@media(max-width:400px){
+  .letter-spacer{flex:0 0 22px;width:22px;height:22px;}
+  input.letter-box{flex:0 0 22px !important;width:22px !important;height:22px !important;font-size:.75rem;}
+}
+
+/* ---- Kreuzworträtsel echt (Waagerecht + Senkrecht, 2D-Grid) ---- */
+.cw2-clues-wrap{
+  display:flex;flex-wrap:wrap;gap:24px;margin-bottom:14px;font-size:.9rem;
+}
+.cw2-clues-wrap b{color:var(--teal);}
+.cw2-cluelist{margin:6px 0 0;padding-left:20px;line-height:1.7;}
+.cw2-scroll{overflow-x:auto;padding-bottom:6px;}
+.cw2-grid{
+  display:inline-grid;
+  gap:0;
+  background:transparent;
+}
+.cw2-cell{
+  position:relative;
+  width:28px;height:28px;
+}
+.cw2-cell input{
+  width:28px !important;height:28px !important;
+  text-align:center;font-size:.85rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;border-radius:0 !important;
+  padding:0 !important;margin:0;
+  text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);
+  box-sizing:border-box;
+}
+.cw2-cell input:focus{outline:none;background:var(--teal-pale);position:relative;z-index:2;border-color:var(--teal) !important;}
+.cw2-cell input.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+.cw2-cell input.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+.cw2-cell input.marked{border:2px solid var(--orange) !important;background:var(--orange-light);color:#9a3412;}
+.cw2-num{
+  position:absolute;top:0;left:2px;font-size:.55rem;font-weight:700;color:var(--teal);z-index:3;pointer-events:none;
+}
+@media(max-width:400px){
+  .cw2-cell{width:23px;height:23px;}
+  .cw2-cell input{width:23px !important;height:23px !important;font-size:.72rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Miteinander! · Kapitel 1</div>
+  <h1>1&nbsp; Miteinander sprechen</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>💬 Meinungen äußern</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Das stimmt. Du hast ganz recht.</div>
+  </div>
+
+  <div class="section">
+    <h2>🗣️ Miteinander sprechen</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Sag das noch einmal. Du musst zuhören. Was schlägst du vor? Mir ist seine Telefonnummer wieder eingefallen. Kannst du mir dein Handy kurz leihen?</div>
+  </div>
+
+  <div class="section">
+    <h2>😯 Reaktionen</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="example-box"><b>Sag's im Gespräch:</b> Das ist nicht wahr. Er lügt! So ein Quatsch! Das war dumm von mir. Es tut mir leid. Das ist mir egal. Das ist verrückt. Das weiß ich ganz genau. Bist du dir da ganz sicher? Nein, ich bin unsicher. Wahrscheinlich hat sie recht. Das ist unwahrscheinlich.</div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <!-- 1 Meinungen äußern -->
+  <div class="section">
+    <h2>1 Meinungen äußern</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Was passt zusammen? Ordnen Sie zu.</div>
+      <div id="ex1-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex1-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Kreuzworträtsel: Miteinander sprechen</div>
+      <div class="ex-instructions">Lösen Sie das Kreuzworträtsel. Einige Buchstaben sind schon markiert (Kreuzungen).</div>
+      <div class="cw2-clues-wrap">
+        <div><b>Waagerecht →</b><ol id="cw2-across" class="cw2-cluelist"></ol></div>
+        <div><b>Senkrecht ↓</b><ol id="cw2-down" class="cw2-cluelist"></ol></div>
+      </div>
+      <div class="cw2-scroll"><div id="cw2-grid" class="cw2-grid"></div></div>
+      <button class="check-btn" data-check="grid2">Prüfen</button>
+      <button class="reset-btn" data-reset="grid2">Zurücksetzen</button>
+      <div class="result-msg" id="res-cw2-grid"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">3 Was passt nicht? Klicken Sie das falsche Wort an.</div>
+      <div id="ex1-3"></div>
+      <button class="check-btn" data-check="mc" data-target="ex1-3">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1-3"></div>
+    </div>
+  </div>
+
+  <!-- 2 Reaktionen und Gefühle -->
+  <div class="section">
+    <h2>2 Reaktionen und Gefühle</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Wie heißt das Gegenteil? Ordnen Sie zu.</div>
+      <div id="ex2-1"></div>
+      <button class="check-btn" data-check="selects" data-target="ex2-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Ergänzen Sie die Sätze mit Wörtern aus dem Kasten.</div>
+      <div class="wordbank"><b>Kasten:</b> leid · sicher · Quatsch · egal · verrückt · genau</div>
+      <div id="ex2-2"></div>
+      <button class="check-btn" data-check="group" data-target="ex2-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-2"></div>
+    </div>
+  </div>
+
+  <!-- 3 Verben rund ums Gespräch -->
+  <div class="section">
+    <h2>3 Verben rund ums Gespräch</h2>
+
+    <div class="exercise">
+      <div class="ex-title">1 Ergänzen Sie die Sätze mit dem passenden Verb.</div>
+      <div class="wordbank"><b>Kasten:</b> stören · einfallen · merken · versprechen · vorschlagen</div>
+      <div id="ex3-1"></div>
+      <button class="check-btn" data-check="group" data-target="ex3-1">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-1"></div>
+    </div>
+
+    <div class="exercise">
+      <div class="ex-title">2 Welche Reaktion passt? Klicken Sie die passende Antwort an.</div>
+      <div id="ex3-2"></div>
+      <button class="check-btn" data-check="mc" data-target="ex3-2">Kontrollieren</button>
+      <div class="result-msg" id="res-ex3-2"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Miteinander sprechen</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [
+ ["die","Meinung, -en","was man über etwas denkt und findet","ý kiến, quan điểm"],
+ ["","meinen (+A)","eine Meinung zu etwas haben, etwas denken","cho rằng, nghĩ là"],
+ ["","dafür sein","eine Sache gut finden, zustimmen","đồng ý, tán thành"],
+ ["","dagegen sein","eine Sache nicht gut finden, nicht zustimmen","phản đối, không tán thành"],
+ ["","diskutieren (über +A)","über ein Thema sprechen und verschiedene Meinungen austauschen","thảo luận"],
+ ["","streiten (mit +D)","laut und mit unterschiedlicher Meinung sprechen, sich nicht einig sein","cãi nhau, tranh cãi"],
+ ["","recht haben","mit seiner Meinung richtig liegen","có lý, đúng"],
+ ["","stimmen","richtig, wahr sein","đúng (sự việc)"],
+];
+
+var vocab2 = [
+ ["","sagen (+A)","etwas mit Worten ausdrücken","nói"],
+ ["","zuhören (+D)","aufmerksam auf das achten, was jemand sagt","lắng nghe"],
+ ["","wahr","der Wirklichkeit entsprechend, nicht gelogen","đúng sự thật"],
+ ["","intelligent","klug, fähig, gut zu denken und zu verstehen","thông minh"],
+ ["","dumm","nicht klug, wenig intelligent","ngu ngốc, kém thông minh"],
+ ["","höflich","freundlich und mit gutem Benehmen","lịch sự"],
+ ["","unhöflich","nicht höflich, ohne gutes Benehmen","bất lịch sự"],
+ ["der","Inhalt, -e","das, worüber ein Text, ein Gespräch usw. handelt","nội dung"],
+ ["die","Nachrichten (Pl.)","aktuelle Informationen über Ereignisse, z. B. im Fernsehen","tin tức"],
+ ["","vorschlagen (+A)","eine Idee nennen, die man für gut hält","đề xuất, gợi ý"],
+ ["","merken (sich +A)","etwas im Gedächtnis behalten, bemerken","nhận ra, ghi nhớ"],
+ ["","einfallen (+D)","plötzlich an etwas denken müssen","chợt nhớ ra"],
+ ["","stören (+A)","jemanden bei etwas unterbrechen, negativ beeinflussen","làm phiền"],
+ ["","versprechen (+D +A)","fest zusagen, dass man etwas tun wird","hứa"],
+ ["das","Handy, -s","ein kleines, mobiles Telefon","điện thoại di động"],
+ ["das","Smartphone, -s","ein Handy mit vielen Zusatzfunktionen wie Internet und Apps","điện thoại thông minh"],
+ ["","leihen (+D +A)","jemandem etwas für kurze Zeit geben, das er zurückgeben muss","cho mượn"],
+];
+
+var vocab3 = [
+ ["","lügen","bewusst etwas Falsches sagen","nói dối"],
+ ["der","Quatsch (Sg.)","Unsinn, etwas, das nicht stimmt","chuyện vớ vẩn, nói nhảm"],
+ ["","leidtun (+D)","Bedauern für etwas ausdrücken","lấy làm tiếc"],
+ ["","egal","ohne Bedeutung, es spielt keine Rolle","không quan trọng, không sao"],
+ ["","verrückt","unglaublich, seltsam, nicht normal","điên rồ, kỳ lạ"],
+ ["","natürlich","selbstverständlich, klar","dĩ nhiên, tất nhiên"],
+ ["","genau","exakt, präzise","chính xác"],
+ ["","ganz","vollständig, sehr","hoàn toàn, rất"],
+ ["","sicher","ohne Zweifel, überzeugt","chắc chắn"],
+ ["","unsicher","mit Zweifel, nicht überzeugt","không chắc chắn"],
+ ["","wahrscheinlich","vermutlich, mit hoher Möglichkeit","có lẽ, khả năng cao"],
+ ["","unwahrscheinlich","mit geringer Möglichkeit, kaum zu erwarten","khó xảy ra, không chắc"],
+];
+
+function ttsCleanWord(word){
+  // remove plural/parenthetical notation for cleaner pronunciation, e.g. "Nudel, -n" -> "Nudel"
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+
+/* ================= TTS (Anhören) ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase(); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+function checkMC(containerId){
+  var container = document.getElementById(containerId);
+  var groups = container.querySelectorAll('.mc-options');
+  var correct = 0, total = groups.length;
+  groups.forEach(function(g){
+    var opts = g.querySelectorAll('.mc-opt');
+    opts.forEach(function(o){
+      if(o.dataset.correct==='1') o.classList.add('correct');
+      if(o.classList.contains('selected') && o.dataset.correct!=='1') o.classList.add('wrong');
+    });
+    var sel = g.querySelector('.mc-opt.selected');
+    if(sel && sel.dataset.correct==='1') correct++;
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+function checkGroupSelects(containerId){
+  var container = document.getElementById(containerId);
+  var selects = container.querySelectorAll('select');
+  var correct = 0, total = selects.length;
+  selects.forEach(function(s){
+    if(s.value===s.dataset.ans){ s.style.borderColor='var(--ok)'; s.style.background='#eafaf0'; correct++; }
+    else { s.style.borderColor='var(--bad)'; s.style.background='#fdecec'; }
+  });
+  var res = document.getElementById('res-'+containerId);
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+
+/* central dispatch for check buttons */
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+    else if(kind==='mc') checkMC(target);
+    else if(kind==='selects') checkGroupSelects(target);
+    else if(kind==='grid2') checkGrid2();
+  });
+});
+document.querySelectorAll('.reset-btn[data-reset]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.dataset.reset==='grid2') resetGrid2();
+  });
+});
+
+function mcHtml(idPrefix, i, options, correctIdx){
+  var opts = options.map(function(o,idx){
+    return '<span class="mc-opt" data-correct="'+(idx===correctIdx?1:0)+'">'+o+'</span>';
+  }).join('');
+  return '<div class="mc-options" id="'+idPrefix+'-'+i+'">'+opts+'</div>';
+}
+function wireMcOptions(root){
+  root.querySelectorAll('.mc-options').forEach(function(g){
+    g.querySelectorAll('.mc-opt').forEach(function(o){
+      o.addEventListener('click', function(){
+        g.querySelectorAll('.mc-opt').forEach(function(x){ x.classList.remove('selected'); });
+        o.classList.add('selected');
+      });
+    });
+  });
+}
+
+/* ================= EX 1.1 Was passt zusammen? ================= */
+(function(){
+  var items = [
+    ["Man müsste viel mehr Sport machen.","Das stimmt. Du hast ganz recht."],
+    ["Kannst du mir dein Handy kurz leihen?","Ich hab es leider nicht dabei."],
+    ["Du hast gestern gelogen!","Das ist nicht wahr!"],
+    ["Kommst du morgen mit ins Kino?","Ganz sicher, aber erst spät."],
+    ["Was hast du gerade gesagt?","Du musst besser zuhören."],
+    ["Wollen wir laufen oder Fahrrad fahren?","Das ist mir egal."],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex1-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' → <select id="e11-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 1.2 Kreuzworträtsel (echtes Gitter, Waagerecht + Senkrecht) ================= */
+/* Jedes Wort: {num, dir:'A'|'D', row, col, answer, clue} — Koordinaten 0-indiziert.
+   Kreuzungszellen (von 2 Wörtern geteilt) werden automatisch erkannt und als Hinweis vorausgefüllt. */
+var CW2_WORDS = [
+  {num:1, dir:'A', row:0,  col:2,  answer:'INHALT',      clue:'Der Film war witzig, aber einen … hatte er eigentlich nicht.'},
+  {num:2, dir:'D', row:0,  col:3,  answer:'NACHRICHTEN',  clue:'Um 23 Uhr 15 kommen die … im Fernsehen. Da will ich zu Hause sein.'},
+  {num:4, dir:'A', row:4,  col:1,  answer:'MERKEN',       clue:'Kannst du dir unseren Termin … oder soll ich ihn dir aufschreiben?'},
+  {num:3, dir:'D', row:2,  col:6,  answer:'HANDY',        clue:'Kannst du mir mal kurz dein … leihen? Ich muss telefonieren.'},
+  {num:5, dir:'D', row:6,  col:12, answer:'DISKUTIEREN',  clue:'Wir können nicht über jeden Satz …, sonst sind wir morgen noch nicht fertig.'},
+  {num:8, dir:'A', row:8,  col:2,  answer:'STREITEN',     clue:'Diskutieren heißt auch … . Man kann nicht immer einer Meinung sein.'},
+  {num:7, dir:'A', row:10, col:11, answer:'QUATSCH',      clue:'Rosi will Sängerin werden? So ein …! Die kann ja gar nicht singen.'},
+  {num:6, dir:'A', row:14, col:10, answer:'VERSPRECHEN',  clue:'Ich kann Ihnen …, dass wir den Kühlschrank am Freitag liefern.'},
+];
+
+function renderGrid2(containerId, words){
+  var grid = document.getElementById(containerId);
+  var cellData = {}; // "r_c" -> {letter, owners:[num,...], numLabel}
+  var maxRow=0, maxCol=0;
+
+  words.forEach(function(w){
+    for(var i=0;i<w.answer.length;i++){
+      var r = w.row + (w.dir==='D' ? i : 0);
+      var c = w.col + (w.dir==='A' ? i : 0);
+      var key = r+'_'+c;
+      if(!cellData[key]) cellData[key] = {letter:w.answer[i], owners:[], numLabel:null};
+      cellData[key].owners.push(w.num);
+      if(i===0) cellData[key].numLabel = w.num;
+      maxRow = Math.max(maxRow, r); maxCol = Math.max(maxCol, c);
+    }
+  });
+
+  grid.style.gridTemplateColumns = 'repeat('+(maxCol+1)+', 28px)';
+  grid.style.gridTemplateRows = 'repeat('+(maxRow+1)+', 28px)';
+  grid.innerHTML='';
+
+  Object.keys(cellData).forEach(function(key){
+    var parts = key.split('_'); var r=+parts[0], c=+parts[1];
+    var d = cellData[key];
+    var isHint = d.owners.length > 1;
+    var cell = document.createElement('div');
+    cell.className='cw2-cell';
+    cell.style.gridRow = (r+1); cell.style.gridColumn = (c+1);
+    var numHtml = d.numLabel ? '<span class="cw2-num">'+d.numLabel+'</span>' : '';
+    cell.innerHTML = numHtml+'<input type="text" maxlength="1" data-ans="'+d.letter+'"'+
+      (isHint ? ' readonly value="'+d.letter+'" class="marked"' : '') + '>';
+    grid.appendChild(cell);
+  });
+
+  grid.querySelectorAll('input:not([readonly])').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+    });
+  });
+
+  var acrossEl = document.getElementById('cw2-across');
+  var downEl = document.getElementById('cw2-down');
+  acrossEl.innerHTML = words.filter(function(w){return w.dir==='A';})
+    .sort(function(a,b){return a.num-b.num;})
+    .map(function(w){ return '<li><b>'+w.num+'.</b> '+w.clue+'</li>'; }).join('');
+  downEl.innerHTML = words.filter(function(w){return w.dir==='D';})
+    .sort(function(a,b){return a.num-b.num;})
+    .map(function(w){ return '<li><b>'+w.num+'.</b> '+w.clue+'</li>'; }).join('');
+}
+
+function checkGrid2(){
+  var inputs = document.querySelectorAll('#cw2-grid input:not([readonly])');
+  var correct=0, total=inputs.length;
+  inputs.forEach(function(inp){
+    if(normalize(inp.value)===normalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById('res-cw2-grid');
+  res.textContent = correct+' / '+total+' richtig';
+  res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+}
+function resetGrid2(){
+  document.querySelectorAll('#cw2-grid input:not([readonly])').forEach(function(inp){
+    inp.value=''; inp.classList.remove('correct','wrong');
+  });
+  document.getElementById('res-cw2-grid').textContent='';
+}
+
+renderGrid2('cw2-grid', CW2_WORDS);
+
+/* ================= EX 1.3 Was passt nicht? ================= */
+(function(){
+  var data = [
+    ["eine Meinung",["äußern","haben","stören"],2],
+    ["einen Vorschlag",["machen","vorschlagen","leihen"],2],
+    ["ein Versprechen",["geben","brechen","zuhören"],2],
+    ["die Nachrichten",["ansehen","hören","leihen"],2],
+    ["Quatsch",["reden","machen","versprechen"],2],
+  ];
+  var el = document.getElementById('ex1-3');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. <b>'+d[0]+'</b>'+mcHtml('mc13',i,d[1],d[2])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* ================= EX 2.1 Gegenteile ================= */
+(function(){
+  var items = [
+    ["sicher","unsicher"],
+    ["höflich","unhöflich"],
+    ["wahrscheinlich","unwahrscheinlich"],
+    ["intelligent","dumm"],
+    ["dafür sein","dagegen sein"],
+    ["die Wahrheit sagen","lügen"],
+  ];
+  var opts = items.map(function(it){ return it[1]; });
+  var el = document.getElementById('ex2-1');
+  el.innerHTML = items.map(function(it,i){
+    var optHtml = opts.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+    return '<div class="matchrow">'+(i+1)+'. '+it[0]+' ↔ <select id="e21-'+i+'" data-ans="'+it[1]+'"><option value="">wählen...</option>'+optHtml+'</select></div>';
+  }).join('');
+})();
+
+/* ================= EX 2.2 Reaktionen ergänzen ================= */
+(function(){
+  var el = document.getElementById('ex2-2');
+  el.innerHTML =
+  '<p>1. Es tut mir '+makeBlank('e22-0','leid',110)+', ich habe unseren Termin total vergessen.</p>'+
+  '<p>2. Bist du dir ganz '+makeBlank('e22-1','sicher',110)+', dass das stimmt?</p>'+
+  '<p>3. So ein '+makeBlank('e22-2','Quatsch',120)+'! Das glaube ich dir nicht.</p>'+
+  '<p>4. Mir ist es völlig '+makeBlank('e22-3','egal',100)+', wohin wir am Wochenende fahren.</p>'+
+  '<p>5. Seit er den neuen Job hat, ist er ganz schön '+makeBlank('e22-4','verrückt',120)+' geworden.</p>'+
+  '<p>6. Ich weiß das ganz '+makeBlank('e22-5','genau',110)+', ich war ja selbst dabei.</p>';
+})();
+
+/* ================= EX 3.1 Verben ergänzen ================= */
+(function(){
+  var el = document.getElementById('ex3-1');
+  el.innerHTML =
+  '<p>1. Entschuldigung, darf ich kurz '+makeBlank('e31-0','stören',110)+'? Ich habe nur eine kurze Frage.</p>'+
+  '<p>2. Ich kann dir gerade nicht sagen, wie er heißt, aber der Name fällt mir bestimmt gleich wieder '+makeBlank('e31-1','ein',90)+'.</p>'+
+  '<p>3. Kannst du dir bitte den Termin '+makeBlank('e31-2','merken',110)+'? Ich habe keinen Kalender dabei.</p>'+
+  '<p>4. Ich '+makeBlank('e31-3','verspreche',130)+' dir, dass ich pünktlich komme.</p>'+
+  '<p>5. Ich möchte einen Ausflug ans Meer '+makeBlank('e31-4','vorschlagen',140)+'. Was haltet ihr davon?</p>';
+})();
+
+/* ================= EX 3.2 Welche Reaktion passt? ================= */
+(function(){
+  var data = [
+    ["Wir müssten viel mehr für die Umwelt tun.",["Das stimmt. Du hast ganz recht.","Das ist mir egal.","Du musst zuhören."],0],
+    ["Anke sagt, dass sie Emil mit Tina gesehen hat.",["Das ist nicht wahr. Sie lügt.","Das tut mir leid.","Was schlägst du vor?"],0],
+    ["Pass doch auf! Jetzt ist mein Hemd schmutzig!",["Das war dumm von mir. Es tut mir leid.","Das ist mir egal.","Ich weiß das ganz genau."],0],
+    ["Du hast doch gelogen!",["Das ist nicht wahr!","Das ist unwahrscheinlich.","Was hast du gesagt?"],0],
+    ["Kannst du mir dein Handy kurz leihen?",["Ich hab es leider nicht dabei.","Was schlägst du vor?","Du musst zuhören."],0],
+    ["Wollen wir Fahrrad fahren oder laufen?",["Das ist mir egal.","Wahrscheinlich hat sie recht.","Bist du dir da ganz sicher?"],0],
+  ];
+  var el = document.getElementById('ex3-2');
+  el.innerHTML = data.map(function(d,i){
+    return '<div class="qline">'+(i+1)+'. '+d[0]+mcHtml('mc32',i,d[1],d[2])+'</div>';
+  }).join('');
+  wireMcOptions(el);
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Was man über etwas denkt und findet, nennt man die ...", "Meinung"],
+    ["Laut und mit unterschiedlicher Meinung sprechen: ...", "streiten"],
+    ["Über ein Thema sprechen und verschiedene Meinungen austauschen: ...", "diskutieren"],
+    ["Aufmerksam auf das achten, was jemand sagt: ...", "zuhören"],
+    ["Das Gegenteil von höflich ist ...", "unhöflich"],
+    ["Aktuelle Informationen über Ereignisse, z. B. im Fernsehen, heißen die ...", "Nachrichten"],
+    ["Eine Idee nennen, die man für gut hält: ...", "vorschlagen"],
+    ["Plötzlich an etwas denken müssen: jemandem etwas ...", "einfallen"],
+    ["Fest zusagen, dass man etwas tun wird: ...", "versprechen"],
+    ["Jemandem etwas für kurze Zeit geben, das er zurückgeben muss: ...", "leihen"],
+    ["Bewusst etwas Falsches sagen: ...", "lügen"],
+    ["Unsinn, etwas, das nicht stimmt, nennt man ...", "Quatsch"],
+    ["Das Gegenteil von sicher ist ...", "unsicher"],
+    ["Mit hoher Möglichkeit, vermutlich: ...", "wahrscheinlich"],
+    ["Ohne Bedeutung, es spielt keine Rolle: ...", "egal"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

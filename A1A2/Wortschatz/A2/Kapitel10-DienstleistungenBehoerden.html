@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Dienstleistungen und Behörden</title>
+<style>
+:root{
+  --teal:#0f3d3e;
+  --teal-light:#1b5c5d;
+  --teal-pale:#e6f0ef;
+  --orange:#e8823a;
+  --orange-light:#fdece0;
+  --bg:#f7f5f0;
+  --card:#ffffff;
+  --text:#233333;
+  --muted:#6b7c7c;
+  --der:#2563eb;
+  --das:#16a34a;
+  --die:#dc2626;
+  --ok:#16a34a;
+  --bad:#dc2626;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI', Arial, sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;padding:22px 16px 16px;text-align:center;position:sticky;top:0;z-index:20;}
+header h1{margin:0;font-size:1.3rem;}
+header .badge{display:inline-block;background:var(--orange);color:#fff;border-radius:20px;padding:3px 14px;font-size:0.85rem;margin-bottom:6px;}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.tabbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.9rem;transition:0.2s;}
+.tabbtn.active{background:var(--orange);border-color:var(--orange);font-weight:bold;}
+.container{max-width:820px;margin:0 auto;padding:16px;}
+.tabcontent{display:none;}
+.tabcontent.active{display:block;}
+.section{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.section h2{color:var(--teal);border-bottom:2px solid var(--orange-light);padding-bottom:6px;margin-top:0;font-size:1.15rem;}
+.section h3{color:var(--teal-light);font-size:1rem;margin-bottom:8px;}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+.vocab-card{border:1px solid #e2ded4;border-radius:10px;padding:10px 12px;cursor:pointer;background:#fbfaf7;}
+.vocab-card:hover{background:var(--teal-pale);}
+.vocab-word-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.vocab-tts-btn{flex:0 0 auto;background:var(--teal-light);color:#fff;border:none;border-radius:16px;padding:3px 10px;font-size:0.78rem;cursor:pointer;}
+.vocab-tts-btn:hover{background:var(--teal);}
+.vocab-word{font-weight:600;font-size:1rem;}
+.vocab-word.der{color:var(--der);}
+.vocab-word.das{color:var(--das);}
+.vocab-word.die{color:var(--die);}
+.vocab-de{margin-top:4px;color:var(--teal-light);font-size:0.88rem;}
+.vocab-vn{display:none;margin-top:4px;color:var(--orange);font-size:0.9rem;font-style:italic;}
+.vocab-card.open .vocab-vn{display:block;}
+.vn-toggle-bar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.vn-switch{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--teal);cursor:pointer;user-select:none;}
+.vn-switch input{transform:scale(1.2);}
+.scale-box{border:1px dashed var(--orange);background:var(--orange-light);border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:600;color:var(--teal);}
+.scale-box div{margin:3px 0;}
+.exercise{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid #eee;}
+.exercise:last-child{border-bottom:none;}
+.ex-title{font-weight:700;color:var(--teal);margin-bottom:6px;}
+.ex-instructions{color:var(--muted);font-size:0.9rem;margin-bottom:10px;}
+.qline{margin:10px 0;line-height:1.9;}
+.qline input[type=text]{border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-size:1rem;padding:2px 4px;width:150px;font-family:inherit;color:var(--text);}
+.qline input[type=text]:focus{outline:none;border-bottom-color:var(--orange);}
+.qline input.correct{border-bottom-color:var(--ok);background:#eafaf0;}
+.qline input.wrong{border-bottom-color:var(--bad);background:#fdecec;}
+.wordbank{background:var(--teal-pale);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.9rem;color:var(--teal);}
+.wordbank b{color:var(--teal-light);}
+.check-btn{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:20px;cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:8px;}
+.check-btn:hover{background:#d5722c;}
+.result-msg{margin-top:8px;font-weight:600;font-size:0.9rem;}
+.footer-credit{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:30px;}
+.note-box{border:1px dashed #c9c2b2;border-radius:10px;padding:10px 14px;margin:10px 0;background:#fbfaf7;}
+.note-box textarea{width:100%;min-height:44px;border:none;border-bottom:2px solid var(--teal-light);background:transparent;font-family:inherit;font-size:0.95rem;padding:6px 2px;resize:vertical;}
+.note-box textarea:focus{outline:none;border-bottom-color:var(--orange);}
+.hoer-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0;padding:8px 10px;border-radius:10px;background:#fbfaf7;border:1px solid #e2ded4;}
+.hoer-word{font-weight:700;color:var(--teal);min-width:150px;}
+.tts-btn{background:var(--teal-light);color:#fff;border:none;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:0.85rem;font-weight:600;}
+.tts-btn:hover{background:var(--teal);}
+.prefix-group{margin-bottom:14px;}
+.prefix-tag{display:inline-block;background:var(--teal);color:#fff;border-radius:8px;padding:2px 10px;font-weight:700;font-size:0.85rem;margin-bottom:6px;}
+.xw-clue{margin:8px 0;line-height:1.7;font-size:0.95rem;}
+.xw-clue b{color:var(--teal);}
+.xw-clue-list{font-size:.92rem;line-height:1.7;padding-left:20px;margin:10px 0;}
+/* ---- Kreuzworträtsel-Engine CSS ---- */
+.word-row{margin:14px 0;}
+.letterrow{display:flex;flex-wrap:nowrap;}
+.letterrow > *:first-child{margin-left:0 !important;}
+.letter-spacer{flex:0 0 30px;width:30px;height:30px;margin-left:-1.5px;box-sizing:border-box;}
+.rownum{display:flex;align-items:center;justify-content:center;width:20px;font-size:.82rem;font-weight:700;color:var(--teal);flex-shrink:0;}
+input.letter-box{
+  flex:0 0 30px !important;width:30px !important;height:30px !important;
+  text-align:center;font-size:.95rem;font-weight:700;line-height:1;
+  border:1.5px solid #333 !important;margin-left:-1.5px !important;border-radius:0 !important;
+  padding:0 !important;text-transform:uppercase;font-family:inherit;background:#fff;color:var(--text);
+  box-sizing:border-box;
+}
+input.letter-box:focus{outline:none;background:#eafaf7;position:relative;z-index:2;border-color:var(--teal) !important;}
+input.letter-box.correct{border-color:#333 !important;background:#f0fdf4;color:var(--ok);}
+input.letter-box.wrong{border-color:#333 !important;background:#fef2f2;color:var(--bad);}
+input.letter-box.marked{border:2.5px solid var(--orange) !important;background:#fff7ed;color:#9a3412;position:relative;z-index:1;}
+.loes-wrap{margin-top:18px;padding-top:14px;border-top:2px dashed var(--teal-pale);display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+input.letter-box.loes-box{border:1.5px solid var(--teal) !important;background:var(--teal-pale);color:var(--teal);}
+@media(max-width:400px){
+  .letter-spacer{flex:0 0 24px;width:24px;height:24px;}
+  input.letter-box{flex:0 0 24px !important;width:24px !important;height:24px !important;font-size:.8rem;}
+}
+button.check{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:8px;}
+button.check:hover{background:#0c5f58;}
+button.reset{background:#fff;color:var(--teal);border:2px solid var(--teal);border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:8px;margin-left:6px;}
+.result{font-size:.85rem;margin-top:8px;font-weight:600;}
+.result.ok{color:var(--ok);}
+.result.bad{color:var(--orange);}
+/* ---- Ende Engine CSS ---- */
+.pic-row{display:flex;align-items:center;gap:14px;margin:14px 0;flex-wrap:wrap;}
+.pic-box{width:84px;height:84px;flex:0 0 84px;border-radius:12px;background:#fbfaf7;border:1px solid #e2ded4;display:flex;align-items:center;justify-content:center;font-size:2.6rem;line-height:1;}
+.pic-box svg{width:100%;height:100%;}
+.syl-pool{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+.syl-tile{
+  font-size:0.85rem;font-weight:700;padding:6px 12px;border-radius:9px;
+  color:#fff;letter-spacing:0.3px;box-shadow:0 2px 4px rgba(0,0,0,0.12);
+  user-select:none;cursor:pointer;transition:transform 0.1s, opacity 0.2s;
+}
+.syl-tile:hover{transform:translateY(-2px);}
+.syl-tile.used{opacity:0.25;cursor:default;pointer-events:none;transform:none;}
+.syl-tile.shake{animation:syl-shake 0.3s;}
+@keyframes syl-shake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-4px);}
+  75%{transform:translateX(4px);}
+}
+.syl-answer-row{display:flex;align-items:center;gap:10px;margin:12px 0;}
+.syl-dot{width:18px;height:18px;border-radius:50%;flex:0 0 18px;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.hint-btn{background:#fdece0;color:var(--orange);border:1px solid var(--orange);border-radius:14px;padding:3px 10px;font-size:0.78rem;font-weight:600;cursor:pointer;}
+.hint-btn:hover{background:var(--orange);color:#fff;}
+.hint-text{display:block;font-size:0.82rem;color:var(--orange);font-style:italic;margin-top:4px;opacity:0;max-height:0;overflow:hidden;transition:opacity 0.3s;}
+.hint-text.show{opacity:1;max-height:60px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">A2 · Wortschatz</div>
+  <h1>10&nbsp; Dienstleistungen und Behörden</h1>
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="wortschatz">📚 Wortschatz</button>
+    <button class="tabbtn" data-tab="übungen">✏️ Übungen</button>
+    <button class="tabbtn" data-tab="test">🎯 Schnelltest</button>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============ WORTSCHATZ ============ -->
+<div id="wortschatz" class="tabcontent active">
+
+  <div class="vn-toggle-bar">
+    <a href="wortschatz-a2.html" style="display:inline-flex;align-items:center;gap:5px;margin-right:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;font-weight:600;">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"></path><path d="M9 22V12h6v10"></path></svg>
+      Übersicht
+    </a>
+    <label class="vn-switch"><input type="checkbox" id="vnToggle"> Vietnamesisch</label>
+  </div>
+
+  <div class="section">
+    <h2>🏛️ Ämter</h2>
+    <div class="vocab-grid" id="vg1"></div>
+    <div class="scale-box">
+      <div>Ihre Tochter kann Ausbildungs<b>förderung</b> bekommen.</div>
+      <div>Die Ausbildungs<b>beratung</b> findet immer mittwochs statt.</div>
+      <div>Kinder bekommen <b>Ermäßigung</b>.</div>
+      <div>Für die Beratung müssen Sie eine <b>Gebühr</b> von 15 Euro zahlen.</div>
+      <div>Zahlen Sie die <b>Gebühr</b> auf unserem Konto ein.</div>
+      <div>Für den <b>Kredit</b> müssen Sie 11 % Zinsen bezahlen.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>📮 Telefon und Post</h2>
+    <div class="vocab-grid" id="vg2"></div>
+    <div class="scale-box">
+      <div>Bitte <b>bestätigen</b> Sie den Empfang des Briefes.</div>
+      <div>Sehr <b>geehrte</b> Damen und Herren, …</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>📄 Umgang mit Ämtern</h2>
+    <div class="vocab-grid" id="vg3"></div>
+    <div class="scale-box">
+      <div>Dieser <b>Bescheid</b> wurde automatisch erstellt und ist ohne Unterschrift <b>gültig</b>.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔊 Wortakzent</h2>
+    <div class="ex-instructions">Die Präfixe <b>be-</b>, <b>er-</b>, <b>ver-</b> werden nie betont. Hören Sie und sprechen Sie die Wörter laut nach.</div>
+    <div id="hoer-be" class="prefix-group"></div>
+    <div id="hoer-er" class="prefix-group"></div>
+    <div id="hoer-ver" class="prefix-group"></div>
+  </div>
+
+</div>
+
+<!-- ============ ÜBUNGEN ============ -->
+<div id="übungen" class="tabcontent">
+
+  <div class="section">
+    <h2>1 Wiederholung A1</h2>
+    <div class="exercise">
+      <div class="ex-title">1a Welche Wörter fallen Ihnen zu den Bildern ein?</div>
+      <div class="ex-instructions">Welche Wörter fallen Ihnen zu den Bildern ein?</div>
+      <div id="ex1a"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1a">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1a"></div>
+    </div>
+    <div class="exercise">
+      <div class="ex-title">1b Ergänzen Sie die Wörter.</div>
+      <div class="wordbank"><b>Kasten:</b> der Antrag · die Bank · der Geldautomat · der Ausweis · der Pass · das Formular · ausfüllen · unterschreiben · die Adresse · der Name · die Straße · die Postleitzahl · der Ort · der Familienstand</div>
+      <div id="ex1b"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex1b">Kontrollieren</button>
+      <div class="result-msg" id="res-ex1b"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2 Ämter-Silbenrätsel</h2>
+    <div class="exercise">
+      <div class="ex-title">2 Wie viele Ämter und Behörden können Sie aus den Silben zusammensetzen?</div>
+      <div class="ex-instructions">Silben mit der gleichen Farbe gehören zusammen. Verbinden Sie sie gedanklich zu einem Wort und schreiben Sie es unten.</div>
+      <div id="ex2-pool" class="syl-pool"></div>
+      <div id="ex2-silben"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex2-silben">Kontrollieren</button>
+      <div class="result-msg" id="res-ex2-silben"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3 Kreuzworträtsel</h2>
+    <div class="exercise">
+      <div class="ex-title">3 Dienstleistungen und Behörden – Lösen Sie das Kreuzworträtsel.</div>
+      <ol class="xw-clue-list">
+        <li>Das Dokument ist nur mit … und Unterschrift der Behörde gültig.</li>
+        <li>Sie müssen den Antrag innerhalb einer … von 14 Tagen unterschrieben zurückschicken.</li>
+        <li>Sie können einen … auf Wohngeld stellen. Füllen Sie dazu das Formular aus.</li>
+        <li>Bitte überweisen Sie den … von 25,80 Euro auf unser Konto bei der VR-Bank.</li>
+        <li>Die Gemeinde verlangt eine … für die Müllabfuhr, das Wasser und das Abwasser.</li>
+        <li>Für einen … muss man zurzeit 5 % Zinsen bezahlen.</li>
+        <li>Schüler und Studenten können Ausbildungs… bekommen. Sie heißt BAföG.</li>
+        <li>Die Aufenthalts… gilt für 12 Monate, dann muss sie verlängert werden.</li>
+        <li>In Deutschland gibt es für fast alle eine …, z. B. für Krankheit, Arbeitslosigkeit, Unfall, Alter.</li>
+        <li>Der Ausweis gilt für die … von 12 Monaten. Dann muss er verlängert werden.</li>
+        <li>Die Agentur für Arbeit bietet auch Berufs… an. Diese ist meistens kostenlos.</li>
+        <li>Kinder bekommen in Bussen und Straßenbahnen eine … Ihre Fahrkarte kostet nicht so viel wie für Erwachsene.</li>
+      </ol>
+      <div class="ex-instructions" style="margin-top:6px;"><b>Senkrecht:</b> Viele Ausländer beantragen nach einigen Jahren in Deutschland die … Sie bekommen dann einen deutschen Pass und die deutschen Bürgerrechte (Wahlrecht etc.).</div>
+
+      <div id="xw10-body"></div>
+      <div class="loes-wrap">
+        <span style="font-size:.9rem;"><b>🔑 Lösung (senkrecht):</b> die</span>
+        <div id="xw10-loes" class="letterrow"></div>
+      </div>
+
+      <button class="check" onclick="checkEx('xw10-body')">Prüfen</button>
+      <button class="reset" onclick="resetEx('xw10-body')">Zurücksetzen</button>
+      <div class="result" id="xw10-body-result"></div>
+    </div>
+  </div>
+
+
+  <div class="section">
+    <h2>4 Was ist was?</h2>
+    <div class="exercise">
+      <div class="ex-title">4 Schreiben Sie die Wörter zu den Bildern.</div>
+      <div class="ex-instructions">Was ist was? Schreiben Sie die Wörter zu den Bildern.</div>
+      <div id="ex4"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex4">Kontrollieren</button>
+      <div class="result-msg" id="res-ex4"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 Bei der Behörde</h2>
+    <div class="exercise">
+      <div class="ex-title">5 Ergänzen Sie die Sätze.</div>
+      <div class="wordbank"><b>Kasten:</b> der Bescheid · erforderlich · das Konsulat · schriftlich · gültig · sich beschweren · einzahlen · befristet · beantragen · verlängern · übersetzen · der Antrag · die Meldung</div>
+      <div id="ex5"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex5">Kontrollieren</button>
+      <div class="result-msg" id="res-ex5"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6 Wortbildung</h2>
+    <div class="exercise">
+      <div class="ex-title">6 Wie heißen die Nomen oder Verben?</div>
+      <div id="ex6"></div>
+      <button class="check-btn" data-check="groupci" data-target="ex6">Kontrollieren</button>
+      <div class="result-msg" id="res-ex6"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ SCHNELLTEST ============ -->
+<div id="test" class="tabcontent">
+  <div class="section">
+    <h2>🎯 Schnelltest – Dienstleistungen und Behörden</h2>
+    <div class="ex-instructions">15 Fragen zum ganzen Kapitel. Achten Sie auf Groß-/Kleinschreibung bei Nomen!</div>
+    <div id="testArea"></div>
+    <button class="check-btn" data-check="group" data-target="testArea">Alles kontrollieren</button>
+    <div class="result-msg" id="res-testArea"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer-credit">Made with ♥ by Bảo Quang</div>
+
+<script>
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tabbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var id = btn.dataset.tab;
+    document.querySelectorAll('.tabcontent').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  });
+});
+
+/* ================= VOCAB DATA ================= */
+var vocab1 = [ // Ämter
+ ["das","Rathaus, ¨-er","das Gebäude der Stadtverwaltung","tòa thị chính"],
+ ["das","Standesamt, ¨-er","die Behörde für Geburt, Ehe und Tod","phòng hộ tịch"],
+ ["das","Amt, ¨-er","eine offizielle Behörde oder Dienststelle","cơ quan, sở"],
+ ["das","Sozialamt, ¨-er","die Behörde für soziale Unterstützung","sở lao động xã hội"],
+ ["das","Ausländeramt, ¨-er","die Behörde für Ausländerangelegenheiten","sở ngoại kiều"],
+ ["der","Beamte, -n","eine Person, die im öffentlichen Dienst arbeitet (weiblich: die Beamtin)","công chức"],
+ ["","verlängern, hat verlängert","die Gültigkeit von etwas zeitlich ausdehnen","gia hạn"],
+ ["","nötig","notwendig, erforderlich","cần thiết"],
+ ["","unnötig","nicht notwendig","không cần thiết"],
+ ["","dringend","sehr eilig, wichtig","khẩn cấp"],
+ ["","freiwillig","aus eigenem Willen, nicht verpflichtet","tự nguyện"],
+ ["die","Behörde, -n","eine staatliche Institution","cơ quan nhà nước"],
+ ["das","Fundbüro, -s","der Ort, an dem verlorene Gegenstände abgegeben werden","phòng đồ thất lạc"],
+ ["die","Feuerwehr, -en","die Organisation, die Brände löscht und rettet","đội cứu hỏa"],
+ ["der","Beirat, ¨-räte","eine beratende Gruppe für eine Institution","hội đồng cố vấn"],
+ ["die","Förderung, -en","finanzielle oder sonstige Unterstützung","sự hỗ trợ, tài trợ"],
+ ["die","Beratung, -en","ein Gespräch, bei dem man Rat bekommt","tư vấn"],
+ ["die","Berechtigung, -en","das Recht, etwas zu tun","quyền được phép"],
+ ["der/die","Erziehungsberechtigte, -n","eine Person, die für die Erziehung eines Kindes verantwortlich ist","người giám hộ"],
+ ["die","Ermäßigung, -en","ein reduzierter Preis","giảm giá"],
+ ["die","Gebühr, -en","Geld, das man für eine Dienstleistung zahlen muss","lệ phí"],
+ ["der","Betrag, ¨-e","eine Geldsumme","số tiền"],
+ ["","einzahlen, hat eingezahlt","Geld auf ein Konto zahlen","nộp tiền vào"],
+ ["der","Kredit","geliehenes Geld, das man zurückzahlen muss","khoản vay"],
+ ["die","Versicherung, -en","ein Vertrag, der finanziellen Schutz bei Schäden bietet","bảo hiểm"],
+];
+
+var vocab2 = [ // Telefon und Post
+ ["das","Telefonbuch, ¨-er","ein Buch mit Telefonnummern und Adressen","danh bạ điện thoại"],
+ ["die","Mitteilung, -en","eine kurze Information oder Nachricht","thông báo"],
+ ["die","(Wurf)Sendung, -en","Werbung oder Post, die in den Briefkasten geworfen wird","thư/tờ rơi gửi vào hộp thư"],
+ ["das","Päckchen, -","ein kleines Paket","gói hàng nhỏ"],
+ ["das","Paket, -e","ein größeres verpacktes Sendungsstück","bưu kiện"],
+ ["","schicken, hat geschickt","etwas an jemanden senden","gửi"],
+ ["der","Briefumschlag, ¨-e","die Papierhülle für einen Brief","phong bì thư"],
+ ["der","Empfang (Sg.)","das Erhalten von etwas, z. B. Post","sự nhận (thư từ)"],
+ ["","bestätigen, hat bestätigt","offiziell sagen, dass etwas stimmt oder angekommen ist","xác nhận"],
+ ["","geehrt","respektvoll angesprochen, z. B. in Briefen","kính mến (trong thư trang trọng)"],
+];
+
+var vocab3 = [ // Umgang mit Ämtern
+ ["der","Aufenthalt, -e","der Zeitraum, in dem man an einem Ort bleibt","thời gian lưu trú"],
+ ["die","Einbürgerung, -en","der Prozess, die Staatsbürgerschaft eines Landes zu bekommen","nhập quốc tịch"],
+ ["die","Erlaubnis (meistens Sg.)","die offizielle Zustimmung, etwas zu tun","sự cho phép"],
+ ["die","Dauer (Sg.)","der Zeitraum, wie lange etwas gilt oder dauert","thời hạn, khoảng thời gian"],
+ ["die","Frist, -en","ein festgelegter Zeitraum, bis wann etwas erledigt sein muss","thời hạn (deadline)"],
+ ["","beantragen, hat beantragt","offiziell um etwas bitten, z. B. bei einer Behörde","xin, nộp đơn xin"],
+ ["","befristet","zeitlich begrenzt, nicht dauerhaft gültig","có thời hạn"],
+ ["das","Konsulat, -e","die diplomatische Vertretung eines Landes in einer anderen Stadt","lãnh sự quán"],
+ ["der","Bescheid, -e","eine offizielle, meist schriftliche Antwort einer Behörde","thông báo/quyết định chính thức"],
+ ["","gültig","offiziell anerkannt, noch nicht abgelaufen","có hiệu lực"],
+ ["","übersetzen, hat übersetzt","einen Text in eine andere Sprache übertragen","dịch"],
+ ["der","Stempel, -","ein Werkzeug, das einen offiziellen Abdruck macht","con dấu"],
+ ["","erforderlich","notwendig, benötigt","cần thiết, bắt buộc"],
+ ["","ergänzen, hat ergänzt","etwas Fehlendes hinzufügen","bổ sung"],
+ ["","schriftlich","in schriftlicher Form, nicht mündlich","bằng văn bản"],
+ ["","sich beschweren, hat sich beschwert","eine Beschwerde äußern, unzufrieden sein","khiếu nại"],
+];
+
+function ttsCleanWord(word){
+  var w = word.replace(/\([^)]*\)/g,'').trim();
+  w = w.split(',')[0].trim();
+  w = w.split('/')[0].trim();
+  return w;
+}
+function renderVocab(list, targetId){
+  var el = document.getElementById(targetId);
+  el.innerHTML = list.map(function(item){
+    var art = item[0], word = item[1], de = item[2], vn = item[3];
+    var cls = art==='der' ? 'der' : art==='das' ? 'das' : art==='die' ? 'die' : '';
+    var label = art ? (art+' '+word) : word;
+    var speakText = (art ? (art.split('/')[0]+' ') : '') + ttsCleanWord(word);
+    return '<div class="vocab-card"><div class="vocab-word-row">'+
+      '<span class="vocab-word '+cls+'">'+label+'</span>'+
+      '<button type="button" class="vocab-tts-btn" data-word="'+speakText.replace(/"/g,'&quot;')+'">🔊</button>'+
+      '</div>'+
+      '<div class="vocab-de">'+de+'</div>'+
+      '<div class="vocab-vn">🇻🇳 '+vn+'</div></div>';
+  }).join('');
+  el.querySelectorAll('.vocab-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  });
+  el.querySelectorAll('.vocab-tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      speakWord(btn.dataset.word);
+    });
+  });
+}
+renderVocab(vocab1,'vg1');
+renderVocab(vocab2,'vg2');
+renderVocab(vocab3,'vg3');
+
+document.getElementById('vnToggle').addEventListener('change', function(){
+  var show = this.checked;
+  document.querySelectorAll('.vocab-card').forEach(function(c){
+    if(show) c.classList.add('open'); else c.classList.remove('open');
+  });
+});
+
+/* ================= TTS ================= */
+var deVoice = null;
+function pickVoice(){
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  deVoice = voices.find(function(v){ return v.lang === 'de-DE'; }) ||
+            voices.find(function(v){ return v.lang && v.lang.indexOf('de') === 0; }) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speakWord(text){
+  if(!window.speechSynthesis){ alert('Ihr Browser unterstützt leider keine Sprachausgabe.'); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  if(deVoice) u.voice = deVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= HELPERS ================= */
+function makeBlank(id, ans, width){
+  return '<input type="text" id="'+id+'" data-ans="'+ans+'" style="'+(width?('width:'+width+'px;'):'')+'">';
+}
+function normalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+
+function checkGroup(containerId, ci){
+  var container = document.getElementById(containerId);
+  var inputs = container.querySelectorAll('input[type=text]');
+  var correct = 0, total = inputs.length;
+  inputs.forEach(function(inp){
+    var ans = inp.dataset.ans.split('|').map(function(a){ return a.trim(); });
+    var val = inp.value.trim();
+    var ok = ci ? ans.map(normalize).indexOf(normalize(val)) > -1 : ans.indexOf(val) > -1;
+    if(ok){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  var res = document.getElementById('res-'+containerId);
+  if(res && total>0){
+    res.textContent = correct+' / '+total+' richtig';
+    res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+  }
+}
+
+document.querySelectorAll('.check-btn[data-check]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var kind = btn.dataset.check;
+    var target = btn.dataset.target;
+    if(kind==='group') checkGroup(target,false);
+    else if(kind==='groupci') checkGroup(target,true);
+  });
+});
+
+/* ================= WORTAKZENT be-/er-/ver- ================= */
+function renderPrefixGroup(targetId, label, words){
+  var el = document.getElementById(targetId);
+  el.innerHTML = '<span class="prefix-tag">'+label+'</span>'+
+    words.map(function(w){
+      return '<div class="hoer-row"><span class="hoer-word">'+w+'</span>'+
+        '<button type="button" class="tts-btn" data-word="'+w.replace(/"/g,'&quot;')+'">🔊 Anhören</button></div>';
+    }).join('');
+  el.querySelectorAll('.tts-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ speakWord(btn.dataset.word); });
+  });
+}
+renderPrefixGroup('hoer-be','be-',["beantragen","die Beratung","der Bescheid","befristet","sich beschweren","die Behörde"]);
+renderPrefixGroup('hoer-er','er-',["ergänzen","erforderlich","die Erlaubnis","die Ermäßigung"]);
+renderPrefixGroup('hoer-ver','ver-',["die Versicherung","die Verlängerung","verlängern","verlieren","verstehen"]);
+
+/* ================= EX 2: Ämter-Silbenrätsel ================= */
+(function(){
+  var colors = ['#0f766e','#e8823a','#2563eb','#9333ea','#dc2626','#0891b2'];
+  // Silben mit Gruppen-Index (0-5), Reihenfolge bewusst gemischt (nicht nach Wort sortiert)
+  var tiles = [
+    ['SO',3], ['AMT',2], ['DER',5], ['STAN',1], ['BÜ',4], ['AUS',2],
+    ['HÖR',5], ['RAT',0], ['LÄN',5], ['DES',1], ['FUND',4], ['AMT',3],
+    ['BE',5], ['ZIAL',3], ['HAUS',0], ['DE',5], ['AUS',5], ['LÄN',2],
+    ['RO',4], ['DER',2], ['AMT',1]
+  ];
+  // die korrekte Silben-Reihenfolge pro Gruppe (Index = Gruppen-Nr.)
+  var groupSeq = [
+    ['RAT','HAUS'],
+    ['STAN','DES','AMT'],
+    ['AUS','LÄN','DER','AMT'],
+    ['SO','ZIAL','AMT'],
+    ['FUND','BÜ','RO'],
+    ['AUS','LÄN','DER','BE','HÖR','DE']
+  ];
+  var answers = [
+    ['das', 'Rathaus', 0],
+    ['das', 'Standesamt', 1],
+    ['das', 'Ausländeramt', 2],
+    ['das', 'Sozialamt', 3],
+    ['das', 'Fundbüro', 4],
+    ['die', 'Ausländerbehörde', 5],
+  ];
+
+  var progress = [0,0,0,0,0,0];   // wie viele Silben pro Gruppe schon korrekt geklickt
+  var buffer   = ['','','','','','']; // aufgebautes Wort pro Gruppe
+
+  var poolEl = document.getElementById('ex2-pool');
+  poolEl.innerHTML = tiles.map(function(t,idx){
+    return '<span class="syl-tile" data-idx="'+idx+'" data-syll="'+t[0]+'" data-group="'+t[1]+'" style="background:'+colors[t[1]]+';">'+t[0]+'</span>';
+  }).join('');
+
+  var el = document.getElementById('ex2-silben');
+  el.innerHTML = answers.map(function(a,i){
+    return '<div class="syl-answer-row"><span class="syl-dot" style="background:'+colors[a[2]]+';"></span>'+
+      (i+1)+'. '+a[0]+' '+makeBlank('e2s-'+i, a[1], 200)+'</div>';
+  }).join('');
+
+  poolEl.querySelectorAll('.syl-tile').forEach(function(tile){
+    tile.addEventListener('click', function(){
+      var group = parseInt(tile.dataset.group,10);
+      var syll = tile.dataset.syll;
+      var seq = groupSeq[group];
+      var nextIdx = progress[group];
+      if(nextIdx < seq.length && seq[nextIdx] === syll){
+        // richtige Reihenfolge
+        buffer[group] += syll;
+        progress[group]++;
+        tile.classList.add('used');
+        var formatted = buffer[group].charAt(0) + buffer[group].slice(1).toLowerCase();
+        var input = document.getElementById('e2s-'+group);
+        if(input) input.value = formatted;
+      } else {
+        tile.classList.add('shake');
+        setTimeout(function(){ tile.classList.remove('shake'); }, 300);
+      }
+    });
+  });
+})();
+
+/* ================= HINT HELPER ================= */
+function wireHints(root){
+  root.querySelectorAll('.hint-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var span = document.getElementById(btn.dataset.target);
+      span.textContent = btn.dataset.hint;
+      span.classList.add('show');
+      clearTimeout(span._t);
+      span._t = setTimeout(function(){ span.classList.remove('show'); }, 3000);
+    });
+  });
+}
+
+/* ================= EX 1a: Bilder ================= */
+(function(){
+  var el = document.getElementById('ex1a');
+  var icons = ['📝','💳','🏧','💶',
+    // Reisepass: einfaches, fettes Icon (rotes Buch mit Emblem)
+    '<svg viewBox="0 0 100 100">'+
+      '<rect x="22" y="10" width="56" height="80" rx="6" fill="#9c1236"/>'+
+      '<rect x="22" y="10" width="56" height="80" rx="6" fill="#000" opacity="0.12"/>'+
+      '<circle cx="50" cy="38" r="14" fill="none" stroke="#e8c547" stroke-width="3"/>'+
+      '<circle cx="50" cy="38" r="5" fill="#e8c547"/>'+
+      '<rect x="32" y="60" width="36" height="6" rx="2" fill="#e8c547"/>'+
+      '<rect x="36" y="72" width="28" height="4.5" rx="2" fill="#e8c547" opacity="0.85"/>'+
+    '</svg>',
+    '📄'];
+  var answers = ['der Antrag','die Kreditkarte|die Kreditkarten','der Geldautomat','das Geld','der Reisepass|der Pass','das Formular'];
+  var widths = [150,180,180,150,180,160];
+  var hints = [
+    'beginnt mit A – ein offizieller, meist schriftlicher Wunsch an eine Behörde',
+    'beginnt mit K – eine Karte, mit der man bargeldlos bezahlen kann',
+    'beginnt mit G – eine Maschine, an der man Geld abheben kann',
+    'beginnt mit G – Münzen und Scheine, mit denen man bezahlt',
+    'beginnt mit R – ein Ausweisdokument für Reisen ins Ausland',
+    'beginnt mit F – ein Blatt mit Feldern zum Ausfüllen',
+  ];
+  el.innerHTML = icons.map(function(svg,i){
+    return '<div class="pic-row"><div class="pic-box">'+svg+'</div>'+
+      '<div style="flex:1;min-width:180px;">'+
+      '<div class="qline" style="margin:0;">'+(i+1)+'. '+makeBlank('e1a-'+i, answers[i], widths[i])+
+      ' <button type="button" class="hint-btn" data-target="e1a-hint-'+i+'" data-hint="'+hints[i].replace(/"/g,'&quot;')+'">💡 Hint</button></div>'+
+      '<span class="hint-text" id="e1a-hint-'+i+'"></span>'+
+      '</div></div>';
+  }).join('');
+  wireHints(el);
+})();
+
+/* ================= EX 1b ================= */
+(function(){
+  var el = document.getElementById('ex1b');
+  el.innerHTML =
+  '<div class="qline">1. Bitte '+makeBlank('e1b-0','füllen',110)+' Sie den Antrag ganz '+makeBlank('e1b-1','aus',90)+'. Und '+makeBlank('e1b-2','unterschreiben',160)+' Sie mit Vor- und Nachnamen.</div>'+
+  '<div class="qline">2. Bitte vergessen Sie nicht Ihre '+makeBlank('e1b-3','Postleitzahl',160)+'.</div>'+
+  '<div class="qline">3. Bringen Sie bitte einen gültigen '+makeBlank('e1b-4','Ausweis',140)+' oder '+makeBlank('e1b-5','Pass',110)+' mit.</div>';
+})();
+
+/* ================= KREUZWORTRÄTSEL-ENGINE (Treppenform) ================= */
+function renderCrossword(opts){
+  var bodyId = opts.bodyId, loesId = opts.loesId, words = opts.words, loesung = opts.loesung;
+  var body = document.getElementById(bodyId);
+  if(!body) return;
+  var targetCol = Math.max.apply(null, words.map(function(w){ return w.markPos - 1; }));
+
+  words.forEach(function(w, wi){
+    var row = document.createElement('div');
+    row.className = 'word-row';
+    var markIndex = w.markPos - 1;
+    var offset = targetCol - markIndex;
+    var cells = '';
+    for(var s=0; s<offset; s++){ cells += '<span class="letter-spacer"></span>'; }
+    for(var i=0; i<w.answer.length; i++){
+      var isMarked = (i === markIndex);
+      cells += '<input type="text" maxlength="1" class="letter-box'+(isMarked?' marked':'')+'" '+
+        'data-ans="'+w.answer[i]+'" data-word="'+wi+'" data-pos="'+i+'" '+
+        (isMarked ? ('data-los="'+wi+'"') : '') + '>';
+    }
+    row.innerHTML = '<div class="letterrow"><span class="rownum">'+(wi+1)+'</span>'+cells+'</div>';
+    body.appendChild(row);
+  });
+
+  var loesBox = document.getElementById(loesId);
+  if(loesBox){
+    var loesHtml = '';
+    for(var k=0; k<loesung.length; k++){
+      loesHtml += '<input type="text" maxlength="1" readonly class="letter-box loesung loes-box" '+
+        'data-ans="'+loesung[k]+'" id="'+bodyId+'-los-'+k+'">';
+    }
+    loesBox.innerHTML = loesHtml;
+  }
+
+  body.querySelectorAll('input.letter-box').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      this.value = this.value.toUpperCase().slice(-1);
+      this.classList.remove('correct','wrong');
+      if(this.dataset.los !== undefined){
+        var target = document.getElementById(bodyId+'-los-'+this.dataset.los);
+        if(target){ target.value = this.value; target.classList.remove('correct','wrong'); }
+      }
+      if(this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.from(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > -1 && idx < all.length-1) all[idx+1].focus();
+      }
+    });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Backspace' && !this.value){
+        var row = this.closest('.letterrow');
+        var all = Array.from(row.querySelectorAll('input.letter-box'));
+        var idx = all.indexOf(this);
+        if(idx > 0) all[idx-1].focus();
+      }
+    });
+  });
+}
+function xwNormalize(s){ return s.trim().toLowerCase().replace(/ß/g,'ss'); }
+function checkEx(id){
+  var box = document.getElementById(id);
+  var inputs = box.querySelectorAll('input.letter-box:not(.loesung)');
+  var correct=0, total=inputs.length;
+  inputs.forEach(function(inp){
+    if(xwNormalize(inp.value)===xwNormalize(inp.dataset.ans)){
+      inp.classList.add('correct'); inp.classList.remove('wrong'); correct++;
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+    }
+  });
+  var res = document.getElementById(id+'-result');
+  if(res){
+    res.textContent = correct+' / '+total+' richtig';
+    res.className = 'result ' + (correct===total ? 'ok':'bad');
+  }
+}
+function resetEx(id){
+  var box = document.getElementById(id);
+  box.querySelectorAll('input.letter-box').forEach(function(inp){ inp.value=''; inp.classList.remove('correct','wrong'); });
+  var res = document.getElementById(id+'-result');
+  if(res){ res.textContent=''; }
+}
+
+/* ================= EX 3: Kreuzworträtsel (Lösung: EINBÜRGERUNG) ================= */
+renderCrossword({
+  bodyId: 'xw10-body',
+  loesId: 'xw10-loes',
+  loesung: "EINBÜRGERUNG",
+  words: [
+    {clue:"1.", answer:"STEMPEL", markPos:3},
+    {clue:"2.", answer:"FRIST", markPos:3},
+    {clue:"3.", answer:"ANTRAG", markPos:2},
+    {clue:"4.", answer:"BETRAG", markPos:1},
+    {clue:"5.", answer:"GEBÜHR", markPos:4},
+    {clue:"6.", answer:"KREDIT", markPos:2},
+    {clue:"7.", answer:"FÖRDERUNG", markPos:9},
+    {clue:"8.", answer:"ERLAUBNIS", markPos:1},
+    {clue:"9.", answer:"VERSICHERUNG", markPos:3},
+    {clue:"10.", answer:"DAUER", markPos:3},
+    {clue:"11.", answer:"BERATUNG", markPos:7},
+    {clue:"12.", answer:"ERMÄSSIGUNG", markPos:11}
+  ]
+});
+
+/* ================= EX 4: Was ist was ================= */
+(function(){
+  var el = document.getElementById('ex4');
+  var icons = [
+    '📖',
+    // Päckchen: flaches liegendes Paket - fett & einfach
+    '<svg viewBox="0 0 100 100">'+
+      '<ellipse cx="48" cy="82" rx="36" ry="7" fill="#000" opacity="0.1"/>'+
+      '<polygon points="8,56 48,38 92,52 52,72" fill="#d9a066"/>'+
+      '<polygon points="8,56 52,72 52,84 8,68" fill="#a9713a"/>'+
+      '<polygon points="52,72 92,52 92,64 52,84" fill="#8f5e2f"/>'+
+      '<polygon points="18,58 62,40 68,43 24,61" fill="#f0dcb8"/>'+
+      '<rect x="30" y="66" width="20" height="12" rx="1" fill="#fff" transform="skewY(11)"/>'+
+      '<line x1="33" y1="70" x2="33" y2="80" stroke="#222" stroke-width="2"/>'+
+      '<line x1="38" y1="70" x2="38" y2="80" stroke="#222" stroke-width="3"/>'+
+      '<line x1="43" y1="70" x2="43" y2="80" stroke="#222" stroke-width="2"/>'+
+    '</svg>',
+    // Paket: stehende 3D-Box - fett & einfach, großes Pfeil-Piktogramm
+    '<svg viewBox="0 0 100 100">'+
+      '<ellipse cx="52" cy="90" rx="38" ry="7" fill="#000" opacity="0.1"/>'+
+      '<polygon points="12,34 55,18 92,32 92,72 55,90 12,74" fill="#d9a066"/>'+
+      '<polygon points="12,34 55,18 92,32 55,46" fill="#eccb9c"/>'+
+      '<polygon points="55,46 92,32 92,72 55,90" fill="#a9713a"/>'+
+      '<line x1="55" y1="46" x2="55" y2="90" stroke="#f5ecdc" stroke-width="5"/>'+
+      '<line x1="55" y1="18" x2="55" y2="46" stroke="#f5ecdc" stroke-width="5"/>'+
+      '<rect x="61" y="52" width="26" height="17" rx="1.5" fill="#fff"/>'+
+      '<line x1="65" y1="56" x2="65" y2="65" stroke="#222" stroke-width="1.5"/>'+
+      '<line x1="69" y1="56" x2="69" y2="65" stroke="#222" stroke-width="2.5"/>'+
+      '<line x1="73" y1="56" x2="73" y2="65" stroke="#222" stroke-width="1.5"/>'+
+      '<line x1="78" y1="56" x2="78" y2="65" stroke="#222" stroke-width="3"/>'+
+      '<rect x="18" y="42" width="24" height="20" rx="2" fill="#fff"/>'+
+      '<path d="M23 55 L30 44 L37 55" fill="none" stroke="#111" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '</svg>',
+    '✉️','🚒'];
+  var answers = ['das Telefonbuch','das Päckchen','das Paket','der Briefumschlag','die Feuerwehr'];
+  var widths = [180,160,150,190,170];
+  var hints = [
+    'beginnt mit T – ein Buch mit Telefonnummern und Adressen',
+    'beginnt mit P – eine kleine Post-Sendung',
+    'beginnt mit P – eine größere Post-Sendung',
+    'beginnt mit B – die Papierhülle für einen Brief',
+    'beginnt mit F – die Organisation, die Brände löscht',
+  ];
+  el.innerHTML = icons.map(function(svg,i){
+    return '<div class="pic-row"><div class="pic-box">'+svg+'</div>'+
+      '<div style="flex:1;min-width:180px;">'+
+      '<div class="qline" style="margin:0;">'+(i+1)+'. '+makeBlank('e4-'+i, answers[i], widths[i])+
+      ' <button type="button" class="hint-btn" data-target="e4-hint-'+i+'" data-hint="'+hints[i].replace(/"/g,'&quot;')+'">💡 Hint</button></div>'+
+      '<span class="hint-text" id="e4-hint-'+i+'"></span>'+
+      '</div></div>';
+  }).join('');
+  wireHints(el);
+})();
+
+/* ================= EX 5 ================= */
+(function(){
+  var el = document.getElementById('ex5');
+  el.innerHTML =
+  '<div class="qline">1. Die Stempelgebühr müssen Sie bei der Gemeindekasse '+makeBlank('e5-0','einzahlen',140)+'.</div>'+
+  '<div class="qline">2. Ihr Ausweis ist bis zum 31.12. '+makeBlank('e5-1','gültig',110)+'.</div>'+
+  '<div class="qline">3. Die Aufenthaltserlaubnis ist auf 12 Monate '+makeBlank('e5-2','befristet',140)+'.</div>'+
+  '<div class="qline">4. Sie müssen die Aufenthaltserlaubnis jedes Jahr '+makeBlank('e5-3','verlängern',150)+'.</div>'+
+  '<div class="qline">5. Dazu müssen Sie einen '+makeBlank('e5-4','Antrag',120)+' bei der Ausländerbehörde stellen.</div>'+
+  '<div class="qline">6. Sie können Wohngeld '+makeBlank('e5-5','beantragen',150)+'.</div>'+
+  '<div class="qline">7. Die Bearbeitung des Antrags dauert 10 Tage. Dann bekommen Sie einen '+makeBlank('e5-6','Bescheid',140)+'.</div>'+
+  '<div class="qline">8. Wenn der '+makeBlank('e5-7','Bescheid',140)+' nicht richtig ist, dann können Sie '+makeBlank('e5-8','sich beschweren',170)+'. Das müssen Sie '+makeBlank('e5-9','schriftlich',140)+' tun, und Sie müssen die Beschwerdefrist beachten.</div>'+
+  '<div class="qline">9. Wenn Sie umziehen, müssen Sie dem Einwohnermeldeamt eine '+makeBlank('e5-10','Meldung',140)+' machen. Sie müssen sich in der neuen Gemeinde anmelden.</div>'+
+  '<div class="qline">10. Für die Verlängerung der Förderung ist ein Antrag '+makeBlank('e5-11','erforderlich',160)+'.</div>'+
+  '<div class="qline">11. Die Dokumente müssen Sie ins Deutsche '+makeBlank('e5-12','übersetzen',150)+' lassen, und das '+makeBlank('e5-13','Konsulat',140)+' Ihres Heimatlandes muss die Echtheit bestätigen.</div>';
+})();
+
+/* ================= EX 6: Wortbildung ================= */
+(function(){
+  var el = document.getElementById('ex6');
+  el.innerHTML =
+  '<div class="qline">empfangen → '+makeBlank('e6-0','der Empfang',150)+'</div>'+
+  '<div class="qline">'+makeBlank('e6-1','sich beschweren',180)+' → die Beschwerde</div>'+
+  '<div class="qline">versichern → '+makeBlank('e6-2','die Versicherung',180)+'</div>'+
+  '<div class="qline">fördern → '+makeBlank('e6-3','die Förderung',160)+'</div>'+
+  '<div class="qline">'+makeBlank('e6-4','beantragen',150)+' → der Antrag</div>'+
+  '<div class="qline">mitteilen → '+makeBlank('e6-5','die Mitteilung',170)+'</div>'+
+  '<div class="qline">'+makeBlank('e6-6','verlängern',150)+' → die Verlängerung</div>'+
+  '<div class="qline">einbürgern → '+makeBlank('e6-7','die Einbürgerung',180)+'</div>'+
+  '<div class="qline">erlauben → '+makeBlank('e6-8','die Erlaubnis',160)+'</div>'+
+  '<div class="qline">'+makeBlank('e6-9','übersetzen',150)+' → die Übersetzung</div>';
+})();
+
+/* ================= SCHNELLTEST ================= */
+(function(){
+  var questions = [
+    ["Die Behörde für Ausländerangelegenheiten: das ...", "Ausländeramt"],
+    ["Eine Person, die im öffentlichen Dienst arbeitet: der ...", "Beamte"],
+    ["Ein reduzierter Preis: die ...", "Ermäßigung"],
+    ["Geld, das man für eine Dienstleistung zahlen muss: die ...", "Gebühr"],
+    ["Geld auf ein Konto zahlen: ...", "einzahlen"],
+    ["Ein größeres verpacktes Sendungsstück: das ...", "Paket"],
+    ["Offiziell sagen, dass etwas stimmt: ...", "bestätigen"],
+    ["Der Zeitraum, in dem man an einem Ort bleibt: der ...", "Aufenthalt"],
+    ["Ein festgelegter Zeitraum, bis wann etwas erledigt sein muss: die ...", "Frist"],
+    ["Offiziell um etwas bitten, z. B. bei einer Behörde: ...", "beantragen"],
+    ["Eine offizielle, meist schriftliche Antwort einer Behörde: der ...", "Bescheid"],
+    ["Offiziell anerkannt, noch nicht abgelaufen: ...", "gültig"],
+    ["Einen Text in eine andere Sprache übertragen: ...", "übersetzen"],
+    ["Notwendig, benötigt: ...", "erforderlich"],
+    ["Eine Beschwerde äußern: ...", "sich beschweren"],
+  ];
+  var el = document.getElementById('testArea');
+  el.innerHTML = questions.map(function(q,i){
+    return '<div class="qline">'+(i+1)+'. '+q[0]+' '+makeBlank('t-'+i, q[1], 170)+'</div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
