@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wortschatz B2 · A · Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --ink:#16233f;
+  --ink2:#233457;
+  --gold:#b8863b;
+  --gold-l:#f7ecd9;
+  --bg:#f4f5fa;
+  --card:#ffffff;
+  --line:#e4e7f0;
+  --ok:#15803d; --ok-bg:#eefbf1; --ok-bd:#a7e3bb;
+  --er:#b91c1c; --er-bg:#fef2f2; --er-bd:#f3b4b4;
+  --tx:#1c2536; --tx2:#5b6478; --mu:#98a0b3;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:60px}
+
+/* HEADER */
+.hdr{background:linear-gradient(180deg,#fdf9f1 0%,var(--bg) 100%);padding:38px 20px 58px;color:var(--ink);position:relative;overflow:hidden;text-align:center;border-bottom:1px solid var(--line)}
+.hdr::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 18% 25%,rgba(184,134,59,.08),transparent 45%),radial-gradient(circle at 88% 70%,rgba(184,134,59,.07),transparent 40%);pointer-events:none}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.hdr h1{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(26px,7.5vw,38px);letter-spacing:-.3px;margin-bottom:10px;color:var(--ink)}
+.hdr-chapter{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--tx2);background:#fff;border:1px solid var(--line);padding:5px 14px 5px 6px;border-radius:99px}
+.hdr-chapter .ltr{background:var(--gold);color:#fff;font-family:'Playfair Display',serif;font-weight:700;font-size:12px;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.hdr p{font-size:12px;color:var(--mu);font-style:italic;margin-top:8px}
+.hdr-badge{position:absolute;top:20px;right:20px;background:var(--gold-l);border:1px solid #ecd9b3;color:#8a6420;font-weight:800;font-size:12px;letter-spacing:.08em;padding:5px 12px;border-radius:99px}
+
+/* SUBNAV */
+.subnav{max-width:680px;margin:-24px auto 0;padding:0 16px;position:relative;z-index:5;display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+.tab-sq{flex:none;width:52px;height:52px;background:var(--card);border:1.5px solid var(--line);color:var(--tx2);font-weight:800;font-size:12.5px;border-radius:12px;cursor:pointer;box-shadow:0 2px 6px rgba(22,35,63,.05);display:flex;align-items:center;justify-content:center;transition:.15s}
+.tab-sq.on{background:var(--gold);border-color:var(--gold);color:#fff}
+.tab-sq.soon{opacity:.35;cursor:not-allowed;font-size:10px;font-weight:700}
+
+.wrap{max-width:680px;margin:0 auto;padding:26px 16px 0}
+
+/* CARD */
+.card{background:var(--card);border-radius:20px;padding:26px 24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(22,35,63,.05),0 10px 28px rgba(22,35,63,.05);border:1px solid var(--line)}
+.card-eyebrow{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.card h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.instr{font-size:13px;color:var(--tx2);font-style:italic;margin-bottom:16px}
+
+/* WORTLISTE */
+.wortliste{display:flex;flex-wrap:wrap;gap:7px;padding:14px 16px;background:#faf8f3;border:1px dashed var(--gold);border-radius:12px;margin-bottom:20px}
+.chip{font-size:12.5px;font-weight:600;color:var(--ink2);padding:4px 10px;background:#fff;border-radius:99px;border:1px solid var(--line)}
+.chip.used{text-decoration:line-through;color:var(--mu);background:transparent;border-color:transparent}
+.chip.pickable{cursor:pointer;transition:.12s}
+.chip.pickable:hover{border-color:var(--gold);color:var(--ink)}
+.chip.disabled{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+
+/* TOOLS ROW */
+.row-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.mode-toggle{display:flex;gap:6px;background:#f1f2f6;padding:4px;border-radius:99px}
+.mbtn{border:none;background:transparent;font-size:11.5px;font-weight:700;color:var(--tx2);padding:7px 13px;border-radius:99px;cursor:pointer}
+.mbtn.on{background:#fff;color:var(--gold);box-shadow:0 1px 4px rgba(22,35,63,.1)}
+.saved-badge{font-size:11px;color:var(--mu);font-style:italic}
+
+/* PARAGRAPH LISTEN ICON */
+.para-listen{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#faf8f3;border:1px solid var(--gold);color:var(--gold);font-size:11px;cursor:pointer;margin-right:8px;vertical-align:middle;flex:none;transition:.12s}
+.para-listen:hover{background:var(--gold);color:#fff;transform:scale(1.08)}
+
+/* INLINE HINT */
+.hint{display:block;font-size:11.5px;line-height:1.5;color:var(--er);margin:2px 0 10px 2px;max-width:340px}
+.hint b{color:var(--er)}
+.hint i{color:#c53030;font-style:italic}
+
+/* PASSAGE */
+.passage{font-size:15.5px;line-height:2.15;color:var(--tx)}
+.passage h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--ink2);margin:18px 0 6px;font-weight:600}
+.passage h3:first-child{margin-top:0}
+.gap-num{font-size:9px;vertical-align:super;color:var(--gold);font-weight:800;margin-right:1px}
+.blank{width:118px;border:none;border-bottom:2px solid var(--gold);background:var(--gold-l);border-radius:4px 4px 0 0;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink);text-align:center;padding:2px 4px;margin:0 2px}
+.blank:focus{outline:none;border-bottom-color:var(--ink);background:#fff}
+.blank.given{background:transparent;border-bottom-color:var(--ok);color:var(--ok);font-weight:700;width:auto;text-decoration:none}
+.blank.ok{background:var(--ok-bg);border-bottom-color:var(--ok);color:var(--ok)}
+.blank.no{background:var(--er-bg);border-bottom-color:var(--er);color:var(--er)}
+
+/* CHECK BUTTON + SCORE */
+.actions{display:flex;align-items:center;gap:12px;margin-top:22px;flex-wrap:wrap}
+.btn{background:var(--gold);color:#fff;font-weight:700;font-size:13.5px;padding:12px 24px;border-radius:99px;border:none;cursor:pointer;letter-spacing:.02em;transition:.15s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--ink2);border:1.5px solid var(--line)}
+.score{font-size:13px;font-weight:700;color:var(--tx2)}
+.score b{color:var(--ok)}
+
+/* ANSWER TABLE */
+.ans-table{margin-top:18px;border-radius:14px;overflow:hidden;border:1px solid var(--line);display:none}
+.ans-table.show{display:block}
+.ans-table table{width:100%;border-collapse:collapse;font-size:12.5px}
+.ans-table th{background:var(--gold);color:#fff;font-weight:700;text-align:left;padding:9px 12px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.ans-table td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top;line-height:1.5}
+.ans-table tr:nth-child(even){background:#faf9fc}
+.ans-table .lk{font-weight:800;color:var(--gold);width:34px}
+.ans-table .dap{font-weight:700;color:var(--ink);white-space:nowrap}
+.ans-table .vd{color:var(--tx2);font-style:italic}
+
+/* WAS PASST NICHT */
+.wpn-item{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.wpn-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.wpn-q{font-size:14.5px;font-weight:600;color:var(--ink2);margin-bottom:9px}
+.wpn-q b{color:var(--gold);font-weight:800}
+.wpn-opts{display:flex;flex-wrap:wrap;gap:8px}
+.wopt{font-size:13px;font-weight:600;padding:7px 14px;border-radius:99px;border:1.5px solid var(--line);background:#fff;color:var(--tx2);cursor:pointer;transition:.15s}
+.wopt.sel{border-color:var(--gold);background:var(--gold);color:#fff;text-decoration:line-through}
+.wopt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);text-decoration:line-through}
+.wopt.wrong-sel{border-color:var(--er);background:var(--er-bg);color:var(--er);text-decoration:line-through}
+
+/* VOCAB BOX */
+.vocab{background:var(--gold-l);border:1px solid #ecd9b3;border-radius:16px;padding:18px 20px}
+.vocab summary{font-weight:800;font-size:13px;color:#8a6420;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.vocab summary::-webkit-details-marker{display:none}
+.vocab summary::before{content:'▸';transition:.2s}
+.vocab[open] summary::before{transform:rotate(90deg)}
+.vgrid{margin-top:14px;display:grid;grid-template-columns:1fr;gap:9px}
+.vrow{display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:1.5;padding-bottom:9px;border-bottom:1px solid #ecd9b3}
+.vrow:last-child{border-bottom:none;padding-bottom:0}
+.vde{font-weight:700;color:var(--ink)}
+.vdd{color:#7a5a1e;font-size:12.5px}
+.vvi{color:#a3762a;font-size:12.5px;font-style:italic;display:none}
+.vocab-toolbar{margin-top:12px}
+.btn-vi{background:#fff;border:1.5px solid #ecd9b3;color:#8a6420;font-weight:700;font-size:12px;padding:8px 16px;border-radius:99px;cursor:pointer}
+.btn-vi.on{background:#8a6420;border-color:#8a6420;color:#fff}
+
+.note{max-width:680px;margin:0 auto;padding:0 16px;font-size:11.5px;color:var(--mu);text-align:center;line-height:1.6}
+.copyright{text-align:center;padding:28px 0 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(22,35,63,.2)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-badge">B2</div>
+  <div class="eyebrow">Deutsch üben · Training Wortschatz</div>
+  <h1>Training Wortschatz B2</h1>
+  <span class="hdr-chapter"><span class="ltr">A</span> Soziale Kontakte und Informationen zur Person</span>
+  <p>Demo: A1 Die perfekte Begrüßung · A2 Verabschiedung</p>
+</div>
+
+<div class="subnav">
+  <div class="tab-sq on" onclick="go(1)">A1</div>
+  <div class="tab-sq" onclick="go(2)">A2</div>
+  <div class="tab-sq soon">A3</div>
+  <div class="tab-sq soon">A4</div>
+  <div class="tab-sq soon">A5</div>
+  <div class="tab-sq soon">A6</div>
+  <div class="tab-sq soon">A7</div>
+  <div class="tab-sq soon">…</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== A1 LÜCKENTEXT ===== -->
+  <div class="card" id="view1">
+    <div class="card-eyebrow">A1 · Lückentext</div>
+    <h2>Die perfekte Begrüßung</h2>
+    <div class="instr">Ergänzen Sie. Achten Sie auf die korrekte Form.</div>
+
+    <div class="row-tools">
+      <div class="mode-toggle">
+        <button class="mbtn on" id="modeType" onclick="setMode('type')">✎ Freies Schreiben</button>
+        <button class="mbtn" id="modeWord" onclick="setMode('word')">☑ Wörter auswählen</button>
+      </div>
+      <span class="saved-badge" id="saved1"></span>
+    </div>
+
+    <div class="wortliste" id="wl1"></div>
+
+    <div class="passage" id="pg1"></div>
+
+    <div class="actions">
+      <button class="btn" onclick="check(1)">Überprüfen</button>
+      <button class="btn ghost" onclick="reveal(1)">Lösung anzeigen</button>
+      <span class="score" id="sc1"></span>
+    </div>
+
+    <div class="ans-table" id="tb1">
+      <table>
+        <tr><th>Lücke</th><th>Lösung</th><th>Struktur / Kollokation</th></tr>
+        <tbody id="tbb1"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== A2 WAS PASST NICHT ===== -->
+  <div class="card" id="view2" style="display:none">
+    <div class="card-eyebrow">A2 · Was passt nicht?</div>
+    <h2>Verabschiedung und Informationsaustausch</h2>
+    <div class="instr">Streichen Sie das Wort, das nicht passt.</div>
+    <div id="wpn2"></div>
+    <div class="actions">
+      <button class="btn" onclick="checkWpn()">Überprüfen</button>
+      <span class="score" id="sc2"></span>
+    </div>
+  </div>
+
+  <!-- VOCAB -->
+  <details class="vocab" open>
+    <summary>Wichtige Wörter und Wendungen (A1–A2)</summary>
+    <div class="vocab-toolbar">
+      <button class="btn-vi" id="viToggle" onclick="toggleVI()">Vietnamesisch anzeigen</button>
+    </div>
+    <div class="vgrid" id="vocabList"></div>
+  </details>
+
+</div>
+
+<div class="copyright">Made with ♥ by Bảo Quang</div>
+
+<script src="dl-core.js" data-file="Training Wortschatz B2 (A)"></script>
+<script>
+/* ============ TTS ============ */
+function speak(text){
+  window.speechSynthesis.cancel();
+  const msg = new SpeechSynthesisUtterance();
+  msg.text = text;
+  msg.lang = 'de-DE';
+  msg.rate = 0.92;
+  window.speechSynthesis.speak(msg);
+}
+
+/* ============ A1 DATA ============ */
+const passage1 = [
+  {t:"h3", v:"Die perfekte Begrüßung"},
+  {t:"p", v:[
+    "Sie wollen einen sympathischen ",
+    {g:1, given:"Eindruck hinterlassen", ans:"Eindruck hinterlassen"},
+    "? Dann begrüßen Sie Ihr Gegenüber formvollendet. Aber wer grüßt zuerst? Wie begrüßt man sich richtig? Wer gibt wem zuerst die Hand? Wir erklären Ihnen die wichtigsten ",
+    {g:2, ans:"Konventionen"},
+    "."
+  ]},
+  {t:"h3", v:"Wer grüßt zuerst?"},
+  {t:"p", v:[
+    "Der Ankommende grüßt die ",
+    {g:3, ans:"Anwesenden"},
+    ": Wenn Sie das Konferenzzimmer, den Empfangsraum oder Fahrstuhl ",
+    {g:4, ans:"betreten"},
+    ", grüßen Sie die Person oder diejenigen, die schon im Zimmer oder Fahrstuhl sind. Im Privaten grüßt immer derjenige zuerst, der den anderen zuerst sieht. Im Berufsleben muss die ",
+    {g:5, ans:"Hierarchie"},
+    " beachtet werden. Der Mitarbeiter grüßt den ",
+    {g:6, ans:"Vorgesetzten"},
+    " immer zuerst. Beim Business-Meeting begrüßen Sie zuerst die ranghöchste Person und dann die anderen Anwesenden. ",
+    {g:7, ans:"Kunden"},
+    " und Geschäftspartner werden ebenfalls zuerst begrüßt."
+  ]},
+  {t:"h3", v:"Wie grüßt man?"},
+  {t:"p", v:[
+    "Der in Deutschland allgemein ",
+    {g:8, ans:"übliche"},
+    " Gruß ist „Guten Tag.\" Im Berufsleben sagen Sie zum Beispiel: „Guten Tag, Frau Mayer.\" Bis 11 Uhr morgens können Sie „Guten Morgen.\" wünschen. Natürlich wird ein ",
+    {g:9, ans:"Gruß erwidert"},
+    ". Erwidern Sie in ähnlichem Wortlaut: Für den ",
+    {g:10, ans:"förmlichen"},
+    " Gruß „Guten Tag.\" wäre die Erwiderung „Hallo.\" zu ",
+    {g:11, ans:"salopp"},
+    ". Schauen Sie Ihrem Gegenüber beim Begrüßen immer in die Augen."
+  ]},
+  {t:"h3", v:"Der richtige Handschlag"},
+  {t:"p", v:[
+    "Die ranghöhere Person ",
+    {g:12, ans:"entscheidet"},
+    ", ob sie neben der verbalen Begrüßung auch die Hand reicht. Beim ersten Kennenlernen von Kunden und Geschäftspartnern ist ein Handschlag zur Begrüßung immer ",
+    {g:13, ans:"üblich"},
+    ". Beim Handschlag gibt man sich die rechte Hand und ",
+    {g:14, ans:"drückt"},
+    " die Hand des anderen — nicht zu fest, aber auch nicht zu ",
+    {g:15, ans:"schlaff"},
+    " — und macht eine kurze, kleine Auf- und Abbewegung. Während des Händegebens schaut man seinem ",
+    {g:16, ans:"Gegenüber"},
+    " immer in die Augen und lächelt. Die andere Hand ist dabei nicht in der Hosentasche."
+  ]}
+];
+const notes1 = {
+  2:{form:"Nomen, Plural", grund:"nach <i>„die wichtigsten“</i> steht ein Plural-Nomen", beispiel:"die wichtigsten Konventionen"},
+  3:{form:"substantiviertes Adjektiv, Akk. Pl.", grund:"nach best. Artikel Plural <i>„die“</i> → Adjektiv-Endung -en", beispiel:"grüßt die Anwesenden"},
+  4:{form:"Verb, Sie-Form Präsens", grund:"Nebensatz mit <i>„wenn Sie …“</i> braucht ein konjugiertes Verb am Ende", beispiel:"wenn Sie den Fahrstuhl betreten"},
+  5:{form:"Nomen, Singular Fem.", grund:"nach best. Artikel <i>„die“</i> (Akkusativ)", beispiel:"die Hierarchie beachten"},
+  6:{form:"substantiviertes Adjektiv, Akk. Sg.", grund:"nach <i>„den“</i> (Akkusativ, maskulin) → Endung -en", beispiel:"grüßt den Vorgesetzten"},
+  7:{form:"Nomen, Plural", grund:"Subjekt im Plural, koordiniert mit <i>„… und Geschäftspartner“</i>", beispiel:"Kunden und Geschäftspartner werden zuerst begrüßt"},
+  8:{form:"Adjektiv + Endung -e", grund:"Adjektivdeklination nach best. Artikel <i>„der“</i> (Nom. mask.)", beispiel:"der übliche Gruß"},
+  9:{form:"Passiv Präsens", grund:"<i>„wird ein …“</i> verlangt Partizip II nach <i>werden</i>", beispiel:"ein Gruß wird erwidert"},
+  10:{form:"Adjektiv + Endung -en", grund:"Adjektivdeklination nach <i>„den“</i> (Akk. mask.)", beispiel:"für den förmlichen Gruß"},
+  11:{form:"prädikatives Adjektiv, keine Endung", grund:"nach <i>„zu“</i> als Prädikativ (kein Nomen danach)", beispiel:"das wäre zu salopp"},
+  12:{form:"Verb, 3. Pers. Sg. Präsens", grund:"Subjekt <i>„die ranghöhere Person“</i> + Nebensatz mit <i>ob</i>", beispiel:"sie entscheidet, ob …"},
+  13:{form:"prädikatives Adjektiv, keine Endung", grund:"nach <i>„ist … immer“</i> als Prädikativ", beispiel:"ist immer üblich"},
+  14:{form:"Verb, 3. Pers. Sg. Präsens", grund:"Satzreihe mit <i>„und“</i> — gleiches Subjekt <i>„man“</i>", beispiel:"man drückt die Hand"},
+  15:{form:"prädikatives Adjektiv, keine Endung", grund:"nach <i>„nicht zu“</i> als Prädikativ", beispiel:"nicht zu schlaff"},
+  16:{form:"Nomen, Dativ", grund:"nach Possessivpronomen Dativ <i>„seinem“</i>", beispiel:"seinem Gegenüber in die Augen schauen"}
+};
+const bank1 = ["betreten","Konvention","drücken","Vorgesetzter","Gruß erwidern","Kunde","förmlich","Eindruck hinterlassen","entscheiden","üblich","Hierarchie","saloppe","Anwesende","Gegenüber","schlaff","üblich"];
+
+function renderPassage(id, data){
+  const el = document.getElementById('pg'+id);
+  let html = "";
+  data.forEach(block=>{
+    if(block.t==="h3"){ html += `<h3>${block.v}</h3>`; return; }
+    const txt = plainText(block).replace(/`/g,"'");
+    html += `<p><button class="para-listen" title="Klick zum Hören" onclick="speak(\`${txt}\`)">🔊</button>`;
+    block.v.forEach(seg=>{
+      if(typeof seg === "string"){ html += seg; }
+      else if(seg.given){
+        html += `<span class="gap-num">${seg.g}</span><span class="blank given">${seg.given}</span>`;
+      } else {
+        html += `<span class="gap-num">${seg.g}</span><input class="blank" id="b${id}-${seg.g}" data-ans="${seg.ans}" size="${Math.max(seg.ans.length-2,4)}" onclick="pickTarget(${id},${seg.g})">`;
+      }
+    });
+    html += "</p>";
+  });
+  el.innerHTML = html;
+}
+function renderWortliste(id, bank, usedFirst){
+  const el = document.getElementById('wl'+id);
+  el.innerHTML = bank.map((w,i)=>`<span class="chip${i===usedFirst?' used':''}" data-word="${w}" onclick="pickWord(${id},'${w.replace(/'/g,"\\'")}',this)">${w}</span>`).join("");
+}
+function noteHTML(n){
+  return `<b>${n.form}</b> — ${n.grund}<br><i>„${n.beispiel}“</i>`;
+}
+function renderTable(id, data, notes){
+  const rows = [];
+  data.forEach(block=>{
+    if(block.t!=="p") return;
+    block.v.forEach(seg=>{
+      if(typeof seg!=="string" && !seg.given){
+        const n = notes[seg.g];
+        rows.push(`<tr><td class="lk">${seg.g}</td><td class="dap">${seg.ans}</td><td class="vd">${n?noteHTML(n):""}</td></tr>`);
+      }
+    });
+  });
+  document.getElementById('tbb1').innerHTML = rows.join("");
+}
+function plainText(block){
+  return block.v.map(seg=>typeof seg==="string"?seg:(seg.given||seg.ans)).join("");
+}
+
+/* ---- mode: freies Schreiben vs Wörter auswählen ---- */
+let currentMode = 'type';
+let activeTarget = null;
+function setMode(m){
+  currentMode = m;
+  document.getElementById('modeType').classList.toggle('on', m==='type');
+  document.getElementById('modeWord').classList.toggle('on', m==='word');
+  document.querySelectorAll('.blank:not(.given)').forEach(inp=>{
+    inp.readOnly = (m==='word');
+    inp.value = "";
+  });
+  document.querySelectorAll('.chip:not(.used)').forEach(c=>{
+    c.classList.toggle('pickable', m==='word');
+    c.classList.remove('disabled');
+  });
+  activeTarget = null;
+}
+function pickTarget(id, num){
+  if(currentMode!=='word') return;
+  activeTarget = 'b'+id+'-'+num;
+  document.querySelectorAll('.blank').forEach(b=>b.style.outline='');
+  const t = document.getElementById(activeTarget);
+  t.style.outline = '2px solid var(--gold)';
+}
+function pickWord(id, word, chipEl){
+  if(currentMode!=='word' || chipEl.classList.contains('disabled')) return;
+  if(!activeTarget){ alert('Chọn ô trống trước, rồi bấm từ để điền.'); return; }
+  document.getElementById(activeTarget).value = word;
+  chipEl.classList.add('disabled');
+  document.getElementById(activeTarget).style.outline='';
+  activeTarget = null;
+}
+
+/* ---- check + inline feedback ---- */
+function check(id){
+  let total=0, ok=0;
+  document.querySelectorAll(`#view${id} .hint`).forEach(h=>h.remove());
+  document.querySelectorAll(`#view${id} .blank:not(.given)`).forEach(inp=>{
+    total++;
+    const val = inp.value.trim().toLowerCase();
+    const ans = inp.dataset.ans.toLowerCase();
+    inp.classList.remove('ok','no');
+    if(val===ans){ inp.classList.add('ok'); ok++; }
+    else {
+      inp.classList.add('no');
+      const num = inp.id.split('-')[1];
+      const note = notes1[num];
+      if(note){
+        const hint = document.createElement('span');
+        hint.className = 'hint';
+        hint.innerHTML = '→ ' + noteHTML(note);
+        inp.insertAdjacentElement('afterend', hint);
+      }
+    }
+  });
+  document.getElementById('sc'+id).innerHTML = `<b>${ok}</b> / ${total} richtig`;
+  saveProgress(id, ok, total);
+  _dlLog('A'+id+' Lückentext', ok, total);
+}
+function reveal(id){
+  document.getElementById('tb'+id).classList.toggle('show');
+}
+
+/* ---- Speicherstand (localStorage — funktioniert ohne Login, geräteweise) ---- */
+function saveProgress(id, ok, total){
+  try{
+    localStorage.setItem('wsb2-progress-A'+id, JSON.stringify({ok,total,ts:Date.now()}));
+    showSaved(id, ok, total);
+  }catch(e){ /* Speicher nicht verfügbar in dieser Ansicht */ }
+}
+function loadProgress(id){
+  try{
+    const raw = localStorage.getItem('wsb2-progress-A'+id);
+    if(raw){ const d = JSON.parse(raw); showSaved(id, d.ok, d.total); }
+  }catch(e){ /* noch kein Speicherstand */ }
+}
+function showSaved(id, ok, total){
+  document.getElementById('saved'+id).textContent = `Letzter Versuch: ${ok}/${total}`;
+}
+
+renderWortliste(1, bank1, 7);
+renderPassage(1, passage1);
+renderTable(1, passage1, notes1);
+loadProgress(1);
+
+/* ============ A2 WAS PASST NICHT ============ */
+const wpn2data = [
+  {q:"Man kann sich zum Abschied …", opts:["umarmen","vorstellen","die Hand geben","zuwinken"], wrong:1},
+  {q:"Man kann den Kontakt zu jemandem …", opts:["austauschen","aufnehmen","herstellen","aufrechterhalten"], wrong:0},
+  {q:"Man kann einen Vorschlag …", opts:["bejahen","meinen","ablehnen","annehmen"], wrong:1},
+  {q:"Man kann einem Vorschlag …", opts:["zustimmen","widersprechen","zuhören","erwidern"], wrong:2},
+  {q:"Man kann Informationen …", opts:["austauschen","sammeln","bitten","bekannt geben"], wrong:2},
+  {q:"Man kann von einem Treffen …", opts:["erzählen","erklären","berichten","sprechen"], wrong:1}
+];
+function renderWpn(){
+  const el = document.getElementById('wpn2');
+  el.innerHTML = wpn2data.map((item,qi)=>`
+    <div class="wpn-item">
+      <div class="wpn-q">${qi+1}. ${item.q}</div>
+      <div class="wpn-opts">
+        ${item.opts.map((o,oi)=>`<span class="wopt" data-q="${qi}" data-o="${oi}" onclick="selectWpn(${qi},${oi})">${o}</span>`).join("")}
+      </div>
+    </div>`).join("");
+}
+const wpnSel = {};
+function selectWpn(qi,oi){
+  wpnSel[qi]=oi;
+  document.querySelectorAll(`.wopt[data-q="${qi}"]`).forEach(el=>{
+    el.classList.toggle('sel', +el.dataset.o===oi);
+  });
+}
+function checkWpn(){
+  let ok=0;
+  wpn2data.forEach((item,qi)=>{
+    document.querySelectorAll(`.wopt[data-q="${qi}"]`).forEach(el=>{
+      const oi = +el.dataset.o;
+      el.classList.remove('correct','wrong-sel');
+      if(oi===item.wrong) el.classList.add('correct');
+      else if(wpnSel[qi]===oi) el.classList.add('wrong-sel');
+    });
+    if(wpnSel[qi]===item.wrong) ok++;
+  });
+  document.getElementById('sc2').innerHTML = `<b>${ok}</b> / ${wpn2data.length} richtig`;
+  _dlLog('A2 Was passt nicht', ok, wpn2data.length);
+}
+renderWpn();
+
+/* ============ VOCAB BOX ============ */
+const vocab = [
+  ["die Anwesenden","Personen, die an einem Ort oder Treffen tatsächlich da sind","người có mặt"],
+  ["die Hierarchie(-n)","die Rangordnung, das Über- und Unterordnungsverhältnis von Positionen","thứ bậc, hệ thống cấp bậc"],
+  ["die Konvention(-en)","eine allgemein akzeptierte Regel, die das gesellschaftliche Verhalten bestimmt","quy tắc ứng xử, thông lệ"],
+  ["der Vorgesetzte(-n)","eine Person, die einem in der Arbeit übergeordnet ist","cấp trên"],
+  ["betreten","einen Raum oder Ort (durch die Tür) hineingehen","bước vào (phòng, thang máy…)"],
+  ["förmlich","nach festen Regeln, offiziell, nicht locker","trang trọng, nghi thức"],
+  ["salopp","sehr locker, ungezwungen, wenig förmlich","suồng sã, thân mật quá mức"],
+  ["schlaff","ohne Spannung, kraftlos, locker","lỏng lẻo, uể oải"],
+  ["(allgemein) üblich","so, wie es normalerweise gemacht wird","thông dụng, phổ biến"],
+  ["den Kontakt aufrechterhalten","weiterhin in Verbindung bleiben","duy trì liên lạc"],
+  ["die Hand reichen","die Hand zum Handschlag ausstrecken","đưa tay (để bắt tay)"],
+  ["einen Eindruck hinterlassen","bei jemandem eine bestimmte Wirkung erzeugen","để lại ấn tượng"],
+  ["einen Gruß erwidern","auf einen Gruß mit einem eigenen Gruß antworten","đáp lại lời chào"],
+  ["einen Vorschlag bejahen","einem Vorschlag zustimmen","chấp thuận một đề xuất"]
+];
+document.getElementById('vocabList').innerHTML = vocab.map(v=>`<div class="vrow"><span class="vde">${v[0]}</span><span class="vdd">${v[1]}</span><span class="vvi">${v[2]}</span></div>`).join("");
+let viOn = false;
+function toggleVI(){
+  viOn = !viOn;
+  document.querySelectorAll('.vvi').forEach(el=>el.style.display = viOn?'block':'none');
+  const btn = document.getElementById('viToggle');
+  btn.classList.toggle('on', viOn);
+  btn.textContent = viOn ? 'Vietnamesisch ausblenden' : 'Vietnamesisch anzeigen';
+}
+
+/* ============ NAV ============ */
+function go(n){
+  document.querySelectorAll('.tab-sq').forEach(p=>p.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  document.getElementById('view1').style.display = n===1?'block':'none';
+  document.getElementById('view2').style.display = n===2?'block':'none';
+}
+</script>
+</body>
+</html>
