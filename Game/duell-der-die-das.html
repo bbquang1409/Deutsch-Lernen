@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Der · Die · Das Duell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+  :root{
+    --bg-top:#0a0e24;
+    --bg-bottom:#1c2a5e;
+    --der:#4c8dff; --der-dark:#2a5fd6;
+    --die:#ff4c6d; --die-dark:#d62a4a;
+    --das:#34d399; --das-dark:#159c6f;
+    --gold:#ffc94c;
+    --cream:#f4f1ea;
+    --panel:rgba(10,14,36,0.82);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0;padding:0;width:100%;min-height:100%;
+    background:linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    font-family:'Nunito',sans-serif;
+    color:var(--cream);
+    overscroll-behavior:none;
+  }
+  .hidden{display:none !important;}
+  .screen{
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px 18px;
+  }
+  .card{
+    background:var(--panel);
+    border-radius:26px;
+    padding:32px 28px 28px;
+    max-width:440px;width:100%;
+    text-align:center;
+    box-shadow:0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.55);
+    backdrop-filter:blur(6px);
+  }
+  .title{ font-family:'Baloo 2',sans-serif;font-weight:800;font-size:28px;line-height:1.15;margin:0 0 8px; }
+  .title span.der{color:var(--der);} .title span.die{color:var(--die);} .title span.das{color:var(--das);}
+  .subtitle{ font-size:14.5px;line-height:1.55;color:var(--cream);opacity:.85;margin:0 0 18px; }
+
+  .sel-label{font-size:13px;font-weight:700;opacity:.75;margin:16px 0 10px;}
+  .sel-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .sel-btn{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;
+    border:2px solid rgba(255,255,255,.15);cursor:pointer;
+    padding:10px 16px;border-radius:14px;
+    background:rgba(255,255,255,.05); color:var(--cream);
+    transition:transform .08s ease, background .15s ease;
+    flex:1;min-width:64px;
+  }
+  .sel-btn.selected{ background:linear-gradient(180deg, var(--gold), #e8a920); color:#26160a; border-color:transparent; }
+  .sel-btn:active{ transform:translateY(2px); }
+
+  .btn{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px;
+    border:none;cursor:pointer;
+    padding:14px 30px;border-radius:999px;
+    background:linear-gradient(180deg, var(--gold), #e8a920);
+    color:#26160a;
+    box-shadow:0 8px 0 #a9781a, 0 12px 20px rgba(0,0,0,.35);
+    transition:transform .08s ease, box-shadow .08s ease;
+    margin-top:18px; width:100%;
+  }
+  .btn:active{ transform:translateY(6px); box-shadow:0 2px 0 #a9781a, 0 6px 14px rgba(0,0,0,.35); }
+  .btn.secondary{ background:linear-gradient(180deg, #3a4270, #262c50); color:var(--cream); box-shadow:0 8px 0 #14172c, 0 12px 20px rgba(0,0,0,.35); }
+  .btn.secondary:active{ box-shadow:0 2px 0 #14172c, 0 6px 14px rgba(0,0,0,.35); }
+
+  .divider{ display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--cream);opacity:.5;font-size:13px; }
+  .divider::before, .divider::after{ content:'';flex:1;height:1px;background:rgba(255,255,255,.15); }
+
+  #joinCodeInput{
+    width:100%;text-align:center;letter-spacing:6px;text-transform:uppercase;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;
+    padding:12px;border-radius:14px;border:2px solid rgba(255,255,255,.2);
+    background:rgba(255,255,255,.05);color:var(--cream);margin-top:6px;
+  }
+  #joinCodeInput::placeholder{ color:rgba(244,241,234,.35); letter-spacing:4px; }
+
+  #roomCodeDisplay{
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:40px;letter-spacing:8px;
+    color:var(--gold); margin:14px 0 6px;
+  }
+  #qrBox{ display:flex;justify-content:center;margin:14px 0; }
+  #qrBox canvas{ border-radius:16px; }
+  .spinner{
+    width:34px;height:34px;border-radius:50%;
+    border:4px solid rgba(255,255,255,.15); border-top-color:var(--gold);
+    animation:spin 0.9s linear infinite; margin:16px auto 0;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .status-text{ font-size:14px;opacity:.75;margin-top:10px; }
+
+  /* ---------- Match screen ---------- */
+  #matchScreen{ padding:0; }
+  #matchHud{
+    position:fixed;top:0;left:0;right:0;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px;pointer-events:none;z-index:5;
+  }
+  .score-block{ display:flex;flex-direction:column;align-items:center;gap:2px; }
+  .score-block .who{ font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.04em; }
+  .score-block .num{ font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px; }
+  .score-block.me .num{ color:var(--gold); }
+  .score-block.opp .num{ color:var(--der); }
+  #roundInfo{ font-size:13px;font-weight:700;opacity:.75; text-align:center; }
+
+  #matchBody{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:90px 20px 40px;
+  }
+  #roundTimerWrap{ width:220px;height:8px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden;margin-bottom:26px; }
+  #roundTimerFill{ height:100%;width:100%;background:var(--gold);border-radius:999px;transition:width .1s linear; }
+
+  #wordDisplay{
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:44px;color:#fff;
+    text-shadow:0 4px 14px rgba(0,0,0,.4);
+    margin-bottom:36px; text-align:center; min-height:60px;
+  }
+  #answerButtons{ display:flex;gap:14px;width:100%;max-width:420px; }
+  .art-btn{
+    flex:1;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;
+    border:none;cursor:pointer;padding:20px 0;border-radius:20px;color:#0a0e24;
+    box-shadow:0 8px 0 rgba(0,0,0,.25), 0 12px 18px rgba(0,0,0,.3);
+    transition:transform .08s ease, box-shadow .08s ease, opacity .2s ease;
+  }
+  .art-btn:active{ transform:translateY(6px); box-shadow:0 2px 0 rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.3); }
+  .art-btn.der{ background:linear-gradient(180deg, #8fb3ff, var(--der)); }
+  .art-btn.die{ background:linear-gradient(180deg, #ff9bae, var(--die)); }
+  .art-btn.das{ background:linear-gradient(180deg, #7fe6c9, var(--das)); }
+  .art-btn:disabled{ opacity:.35;cursor:default; }
+
+  #feedbackText{
+    margin-top:20px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:18px;
+    min-height:26px; opacity:0; transition:opacity .2s ease;
+  }
+  #feedbackText.show{ opacity:1; }
+
+  .stat-row{ display:flex;justify-content:center;gap:26px;margin:18px 0 10px; }
+  .stat{display:flex;flex-direction:column;gap:2px;}
+  .stat b{font-family:'Baloo 2',sans-serif;font-size:30px;color:var(--gold);}
+  .stat span{font-size:12px;opacity:.75;}
+  #resultHeadline{ font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;margin:6px 0 4px; }
+
+  @media (max-width:420px){
+    .title{font-size:23px;}
+    .card{padding:26px 20px 22px;border-radius:22px;}
+    #wordDisplay{font-size:36px;}
+    .art-btn{font-size:19px;padding:16px 0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== LOBBY ===================== -->
+<div id="lobbyScreen" class="screen">
+  <div class="card">
+    <h1 class="title"><span class="der">Der</span> · <span class="die">Die</span> · <span class="das">Das</span> Duell</h1>
+    <p class="subtitle">Fordere jemanden live heraus. Beide sehen dasselbe Wort gleichzeitig — wer zuerst den richtigen Artikel trifft, bekommt den Punkt.</p>
+
+    <div id="createPane">
+      <div class="sel-label">Niveau wählen</div>
+      <div class="sel-row" id="levelRow">
+        <button class="sel-btn selected" data-level="A1">A1</button>
+        <button class="sel-btn" data-level="A2">A2</button>
+        <button class="sel-btn" data-level="B1">B1</button>
+      </div>
+      <div class="sel-label">Rundenanzahl</div>
+      <div class="sel-row" id="roundsRow">
+        <button class="sel-btn" data-rounds="10">Kurz (10)</button>
+        <button class="sel-btn selected" data-rounds="15">Mittel (15)</button>
+        <button class="sel-btn" data-rounds="20">Lang (20)</button>
+      </div>
+      <button class="btn" id="createBtn">Duell erstellen</button>
+    </div>
+
+    <div class="divider">oder</div>
+
+    <div id="joinPane">
+      <input id="joinCodeInput" maxlength="5" placeholder="CODE eingeben">
+      <button class="btn secondary" id="joinBtn">Beitreten</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== WAITING (host) ===================== -->
+<div id="waitHostScreen" class="screen hidden">
+  <div class="card">
+    <h1 class="title">Warte auf Gegner…</h1>
+    <p class="subtitle">Lass deinen Freund diesen QR-Code mit der Handykamera scannen — oder den Code eingeben.</p>
+    <div id="roomCodeDisplay">-----</div>
+    <div id="qrBox"></div>
+    <div class="spinner"></div>
+    <div class="status-text" id="hostStatus">Verbindung wird aufgebaut…</div>
+  </div>
+</div>
+
+<!-- ===================== WAITING (guest) ===================== -->
+<div id="waitGuestScreen" class="screen hidden">
+  <div class="card">
+    <h1 class="title">Verbinde mit Duell…</h1>
+    <div class="spinner"></div>
+    <div class="status-text" id="guestStatus">Verbindung wird aufgebaut…</div>
+  </div>
+</div>
+
+<!-- ===================== MATCH ===================== -->
+<div id="matchScreen" class="screen hidden">
+  <div id="matchHud">
+    <div class="score-block me">
+      <div class="who">Du</div>
+      <div class="num" id="myScoreHud">0</div>
+    </div>
+    <div id="roundInfo">Runde 1 / 15</div>
+    <div class="score-block opp">
+      <div class="who">Gegner</div>
+      <div class="num" id="oppScoreHud">0</div>
+    </div>
+  </div>
+  <div id="matchBody">
+    <div id="roundTimerWrap"><div id="roundTimerFill"></div></div>
+    <div id="wordDisplay">&nbsp;</div>
+    <div id="answerButtons">
+      <button class="art-btn der" data-a="der">der</button>
+      <button class="art-btn die" data-a="die">die</button>
+      <button class="art-btn das" data-a="das">das</button>
+    </div>
+    <div id="feedbackText"></div>
+  </div>
+</div>
+
+<!-- ===================== RESULT ===================== -->
+<div id="resultScreen" class="screen hidden">
+  <div class="card">
+    <h1 class="title" id="resultHeadline">Fertig!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="finalMyScore">0</b><span>Du</span></div>
+      <div class="stat"><b id="finalOppScore">0</b><span>Gegner</span></div>
+    </div>
+    <button class="btn" id="newDuelBtn">Neues Duell</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- Wörterdatenbank ----------------
+  const WORD_DB = {
+    A1: [
+      {w:'Mann',a:'der'},{w:'Tisch',a:'der'},{w:'Stuhl',a:'der'},{w:'Hund',a:'der'},{w:'Apfel',a:'der'},
+      {w:'Baum',a:'der'},{w:'Vater',a:'der'},{w:'Bruder',a:'der'},{w:'Ball',a:'der'},{w:'Mond',a:'der'},
+      {w:'Kaffee',a:'der'},{w:'Bus',a:'der'},
+      {w:'Frau',a:'die'},{w:'Katze',a:'die'},{w:'Blume',a:'die'},{w:'Mutter',a:'die'},{w:'Schwester',a:'die'},
+      {w:'Lampe',a:'die'},{w:'Schule',a:'die'},{w:'Tasche',a:'die'},{w:'Uhr',a:'die'},{w:'Sonne',a:'die'},
+      {w:'Milch',a:'die'},{w:'Tür',a:'die'},
+      {w:'Haus',a:'das'},{w:'Auto',a:'das'},{w:'Buch',a:'das'},{w:'Kind',a:'das'},{w:'Wasser',a:'das'},
+      {w:'Brot',a:'das'},{w:'Bett',a:'das'},{w:'Fenster',a:'das'},{w:'Jahr',a:'das'},{w:'Ei',a:'das'},
+      {w:'Zimmer',a:'das'},{w:'Handy',a:'das'}
+    ],
+    A2: [
+      {w:'Beruf',a:'der'},{w:'Urlaub',a:'der'},{w:'Flughafen',a:'der'},{w:'Regenschirm',a:'der'},{w:'Schlüssel',a:'der'},
+      {w:'Rucksack',a:'der'},{w:'Fernseher',a:'der'},{w:'Supermarkt',a:'der'},{w:'Nachbar',a:'der'},{w:'Sport',a:'der'},
+      {w:'Spaziergang',a:'der'},{w:'Termin',a:'der'},
+      {w:'Reise',a:'die'},{w:'Wohnung',a:'die'},{w:'Rechnung',a:'die'},{w:'Zeitung',a:'die'},{w:'Speisekarte',a:'die'},
+      {w:'Verabredung',a:'die'},{w:'Ausbildung',a:'die'},{w:'Erfahrung',a:'die'},{w:'Versicherung',a:'die'},{w:'Gesundheit',a:'die'},
+      {w:'Freizeit',a:'die'},{w:'Nachricht',a:'die'},
+      {w:'Frühstück',a:'das'},{w:'Restaurant',a:'das'},{w:'Hotel',a:'das'},{w:'Ticket',a:'das'},{w:'Gepäck',a:'das'},
+      {w:'Formular',a:'das'},{w:'Rezept',a:'das'},{w:'Museum',a:'das'},{w:'Fahrrad',a:'das'},{w:'Praktikum',a:'das'},
+      {w:'Wochenende',a:'das'},{w:'Geschäft',a:'das'}
+    ],
+    B1: [
+      {w:'Erfolg',a:'der'},{w:'Fortschritt',a:'der'},{w:'Umweltschutz',a:'der'},{w:'Wettbewerb',a:'der'},{w:'Vorschlag',a:'der'},
+      {w:'Zusammenhang',a:'der'},{w:'Eindruck',a:'der'},{w:'Widerspruch',a:'der'},{w:'Vertrag',a:'der'},{w:'Anspruch',a:'der'},
+      {w:'Unterschied',a:'der'},{w:'Standpunkt',a:'der'},
+      {w:'Entwicklung',a:'die'},{w:'Verantwortung',a:'die'},{w:'Bevölkerung',a:'die'},{w:'Wirtschaft',a:'die'},{w:'Entscheidung',a:'die'},
+      {w:'Beziehung',a:'die'},{w:'Herausforderung',a:'die'},{w:'Bedeutung',a:'die'},{w:'Möglichkeit',a:'die'},{w:'Voraussetzung',a:'die'},
+      {w:'Konsequenz',a:'die'},{w:'Meinung',a:'die'},
+      {w:'Verhalten',a:'das'},{w:'Ergebnis',a:'das'},{w:'Verständnis',a:'das'},{w:'Ereignis',a:'das'},{w:'Bewusstsein',a:'das'},
+      {w:'Interesse',a:'das'},{w:'Verfahren',a:'das'},{w:'Vorurteil',a:'das'},{w:'Gleichgewicht',a:'das'},{w:'Verhältnis',a:'das'},
+      {w:'Bedürfnis',a:'das'},{w:'Argument',a:'das'}
+    ]
+  };
+
+  const ROUND_WINDOW_MS = 4000;
+  const MQTT_URL = 'wss://broker.emqx.io:8084/mqtt';
+  const TOPIC_PREFIX = 'dld/duell/v1/';
+
+  let myId = 'p_' + Math.random().toString(36).slice(2,8);
+  let peerId = null;
+  let isHost = false;
+  let roomCode = null;
+  let client = null;
+  let topic = null;
+
+  let selectedLevel = 'A1';
+  let selectedRounds = 15;
+
+  let sequence = [];        // word list for this match (host-generated)
+  let currentIdx = -1;
+  let totalRounds = 15;
+  let myScore = 0, oppScore = 0;
+  let roundAnswers = {};    // idx -> array of {from, correct, ms}
+  let roundStartLocal = 0;  // performance.now() when current word was shown locally
+  let answeredThisRound = false;
+  let roundTimer = null;
+  let roundTimerAnim = null;
+  let hostAdvanceTimer = null;
+
+  // ---------------- DOM refs ----------------
+  const lobbyScreen = document.getElementById('lobbyScreen');
+  const waitHostScreen = document.getElementById('waitHostScreen');
+  const waitGuestScreen = document.getElementById('waitGuestScreen');
+  const matchScreen = document.getElementById('matchScreen');
+  const resultScreen = document.getElementById('resultScreen');
+
+  const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+  const qrBox = document.getElementById('qrBox');
+  const hostStatus = document.getElementById('hostStatus');
+  const guestStatus = document.getElementById('guestStatus');
+  const joinCodeInput = document.getElementById('joinCodeInput');
+
+  const myScoreHud = document.getElementById('myScoreHud');
+  const oppScoreHud = document.getElementById('oppScoreHud');
+  const roundInfo = document.getElementById('roundInfo');
+  const wordDisplay = document.getElementById('wordDisplay');
+  const roundTimerFill = document.getElementById('roundTimerFill');
+  const feedbackText = document.getElementById('feedbackText');
+  const answerButtons = document.querySelectorAll('.art-btn');
+
+  const resultHeadline = document.getElementById('resultHeadline');
+  const finalMyScore = document.getElementById('finalMyScore');
+  const finalOppScore = document.getElementById('finalOppScore');
+
+  function showScreen(el){
+    [lobbyScreen, waitHostScreen, waitGuestScreen, matchScreen, resultScreen].forEach(s=>s.classList.add('hidden'));
+    el.classList.remove('hidden');
+  }
+
+  // ---------------- Helpers ----------------
+  function rand(a,b){ return a + Math.random()*(b-a); }
+  function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  function genRoomCode(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = '';
+    for(let i=0;i<5;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  }
+
+  // ---------------- Selection UI (create pane) ----------------
+  function wireSelectors(rowId, attr, applyFn){
+    const row = document.getElementById(rowId);
+    row.querySelectorAll('.sel-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        row.querySelectorAll('.sel-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        applyFn(btn.dataset[attr]);
+      });
+    });
+  }
+  wireSelectors('levelRow', 'level', v=>selectedLevel=v);
+  wireSelectors('roundsRow', 'rounds', v=>selectedRounds=parseInt(v,10));
+
+  // ---------------- MQTT connection ----------------
+  function connectMqtt(onConnected){
+    client = mqtt.connect(MQTT_URL, { clientId: myId + '_' + Date.now(), clean:true, connectTimeout: 8000 });
+    client.on('connect', ()=>{
+      client.subscribe(topic, ()=>{ if(onConnected) onConnected(); });
+    });
+    client.on('message', (t, payload)=>{
+      if(t !== topic) return;
+      let msg;
+      try{ msg = JSON.parse(payload.toString()); }catch(e){ return; }
+      handleMessage(msg);
+    });
+    client.on('error', ()=>{
+      hostStatus.textContent = 'Verbindungsfehler. Prüfe deine Internetverbindung.';
+      guestStatus.textContent = 'Verbindungsfehler. Prüfe deine Internetverbindung.';
+    });
+  }
+  function publish(msg){
+    if(client && client.connected){
+      client.publish(topic, JSON.stringify(msg));
+    }
+  }
+
+  // ---------------- Message handling ----------------
+  function handleMessage(msg){
+    if(msg.from && msg.from !== myId && !peerId){
+      peerId = msg.from;
+    }
+    if(msg.t === 'join' && isHost){
+      if(!peerId) peerId = msg.from;
+      if(currentIdx === -1){
+        beginMatch();
+      }
+    } else if(msg.t === 'word'){
+      if(msg.idx > currentIdx || (msg.idx === currentIdx && matchScreen.classList.contains('hidden'))){
+        showRound(msg.idx, msg.word, msg.artikel);
+      }
+    } else if(msg.t === 'answer'){
+      if(!roundAnswers[msg.idx]) roundAnswers[msg.idx] = [];
+      if(!roundAnswers[msg.idx].some(a=>a.from===msg.from)){
+        roundAnswers[msg.idx].push({from:msg.from, correct:msg.correct, ms:msg.ms});
+      }
+      maybeResolveRound(msg.idx);
+    } else if(msg.t === 'end'){
+      finishMatch();
+    }
+  }
+
+  // ---------------- Lobby actions ----------------
+  document.getElementById('createBtn').addEventListener('click', ()=>{
+    isHost = true;
+    roomCode = genRoomCode();
+    topic = TOPIC_PREFIX + roomCode;
+    totalRounds = selectedRounds;
+    roomCodeDisplay.textContent = roomCode;
+    showScreen(waitHostScreen);
+
+    const joinUrl = location.origin + location.pathname + '?room=' + roomCode;
+    qrBox.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    qrBox.appendChild(canvas);
+    if(window.QRCode){
+      QRCode.toCanvas(canvas, joinUrl, { width:200, margin:1, color:{dark:'#0a0e24', light:'#f4f1ea'} }, function(err){
+        if(err) qrBox.innerHTML = '<div class="status-text">QR konnte nicht erstellt werden. Code oben eingeben.</div>';
+      });
+    }
+    hostStatus.textContent = 'Verbindung wird aufgebaut…';
+    connectMqtt(()=>{ hostStatus.textContent = 'Bereit! Warte auf Mitspieler…'; });
+  });
+
+  document.getElementById('joinBtn').addEventListener('click', ()=>{
+    const code = joinCodeInput.value.trim().toUpperCase();
+    if(code.length < 4){ joinCodeInput.focus(); return; }
+    isHost = false;
+    roomCode = code;
+    topic = TOPIC_PREFIX + roomCode;
+    showScreen(waitGuestScreen);
+    guestStatus.textContent = 'Verbindung wird aufgebaut…';
+    connectMqtt(()=>{
+      guestStatus.textContent = 'Verbunden! Warte auf Spielstart…';
+      publish({t:'join', from: myId});
+    });
+  });
+
+  // auto-fill room code from ?room= param (from QR scan)
+  const params = new URLSearchParams(location.search);
+  if(params.get('room')){
+    joinCodeInput.value = params.get('room').toUpperCase();
+  }
+
+  // ---------------- Match logic (host drives rounds) ----------------
+  function beginMatch(){
+    sequence = [];
+    const pool = shuffle(WORD_DB[selectedLevel]);
+    for(let i=0;i<totalRounds;i++){
+      sequence.push(pool[i % pool.length]);
+    }
+    myScore = 0; oppScore = 0;
+    roundAnswers = {};
+    currentIdx = -1;
+    hostStatus.textContent = 'Gegner gefunden! Start…';
+    setTimeout(()=>{ hostAdvanceRound(0); }, 900);
+  }
+  function hostAdvanceRound(idx){
+    if(idx >= totalRounds){
+      publish({t:'end', from: myId});
+      finishMatch();
+      return;
+    }
+    const entry = sequence[idx];
+    publish({t:'word', from: myId, idx, word: entry.w, artikel: entry.a});
+    clearTimeout(hostAdvanceTimer);
+    hostAdvanceTimer = setTimeout(()=>{ hostAdvanceRound(idx+1); }, ROUND_WINDOW_MS + 250);
+  }
+
+  // ---------------- Round display (both host & guest) ----------------
+  function showRound(idx, word, artikel){
+    currentIdx = idx;
+    answeredThisRound = false;
+    sequence[idx] = sequence[idx] || {w:word, a:artikel};
+    showScreen(matchScreen);
+    wordDisplay.textContent = word;
+    roundInfo.textContent = 'Runde ' + (idx+1) + ' / ' + totalRounds;
+    feedbackText.classList.remove('show');
+    answerButtons.forEach(b=>{ b.disabled = false; });
+    roundStartLocal = performance.now();
+
+    clearInterval(roundTimerAnim);
+    const endAt = performance.now() + ROUND_WINDOW_MS;
+    roundTimerFill.style.width = '100%';
+    roundTimerAnim = setInterval(()=>{
+      const remain = Math.max(0, endAt - performance.now());
+      roundTimerFill.style.width = (remain/ROUND_WINDOW_MS*100) + '%';
+      if(remain <= 0) clearInterval(roundTimerAnim);
+    }, 60);
+
+    updateScoreHud();
+  }
+
+  function onAnswerClick(e){
+    if(answeredThisRound || currentIdx < 0) return;
+    const picked = e.currentTarget.dataset.a;
+    const entry = sequence[currentIdx];
+    const correct = entry && entry.a === picked;
+    const ms = Math.round(performance.now() - roundStartLocal);
+    answeredThisRound = true;
+    answerButtons.forEach(b=>{ b.disabled = true; });
+    feedbackText.textContent = correct ? 'Richtig! ✓' : ('Falsch – es war "' + (entry?entry.a:'?') + '"');
+    feedbackText.style.color = correct ? 'var(--das)' : 'var(--die)';
+    feedbackText.classList.add('show');
+
+    if(!roundAnswers[currentIdx]) roundAnswers[currentIdx] = [];
+    if(!roundAnswers[currentIdx].some(a=>a.from===myId)){
+      roundAnswers[currentIdx].push({from:myId, correct, ms});
+    }
+    publish({t:'answer', from: myId, idx: currentIdx, correct, ms});
+    maybeResolveRound(currentIdx);
+  }
+  answerButtons.forEach(b=> b.addEventListener('click', onAnswerClick));
+
+  function maybeResolveRound(idx){
+    const answers = roundAnswers[idx];
+    if(!answers) return;
+    // resolve once we have up to 2 answers, or just recompute live from what we have
+    const correctAnswers = answers.filter(a=>a.correct).sort((a,b)=>a.ms-b.ms);
+    // live tally: recompute total scores from scratch based on resolved rounds so far
+    recomputeScores();
+  }
+
+  function recomputeScores(){
+    let mine = 0, theirs = 0;
+    Object.keys(roundAnswers).forEach(k=>{
+      const idx = parseInt(k,10);
+      if(idx === currentIdx) return; // don't finalize the in-progress round yet
+      const answers = roundAnswers[k];
+      const correct = answers.filter(a=>a.correct).sort((a,b)=>a.ms-b.ms);
+      if(correct.length){
+        const winner = correct[0].from;
+        if(winner === myId) mine++; else theirs++;
+      }
+    });
+    myScore = mine; oppScore = theirs;
+    updateScoreHud();
+  }
+
+  function updateScoreHud(){
+    myScoreHud.textContent = myScore;
+    oppScoreHud.textContent = oppScore;
+  }
+
+  function finishMatch(){
+    // final tally including the last round
+    let mine = 0, theirs = 0;
+    Object.keys(roundAnswers).forEach(k=>{
+      const answers = roundAnswers[k];
+      const correct = answers.filter(a=>a.correct).sort((a,b)=>a.ms-b.ms);
+      if(correct.length){
+        if(correct[0].from === myId) mine++; else theirs++;
+      }
+    });
+    myScore = mine; oppScore = theirs;
+    finalMyScore.textContent = myScore;
+    finalOppScore.textContent = oppScore;
+    if(myScore > oppScore) resultHeadline.textContent = 'Du hast gewonnen! 🎉';
+    else if(myScore < oppScore) resultHeadline.textContent = 'Gegner hat gewonnen';
+    else resultHeadline.textContent = 'Unentschieden!';
+    showScreen(resultScreen);
+  }
+
+  document.getElementById('newDuelBtn').addEventListener('click', ()=>{
+    if(client){ try{ client.end(true); }catch(e){} client=null; }
+    currentIdx = -1; roundAnswers = {}; peerId=null; roomCode=null; topic=null;
+    joinCodeInput.value = '';
+    history.replaceState(null, '', location.pathname);
+    showScreen(lobbyScreen);
+  });
+
+  showScreen(lobbyScreen);
+})();
+</script>
+</body>
+</html>
