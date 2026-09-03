@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Đường Đua Der · Die · Das</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-top:#0a0e24;
+    --bg-bottom:#1c2a5e;
+    --der:#4c8dff;
+    --der-dark:#2a5fd6;
+    --die:#ff4c6d;
+    --die-dark:#d62a4a;
+    --das:#34d399;
+    --das-dark:#159c6f;
+    --gold:#ffc94c;
+    --cream:#f4f1ea;
+    --panel:rgba(10,14,36,0.82);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0;padding:0;width:100%;height:100%;overflow:hidden;
+    background:var(--bg-top);
+    font-family:'Nunito',sans-serif;
+    color:var(--cream);
+    overscroll-behavior:none;
+  }
+  #game{
+    position:fixed;inset:0;
+    touch-action:none;
+    display:block;
+  }
+  .hidden{display:none !important;}
+
+  #hud{
+    position:fixed;top:0;left:0;right:0;
+    display:flex;align-items:flex-start;justify-content:space-between;
+    padding:16px 18px;
+    pointer-events:none;
+    z-index:5;
+  }
+  .hud-block{display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+  #lives{display:flex;gap:4px;font-size:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));}
+  #score{
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:26px;
+    color:var(--gold);
+    text-shadow:0 2px 6px rgba(0,0,0,.5);
+    text-align:right;
+  }
+  #combo{
+    font-size:13px;font-weight:700;color:var(--cream);opacity:.85;text-align:right;
+    min-height:16px;
+  }
+  #targetWrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  #targetLabel{
+    font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--cream);opacity:.75;
+  }
+  #targetBadge{
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;
+    padding:6px 22px;border-radius:999px;
+    color:#0a0e24;
+    box-shadow:0 4px 14px rgba(0,0,0,.35);
+    transition:background .25s ease;
+  }
+  #targetProgress{
+    width:120px;height:6px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden;
+  }
+  #targetProgressFill{
+    height:100%;width:100%;background:var(--gold);border-radius:999px;transition:width .2s linear;
+  }
+
+  #targetBanner{
+    position:fixed;top:22%;left:50%;transform:translate(-50%,-10px);
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:36px;
+    padding:10px 30px;border-radius:16px;
+    z-index:6;pointer-events:none;
+    opacity:0;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  #targetBanner.show{opacity:1;transform:translate(-50%,0);}
+
+  .tap-hint{
+    position:fixed;bottom:26px;
+    width:56px;height:56px;border-radius:50%;
+    background:rgba(255,255,255,.08);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;color:rgba(255,255,255,.55);
+    pointer-events:none;
+    z-index:4;
+  }
+  #hintLeft{left:22px;}
+  #hintRight{right:22px;}
+
+  .overlay{
+    position:fixed;inset:0;z-index:10;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at 50% 30%, rgba(28,42,94,.55), rgba(6,8,20,.85));
+    padding:20px;
+  }
+  .card{
+    background:var(--panel);
+    border-radius:26px;
+    padding:36px 32px 30px;
+    max-width:440px;width:100%;
+    text-align:center;
+    box-shadow:0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.55);
+    backdrop-filter:blur(6px);
+  }
+  .title{
+    font-family:'Baloo 2',sans-serif;font-weight:800;
+    font-size:28px;line-height:1.15;margin:0 0 6px;
+  }
+  .title span.der{color:var(--der);}
+  .title span.die{color:var(--die);}
+  .title span.das{color:var(--das);}
+  .subtitle{
+    font-size:14.5px;line-height:1.55;color:var(--cream);opacity:.85;
+    margin:0 0 20px;
+  }
+  .legend{
+    display:flex;justify-content:center;gap:10px;margin-bottom:22px;flex-wrap:wrap;
+  }
+  .legend-chip{
+    display:flex;align-items:center;gap:6px;
+    font-weight:700;font-size:13px;
+    padding:6px 12px;border-radius:999px;
+    background:rgba(255,255,255,.06);
+  }
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.der{background:var(--der);}
+  .dot.die{background:var(--die);}
+  .dot.das{background:var(--das);}
+
+  .diff-label{font-size:13px;font-weight:700;opacity:.75;margin-bottom:10px;}
+  .diff-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:6px;}
+  .btn-diff{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;
+    border:none;cursor:pointer;
+    padding:12px 20px;border-radius:16px;
+    color:#0a0e24;
+    box-shadow:0 6px 0 rgba(0,0,0,.25), 0 10px 16px rgba(0,0,0,.3);
+    transition:transform .08s ease, box-shadow .08s ease;
+    flex:1;min-width:96px;
+  }
+  .btn-diff:active{ transform:translateY(5px); box-shadow:0 1px 0 rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.3); }
+  .btn-diff.easy{ background:linear-gradient(180deg, #5be0a8, var(--das)); }
+  .btn-diff.medium{ background:linear-gradient(180deg, #ffdd7a, var(--gold)); }
+  .btn-diff.hard{ background:linear-gradient(180deg, #ff8fa3, var(--die)); }
+
+  .stat-row{display:flex;justify-content:center;gap:26px;margin:16px 0 22px;}
+  .stat{display:flex;flex-direction:column;gap:2px;}
+  .stat b{font-family:'Baloo 2',sans-serif;font-size:28px;color:var(--gold);}
+  .stat span{font-size:12px;opacity:.75;}
+
+  @media (max-width:420px){
+    .title{font-size:23px;}
+    .card{padding:28px 22px 24px;border-radius:22px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div class="hud-block"><div id="lives"></div></div>
+  <div id="targetWrap">
+    <div id="targetLabel">Xe của bạn đang là</div>
+    <div id="targetBadge">der</div>
+    <div id="targetProgress"><div id="targetProgressFill"></div></div>
+  </div>
+  <div class="hud-block">
+    <div id="score">0</div>
+    <div id="combo">&nbsp;</div>
+  </div>
+</div>
+
+<div id="targetBanner"></div>
+<div id="hintLeft" class="tap-hint">◀</div>
+<div id="hintRight" class="tap-hint">▶</div>
+
+<div id="startScreen" class="overlay">
+  <div class="card">
+    <h1 class="title">Đường Đua <span class="der">Der</span> · <span class="die">Die</span> · <span class="das">Das</span></h1>
+    <p class="subtitle">Xe của bạn cứ sau 10 giây sẽ đổi "quốc tịch" thành der, die hoặc das. Chạm nửa trái/phải màn hình (hoặc ◀ ▶) để đổi làn — lái vào từ đúng mạo từ đang hiện trên xe, né những từ không khớp!</p>
+    <div class="legend">
+      <div class="legend-chip"><span class="dot der"></span>der</div>
+      <div class="legend-chip"><span class="dot die"></span>die</div>
+      <div class="legend-chip"><span class="dot das"></span>das</div>
+    </div>
+    <div class="diff-label">Chọn cấp độ</div>
+    <div class="diff-row">
+      <button class="btn-diff easy" data-diff="easy">Dễ</button>
+      <button class="btn-diff medium" data-diff="medium">Trung bình</button>
+      <button class="btn-diff hard" data-diff="hard">Khó</button>
+    </div>
+  </div>
+</div>
+
+<div id="gameOverScreen" class="overlay hidden">
+  <div class="card">
+    <h1 class="title">Xe hỏng rồi!</h1>
+    <div class="stat-row">
+      <div class="stat"><b id="finalScore">0</b><span>Điểm</span></div>
+      <div class="stat"><b id="finalBest">0</b><span>Kỷ lục</span></div>
+    </div>
+    <div class="diff-label">Đua lại với cấp độ nào?</div>
+    <div class="diff-row">
+      <button class="btn-diff easy" data-diff="easy">Dễ</button>
+      <button class="btn-diff medium" data-diff="medium">Trung bình</button>
+      <button class="btn-diff hard" data-diff="hard">Khó</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const WORDS = [
+    {w:'Hund',a:'der'},{w:'Tisch',a:'der'},{w:'Stuhl',a:'der'},{w:'Apfel',a:'der'},{w:'Baum',a:'der'},
+    {w:'Vater',a:'der'},{w:'Bruder',a:'der'},{w:'Freund',a:'der'},{w:'Ball',a:'der'},{w:'Mond',a:'der'},
+    {w:'Kaffee',a:'der'},{w:'Bus',a:'der'},{w:'Zug',a:'der'},{w:'Garten',a:'der'},{w:'Himmel',a:'der'},
+    {w:'Katze',a:'die'},{w:'Blume',a:'die'},{w:'Mutter',a:'die'},{w:'Schwester',a:'die'},{w:'Lampe',a:'die'},
+    {w:'Schule',a:'die'},{w:'Tasche',a:'die'},{w:'Uhr',a:'die'},{w:'Sonne',a:'die'},{w:'Straße',a:'die'},
+    {w:'Milch',a:'die'},{w:'Tür',a:'die'},{w:'Stadt',a:'die'},{w:'Woche',a:'die'},{w:'Musik',a:'die'},
+    {w:'Haus',a:'das'},{w:'Auto',a:'das'},{w:'Buch',a:'das'},{w:'Kind',a:'das'},{w:'Wasser',a:'das'},
+    {w:'Brot',a:'das'},{w:'Bett',a:'das'},{w:'Fenster',a:'das'},{w:'Handy',a:'das'},{w:'Jahr',a:'das'},
+    {w:'Zimmer',a:'das'},{w:'Ei',a:'das'},{w:'Land',a:'das'},{w:'Meer',a:'das'},{w:'Spiel',a:'das'}
+  ];
+  const ARTIKEL_COLORS = {
+    der:{base:'#4c8dff',dark:'#2a5fd6'},
+    die:{base:'#ff4c6d',dark:'#d62a4a'},
+    das:{base:'#34d399',dark:'#159c6f'}
+  };
+  const TILE_COLORS = ['#ffc94c','#8fb3ff','#ffa8bd','#7fe6c9','#ffd28a'];
+
+  const DIFFICULTY = {
+    easy:   { baseSpeed:170, speedInc:10, baseSpawn:1500, spawnDec:20, spawnFloor:1000, label:'Dễ' },
+    medium: { baseSpeed:240, speedInc:20, baseSpawn:1200, spawnDec:36, spawnFloor:720,  label:'Trung bình' },
+    hard:   { baseSpeed:310, speedInc:30, baseSpawn:980,  spawnDec:50, spawnFloor:520,  label:'Khó' }
+  };
+  let currentDifficulty = 'medium';
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0, DPR = 1;
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W*DPR);
+    canvas.height = Math.floor(H*DPR);
+    canvas.style.width = W+'px';
+    canvas.style.height = H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let state = 'start';
+  let score = 0, best = parseInt(localStorage.getItem('ndd_race_best')||'0',10) || 0;
+  let lives = 3, maxLives = 3;
+  let combo = 0;
+  let level = 1;
+  let carLane = 1;
+  let carX = 0, carY = 0;
+  let items = [];
+  let particles = [];
+  let floaters = [];
+  let spawnTimer = 0, spawnInterval = 1200;
+  let itemSpeed = 240;
+  let shake = 0;
+  let roadScroll = 0;
+
+  let target = 'der';
+  const TARGET_INTERVAL = 10;
+  let targetTime = 0;
+
+  const livesEl = document.getElementById('lives');
+  const scoreEl = document.getElementById('score');
+  const comboEl = document.getElementById('combo');
+  const targetBadgeEl = document.getElementById('targetBadge');
+  const targetProgressFillEl = document.getElementById('targetProgressFill');
+  const bannerEl = document.getElementById('targetBanner');
+  const startScreen = document.getElementById('startScreen');
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const finalScoreEl = document.getElementById('finalScore');
+  const finalBestEl = document.getElementById('finalBest');
+
+  let actx = null;
+  function beep(freq, dur, type, vol){
+    try{
+      if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = actx.createOscillator();
+      const g = actx.createGain();
+      o.type = type||'sine';
+      o.frequency.value = freq;
+      g.gain.value = vol||0.06;
+      o.connect(g); g.connect(actx.destination);
+      const now = actx.currentTime;
+      g.gain.setValueAtTime(g.gain.value, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+      o.start(now);
+      o.stop(now + dur);
+    }catch(e){}
+  }
+  function sfxCorrect(){ beep(720,0.12,'triangle',0.08); beep(980,0.1,'triangle',0.05); }
+  function sfxWrong(){ beep(150,0.25,'sawtooth',0.08); }
+  function sfxOver(){ beep(220,0.3,'sawtooth',0.08); }
+
+  function rand(a,b){ return a + Math.random()*(b-a); }
+  function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function laneX(i){ return (W/3)*(i+0.5); }
+
+  function fitFontSize(text, maxWidth, family, startSize){
+    let size = startSize;
+    ctx.font = `800 ${size}px ${family}`;
+    while(ctx.measureText(text).width > maxWidth && size > 13){
+      size -= 1;
+      ctx.font = `800 ${size}px ${family}`;
+    }
+    return size;
+  }
+
+  function renderLives(){
+    livesEl.innerHTML = '';
+    for(let i=0;i<maxLives;i++){
+      const span = document.createElement('span');
+      span.textContent = i < lives ? '❤️' : '🖤';
+      livesEl.appendChild(span);
+    }
+  }
+  function setTarget(newTarget, announce){
+    target = newTarget;
+    targetTime = 0;
+    const c = ARTIKEL_COLORS[target];
+    targetBadgeEl.textContent = target;
+    targetBadgeEl.style.background = c.base;
+    targetProgressFillEl.style.width = '100%';
+    if(announce){
+      bannerEl.textContent = 'Xe đổi thành: ' + target.toUpperCase();
+      bannerEl.style.color = c.base;
+      bannerEl.classList.add('show');
+      setTimeout(()=>bannerEl.classList.remove('show'), 900);
+    }
+  }
+  function pickNewTarget(){
+    const opts = ['der','die','das'].filter(a=>a!==target);
+    setTarget(choice(opts), true);
+  }
+  function updateHud(){
+    scoreEl.textContent = score;
+    comboEl.textContent = combo>1 ? ('Combo x'+combo) : '\u00A0';
+    targetProgressFillEl.style.width = Math.max(0, 100 - (targetTime/TARGET_INTERVAL)*100) + '%';
+  }
+
+  function laneBusy(laneIdx){
+    const clearY = H*0.4;
+    return items.some(it => it.lane===laneIdx && it.y < clearY && !it.resolved);
+  }
+  function spawnItem(){
+    const order = [0,1,2].sort(()=>Math.random()-0.5);
+    let lane = -1;
+    for(const l of order){ if(!laneBusy(l)){ lane=l; break; } }
+    if(lane === -1) return;
+    const entry = choice(WORDS);
+    const laneWidth = W/3;
+    const tileW = Math.min(laneWidth*0.72, 190);
+    const tileH = tileW*0.52;
+    items.push({
+      lane,
+      x: laneX(lane),
+      y: -tileH,
+      w: tileW,
+      h: tileH,
+      word: entry.w,
+      artikel: entry.a,
+      color: choice(TILE_COLORS),
+      resolved: false,
+      resolveT: 0,
+      correct:false
+    });
+  }
+
+  function spawnParticles(x,y,color,count){
+    for(let i=0;i<count;i++){
+      const ang = rand(0, Math.PI*2);
+      const spd = rand(80, 300);
+      particles.push({
+        x, y,
+        vx: Math.cos(ang)*spd,
+        vy: Math.sin(ang)*spd - 80,
+        life: rand(0.4,0.8),
+        maxLife: 0.8,
+        size: rand(3,7),
+        color
+      });
+    }
+  }
+  function spawnFloater(x,y,text,color){
+    floaters.push({x,y,text,color,life:0.9,vy:-70});
+  }
+
+  function resolveHit(item, now){
+    if(item.resolved) return;
+    item.resolved = true;
+    item.resolveT = now;
+    const correct = item.artikel === target;
+    item.correct = correct;
+    if(correct){
+      combo += 1;
+      const gained = 10 + Math.floor(combo*1.5);
+      score += gained;
+      spawnParticles(item.x, carY, ARTIKEL_COLORS[target].base, 16);
+      spawnFloater(item.x, carY-40, '+'+gained, '#ffc94c');
+      sfxCorrect();
+    } else {
+      combo = 0;
+      lives -= 1;
+      shake = 14;
+      spawnParticles(item.x, carY, '#ff4c6d', 22);
+      spawnFloater(item.x, carY-40, 'Đó là "'+item.artikel+'"!', '#ff4c6d');
+      sfxWrong();
+      renderLives();
+      if(lives <= 0){
+        setTimeout(endGame, 180);
+      }
+    }
+    updateHud();
+  }
+
+  function moveLane(dir){
+    if(state !== 'playing') return;
+    carLane = Math.max(0, Math.min(2, carLane + dir));
+  }
+  function handleTap(clientX){
+    const half = W/2;
+    if(clientX < half) moveLane(-1); else moveLane(1);
+  }
+  canvas.addEventListener('mousedown', (e)=>{ handleTap(e.clientX); });
+  canvas.addEventListener('touchstart', (e)=>{
+    if(e.touches && e.touches.length){ handleTap(e.touches[0].clientX); }
+    e.preventDefault();
+  }, {passive:false});
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLane(-1);
+    if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveLane(1);
+  });
+
+  let lastTime = performance.now();
+
+  function update(dt, now){
+    const preset = DIFFICULTY[currentDifficulty];
+
+    spawnTimer += dt*1000;
+    if(spawnTimer > spawnInterval){
+      spawnTimer = 0;
+      spawnItem();
+      if(level >= 3 && Math.random() < 0.3) spawnItem();
+    }
+
+    level = 1 + Math.floor(score/220);
+    spawnInterval = Math.max(preset.spawnFloor, preset.baseSpawn - level*preset.spawnDec);
+    itemSpeed = preset.baseSpeed + level*preset.speedInc;
+
+    const targetX = laneX(carLane);
+    carX += (targetX - carX) * Math.min(1, dt*9);
+    carY = H*0.8;
+
+    for(let i=items.length-1;i>=0;i--){
+      const it = items[i];
+      if(!it.resolved){
+        it.y += itemSpeed*dt;
+        const carTop = carY - 46, carBottom = carY + 46;
+        const itemBottom = it.y + it.h/2, itemTop = it.y - it.h/2;
+        if(it.lane === carLane && itemBottom >= carTop && itemTop <= carBottom){
+          resolveHit(it, now);
+        } else if(itemTop > carBottom){
+          it.resolved = true;
+          it.resolveT = now;
+          it.correct = null;
+        }
+      } else {
+        it.y += itemSpeed*dt;
+      }
+      if(it.y - it.h/2 > H + 40){
+        items.splice(i,1);
+      }
+    }
+
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.vy += 650*dt;
+      p.x += p.vx*dt;
+      p.y += p.vy*dt;
+      p.life -= dt;
+      if(p.life <= 0) particles.splice(i,1);
+    }
+
+    for(let i=floaters.length-1;i>=0;i--){
+      const fl = floaters[i];
+      fl.y += fl.vy*dt;
+      fl.life -= dt;
+      if(fl.life <= 0) floaters.splice(i,1);
+    }
+
+    targetTime += dt;
+    if(targetTime >= TARGET_INTERVAL){
+      pickNewTarget();
+    }
+
+    roadScroll += itemSpeed*dt;
+    if(shake > 0) shake = Math.max(0, shake - dt*45);
+
+    updateHud();
+  }
+
+  function drawRoad(){
+    ctx.fillStyle = '#2b2f3a';
+    ctx.fillRect(0,0,W,H);
+
+    const laneW = W/3;
+    for(let i=0;i<3;i++){
+      ctx.fillStyle = i%2===0 ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.05)';
+      ctx.fillRect(i*laneW,0,laneW,H);
+    }
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 4;
+    const dashLen = 34, gapLen = 26;
+    const offset = roadScroll % (dashLen+gapLen);
+    for(let i=1;i<3;i++){
+      const x = i*laneW;
+      ctx.beginPath();
+      for(let y = -dashLen + offset; y < H+dashLen; y += dashLen+gapLen){
+        ctx.moveTo(x,y);
+        ctx.lineTo(x,y+dashLen);
+      }
+      ctx.stroke();
+    }
+  }
+
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function drawItem(it){
+    let alpha = 1, scale = 1;
+    if(it.resolved){
+      const t = Math.min(1, (performance.now()-it.resolveT)/240);
+      if(it.correct === null){ alpha = 1-t; scale = 1-t*0.3; }
+      else { alpha = 1-t; scale = 1 + t*0.5; }
+    }
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(it.x, it.y);
+    ctx.scale(scale, scale);
+
+    ctx.fillStyle = '#f4f1ea';
+    roundRect(ctx, -it.w/2, -it.h/2, it.w, it.h, 14);
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = it.color;
+    roundRect(ctx, -it.w/2, -it.h/2, it.w, it.h, 14);
+    ctx.stroke();
+
+    const family = "'Nunito', sans-serif";
+    const size = fitFontSize(it.word, it.w*0.82, family, Math.floor(it.h*0.4));
+    ctx.font = `800 ${size}px ${family}`;
+    ctx.fillStyle = '#20232c';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(it.word, 0, 1);
+
+    ctx.restore();
+  }
+
+  function drawCar(){
+    const c = ARTIKEL_COLORS[target];
+    const w = 76, h = 116;
+    ctx.save();
+    ctx.translate(carX, carY);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, h*0.42, w*0.5, 12, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    const grad = ctx.createLinearGradient(0,-h/2,0,h/2);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.25, c.base);
+    grad.addColorStop(1, c.dark);
+    ctx.fillStyle = grad;
+    roundRect(ctx, -w/2, -h/2, w, h, 22);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(20,26,50,0.85)';
+    roundRect(ctx, -w*0.32, -h*0.32, w*0.64, h*0.28, 10);
+    ctx.fill();
+
+    ctx.fillStyle = '#111';
+    roundRect(ctx, -w/2-6, -h*0.28, 8, 26, 3); ctx.fill();
+    roundRect(ctx, w/2-2, -h*0.28, 8, 26, 3); ctx.fill();
+    roundRect(ctx, -w/2-6, h*0.06, 8, 26, 3); ctx.fill();
+    roundRect(ctx, w/2-2, h*0.06, 8, 26, 3); ctx.fill();
+
+    ctx.fillStyle = '#0a0e24';
+    ctx.font = "800 16px 'Baloo 2', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(target, 0, h*0.14);
+
+    ctx.restore();
+  }
+
+  function drawParticles(){
+    for(const p of particles){
+      ctx.globalAlpha = Math.max(0, p.life/p.maxLife);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function drawFloaters(){
+    for(const fl of floaters){
+      ctx.globalAlpha = Math.max(0, fl.life/0.9);
+      ctx.font = "800 19px 'Baloo 2', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillStyle = fl.color;
+      ctx.fillText(fl.text, fl.x, fl.y);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function render(){
+    ctx.save();
+    if(shake > 0){
+      const dx = rand(-shake,shake), dy = rand(-shake,shake);
+      ctx.translate(dx,dy);
+    }
+    drawRoad();
+    for(const it of items) drawItem(it);
+    drawCar();
+    drawParticles();
+    drawFloaters();
+    ctx.restore();
+  }
+
+  function loop(now){
+    const dt = Math.min((now-lastTime)/1000, 0.033);
+    lastTime = now;
+    if(state === 'playing'){
+      update(dt, now);
+      render();
+    } else if(state === 'start' || state === 'gameover'){
+      roadScroll += 90*dt;
+      drawRoad();
+      drawCar();
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function startGame(diffKey){
+    currentDifficulty = diffKey || currentDifficulty;
+    score = 0; combo = 0; lives = maxLives; level = 1;
+    items = []; particles = []; floaters = [];
+    spawnTimer = 0;
+    spawnInterval = DIFFICULTY[currentDifficulty].baseSpawn;
+    itemSpeed = DIFFICULTY[currentDifficulty].baseSpeed;
+    carLane = 1; carX = laneX(1); carY = H*0.8;
+    setTarget(choice(['der','die','das']), false);
+    renderLives();
+    updateHud();
+    startScreen.classList.add('hidden');
+    gameOverScreen.classList.add('hidden');
+    state = 'playing';
+    if(actx && actx.state === 'suspended') actx.resume();
+  }
+
+  function endGame(){
+    state = 'gameover';
+    sfxOver();
+    if(score > best){
+      best = score;
+      localStorage.setItem('ndd_race_best', String(best));
+    }
+    finalScoreEl.textContent = score;
+    finalBestEl.textContent = best;
+    gameOverScreen.classList.remove('hidden');
+  }
+
+  document.querySelectorAll('.btn-diff').forEach(btn=>{
+    btn.addEventListener('click', ()=> startGame(btn.dataset.diff));
+  });
+
+  carX = laneX(1); carY = H*0.8;
+  renderLives();
+  updateHud();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
