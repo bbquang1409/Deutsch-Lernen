@@ -343,6 +343,28 @@
   }
   #globalExitBtn:active{ transform:scale(0.92); }
 
+  #wortbankModal{ z-index:60; }
+  #wortbankModal .card{ max-width:480px; text-align:left; }
+  #wortbankModal .title{ font-size:22px; text-align:center; }
+  #wortbankModal .subtitle{ text-align:center; }
+  #lektionListWrap{ margin-bottom:10px; max-height:200px; overflow-y:auto; }
+  .lektion-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.05);
+    margin-bottom:8px;
+  }
+  .lektion-item .meta{ font-weight:700;font-size:14px; }
+  .lektion-item .count{ font-size:12px;opacity:.6;font-weight:600; }
+  .lektion-item .actions{ display:flex;gap:8px; }
+  .lektion-item button{
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:12px;
+    padding:6px 10px;border-radius:8px;border:none;cursor:pointer;
+  }
+  .lektion-item .pick-btn{ background:var(--gold);color:#26160a; }
+  .lektion-item .del-btn{ background:rgba(255,76,109,.15);color:var(--die); }
+  #newLektionWords{ min-height:110px; }
+  #wortbankModal .btn{ margin-top:10px; }
+
 </style>
 </head>
 <body>
@@ -394,6 +416,7 @@
       <button class="sel-btn selected" data-level="A1">A1</button>
       <button class="sel-btn" data-level="A2">A2</button>
       <button class="sel-btn" data-level="B1">B1</button>
+      <button class="sel-btn" data-special="lektion" id="lektionBtn">📚 Lektion</button>
     </div>
     <div class="sel-label">Rundenlänge wählen</div>
     <div class="sel-row" id="durationRow">
@@ -417,6 +440,7 @@
       <button class="sel-btn" data-level="A1">A1</button>
       <button class="sel-btn" data-level="A2">A2</button>
       <button class="sel-btn" data-level="B1">B1</button>
+      <button class="sel-btn" data-special="lektion" id="lektionBtn2">📚 Lektion</button>
     </div>
     <div class="sel-label">Rundenlänge</div>
     <div class="sel-row" id="durationRow2">
@@ -443,6 +467,7 @@
         <button class="sel-btn selected" data-level="A1">A1</button>
         <button class="sel-btn" data-level="A2">A2</button>
         <button class="sel-btn" data-level="B1">B1</button>
+        <button class="sel-btn" data-special="lektion" id="duelLektionBtn">📚 Lektion</button>
       </div>
       <div class="sel-label">Rundenanzahl</div>
       <div class="sel-row" id="roundsRow">
@@ -518,6 +543,22 @@
   </div>
 </div>
 </div>
+
+
+<div id="wortbankModal" class="overlay hidden">
+  <div class="card">
+    <h1 class="title">📚 Wortbank</h1>
+    <p class="subtitle">Wähle eine gespeicherte Lektion oder erstelle eine neue.</p>
+    <div id="lektionListWrap"></div>
+    <div class="divider">oder neu erstellen</div>
+    <input id="newLektionName" class="text-input" placeholder="Name, z. B. Lektion 7">
+    <textarea id="newLektionWords" class="text-input" rows="6" placeholder="der Tisch&#10;die Blume&#10;das Haus&#10;..."></textarea>
+    <div id="lektionParseInfo" class="status-text"></div>
+    <button class="btn" id="saveLektionBtn">Lektion speichern</button>
+    <button class="btn secondary" id="closeWortbankModal">Schließen</button>
+  </div>
+</div>
+
 
 <script>
 
@@ -743,7 +784,9 @@
 
   // ---------------- Entities ----------------
   function spawnFruit(){
-    const entry = choice(WORD_DB[currentLevel]);
+    const sourceWords = (currentLevel === 'CUSTOM' && customLektionWords && customLektionWords.length)
+      ? customLektionWords : WORD_DB[currentLevel];
+    const entry = choice(sourceWords);
     const radius = Math.max(58, Math.min(W,H) * 0.15);
     const apexY = H * rand(0.28, 0.4);
     let x, vx, vy;
@@ -1110,10 +1153,11 @@
   }
 
   // ---------------- Selection UI ----------------
+  let customLektionWords = null;
   function wireSelectors(rowId, attr, applyFn){
     const row = document.getElementById(rowId);
     if(!row) return;
-    row.querySelectorAll('.sel-btn').forEach(btn=>{
+    row.querySelectorAll('.sel-btn:not([data-special])').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         row.querySelectorAll('.sel-btn').forEach(b=>b.classList.remove('selected'));
         btn.classList.add('selected');
@@ -1121,10 +1165,30 @@
       });
     });
   }
+  function wireLektionButton(btnId, rowId, defaultLabel){
+    const btn = document.getElementById(btnId);
+    const row = document.getElementById(rowId);
+    if(!btn || !row) return;
+    btn.addEventListener('click', ()=>{
+      if(!window.WortbankUI) return;
+      window.WortbankUI.open((lek)=>{
+        customLektionWords = lek.words;
+        currentLevel = 'CUSTOM';
+        row.querySelectorAll('.sel-btn').forEach(b=>{
+          b.classList.remove('selected');
+          if(b.dataset.special === 'lektion') b.textContent = defaultLabel;
+        });
+        btn.classList.add('selected');
+        btn.textContent = '📚 ' + lek.name;
+      });
+    });
+  }
   wireSelectors('levelRow', 'level', v=>currentLevel=v);
   wireSelectors('durationRow', 'duration', v=>currentDuration=parseInt(v,10));
   wireSelectors('levelRow2', 'level', v=>currentLevel=v);
   wireSelectors('durationRow2', 'duration', v=>currentDuration=parseInt(v,10));
+  wireLektionButton('lektionBtn', 'levelRow', '📚 Lektion');
+  wireLektionButton('lektionBtn2', 'levelRow2', '📚 Lektion');
 
   // keep the two screens' selectors in sync visually with current values
   function syncSelectorUI(){
@@ -1314,9 +1378,10 @@
   }
 
   // ---------------- Selection UI ----------------
+  let customLektionWords = null;
   function wireSelectors(rowId, attr, applyFn){
     const row = document.getElementById(rowId);
-    row.querySelectorAll('.sel-btn').forEach(btn=>{
+    row.querySelectorAll('.sel-btn:not([data-special])').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         row.querySelectorAll('.sel-btn').forEach(b=>b.classList.remove('selected'));
         btn.classList.add('selected');
@@ -1324,8 +1389,27 @@
       });
     });
   }
+  function wireLektionButton(btnId, rowId, defaultLabel){
+    const btn = document.getElementById(btnId);
+    const row = document.getElementById(rowId);
+    if(!btn || !row) return;
+    btn.addEventListener('click', ()=>{
+      if(!window.WortbankUI) return;
+      window.WortbankUI.open((lek)=>{
+        customLektionWords = lek.words;
+        selectedLevel = 'CUSTOM';
+        row.querySelectorAll('.sel-btn').forEach(b=>{
+          b.classList.remove('selected');
+          if(b.dataset.special === 'lektion') b.textContent = defaultLabel;
+        });
+        btn.classList.add('selected');
+        btn.textContent = '📚 ' + lek.name;
+      });
+    });
+  }
   wireSelectors('duelLevelRow', 'level', v=>selectedLevel=v);
   wireSelectors('roundsRow', 'rounds', v=>selectedRounds=parseInt(v,10));
+  wireLektionButton('duelLektionBtn', 'duelLevelRow', '📚 Lektion');
 
   // ---------------- MQTT ----------------
   function connectMqtt(onConnected){
@@ -1472,7 +1556,9 @@
     publish({t:'matchStart', from:myId, players: rosterArr, totalRounds});
 
     sequence = [];
-    const pool = shuffle(WORD_DB[selectedLevel]);
+    const sourceWords = (selectedLevel === 'CUSTOM' && customLektionWords && customLektionWords.length)
+      ? customLektionWords : WORD_DB[selectedLevel];
+    const pool = shuffle(sourceWords);
     for(let i=0;i<totalRounds;i++){ sequence.push(pool[i % pool.length]); }
 
     setTimeout(()=>{ hostAdvanceRound(0); }, 900);
@@ -1635,6 +1721,123 @@
   window.__exitDuelToMenu = resetDuelToLobby;
 
   showScreen(lobbyScreen);
+})();
+
+</script>
+
+<script>
+(function(){
+  "use strict";
+  const STORAGE_KEY = 'wortbank_lektionen_v1';
+
+  function loadLektionen(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch(e){ return []; }
+  }
+  function saveLektionen(list){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+  }
+  function parseWordLines(text){
+    const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+    const words = [];
+    const invalid = [];
+    const re = /^(der|die|das)\s+(.+)$/i;
+    lines.forEach(line=>{
+      const m = line.match(re);
+      if(m){
+        words.push({ a: m[1].toLowerCase(), w: m[2].trim() });
+      } else {
+        invalid.push(line);
+      }
+    });
+    return { words, invalid };
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  const modal = document.getElementById('wortbankModal');
+  const listWrap = document.getElementById('lektionListWrap');
+  const nameInput = document.getElementById('newLektionName');
+  const wordsInput = document.getElementById('newLektionWords');
+  const parseInfo = document.getElementById('lektionParseInfo');
+  const saveBtn = document.getElementById('saveLektionBtn');
+  const closeBtn = document.getElementById('closeWortbankModal');
+
+  if(!modal) return;
+
+  let onPickCallback = null;
+
+  function renderList(){
+    const list = loadLektionen();
+    if(list.length === 0){
+      listWrap.innerHTML = '<div class="status-text">Noch keine Lektion gespeichert.</div>';
+      return;
+    }
+    listWrap.innerHTML = list.map(l=>{
+      return '<div class="lektion-item">'+
+        '<div><div class="meta">'+escapeHtml(l.name)+'</div>'+
+        '<div class="count">'+l.words.length+' Wörter</div></div>'+
+        '<div class="actions">'+
+        '<button type="button" class="pick-btn" data-pick="'+l.id+'">Wählen</button>'+
+        '<button type="button" class="del-btn" data-del="'+l.id+'">Löschen</button>'+
+        '</div></div>';
+    }).join('');
+    listWrap.querySelectorAll('[data-pick]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const l = loadLektionen().find(x=>x.id===btn.dataset.pick);
+        if(l && onPickCallback){ onPickCallback(l); }
+        closeModal();
+      });
+    });
+    listWrap.querySelectorAll('[data-del]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const list2 = loadLektionen().filter(x=>x.id!==btn.dataset.del);
+        saveLektionen(list2);
+        renderList();
+      });
+    });
+  }
+
+  saveBtn.addEventListener('click', ()=>{
+    const name = nameInput.value.trim();
+    const parsed = parseWordLines(wordsInput.value);
+    if(!name){
+      parseInfo.textContent = 'Bitte einen Namen eingeben.';
+      parseInfo.style.color = 'var(--die)';
+      return;
+    }
+    if(parsed.words.length < 4){
+      parseInfo.textContent = 'Mindestens 4 gültige Wörter nötig (Format: "der Tisch").';
+      parseInfo.style.color = 'var(--die)';
+      return;
+    }
+    const list = loadLektionen();
+    list.push({ id: 'lek_'+Date.now(), name, words: parsed.words, createdAt: Date.now() });
+    saveLektionen(list);
+    parseInfo.textContent = parsed.invalid.length
+      ? ('Gespeichert: '+parsed.words.length+' Wörter. '+parsed.invalid.length+' Zeile(n) ignoriert (falsches Format).')
+      : ('Gespeichert: '+parsed.words.length+' Wörter.');
+    parseInfo.style.color = 'var(--das)';
+    nameInput.value = '';
+    wordsInput.value = '';
+    renderList();
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  function closeModal(){
+    modal.classList.add('hidden');
+    onPickCallback = null;
+  }
+
+  window.WortbankUI = {
+    open(callback){
+      onPickCallback = callback;
+      parseInfo.textContent = '';
+      renderList();
+      modal.classList.remove('hidden');
+    }
+  };
 })();
 
 </script>

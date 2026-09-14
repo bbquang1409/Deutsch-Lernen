@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Was fehlt? – Scene 01</title>
+<style>
+:root{--bg:#08172e;--panel:#0e2b54;--line:#4b9cff;--gold:#ffd84a;--text:#edf5ff;--muted:#a9c1df;--good:#49dc8a;--bad:#ff6d6d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#16477f 0,#08172e 58%);color:var(--text);font-family:Inter,Segoe UI,system-ui,sans-serif}
+.app{width:min(1180px,100%);margin:auto;padding:14px}
+.top{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;margin-bottom:12px}
+.pill,.instruction,.timer{background:linear-gradient(180deg,#123a70,var(--panel));border:2px solid var(--line);box-shadow:0 0 16px #398dff40}
+.pill{border-radius:18px;padding:9px 15px;font-weight:900}.pill small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.instruction{border-radius:18px;padding:9px 15px}.instruction b{display:block;font-size:18px}.instruction span{font-size:12px;color:var(--muted)}
+.timer{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:900;color:var(--gold)}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,.8fr);gap:14px}
+.scene-card{position:relative;border:2px solid var(--line);border-radius:20px;overflow:hidden;background:#091b38;box-shadow:0 0 24px #398dff33}
+.scene{position:relative;width:100%;aspect-ratio:762/414;background:#111;overflow:hidden}.scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.object{position:absolute;height:auto;display:block;object-fit:contain;transform-origin:center bottom;transition:opacity .25s,transform .25s;user-select:none;-webkit-user-drag:none}
+.object.is-hidden{opacity:0;transform:scale(.96);pointer-events:none}
+.side{display:flex;flex-direction:column;gap:10px}.side-head{background:linear-gradient(180deg,#123a70,var(--panel));border:2px solid var(--line);border-radius:17px;padding:12px 15px;font-size:20px;font-weight:900}
+.answers{display:grid;gap:9px}.answer{min-height:52px;border:2px solid #2d70bd;border-radius:14px;background:linear-gradient(180deg,#173b6b,#12345f);color:var(--text);font-weight:850;font-size:15px;text-align:left;padding:8px 12px;cursor:pointer;transition:.12s}.answer:hover{transform:translateY(-2px);border-color:#79b9ff}.answer:disabled{opacity:.55;cursor:default;transform:none}.answer.correct{border-color:var(--good)}.answer.wrong{border-color:var(--bad)}
+.feedback{min-height:28px;text-align:center;font-weight:900;padding:4px}.good{color:var(--good)}.bad{color:var(--bad)}
+.bottom{display:flex;justify-content:space-between;align-items:center;margin-top:12px}.score{border:2px solid var(--gold);border-radius:999px;padding:7px 14px;font-weight:900;color:var(--gold)}.dots{display:flex;gap:7px}.dot{width:10px;height:10px;border-radius:50%;background:#23466f}.dot.done{background:var(--gold)}.dot.current{background:var(--line);transform:scale(1.25)}
+.start{position:absolute;inset:0;z-index:100;background:#07152fdd;display:grid;place-items:center;padding:20px}.start-box{max-width:500px;text-align:center;background:linear-gradient(180deg,#123a70,#0d2851);border:2px solid #68adff;border-radius:22px;padding:30px;box-shadow:0 0 30px #56a5ff55}.start-box h1{margin:0 0 8px}.start-box p{color:#c4d6ee;line-height:1.55}.btn{border:0;border-radius:14px;background:linear-gradient(180deg,#ffe37f,var(--gold));color:#17243c;font-weight:950;font-size:17px;padding:12px 25px;cursor:pointer}
+.hidden{display:none!important}
+@media(max-width:800px){.top{grid-template-columns:1fr auto}.instruction{grid-column:1/-1;grid-row:2}.layout{grid-template-columns:1fr}.side{order:2}.answers{grid-template-columns:repeat(2,minmax(0,1fr))}.answer{min-height:48px;font-size:14px}.scene-card{border-radius:16px}.app{padding:9px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="pill">🇩🇪 A1<small>Scene 01 · Wohnzimmer</small></div>
+    <div class="instruction"><b id="instruction">Merke dir die Gegenstände!</b><span id="sub">In 5 Sekunden verschwindet ein Gegenstand.</span></div>
+    <div class="timer" id="timer">5</div>
+  </div>
+
+  <div class="layout">
+    <div class="scene-card">
+      <div class="scene" id="scene">
+        <img class="scene-bg" id="background" alt="Wohnzimmer">
+      </div>
+      <div class="start" id="start">
+        <div class="start-box">
+          <h1>Was fehlt?</h1>
+          <p>Schau dir die Szene genau an. Merke dir die Gegenstände. Nach 5 Sekunden verschwindet ein Gegenstand.</p>
+          <button class="btn" id="startBtn">▶ Spielen</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="side-head">Wortbank</div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+    </aside>
+  </div>
+
+  <div class="bottom"><div class="score">⭐ <span id="score">0</span></div><div class="dots" id="dots"></div></div>
+</div>
+
+<script>
+const CONFIG_URL='scene.json';
+let config, objects={}, currentId=null, round=0, score=0, locked=false, interval=null;
+const $=id=>document.getElementById(id);
+const shuffle=a=>[...a].sort(()=>Math.random()-.5);
+
+async function loadScene(){
+  config=await fetch(CONFIG_URL).then(r=>r.json());
+  $('background').src=config.background;
+  config.objects.forEach(o=>{
+    const img=document.createElement('img');
+    img.className='object'; img.src=o.file; img.alt=o.name; img.dataset.id=o.id;
+    img.style.left=o.x+'%'; img.style.top=o.y+'%'; img.style.width=o.w+'%'; img.style.zIndex=o.z ?? 10;
+    $('scene').appendChild(img); objects[o.id]=img;
+  });
+  $('answers').innerHTML=config.wordbank.map(w=>`<button class="answer" data-id="${w.id}" disabled>${w.name}</button>`).join('');
+  $('answers').addEventListener('click',e=>{if(e.target.matches('.answer')) answer(e.target.dataset.id,e.target)});
+  buildDots();
+}
+
+function buildDots(){ $('dots').innerHTML=''; for(let i=0;i<config.rounds;i++){const d=document.createElement('span');d.className='dot';$('dots').appendChild(d)} }
+function updateDots(){[...$('dots').children].forEach((d,i)=>{d.classList.toggle('done',i<round);d.classList.toggle('current',i===round)})}
+function setAnswersDisabled(v){document.querySelectorAll('.answer').forEach(b=>b.disabled=v)}
+
+function startGame(){
+  score=0; round=0; $('score').textContent=score; $('start').classList.add('hidden'); resetObjects(); nextRound();
+}
+function resetObjects(){Object.values(objects).forEach(img=>img.classList.remove('is-hidden'));}
+function nextRound(){
+  if(round>=config.rounds){finish();return}
+  locked=false; $('feedback').textContent=''; setAnswersDisabled(true); resetObjects(); updateDots();
+  currentId=config.roundSequence?.[round] || shuffle(config.objects.map(o=>o.id))[0];
+  let seconds=config.removeAfterSeconds ?? 5; $('timer').textContent=seconds;
+  $('instruction').textContent='Merke dir die Gegenstände!'; $('sub').textContent=`In ${seconds} Sekunden verschwindet ein Gegenstand.`;
+  clearInterval(interval);
+  interval=setInterval(()=>{seconds--; $('timer').textContent=Math.max(0,seconds); if(seconds<=0){clearInterval(interval);hideCurrent()}},1000);
+}
+function hideCurrent(){
+  objects[currentId]?.classList.add('is-hidden');
+  $('instruction').textContent='Was fehlt?'; $('sub').textContent='Wähle den fehlenden Gegenstand.';
+  setAnswersDisabled(false);
+}
+function answer(id,button){
+  if(locked)return; locked=true; setAnswersDisabled(true);
+  if(id===currentId){score+=100;button.classList.add('correct');$('feedback').innerHTML='<span class="good">✓ Richtig! +100</span>'}
+  else {score=Math.max(0,score-30);button.classList.add('wrong');const right=document.querySelector(`.answer[data-id="${currentId}"]`);right?.classList.add('correct');$('feedback').innerHTML='<span class="bad">✗ Falsch</span>'}
+  $('score').textContent=score; round++; updateDots(); setTimeout(nextRound,900);
+}
+function finish(){
+  $('timer').textContent='✓'; $('instruction').textContent='🎉 Geschafft!'; $('sub').textContent='Die Runde ist abgeschlossen.';
+  $('answers').innerHTML=`<button class="answer" style="text-align:center" onclick="startGame()">▶ Nochmal spielen</button>`;
+  $('feedback').innerHTML=`Du hast <b>${score} Punkte</b> gesammelt.`;
+}
+$('startBtn').addEventListener('click',startGame); loadScene().catch(err=>{console.error(err);$('instruction').textContent='Fehler beim Laden';$('sub').textContent='scene.json konnte nicht geladen werden.'});
+</script>
+</body>
+</html>
