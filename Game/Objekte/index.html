@@ -195,6 +195,13 @@ const RING_LEN = 213.6;
 const sceneEl = document.querySelector('.scene');
 
 async function loadScene(){
+  // Primary: a single scene.json sitting right next to index.html (current setup).
+  try{
+    const res = await fetch('./scene.json', {cache:'no-store'});
+    if(res.ok){ SCENE = await res.json(); return; }
+  }catch(e){ /* fall through */ }
+
+  // Optional future setup: a scenes/ folder with a manifest listing multiple scenes.
   try{
     const idxRes = await fetch('./scenes/index.json', {cache:'no-store'});
     if(idxRes.ok){
@@ -204,12 +211,7 @@ async function loadScene(){
         if(first.ok){ SCENE = await first.json(); return; }
       }
     }
-  }catch(e){ /* no manifest yet, fall through */ }
-
-  try{
-    const res = await fetch('./scenes/zuhause-1/scene.json', {cache:'no-store'});
-    if(res.ok){ SCENE = await res.json(); return; }
-  }catch(e){ /* ignore */ }
+  }catch(e){ /* fall through */ }
 
   SCENE = FALLBACK_SCENE;
 }
