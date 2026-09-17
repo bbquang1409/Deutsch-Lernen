@@ -245,7 +245,7 @@ function setupScene(){
     layer.dataset.name=o.name;
     layer.style.left=o.x+'%'; layer.style.top=o.y+'%';
     layer.style.width=o.w+'%'; layer.style.height=o.h+'%';
-    layer.style.zIndex = String(Math.round(o.y));
+    layer.style.zIndex = String(o.z !== undefined ? o.z : Math.round(o.y));
     if(o.image){
       layer.innerHTML = '<img src="'+o.image+'" alt="'+o.name+'">';
     } else {
@@ -320,8 +320,9 @@ function next(){
 function hide(){
   const layer = sceneEl.querySelector('.obj-layer[data-name="'+CSS.escape(current.name)+'"]');
   if(layer) layer.classList.add('gone');
-  const lbl = sceneEl.querySelector('.hint-label[data-name="'+CSS.escape(current.name)+'"]');
-  if(lbl) lbl.remove();
+  // Labels were only a memorize-phase aid — all of them must go now, not just
+  // the missing item's, or the empty label slot alone gives away the answer.
+  sceneEl.querySelectorAll('.hint-label').forEach(el=>el.remove());
 
   $("instructionMain").textContent="Was fehlt?";
   $("instructionSub").textContent="Wähle die richtige Antwort.";
