@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memory Scene - Was fehlt?</title>
+<style>
+:root{
+  --bg:#07152f; --panel:#0b2551; --line:#398dff; --line2:#56a5ff;
+  --gold:#ffd84a; --good:#4ee08a; --bad:#ff6b6b; --text:#eaf2ff; --dim:#9db6d8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -10%, #123a72 0%, var(--bg) 55%);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif}
+.app{max-width:1200px;margin:auto;padding:16px}
+
+/* ---------- NAME BAR ---------- */
+.name-bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(180deg,#0d2851,#0a1e40);border:1px solid #1c4a86;border-radius:14px;
+  padding:8px 14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.name-bar label{font-size:13px;font-weight:700;color:var(--dim);white-space:nowrap}
+.name-bar input{flex:1;max-width:260px;background:#0a1e40;border:1px solid #2e75c9;border-radius:10px;
+  color:var(--text);padding:7px 12px;font-size:14px;outline:none}
+.name-bar input:focus{border-color:var(--line2)}
+
+/* ---------- TOP BAR ---------- */
+.top{display:flex;gap:14px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.lesson-pill{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,#123a72,var(--panel));
+  border:2px solid var(--line);border-radius:20px;padding:10px 18px;box-shadow:0 0 16px rgba(57,141,255,.35)}
+.flag-badge{display:flex;align-items:center;gap:6px;font-weight:900;font-size:15px;background:#0006;padding:6px 10px;border-radius:12px}
+.lesson-info{display:flex;flex-direction:column;gap:5px;min-width:160px}
+.lesson-name{font-weight:800;font-size:14px;white-space:nowrap}
+.progress-track{height:7px;background:#0a2040;border-radius:99px;overflow:hidden;border:1px solid #1c4a86}
+.progress-fill{height:100%;width:12%;background:linear-gradient(90deg,#ffb84a,var(--gold));border-radius:99px;
+  box-shadow:0 0 8px var(--gold);transition:width .4s ease}
+
+.instruction-bubble{flex:1;min-width:220px;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(180deg,#123a72,var(--panel));border:2px solid var(--line2);border-radius:20px;
+  padding:10px 18px;box-shadow:0 0 18px rgba(86,165,255,.4)}
+.instruction-icon{font-size:26px;filter:drop-shadow(0 0 6px var(--line2))}
+.instruction-main{font-weight:900;font-size:clamp(14px,1.8vw,19px)}
+.instruction-sub{font-size:12.5px;color:var(--dim);font-weight:600}
+
+.timer-ring{position:relative;width:76px;height:76px;flex-shrink:0}
+.timer-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.15);stroke-width:6}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;
+  stroke-dasharray:213.6;stroke-dashoffset:0;transition:stroke-dashoffset .9s linear;
+  filter:drop-shadow(0 0 6px var(--gold))}
+.timer-num{position:absolute;inset:0;display:grid;place-items:center;font-weight:900;font-size:22px}
+
+/* ---------- MAIN LAYOUT ---------- */
+.game{position:relative;overflow:hidden;border:2px solid var(--line);border-radius:22px;
+  background:#091b38;box-shadow:0 0 24px rgba(57,141,255,.25)}
+.game-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start;padding:14px}
+.scene{position:relative;aspect-ratio:1536/1024;border-radius:14px;overflow:hidden;background:#0a1e40}
+.scene .base-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+
+.hint-label{
+  position:absolute;transform:translate(-50%,calc(-100% - 8px));left:0;top:0;
+  background:linear-gradient(180deg,#123a72,#0b2551);border:2px solid var(--line2);
+  border-radius:999px;padding:5px 12px;font-weight:800;font-size:12.5px;white-space:nowrap;
+  box-shadow:0 0 14px rgba(86,165,255,.55);pointer-events:none;z-index:5;
+  animation:fadeIn .25s ease;
+}
+.hint-label::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--gold);margin-right:5px;box-shadow:0 0 6px var(--gold)}
+.hint-label::after{content:'';position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);
+  width:2px;height:9px;background:linear-gradient(var(--line2),transparent)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ---------- SIDE PANEL ---------- */
+.side-panel{display:flex;flex-direction:column;gap:12px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(180deg,#123a72,var(--panel));border:2px solid var(--line2);
+  border-radius:18px;padding:12px 18px;box-shadow:0 0 16px rgba(86,165,255,.35)}
+.panel-title{font-weight:900;font-size:20px}
+.mascot{font-size:26px}
+
+.answers{display:flex;flex-direction:column;gap:10px}
+.answer{display:flex;align-items:center;gap:12px;min-height:60px;border-radius:16px;
+  border:2px solid #2e75c9;background:linear-gradient(180deg,#173a68,#12345f);color:var(--text);
+  font-size:15px;font-weight:800;cursor:pointer;padding:8px 14px;text-align:left;
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease}
+.answer .icon-tile{flex-shrink:0;width:44px;height:44px;border-radius:10px;background:rgba(86,165,255,.15);
+  display:grid;place-items:center;overflow:hidden;border:1px solid rgba(86,165,255,.4)}
+.answer .icon-tile img{width:100%;height:100%;object-fit:contain}
+.answer:hover{background:linear-gradient(180deg,#1d4d86,#19487d);border-color:var(--line2);
+  transform:translateY(-2px);box-shadow:0 4px 14px rgba(57,141,255,.35)}
+.answer:active{transform:translateY(0)}
+.answer.locked{opacity:.55;cursor:default;transform:none;pointer-events:none}
+
+.feedback{text-align:center;min-height:30px;padding:6px;font-size:16px;font-weight:900}
+.feedback .good{color:var(--good);text-shadow:0 0 10px rgba(78,224,138,.5)}
+.feedback .bad{color:var(--bad);text-shadow:0 0 10px rgba(255,107,107,.5)}
+
+/* ---------- BOTTOM BAR ---------- */
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.star-pill{display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,#123a72,var(--panel));
+  border:2px solid var(--gold);border-radius:999px;padding:8px 16px;font-weight:900;font-size:15px;
+  box-shadow:0 0 12px rgba(255,216,74,.35)}
+.dots{display:flex;gap:8px}
+.dot-step{width:10px;height:10px;border-radius:50%;background:#1c3f70;transition:all .25s ease}
+.dot-step.done{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+.dot-step.current{background:var(--line2);box-shadow:0 0 8px var(--line2);transform:scale(1.3)}
+.pause-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--line2);background:var(--panel);
+  color:var(--text);font-size:16px;cursor:pointer;box-shadow:0 0 12px rgba(86,165,255,.3)}
+
+/* ---------- START OVERLAY ---------- */
+.start{position:absolute;inset:0;display:grid;place-items:center;background:rgba(7,21,47,.9);z-index:5;
+  border-radius:22px}
+.box{max-width:520px;padding:34px 30px;border-radius:24px;background:linear-gradient(180deg,#123a72,#0d2851);
+  border:2px solid var(--line2);text-align:center;box-shadow:0 0 30px rgba(86,165,255,.4)}
+.box h2{font-size:32px;margin:0 0 10px;font-weight:900}
+.box p{color:#c1d3ec;line-height:1.6;font-size:15px}
+.play{border:0;border-radius:16px;padding:14px 30px;background:linear-gradient(180deg,#ffe07a,var(--gold));
+  color:#14213a;font-size:18px;font-weight:900;cursor:pointer;margin-top:10px;
+  box-shadow:0 6px 0 #c9a020, 0 10px 20px rgba(0,0,0,.35);transition:transform .1s ease}
+.play:active{transform:translateY(4px)}
+
+@media(max-width:820px){
+  .game-layout{grid-template-columns:1fr}
+  .answer{font-size:14px}
+}
+</style></head>
+<body><div class="app">
+
+  <div class="name-bar">
+    <label for="studentName">Dein Name:</label>
+    <input type="text" id="studentName" placeholder="Name eingeben ...">
+  </div>
+
+  <div class="top">
+    <div class="lesson-pill">
+      <span class="flag-badge">DE <span id="levelBadge">A1</span></span>
+      <div class="lesson-info">
+        <div class="lesson-name" id="lessonName">Lektion 1 - Zuhause</div>
+        <div class="progress-track"><div class="progress-fill" id="lessonProgress"></div></div>
+      </div>
+    </div>
+    <div class="instruction-bubble">
+      <span class="instruction-icon">&#128065;</span>
+      <div>
+        <div class="instruction-main" id="instructionMain">Merke dir die Gegenstande!</div>
+        <div class="instruction-sub" id="instructionSub">In 5 Sekunden erscheint eine Lucke.</div>
+      </div>
+    </div>
+    <div class="timer-ring">
+      <svg viewBox="0 0 80 80">
+        <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+        <circle class="ring-fill" id="ringFill" cx="40" cy="40" r="34"></circle>
+      </svg>
+      <div class="timer-num" id="timer">5</div>
+    </div>
+  </div>
+
+  <div class="game">
+    <div class="game-layout">
+      <div class="scene" id="scene">
+        <img class="base-img" id="baseImg" src="" alt="Szene">
+      </div>
+      <div class="side-panel">
+        <div class="panel-header">
+          <span class="panel-title">Was fehlt?</span>
+          <span class="mascot">&#129417;</span>
+        </div>
+        <div class="answers" id="answers"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+    <div class="start" id="start">
+      <div class="box">
+        <h2>Was fehlt?</h2>
+        <p>Schau dir die Szene genau an. Du hast 5 Sekunden. Danach verschwindet ein Gegenstand - wirklich! Finde ihn.</p>
+        <button class="play" id="playBtn" type="button">Spielen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="star-pill">&#11088; <span id="score">0</span></div>
+    <div class="dots" id="dots"></div>
+    <button class="pause-btn" id="pauseBtn" type="button">&#9208;</button>
+  </div>
+
+</div>
+<script>
+/* Scene data model (see scene.json):
+   { id, name, level, full: "path/to/full.jpg",
+     objects: [ { name, icon: "small sprite for answer tile",
+                  missing: "path/to/variant-with-this-object-removed.jpg",
+                  x,y,w,h: percent box, used only to place the memorize-phase hint label } ] }
+   The scene image itself is swapped wholesale (full -> missing-X) instead of
+   layering separate object sprites on top, so lighting/shadow/perspective are
+   always pre-baked and consistent - no per-object positioning bugs at runtime. */
+
+var TOTAL_ROUNDS = 8;
+var FALLBACK_SCENE = {
+  id: "fallback",
+  name: "Demo-Szene (Platzhalter)",
+  level: "A1",
+  full: null,
+  objects: [
+    {name:"die Tur", icon:null, missing:null, x:84,y:29,w:11,h:48},
+    {name:"das Fenster", icon:null, missing:null, x:3,y:15,w:26,h:48},
+    {name:"die Lampe", icon:null, missing:null, x:28,y:29,w:14,h:32},
+    {name:"das Sofa", icon:null, missing:null, x:40,y:43,w:35,h:29},
+    {name:"der Sessel", icon:null, missing:null, x:8,y:47,w:18,h:36},
+    {name:"der Tisch", icon:null, missing:null, x:28,y:66,w:29,h:18}
+  ]
+};
+
+var SCENE = null;
+var score = 0, r = 0, current = null, locked = false, timer = null;
+var roundOrder = [];
+var studentName = "";
+
+function $(id){ return document.getElementById(id); }
+function shuffle(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp = a[i]; a[i]=a[j]; a[j]=tmp;
+  }
+  return a;
+}
+var RING_LEN = 213.6;
+var sceneEl = null;
+
+function loadScene(){
+  return fetch("./scene.json", {cache:"no-store"}).then(function(res){
+    if(res.ok){ return res.json(); }
+    throw new Error("no scene.json");
+  }).then(function(data){
+    SCENE = data;
+  }).catch(function(){
+    SCENE = FALLBACK_SCENE;
+  });
+}
+
+function buildDots(){
+  var wrap = $("dots");
+  wrap.innerHTML = "";
+  for(var i=0;i<TOTAL_ROUNDS;i++){
+    var d = document.createElement("span");
+    d.className = "dot-step";
+    wrap.appendChild(d);
+  }
+}
+function updateDots(){
+  var steps = document.querySelectorAll(".dot-step");
+  steps.forEach(function(el,i){
+    el.classList.toggle("done", i < r);
+    el.classList.toggle("current", i === r);
+  });
+}
+
+function setupScene(){
+  $("lessonName").textContent = SCENE.name || "Szene";
+  $("levelBadge").textContent = SCENE.level || "A1";
+  if(SCENE.full){ $("baseImg").src = SCENE.full; }
+}
+
+function renderLabels(){
+  sceneEl.querySelectorAll(".hint-label").forEach(function(el){ el.remove(); });
+  SCENE.objects.forEach(function(o){
+    var el = document.createElement("div");
+    el.className = "hint-label";
+    el.dataset.name = o.name;
+    el.style.left = (o.x + o.w/2) + "%";
+    el.style.top = o.y + "%";
+    el.textContent = o.name;
+    sceneEl.appendChild(el);
+  });
+}
+function clearLabels(){
+  sceneEl.querySelectorAll(".hint-label").forEach(function(el){ el.remove(); });
+}
+
+function begin(){
+  var ready = SCENE ? Promise.resolve() : loadScene();
+  ready.then(function(){
+    setupScene();
+    $("start").style.display = "none";
+    score = 0; r = 0;
+    $("score").textContent = score;
+    roundOrder = shuffle(SCENE.objects).slice(0, Math.min(TOTAL_ROUNDS, SCENE.objects.length));
+    TOTAL_ROUNDS = roundOrder.length;
+    buildDots();
+    next();
+  });
+}
+
+function next(){
+  if(r >= TOTAL_ROUNDS){
+    $("instructionMain").textContent = "Geschafft!";
+    $("instructionSub").textContent = "Runde abgeschlossen.";
+    $("timer").textContent = "OK";
+    if(SCENE.full){ $("baseImg").src = SCENE.full; }
+    clearLabels();
+    var restartBtn = document.createElement("button");
+    restartBtn.className = "answer";
+    restartBtn.style.justifyContent = "center";
+    restartBtn.type = "button";
+    restartBtn.textContent = "Nochmal spielen";
+    restartBtn.addEventListener("click", begin);
+    var answersEl = $("answers");
+    answersEl.innerHTML = "";
+    answersEl.appendChild(restartBtn);
+    var name = studentName ? (" (" + studentName + ")") : "";
+    $("feedback").innerHTML = "Du hast <b>" + score + " Punkte</b> gesammelt" + name + ".";
+    return;
+  }
+  locked = false;
+  $("feedback").innerHTML = "";
+  if(SCENE.full){ $("baseImg").src = SCENE.full; }
+  $("instructionMain").textContent = "Merke dir die Gegenstande!";
+  $("instructionSub").textContent = "In 5 Sekunden verschwindet einer.";
+  updateDots();
+  $("lessonProgress").style.width = (12 + (r/TOTAL_ROUNDS)*88) + "%";
+  renderLabels();
+
+  current = roundOrder[r];
+  var n = 5;
+  $("timer").textContent = n;
+  $("ringFill").style.strokeDashoffset = 0;
+  if(timer) clearInterval(timer);
+  timer = setInterval(function(){
+    n--;
+    $("timer").textContent = n > 0 ? n : "0";
+    $("ringFill").style.strokeDashoffset = RING_LEN * (1 - Math.max(n,0)/5);
+    if(n <= 0){ clearInterval(timer); hide(); }
+  }, 1000);
+}
+
+function hide(){
+  clearLabels();
+  if(current.missing){ $("baseImg").src = current.missing; }
+
+  $("instructionMain").textContent = "Was fehlt?";
+  $("instructionSub").textContent = "Wahle die richtige Antwort.";
+
+  var pool = SCENE.objects;
+  var distractors = shuffle(pool.filter(function(x){ return x !== current; })).slice(0, Math.min(3, pool.length-1));
+  var opts = shuffle([current].concat(distractors));
+  var answersEl = $("answers");
+  answersEl.innerHTML = "";
+  opts.forEach(function(x){
+    var btn = document.createElement("button");
+    btn.className = "answer";
+    btn.type = "button";
+    btn.dataset.n = x.name;
+
+    var tile = document.createElement("span");
+    tile.className = "icon-tile";
+    if(x.icon){
+      var img = document.createElement("img");
+      img.src = x.icon;
+      img.alt = x.name;
+      tile.appendChild(img);
+    } else {
+      tile.textContent = "?";
+    }
+    btn.appendChild(tile);
+    btn.appendChild(document.createTextNode(x.name));
+    btn.addEventListener("click", function(){ answer(x.name); });
+    answersEl.appendChild(btn);
+  });
+}
+
+function answer(n){
+  if(locked) return;
+  locked = true;
+  document.querySelectorAll(".answer").forEach(function(b){ b.classList.add("locked"); });
+  var ok = n === current.name;
+  if(ok){
+    score += 100;
+    $("feedback").innerHTML = '<span class="good">Richtig! +100</span>';
+  } else {
+    $("feedback").innerHTML = '<span class="bad">Das war ' + current.name + '</span>';
+    score = Math.max(0, score - 30);
+  }
+  r++;
+  $("score").textContent = score;
+  updateDots();
+  setTimeout(next, 900);
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  sceneEl = $("scene");
+  $("playBtn").addEventListener("click", begin);
+  $("studentName").addEventListener("input", function(e){ studentName = e.target.value; });
+  loadScene();
+});
+</script>
+</body></html>
