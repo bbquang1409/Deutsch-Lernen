@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>WORT-PAAR ONLINE · TEST v01</title>
+<title>WORT-PAAR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;800&display=swap" rel="stylesheet">
@@ -2476,25 +2476,28 @@ html,body{margin:0!important;min-height:100%!important}
 
   function checkSeatCollision(peersList){
     if(!ONLINE.mySeat || !ONLINE.room) return;
-    var mine = null;
-    peersList.forEach(function(p){ if(p.isMe) mine = p; });
+    // Deterministic seat reconciliation: smaller peer ID keeps the seat.
+    // The other participant moves to the unoccupied seat automatically.
+    // No manual rejoin, no oscillating seat swap.
+    var mine = peersList.find(function(p){return p.isMe;});
     if(!mine) return;
-    var rivals = peersList.filter(function(p){ return !p.isMe && p.presence && p.presence.seat === ONLINE.mySeat; });
-    if(rivals.length === 0) return;
-    var iShouldYield = rivals.some(function(p){ return p.peer < mine.peer; });
-    if(!iShouldYield) return;
-    // I lose the tie-break: drop my seat entirely and stop reacting to further
-    // peer changes, instead of auto-switching seats. Auto-switching caused a
-    // feedback loop (each presence write re-triggered this check on both
-    // sides, so seats could flip back and forth continuously). Requiring a
-    // manual rejoin keeps seat assignment stable.
-    ONLINE.mySeat = null;
-    ONLINE.isHost = false;
-    ONLINE.room.presence({seat: null}).catch(function(){});
-    if(ONLINE.unsubPeers){ ONLINE.unsubPeers(); ONLINE.unsubPeers = null; }
-    if(ONLINE.unsubSync){ ONLINE.unsubSync(); ONLINE.unsubSync = null; }
-    if(ONLINE.unsubMove){ ONLINE.unsubMove(); ONLINE.unsubMove = null; }
-    document.getElementById("onlineStatus").textContent = "Sitzplatz-Konflikt erkannt. Bitte tritt dem Raum erneut bei.";
+    var rivals = peersList.filter(function(p){
+      return !p.isMe && p.presence && p.presence.seat === ONLINE.mySeat;
+    });
+    if(!rivals.some(function(p){return p.peer < mine.peer;})) return;
+    var alternative = ONLINE.mySeat === 'p1' ? 'p2' : 'p1';
+    var occupied = peersList.some(function(p){
+      return !p.isMe && p.presence && p.presence.seat === alternative;
+    });
+    if(occupied){
+      document.getElementById('onlineStatus').textContent = 'Der Raum ist voll. Bitte anderen Raumcode verwenden.';
+      return;
+    }
+    ONLINE.mySeat = alternative;
+    ONLINE.isHost = alternative === 'p1';
+    ONLINE.room.presence({seat:alternative}).catch(function(err){
+      document.getElementById('onlineStatus').textContent = 'Verbindung unterbrochen: '+err.message;
+    });
     updateOnlineUI();
   }
 
@@ -2536,7 +2539,9 @@ html,body{margin:0!important;min-height:100%!important}
       ONLINE.mySeat = seat;
       ONLINE.isHost = seat === "p1";
       ONLINE.phase = "lobby";
-      room.presence({seat: seat});
+      room.presence({seat: seat}).catch(function(err){
+        document.getElementById("onlineStatus").textContent = "Verbindung fehlgeschlagen: " + err.message;
+      });
       subscribeRoomEvents();
       updateOnlineUI();
     }).catch(function(err){
@@ -2876,6 +2881,8 @@ window.addEventListener('DOMContentLoaded',()=>{const local=document.querySelect
         client.subscribe(topic,{qos:0},function(err){
           if(err){clearTimeout(timeout);reject(err);pending=null;return;}
           send('hello',presence).catch(function(){});
+          setTimeout(function(){send('hello',presence).catch(function(){});},650);
+          setTimeout(function(){send('hello',presence).catch(function(){});},1500);
           setTimeout(function(){
             clearTimeout(timeout);
             room={
@@ -2886,7 +2893,7 @@ window.addEventListener('DOMContentLoaded',()=>{const local=document.querySelect
               emit:send
             };
             resolve(room);
-          },900);
+          },2800);
         });
       });
       client.on('message',function(t,payload){
