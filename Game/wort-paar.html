@@ -1560,8 +1560,27 @@ html,body{margin:0!important;min-height:100%!important}
 #screenSetup #personModeBlock,#screenSetup #onlinePanel{display:none!important}
 @media(max-width:650px){#screenSetup .wp-dropdown{padding:3px!important;border-radius:7px!important}#screenSetup .wp-dropdown .v10-choice{min-height:27px!important;padding:2px!important}#screenSetup .wp-dropdown .v10-choice span{font-size:8px!important}}
 </style>
-</head>
-<body>
+<style id="arena-orientation-style">
+#arena-orientation-gate{position:fixed;inset:0;z-index:2147483647;background:#102b48;color:#fff;font:600 17px/1.5 system-ui,Arial,sans-serif;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
+#arena-orientation-gate .arena-orientation-panel{max-width:420px}
+#arena-orientation-gate .arena-orientation-icon{font-size:52px;margin-bottom:12px}
+#arena-orientation-gate button{background:#ffcf4d;color:#241b0a;border:0;border-radius:12px;padding:12px 22px;font:800 16px system-ui;cursor:pointer;margin-top:18px}
+@media (orientation:portrait) and (max-width:800px){#arena-orientation-gate{display:flex}}
+</style></head>
+<body><div id="arena-orientation-gate" role="dialog" aria-label="Querformat" aria-modal="true"><div class="arena-orientation-panel"><div class="arena-orientation-icon">↻</div><div>Bitte drehe dein Handy ins Querformat.</div><div style="font-size:14px;opacity:.8;margin-top:8px">Xoay điện thoại sang ngang để chơi.</div><button id="arena-landscape-btn" type="button">QUERFORMAT STARTEN</button></div></div>
+<script id="arena-orientation-adapter">
+(function(){
+  'use strict';
+  var btn=document.getElementById('arena-landscape-btn');
+  if(!btn)return;
+  btn.addEventListener('click',async function(){
+    // Orientation lock is allowed only after a user gesture and usually fullscreen.
+    try {if(document.documentElement.requestFullscreen && !document.fullscreenElement){await document.documentElement.requestFullscreen();}}catch(e){}
+    try {if(screen.orientation && screen.orientation.lock){await screen.orientation.lock('landscape');}}catch(e){}
+    // On iOS Safari or browsers refusing lock, the gate remains until device rotates.
+  });
+})();
+</script>
 <div class="app">
 
   <div id="screenSetup" class="v10-home wp-home">
