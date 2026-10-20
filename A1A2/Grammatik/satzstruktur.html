@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satzstruktur &amp; Fragen – A1–A2 Grammatik</title>
+
+<script>
+// ===========================================
+//  DEUTSCH-LERNEN LOGGING
+// ===========================================
+const _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const _DL_FILE  = "Satzstruktur & Fragen (A1-A2)";
+let _dlU = null;
+function _dlUser() {
+  if (_dlU) return _dlU;
+  try { var s = localStorage.getItem('dl_user'); if (s) _dlU = JSON.parse(s); } catch(e) {}
+  return _dlU;
+}
+function _dlLog(setName, score, total) {
+  var u = _dlUser(); if (!u) return;
+  fetch(_DL_SHEET, {
+    method:'POST', mode:'no-cors',
+    body: JSON.stringify({name:u.name, email:u.email, file:_DL_FILE, set:setName, score:score, total:total})
+  }).catch(function(){});
+}
+</script>
+
+<style>
+:root{
+  --bg:#fafafc; --surface:#ffffff; --border:#e3e6f0; --text:#1f2430; --muted:#6b7285;
+  --accent:#c92a2a; --accent-soft:#fff5f5;
+  --verb:#c92a2a; --verb-bg:#ffe3e3;
+  --subj:#3b5bdb; --subj-bg:#dbe4ff;
+  --wq:#9c36b5;   --wq-bg:#f3d9fa;
+  --zeit:#d9480f; --zeit-bg:#ffe8cc;
+  --ort:#2b8a3e;  --ort-bg:#d3f9d8;
+  --good:#2b8a3e; --bad:#e03131;
+  --radius:12px; --shadow:0 1px 4px rgba(0,0,0,.08);
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* HEADER – hell, kein dunkler Hintergrund */
+.hero{background:linear-gradient(135deg,#fff5f5 0%,#fff9db 100%);border-bottom:3px solid #ffa8a8;padding:26px 18px 20px;text-align:center;position:relative}
+.back-btn{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--border);color:var(--accent);text-decoration:none;font-size:12px;font-weight:700;padding:5px 11px;border-radius:20px}
+.hero-tag{display:inline-block;background:#fff;border:1px solid #ffc9c9;color:var(--accent);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin:14px 0 10px}
+.hero h1{font-size:26px;font-weight:800;color:var(--text)}
+.hero-sub{color:var(--muted);font-size:13px;margin-top:2px}
+
+/* TABS */
+.tab-bar{display:flex;gap:2px;padding:0 12px;border-bottom:2px solid var(--border);background:var(--surface);overflow-x:auto;scrollbar-width:none;box-shadow:var(--shadow);position:sticky;top:0;z-index:5}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{padding:13px 16px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:var(--font)}
+.tab-btn:hover{color:var(--accent)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:20px 16px 40px;max-width:700px;margin:0 auto}
+.tab-content.active{display:block}
+
+/* TYPO */
+h2.sec{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin:26px 0 12px;display:flex;align-items:center;gap:8px}
+h2.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+p{margin:8px 0}
+.rule{background:var(--accent-soft);border:1px solid #ffc9c9;border-left:5px solid var(--accent);border-radius:var(--radius);padding:14px 16px;font-size:16px}
+.note{background:#fff9db;border:1px solid #ffec99;border-left:5px solid #f08c00;border-radius:var(--radius);padding:12px 14px;margin:12px 0;font-size:14px}
+.err{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin:12px 0;display:grid;gap:4px}
+.err .x{color:var(--bad);font-weight:700}.err .v{color:var(--good);font-weight:700}
+ul.rules{margin:10px 0 0 20px}ul.rules li{margin:6px 0}
+
+/* TOKENS (Farbcode) */
+.tk{display:inline-block;padding:1px 8px;border-radius:7px;font-weight:700;margin:1px 0}
+.tk.v{background:var(--verb-bg);color:var(--verb)}
+.tk.s{background:var(--subj-bg);color:var(--subj)}
+.tk.w{background:var(--wq-bg);color:var(--wq)}
+.tk.z{background:var(--zeit-bg);color:var(--zeit)}
+.tk.o{background:var(--ort-bg);color:var(--ort)}
+.tk.n{background:#f1f3f5;color:#495057}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;font-size:13px}
+
+/* TABELLEN */
+.tscroll{overflow-x:auto;margin:10px 0;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface)}
+table.pt{width:100%;border-collapse:collapse;font-size:14.5px;min-width:430px}
+table.pt th{background:#f8f9fa;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+table.pt th.v{background:var(--verb-bg);color:var(--verb)}
+table.pt th.w{background:var(--wq-bg);color:var(--wq)}
+table.pt th.s{background:var(--subj-bg);color:var(--subj)}
+table.pt td{padding:9px 10px;border-bottom:1px solid #f1f3f5;vertical-align:top}
+table.pt tr:last-child td{border-bottom:none}
+table.pt td.hd{font-weight:700;color:var(--muted);font-size:12.5px}
+
+/* KLAMMER-GRAFIK */
+.klam{display:grid;grid-template-columns:auto auto 1fr auto;column-gap:6px;align-items:end;margin:14px 0;font-size:16px}
+.klam .br{grid-column:2 / 5;grid-row:1;height:14px;border:3px solid var(--verb);border-bottom:none;border-radius:10px 10px 0 0;margin:0 6px}
+.klam .kc{grid-row:2;padding:8px 10px;border-radius:8px;background:#f1f3f5;text-align:center;font-weight:600}
+.klam .kc.s{background:var(--subj-bg);color:var(--subj)}
+.klam .kc.v{background:var(--verb-bg);color:var(--verb);font-weight:800}
+.klam .kc[data-l]::after{content:attr(data-l);display:block;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;opacity:.75}
+.klam .kc.pad{background:transparent}
+
+/* UMSTELL-SPIEL & FLIP */
+.play{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.play .btnrow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.pbtn{border:2px solid var(--border);background:#fff;border-radius:10px;padding:7px 14px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
+.pbtn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.play .out{font-size:18px;min-height:34px}
+.play .hint{font-size:13px;color:var(--muted);margin-top:6px}
+.flipgrid{display:grid;gap:10px}
+.flip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;cursor:pointer;box-shadow:var(--shadow);user-select:none}
+.flip small{display:block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.flip .t{font-size:17px}
+.flip.q{border-color:#d0bfff;background:#faf5ff}
+
+/* ÜBUNGEN */
+.ex{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:16px 0;box-shadow:var(--shadow)}
+.ex h3{font-size:16px;margin-bottom:2px}
+.ex .intro{color:var(--muted);font-size:13.5px;margin:2px 0 12px}
+.q{padding:10px 0;border-bottom:1px dashed var(--border)}
+.q:last-child{border-bottom:none}
+.q .nr{font-weight:800;color:var(--muted);margin-right:8px}
+.q.q-ok{background:#f4fcf6}.q.q-bad{background:#fff5f5}
+.inp{font:inherit;border:2px solid var(--border);border-radius:8px;padding:2px 8px;margin:0 3px;text-align:center;background:#fff}
+.inp:focus{outline:none;border-color:var(--accent)}
+.inp.good{border-color:var(--good);background:#ebfbee}.inp.bad{border-color:var(--bad);background:#fff0f0}
+.sol{font-size:13px;color:var(--good);font-weight:600;margin-top:4px}
+.q.q-bad .sol{color:var(--bad)}
+.hint{color:var(--muted);font-size:13.5px}
+.line{display:flex;align-items:center;gap:6px;margin:8px 0;border:2px dashed var(--border);border-radius:10px;padding:8px;min-height:50px;background:#fcfcfd}
+.ans{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+.end{font-weight:800;font-size:18px}
+.pool{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid #c5cbe8;background:#fff;border-radius:9px;padding:6px 12px;font:inherit;font-weight:600;cursor:pointer}
+.chip:active{transform:scale(.97)}
+.ans .chip{border-color:var(--accent);background:var(--accent-soft)}
+.chip.sel{border-color:var(--accent);background:var(--verb-bg);color:var(--verb)}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.sit{font-size:13px;color:var(--muted);font-style:italic;margin:4px 0 6px 24px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 0 24px}
+.opt{border:2px solid var(--border);background:#fff;border-radius:10px;padding:7px 13px;font:inherit;cursor:pointer;text-align:left}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.good{border-color:var(--good);background:#ebfbee}.opt.bad{border-color:var(--bad);background:#fff0f0}
+.btns{display:flex;gap:8px;margin-top:12px}
+.btn{border:2px solid var(--border);background:#fff;border-radius:10px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.res{margin-top:10px;font-weight:700;border-radius:10px;padding:0}
+.res.gut{background:#ebfbee;color:var(--good);padding:10px 12px}
+.res.schlecht{background:#fff4e6;color:var(--zeit);padding:10px 12px}
+.dialog .who{font-weight:800;color:var(--subj);margin-right:4px}
+@media(max-width:480px){.klam{font-size:14px}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <a href="../../grammatik.html" class="back-btn">← Übersicht</a>
+  <div class="hero-tag">A1–A2 · Grammatik</div>
+  <h1>Satzstruktur &amp; Fragen</h1>
+  <div class="hero-sub">Position 2 · W-Fragen · Ja/Nein-Fragen · Satzklammer</div>
+</header>
+
+<nav class="tab-bar" id="tabs">
+  <button class="tab-btn active" data-tab="pos">1 · Position 2</button>
+  <button class="tab-btn" data-tab="wfr">2 · W-Fragen</button>
+  <button class="tab-btn" data-tab="jan">3 · Ja/Nein-Fragen</button>
+  <button class="tab-btn" data-tab="klam">4 · Satzklammer</button>
+  <button class="tab-btn" data-tab="misch">5 · Mischübung</button>
+</nav>
+
+<main>
+
+<!-- ═══════════ TAB 1: POSITION 2 ═══════════ -->
+<section class="tab-content active" id="tab-pos">
+  <div class="rule"><b>Grundregel:</b> Im Aussagesatz steht das <span class="tk v">konjugierte Verb</span> immer auf <b>Position 2</b>.</div>
+  <div class="legend">
+    <span class="tk s">Subjekt</span><span class="tk v">Verb</span><span class="tk z">Zeit</span><span class="tk o">Ort</span><span class="tk w">Fragewort</span>
+  </div>
+
+  <h2 class="sec">Position 1 – Position 2</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Position 1</th><th class="v">Position 2</th><th>Mittelfeld</th></tr>
+    <tr><td><span class="tk s">Ich</span></td><td><span class="tk v">lerne</span></td><td><span class="tk z">heute</span> Deutsch.</td></tr>
+    <tr><td><span class="tk z">Heute</span></td><td><span class="tk v">lerne</span></td><td><span class="tk s">ich</span> Deutsch.</td></tr>
+    <tr><td><span class="tk s">Anna und Ben</span></td><td><span class="tk v">kochen</span></td><td><span class="tk z">am Abend</span> Nudeln.</td></tr>
+    <tr><td><span class="tk z">Am Abend</span></td><td><span class="tk v">kochen</span></td><td><span class="tk s">Anna und Ben</span> Nudeln.</td></tr>
+  </table></div>
+
+  <ul class="rules">
+    <li>Das Verb steht <b>immer</b> auf Position 2 – egal, was auf Position 1 steht.</li>
+    <li>Auf Position 1 steht <b>ein Satzglied</b>. Das kann ein Wort sein oder eine Wortgruppe: <i>Anna und Ben · Am Abend · Seit zwei Jahren</i>.</li>
+    <li>Das Subjekt steht links <b>oder</b> rechts vom Verb. Steht etwas anderes auf Position 1, steht das Subjekt <b>nach dem Verb</b> (Inversion).</li>
+  </ul>
+  <div class="err">
+    <div><span class="x">✗</span> Heute ich lerne Deutsch.</div>
+    <div><span class="v">✓</span> Heute lerne ich Deutsch.</div>
+  </div>
+
+  <h2 class="sec">Umstell-Spiel</h2>
+  <div class="play">
+    <div><b>Tippe auf ein Satzglied – es springt auf Position 1.</b></div>
+    <div class="btnrow" id="um-btns">
+      <button class="pbtn on" data-k="s">Anna</button>
+      <button class="pbtn" data-k="z">am Morgen</button>
+      <button class="pbtn" data-k="o">Tee</button>
+    </div>
+    <div class="out" id="um-out"></div>
+    <div class="hint" id="um-hint"></div>
+  </div>
+
+  <h2 class="sec">Zeit vor Ort</h2>
+  <div class="rule">Im Mittelfeld steht <span class="tk z">Zeit</span> (Wann? Wie lange? Wie oft?) meistens <b>vor</b> <span class="tk o">Ort</span> (Wo? Wohin? Woher?).</div>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Position 1</th><th class="v">Position 2</th><th>Mittelfeld</th></tr>
+    <tr><td><span class="tk s">Ich</span></td><td><span class="tk v">wohne</span></td><td><span class="tk z">seit zwei Jahren</span> <span class="tk o">in Leipzig</span>.</td></tr>
+    <tr><td><span class="tk z">Seit zwei Jahren</span></td><td><span class="tk v">wohne</span></td><td><span class="tk s">ich</span> <span class="tk o">in Leipzig</span>.</td></tr>
+    <tr><td><span class="tk s">Wir</span></td><td><span class="tk v">fahren</span></td><td><span class="tk z">am Freitag</span> <span class="tk o">nach Wien</span>.</td></tr>
+  </table></div>
+
+  <h2 class="sec">Position 0: und · aber · oder · denn · sondern</h2>
+  <p>Diese Wörter verbinden zwei Sätze. Sie stehen <b>vor</b> Position 1 – auf <b>Position 0</b>. Danach bleibt die Satzstellung wie im Hauptsatz: Subjekt, Verb auf Position 2.</p>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Position 0</th><th>Bedeutung</th><th>Beispiel</th></tr>
+    <tr><td><b>und</b></td><td>Addition</td><td>Anna kocht, <b>und</b> <span class="tk s">Ben</span> <span class="tk v">deckt</span> den Tisch.</td></tr>
+    <tr><td><b>aber</b></td><td>Gegensatz</td><td>Ich möchte kommen, <b>aber</b> <span class="tk s">ich</span> <span class="tk v">habe</span> keine Zeit.</td></tr>
+    <tr><td><b>oder</b></td><td>Alternative</td><td>Gehen wir ins Kino, <b>oder</b> <span class="tk v">bleiben</span> <span class="tk s">wir</span> zu Hause?</td></tr>
+    <tr><td><b>denn</b></td><td>Grund</td><td>Ich bleibe zu Hause, <b>denn</b> <span class="tk s">ich</span> <span class="tk v">bin</span> krank.</td></tr>
+    <tr><td><b>sondern</b></td><td>Korrektur nach <i>nicht / kein</i></td><td>Das ist kein Tee, <b>sondern</b> Kaffee.</td></tr>
+  </table></div>
+
+  <div data-ex="p_build"></div>
+  <div data-ex="p_fill"></div>
+  <div data-ex="p_mc"></div>
+</section>
+
+<!-- ═══════════ TAB 2: W-FRAGEN ═══════════ -->
+<section class="tab-content" id="tab-wfr">
+  <div class="rule"><b>W-Frage:</b> <span class="tk w">Fragewort</span> auf Position 1 – <span class="tk v">Verb</span> auf Position 2 – dann das <span class="tk s">Subjekt</span>.</div>
+  <div class="tscroll"><table class="pt">
+    <tr><th class="w">Position 1</th><th class="v">Position 2</th><th class="s">Subjekt</th><th>Rest</th></tr>
+    <tr><td><span class="tk w">Wie</span></td><td><span class="tk v">heißt</span></td><td><span class="tk s">du</span></td><td>?</td></tr>
+    <tr><td><span class="tk w">Woher</span></td><td><span class="tk v">kommt</span></td><td><span class="tk s">Ben</span></td><td>?</td></tr>
+    <tr><td><span class="tk w">Wann</span></td><td><span class="tk v">beginnt</span></td><td><span class="tk s">der Kurs</span></td><td>?</td></tr>
+    <tr><td><span class="tk w">Was</span></td><td><span class="tk v">machst</span></td><td><span class="tk s">du</span></td><td>heute Abend?</td></tr>
+    <tr><td><span class="tk w">Wie viele</span></td><td><span class="tk v">hat</span></td><td><span class="tk s">Frau Köhler</span></td><td>Kinder?</td></tr>
+  </table></div>
+  <p>Alle Fragewörter beginnen mit <b>w</b>: <i>wer, was, wo, wann, wie, warum …</i></p>
+
+  <h2 class="sec">Die wichtigsten Fragewörter</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Frage nach …</th><th class="w">Fragewort</th><th>Frage</th><th>Antwort</th></tr>
+    <tr><td class="hd">Person (Nom.)</td><td><span class="tk w">Wer?</span></td><td>Wer kommt heute?</td><td>Frau Meier.</td></tr>
+    <tr><td class="hd">Person (Akk.)</td><td><span class="tk w">Wen?</span></td><td>Wen besuchst du?</td><td>Meine Oma.</td></tr>
+    <tr><td class="hd">Person (Dat.)</td><td><span class="tk w">Wem?</span></td><td>Wem gehört das Auto?</td><td>Meinem Bruder.</td></tr>
+    <tr><td class="hd">Begleitung</td><td><span class="tk w">Mit wem?</span></td><td>Mit wem wohnst du?</td><td>Mit meiner Schwester.</td></tr>
+    <tr><td class="hd">Sache</td><td><span class="tk w">Was?</span></td><td>Was kaufst du?</td><td>Brot und Käse.</td></tr>
+    <tr><td class="hd">Ort</td><td><span class="tk w">Wo?</span></td><td>Wo wohnst du?</td><td>In Köln.</td></tr>
+    <tr><td class="hd">Richtung</td><td><span class="tk w">Wohin?</span></td><td>Wohin fährst du?</td><td>Nach Köln.</td></tr>
+    <tr><td class="hd">Herkunft</td><td><span class="tk w">Woher?</span></td><td>Woher kommst du?</td><td>Aus Spanien.</td></tr>
+    <tr><td class="hd">Zeitpunkt</td><td><span class="tk w">Wann?</span></td><td>Wann beginnt der Kurs?</td><td>Um 9 Uhr.</td></tr>
+    <tr><td class="hd">Uhrzeit</td><td><span class="tk w">Um wie viel Uhr?</span></td><td>Um wie viel Uhr beginnt der Film?</td><td>Um 20 Uhr.</td></tr>
+    <tr><td class="hd">Dauer</td><td><span class="tk w">Wie lange?</span></td><td>Wie lange bleibst du?</td><td>Zwei Wochen.</td></tr>
+    <tr><td class="hd">Häufigkeit</td><td><span class="tk w">Wie oft?</span></td><td>Wie oft gehst du schwimmen?</td><td>Zweimal pro Woche.</td></tr>
+    <tr><td class="hd">Art und Weise</td><td><span class="tk w">Wie?</span></td><td>Wie geht es Ihnen?</td><td>Gut, danke.</td></tr>
+    <tr><td class="hd">Alter</td><td><span class="tk w">Wie alt?</span></td><td>Wie alt ist dein Sohn?</td><td>Fünf Jahre.</td></tr>
+    <tr><td class="hd">Menge (Singular)</td><td><span class="tk w">Wie viel?</span></td><td>Wie viel kostet das Brot?</td><td>Zwei Euro.</td></tr>
+    <tr><td class="hd">Menge (Plural)</td><td><span class="tk w">Wie viele?</span></td><td>Wie viele Kinder hast du?</td><td>Zwei.</td></tr>
+    <tr><td class="hd">Grund</td><td><span class="tk w">Warum?</span></td><td>Warum lernst du Deutsch?</td><td>Ich arbeite in Deutschland.</td></tr>
+  </table></div>
+
+  <div class="note"><b>Achtung bei »Wer?«:</b> Das Fragewort ist selbst das Subjekt. Das Verb steht meistens in der 3. Person Singular: <i>Wer kommt? Wer wohnt hier?</i> (nicht: <s>Wer kommen?</s>)</div>
+
+  <h2 class="sec">Wo? – Wohin? – Woher?</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th class="w">Fragewort</th><th>Frage</th><th>Antwort</th></tr>
+    <tr><td><span class="tk w">Wo?</span> (Position)</td><td>Wo bist du?</td><td>Ich bin <b>in</b> der Schule. · <b>zu</b> Hause.</td></tr>
+    <tr><td><span class="tk w">Wohin?</span> (Richtung)</td><td>Wohin gehst du?</td><td>Ich gehe <b>in</b> die Schule. · <b>nach</b> Hause.</td></tr>
+    <tr><td><span class="tk w">Woher?</span> (Herkunft)</td><td>Woher kommst du?</td><td>Ich komme <b>aus</b> der Schule. · <b>von</b> der Arbeit.</td></tr>
+  </table></div>
+  <p class="hint">Mehr zu <i>welch-</i> (Welcher Kurs? Welche Farbe?) findest du in der Lektion »Welcher? – Dieser!« (welche-diese.html).</p>
+
+  <div data-ex="w_fill"></div>
+  <div data-ex="w_build"></div>
+  <div data-ex="w_mc"></div>
+</section>
+
+<!-- ═══════════ TAB 3: JA/NEIN-FRAGEN ═══════════ -->
+<section class="tab-content" id="tab-jan">
+  <div class="rule"><b>Ja/Nein-Frage:</b> Das <span class="tk v">Verb</span> steht auf <b>Position 1</b>, danach kommt das <span class="tk s">Subjekt</span>. Die Stimme geht am Ende nach oben ↗</div>
+
+  <h2 class="sec">Aussage → Frage (tippe auf die Karten)</h2>
+  <div class="flipgrid" id="flips"></div>
+
+  <div class="err">
+    <div><span class="x">✗</span> Du magst Kaffee? <i>(nur gesprochen, mit Fragemelodie)</i></div>
+    <div><span class="v">✓</span> Magst du Kaffee?</div>
+  </div>
+
+  <h2 class="sec">Antworten: Ja – Nein – Doch</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Frage</th><th>Situation</th><th>Antwort</th></tr>
+    <tr><td rowspan="2"><b>Positive Frage</b><br>Kommst du heute?</td><td>✔ Du kommst.</td><td><b>Ja</b>, ich komme heute.</td></tr>
+    <tr><td>✘ Du kommst nicht.</td><td><b>Nein</b>, ich komme heute nicht.</td></tr>
+    <tr><td rowspan="2"><b>Negative Frage</b> (nicht / kein)<br>Kommst du heute nicht?</td><td>✔ Du kommst.</td><td><b>Doch</b>, ich komme heute.</td></tr>
+    <tr><td>✘ Du kommst nicht.</td><td><b>Nein</b>, ich komme heute nicht.</td></tr>
+  </table></div>
+  <div class="note"><b>Doch</b> gibt es nur als Antwort auf eine <b>negative Frage</b>: Es heißt »Doch, das stimmt nicht« → »Doch, es stimmt.«</div>
+
+  <h2 class="sec">Höfliche Bitten (A2)</h2>
+  <p>Höfliche Bitten sind auch Ja/Nein-Fragen. Das Verb steht auf Position 1, der Infinitiv steht am Ende (Satzklammer).</p>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Form</th><th class="v">Position 1</th><th>Mittelfeld</th><th>Ende</th></tr>
+    <tr><td class="hd">Sie</td><td><span class="tk v">Könnten</span> <span class="tk s">Sie</span></td><td>bitte langsamer</td><td>sprechen?</td></tr>
+    <tr><td class="hd">Sie</td><td><span class="tk v">Würden</span> <span class="tk s">Sie</span></td><td>mir bitte einen Termin</td><td>geben?</td></tr>
+    <tr><td class="hd">du</td><td><span class="tk v">Könntest</span> <span class="tk s">du</span></td><td>bitte die Tür</td><td>zumachen?</td></tr>
+    <tr><td class="hd">du</td><td><span class="tk v">Würdest</span> <span class="tk s">du</span></td><td>mir bitte</td><td>helfen?</td></tr>
+  </table></div>
+
+  <div data-ex="j_fill"></div>
+  <div data-ex="j_mc"></div>
+  <div data-ex="j_build"></div>
+</section>
+
+<!-- ═══════════ TAB 4: SATZKLAMMER ═══════════ -->
+<section class="tab-content" id="tab-klam">
+  <div class="rule"><b>Satzklammer:</b> Viele Verben haben zwei Teile. Der <b>konjugierte Teil</b> steht auf <b>Position 2</b>, der <b>zweite Teil</b> steht am <b>Ende</b>. Dazwischen steht der Rest des Satzes.</div>
+
+  <div class="klam">
+    <div class="br"></div>
+    <div class="kc s" style="grid-column:1">Wir</div>
+    <div class="kc v" data-l="Position 2" style="grid-column:2">müssen</div>
+    <div class="kc" style="grid-column:3">heute früh</div>
+    <div class="kc v" data-l="Ende" style="grid-column:4">aufstehen.</div>
+  </div>
+  <div class="klam">
+    <div class="br"></div>
+    <div class="kc s" style="grid-column:1">Der Zug</div>
+    <div class="kc v" data-l="Position 2" style="grid-column:2">kommt</div>
+    <div class="kc" style="grid-column:3">um acht Uhr</div>
+    <div class="kc v" data-l="Ende" style="grid-column:4">an.</div>
+  </div>
+  <div class="klam">
+    <div class="br"></div>
+    <div class="kc s" style="grid-column:1">Ich</div>
+    <div class="kc v" data-l="Position 2" style="grid-column:2">habe</div>
+    <div class="kc" style="grid-column:3">gestern Pizza</div>
+    <div class="kc v" data-l="Ende" style="grid-column:4">gegessen.</div>
+  </div>
+
+  <h2 class="sec">Alle Klammer-Typen</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Typ</th><th class="s">Position 1</th><th class="v">Position 2</th><th>Mittelfeld</th><th class="v">Ende</th></tr>
+    <tr><td class="hd">Modalverb</td><td><span class="tk s">Wir</span></td><td><span class="tk v">müssen</span></td><td>heute</td><td><span class="tk v">arbeiten.</span></td></tr>
+    <tr><td class="hd">Trennbares Verb</td><td><span class="tk s">Der Zug</span></td><td><span class="tk v">kommt</span></td><td>um acht Uhr</td><td><span class="tk v">an.</span></td></tr>
+    <tr><td class="hd">Perfekt mit <i>haben</i></td><td><span class="tk s">Ich</span></td><td><span class="tk v">habe</span></td><td>gestern Pizza</td><td><span class="tk v">gegessen.</span></td></tr>
+    <tr><td class="hd">Perfekt mit <i>sein</i></td><td><span class="tk s">Er</span></td><td><span class="tk v">ist</span></td><td>nach Hause</td><td><span class="tk v">gegangen.</span></td></tr>
+    <tr><td class="hd">Futur</td><td><span class="tk s">Es</span></td><td><span class="tk v">wird</span></td><td>morgen</td><td><span class="tk v">regnen.</span></td></tr>
+    <tr><td class="hd"><i>sein</i> + Adjektiv</td><td><span class="tk s">Das Essen</span></td><td><span class="tk v">ist</span></td><td>heute</td><td><span class="tk v">lecker.</span></td></tr>
+    <tr><td class="hd">Verb + Verb</td><td><span class="tk s">Wir</span></td><td><span class="tk v">gehen</span></td><td>am Sonntag</td><td><span class="tk v">schwimmen.</span></td></tr>
+    <tr><td class="hd">Nomen + Verb</td><td><span class="tk s">Sie</span></td><td><span class="tk v">lernt</span></td><td>seit einem Jahr</td><td><span class="tk v">Deutsch.</span></td></tr>
+  </table></div>
+  <p class="hint">Die letzten drei Typen funktionieren wie trennbare Verben: <i>lecker sein, schwimmen gehen, Deutsch lernen, Tennis spielen, Auto fahren</i> …</p>
+
+  <h2 class="sec">So baust du einen Satz mit Klammer</h2>
+  <ul class="rules">
+    <li><b>1.</b> Das konjugierte Verb kommt auf <b>Position 2</b>.</li>
+    <li><b>2.</b> Der zweite Teil (Infinitiv, Partizip II, Präfix …) kommt <b>ans Ende</b>.</li>
+    <li><b>3.</b> Alles andere steht dazwischen – <span class="tk z">Zeit</span> vor <span class="tk o">Ort</span>.</li>
+  </ul>
+
+  <h2 class="sec">Trennbare Verben</h2>
+  <p>Trennbare Verben bestehen aus einem <b>Präfix</b> und einem <b>Verb</b>. Der Wortakzent liegt immer auf dem Präfix: <i>ÁNkommen, AUFstehen, EINkaufen</i>.</p>
+  <div class="legend">
+    <span class="tk n">ab-</span><span class="tk n">an-</span><span class="tk n">auf-</span><span class="tk n">aus-</span><span class="tk n">ein-</span><span class="tk n">fern-</span><span class="tk n">mit-</span><span class="tk n">vor-</span><span class="tk n">weg-</span><span class="tk n">weiter-</span><span class="tk n">zu-</span><span class="tk n">zurück-</span><span class="tk n">zusammen-</span>
+  </div>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Infinitiv</th><th>Satz</th><th>Typ</th></tr>
+    <tr><td>auf|machen</td><td>Sie <b>macht</b> das Fenster <b>auf</b>.</td><td>trennbar</td></tr>
+    <tr><td>an|rufen</td><td>Ich <b>rufe</b> meine Oma <b>an</b>.</td><td>trennbar</td></tr>
+    <tr><td>be·suchen</td><td>Ich <b>besuche</b> meine Oma.</td><td>untrennbar</td></tr>
+    <tr><td>ver·stehen</td><td>Wir <b>verstehen</b> das nicht.</td><td>untrennbar</td></tr>
+  </table></div>
+  <p class="hint">Untrennbare Präfixe: <i>be-, ge-, er-, ver-, zer-, ent-, emp-</i>. Bei <i>um-, über-, durch-</i> gibt es trennbare und untrennbare Verben – das lernst du später.</p>
+
+  <h2 class="sec">Besondere Fälle</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Fall</th><th>Beispiel</th></tr>
+    <tr><td class="hd"><i>nicht</i> steht vor Teil 2</td><td>Ich kann heute <b>nicht</b> <span class="tk v">kommen</span>. · Er steht <b>nicht</b> <span class="tk v">auf</span>.</td></tr>
+    <tr><td class="hd">Imperativ + trennbar</td><td>Mach das Fenster <span class="tk v">zu</span>!</td></tr>
+    <tr><td class="hd">Frage + Klammer</td><td>Wann <span class="tk v">kommt</span> der Zug <span class="tk v">an</span>? · <span class="tk v">Möchten</span> Sie einen Tee <span class="tk v">trinken</span>?</td></tr>
+    <tr><td class="hd">Ausblick B1: Nebensatz</td><td>…, weil ich früh <span class="tk v">aufstehe</span>. (beide Teile stehen zusammen am Ende)</td></tr>
+  </table></div>
+
+  <div data-ex="k_pick"></div>
+  <div data-ex="k_fill"></div>
+  <div data-ex="k_build"></div>
+</section>
+
+<!-- ═══════════ TAB 5: MISCHÜBUNG ═══════════ -->
+<section class="tab-content" id="tab-misch">
+  <h2 class="sec" style="margin-top:4px">Merktabelle: Wo steht das Verb?</h2>
+  <div class="tscroll"><table class="pt">
+    <tr><th>Satzart</th><th class="v">Verb</th><th>Beispiel</th></tr>
+    <tr><td class="hd">Aussagesatz</td><td><span class="tk v">Position 2</span></td><td>Anna <span class="tk v">lernt</span> heute Deutsch.</td></tr>
+    <tr><td class="hd">W-Frage</td><td><span class="tk v">Position 2</span></td><td><span class="tk w">Was</span> <span class="tk v">lernt</span> Anna heute?</td></tr>
+    <tr><td class="hd">Ja/Nein-Frage</td><td><span class="tk v">Position 1</span></td><td><span class="tk v">Lernt</span> Anna heute Deutsch?</td></tr>
+    <tr><td class="hd">Imperativ</td><td><span class="tk v">Position 1</span></td><td><span class="tk v">Lern</span> heute Deutsch!</td></tr>
+    <tr><td class="hd">Satzklammer</td><td><span class="tk v">Position 2 + Ende</span></td><td>Anna <span class="tk v">will</span> heute Deutsch <span class="tk v">lernen</span>.</td></tr>
+    <tr><td class="hd">Konjunktion (Position 0)</td><td><span class="tk v">Position 2</span> im 2. Satz</td><td>…, denn sie <span class="tk v">braucht</span> den Kurs.</td></tr>
+  </table></div>
+
+  <div data-ex="m_mc"></div>
+  <div data-ex="m_build"></div>
+  <div data-ex="m_fill"></div>
+</section>
+
+</main>
+
+<script id="exdata">
+const EX = {
+
+/* ───────── TAB 1 ───────── */
+p_build:{type:"build", title:"Übung 1 – Sätze bauen",
+ intro:"Tippe die Wörter in der richtigen Reihenfolge an. Beachte den Hinweis.",
+ items:[
+  {hint:"Beginne mit »Heute«.", words:["Heute","kocht","Frau Köhler","Suppe"], ok:["Heute kocht Frau Köhler Suppe."], end:"."},
+  {hint:"Beginne mit dem Subjekt. (Zeit vor Ort)", words:["wohnt","Familie Yilmaz","in Hamburg","seit zwei Jahren"], ok:["Familie Yilmaz wohnt seit zwei Jahren in Hamburg."], end:"."},
+  {hint:"Beginne mit »Am Wochenende«.", words:["Am Wochenende","besuchen","wir","unsere Freunde"], ok:["Am Wochenende besuchen wir unsere Freunde."], end:"."},
+  {hint:"Beginne mit »Im Park«.", words:["Im Park","spielen","die Kinder","Fußball"], ok:["Im Park spielen die Kinder Fußball."], end:"."},
+  {hint:"Beginne mit »Nach dem Kurs«.", words:["Nach dem Kurs","trinke","ich","einen Kaffee"], ok:["Nach dem Kurs trinke ich einen Kaffee."], end:"."},
+  {hint:"Verbinde mit »denn«.", words:["Ich bleibe zu Hause","denn","ich","bin","krank"], ok:["Ich bleibe zu Hause, denn ich bin krank."], end:"."}
+ ]},
+p_fill:{type:"fill", title:"Übung 2 – Position 1 wechseln",
+ intro:"Ergänze das Verb und das Subjekt (oder nur das Verb). Achte auf die Inversion.",
+ items:[
+  {t:"Ich lerne am Abend Deutsch. → Am Abend ___ ___ Deutsch.", a:["lerne","ich"]},
+  {t:"Lena fährt morgen nach Wien. → Morgen ___ ___ nach Wien.", a:["fährt","Lena"]},
+  {t:"Wir essen im Garten Kuchen. → Im Garten ___ ___ Kuchen.", a:["essen","wir"]},
+  {t:"Die Kinder spielen heute im Park. → Heute ___ die Kinder im Park.", a:["spielen"]},
+  {t:"Herr Weber arbeitet seit 2010 hier. → Seit 2010 ___ Herr Weber hier.", a:["arbeitet"]},
+  {t:"Heute ___ ich ins Kino. (gehen)", a:["gehe"]},
+  {t:"Am Freitag ___ du frei. (haben)", a:["hast"]},
+  {t:"Im Sommer ___ wir nach Italien. (fahren)", a:["fahren"]},
+  {t:"Zum Frühstück ___ er immer Tee. (trinken)", a:["trinkt"]}
+ ]},
+p_mc:{type:"mc", title:"Übung 3 – Welcher Satz ist richtig?",
+ intro:"Wähle den richtigen Satz.",
+ items:[
+  {q:"Satzstellung", opts:["Morgen ich fahre nach Berlin.","Morgen fahre ich nach Berlin.","Ich morgen fahre nach Berlin."], c:1, exp:"Position 1: »Morgen« – Position 2: Verb – dann das Subjekt."},
+  {q:"Satzstellung", opts:["Seit einem Jahr lernt Anna Deutsch.","Seit einem Jahr Anna lernt Deutsch.","Anna seit einem Jahr lernt Deutsch."], c:0, exp:"Das Verb steht immer auf Position 2."},
+  {q:"Satzstellung", opts:["Wir am Samstag gehen ins Kino.","Am Samstag wir gehen ins Kino.","Wir gehen am Samstag ins Kino."], c:2, exp:"Subjekt auf Position 1, Verb auf Position 2."},
+  {q:"Konjunktion", opts:["Ich bleibe zu Hause, denn bin ich müde.","Ich bleibe zu Hause, denn müde ich bin.","Ich bleibe zu Hause, denn ich bin müde."], c:2, exp:"Nach »denn« (Position 0) steht Subjekt + Verb wie im Hauptsatz."},
+  {q:"Satzstellung", opts:["Im Büro arbeitet Herr Weber.","Im Büro Herr Weber arbeitet.","Herr Weber im Büro arbeitet."], c:0, exp:"Position 1: »Im Büro« – Position 2: arbeitet."},
+  {q:"Satzstellung", opts:["Heute Abend ich koche Pasta.","Heute koche Abend ich Pasta.","Heute Abend koche ich Pasta."], c:2, exp:"»Heute Abend« ist ein Satzglied auf Position 1."}
+ ]},
+
+/* ───────── TAB 2 ───────── */
+w_fill:{type:"fill", title:"Übung 1 – Fragewort ergänzen",
+ intro:"Schreibe das ganze Fragewort, z. B. »Wie viel«.",
+ items:[
+  {t:"___ heißt du? – Ich heiße Mara.", a:["Wie"]},
+  {t:"___ kommt Ben? – Aus Polen.", a:["Woher"]},
+  {t:"___ wohnt ihr? – In Dresden.", a:["Wo"]},
+  {t:"___ fährt der Zug? – Nach Hamburg.", a:["Wohin"]},
+  {t:"___ beginnt das Konzert? – Um 19 Uhr.", a:["Wann"]},
+  {t:"___ kostet das Brot? – Zwei Euro.", a:[["Wie viel","Was"]]},
+  {t:"___ besuchst du am Wochenende? – Meine Eltern.", a:["Wen"]},
+  {t:"___ gehört das Fahrrad? – Meiner Schwester.", a:["Wem"]},
+  {t:"___ kommst du heute nicht? – Ich bin krank.", a:[["Warum","Wieso","Weshalb"]]},
+  {t:"___ lernst du schon Deutsch? – Seit einem Jahr.", a:["Wie lange"]},
+  {t:"___ Kinder hat Frau Köhler? – Drei.", a:["Wie viele"]},
+  {t:"___ ist im Koffer? – Meine Kleidung.", a:["Was"]}
+ ]},
+w_build:{type:"build", title:"Übung 2 – W-Fragen bauen",
+ intro:"Tippe die Wörter in der richtigen Reihenfolge an.",
+ items:[
+  {hint:"Beginne mit dem Fragewort.", words:["Woher","kommst","du"], ok:["Woher kommst du?"], end:"?"},
+  {hint:"Beginne mit dem Fragewort.", words:["Was","studiert","Mara"], ok:["Was studiert Mara?"], end:"?"},
+  {hint:"Beginne mit dem Fragewort.", words:["Wann","hat","der Kurs","Pause"], ok:["Wann hat der Kurs Pause?"], end:"?"},
+  {hint:"Beginne mit dem Fragewort.", words:["Wie viele","Kinder","hat","Herr Weber"], ok:["Wie viele Kinder hat Herr Weber?"], end:"?"},
+  {hint:"Beginne mit dem Fragewort.", words:["Mit wem","spielst","du","Fußball"], ok:["Mit wem spielst du Fußball?"], end:"?"},
+  {hint:"Beginne mit dem Fragewort.", words:["Wohin","geht","ihr","am Sonntag"], ok:["Wohin geht ihr am Sonntag?"], end:"?"}
+ ]},
+w_mc:{type:"mc", title:"Übung 3 – Wonach wird gefragt?",
+ intro:"Welches Fragewort passt zum markierten Satzteil?",
+ items:[
+  {q:"Der Film beginnt <b>um acht Uhr</b>.", opts:["Wann?","Wohin?","Warum?"], c:0, exp:"Zeitpunkt → Wann?"},
+  {q:"Die Schlüssel liegen <b>auf dem Tisch</b>.", opts:["Wohin?","Wo?","Woher?"], c:1, exp:"Position (Dativ) → Wo?"},
+  {q:"Ich fahre <b>nach Rom</b>.", opts:["Wo?","Woher?","Wohin?"], c:2, exp:"Richtung → Wohin?"},
+  {q:"Das Brot kostet <b>zwei Euro</b>.", opts:["Wie viel?","Wie viele?","Wie lange?"], c:0, exp:"Preis, Menge im Singular → Wie viel?"},
+  {q:"Er arbeitet <b>mit seinem Bruder</b>.", opts:["Wer?","Wem?","Mit wem?"], c:2, exp:"Begleitung → Mit wem?"},
+  {q:"Wir lernen <b>seit drei Monaten</b> Deutsch.", opts:["Wann?","Wie lange?","Wie oft?"], c:1, exp:"Dauer → Wie lange?"},
+  {q:"<b>Meine Tante</b> wohnt in Bonn.", opts:["Wer?","Wen?","Wem?"], c:0, exp:"Subjekt (Person) → Wer?"},
+  {q:"Ich besuche <b>meine Tante</b>.", opts:["Wer?","Wen?","Wem?"], c:1, exp:"Akkusativobjekt (Person) → Wen?"}
+ ]},
+
+/* ───────── TAB 3 ───────── */
+j_fill:{type:"fill", title:"Übung 1 – Aussage → Ja/Nein-Frage",
+ intro:"Ergänze die Frage.",
+ items:[
+  {t:"Er spielt Gitarre. → ___ ___ Gitarre?", a:["Spielt","er"]},
+  {t:"Du bist müde. → ___ ___ müde?", a:["Bist","du"]},
+  {t:"Sie haben ein Auto. → ___ ___ ein Auto?", a:["Haben","Sie"]},
+  {t:"Ihr wohnt in Mainz. → ___ ___ in Mainz?", a:["Wohnt","ihr"]},
+  {t:"Wir können morgen kommen. → ___ ___ morgen ___?", a:["Können","wir","kommen"]},
+  {t:"Anna kommt aus Kanada. → ___ Anna aus Kanada?", a:["Kommt"]},
+  {t:"Paul und Mia lernen Deutsch. → ___ Paul und Mia Deutsch?", a:["Lernen"]},
+  {t:"Das Wetter ist schön. → ___ das Wetter schön?", a:["Ist"]}
+ ]},
+j_mc:{type:"mc", title:"Übung 2 – Ja, Nein oder Doch?",
+ intro:"Lies die Situation und wähle die richtige Antwort.",
+ items:[
+  {q:"Hast du Hunger?", sit:"Situation: Du hast Hunger.", opts:["Ja","Nein","Doch"], c:0, exp:"Positive Frage + Zustimmung → Ja."},
+  {q:"Hast du keinen Hunger?", sit:"Situation: Du hast Hunger.", opts:["Ja","Nein","Doch"], c:2, exp:"Negative Frage, aber positive Antwort → Doch."},
+  {q:"Hast du keinen Hunger?", sit:"Situation: Du hast keinen Hunger.", opts:["Ja","Nein","Doch"], c:1, exp:"Negative Frage + negative Antwort → Nein."},
+  {q:"Kommt Lena heute?", sit:"Situation: Lena kommt nicht.", opts:["Ja","Nein","Doch"], c:1, exp:"Positive Frage + negative Antwort → Nein."},
+  {q:"Kommt Lena heute nicht?", sit:"Situation: Lena kommt.", opts:["Ja","Nein","Doch"], c:2, exp:"Negative Frage, aber positive Antwort → Doch."},
+  {q:"Sprichst du kein Französisch?", sit:"Situation: Du sprichst Französisch.", opts:["Ja","Nein","Doch"], c:2, exp:"Negative Frage, aber positive Antwort → Doch."},
+  {q:"Ist das Büro am Samstag geöffnet?", sit:"Situation: Es ist geöffnet.", opts:["Ja","Nein","Doch"], c:0, exp:"Positive Frage + Zustimmung → Ja."},
+  {q:"Ist das Büro am Samstag nicht geöffnet?", sit:"Situation: Es ist nicht geöffnet.", opts:["Ja","Nein","Doch"], c:1, exp:"Negative Frage + negative Antwort → Nein."}
+ ]},
+j_build:{type:"build", title:"Übung 3 – Fragen und Bitten bauen",
+ intro:"Tippe die Wörter in der richtigen Reihenfolge an.",
+ items:[
+  {hint:"Höfliche Bitte (Sie).", words:["Könnten","Sie","bitte","das Fenster","öffnen"], ok:["Könnten Sie bitte das Fenster öffnen?","Könnten Sie das Fenster bitte öffnen?"], end:"?"},
+  {hint:"Höfliche Bitte (du).", words:["Würdest","du","mir","bitte","helfen"], ok:["Würdest du mir bitte helfen?"], end:"?"},
+  {hint:"Ja/Nein-Frage.", words:["Spielt","Anna","Klavier"], ok:["Spielt Anna Klavier?"], end:"?"},
+  {hint:"Ja/Nein-Frage.", words:["Haben","Sie","morgen","Zeit"], ok:["Haben Sie morgen Zeit?"], end:"?"},
+  {hint:"Ja/Nein-Frage mit Klammer.", words:["Kannst","du","heute","kochen"], ok:["Kannst du heute kochen?"], end:"?"},
+  {hint:"Ja/Nein-Frage mit Klammer.", words:["Möchten","Sie","einen Tee","trinken"], ok:["Möchten Sie einen Tee trinken?"], end:"?"}
+ ]},
+
+/* ───────── TAB 4 ───────── */
+k_pick:{type:"pick", title:"Übung 1 – Finde die Klammer",
+ intro:"Tippe auf die zwei Teile der Klammer: das konjugierte Verb und den zweiten Teil.",
+ items:[
+  {words:["Wir","müssen","heute","früh","aufstehen"], pick:[1,4]},
+  {words:["Der Bus","kommt","um acht Uhr","an"], pick:[1,3]},
+  {words:["Ich","habe","gestern","einen Kuchen","gebacken"], pick:[1,4]},
+  {words:["Sie","ruft","am Abend","ihre Mutter","an"], pick:[1,4]},
+  {words:["Das Kind","ist","früh","eingeschlafen"], pick:[1,3]},
+  {words:["Es","wird","morgen","regnen"], pick:[1,3]},
+  {words:["Möchten","Sie","heute Abend","ins Kino","gehen"], pick:[0,4]}
+ ]},
+k_fill:{type:"fill", title:"Übung 2 – Trennbare Verben (Präsens)",
+ intro:"Ergänze das konjugierte Verb und das Präfix.",
+ items:[
+  {t:"Der Zug (ankommen) ___ um 9 Uhr ___.", a:["kommt","an"]},
+  {t:"Ich (aufstehen) ___ jeden Tag um 6 Uhr ___.", a:["stehe","auf"]},
+  {t:"Wir (einkaufen) ___ am Samstag im Supermarkt ___.", a:["kaufen","ein"]},
+  {t:"Du (anrufen) ___ deine Mutter heute ___.", a:["rufst","an"]},
+  {t:"Der Unterricht (anfangen) ___ um 8 Uhr ___.", a:["fängt","an"]},
+  {t:"___ ihr heute Abend ___? (mitkommen)", a:["Kommt","mit"]},
+  {t:"Er (fernsehen) ___ jeden Abend ___.", a:["sieht","fern"]},
+  {t:"Die Kinder (aufräumen) ___ ihr Zimmer ___.", a:["räumen","auf"]},
+  {t:"Ich (zumachen) ___ das Fenster ___.", a:["mache","zu"]}
+ ]},
+k_build:{type:"build", title:"Übung 3 – Sätze mit Klammer bauen",
+ intro:"Tippe die Wörter in der richtigen Reihenfolge an. Beachte den Hinweis.",
+ items:[
+  {hint:"Modalverb.", words:["Ich","muss","morgen","einkaufen"], ok:["Ich muss morgen einkaufen."], end:"."},
+  {hint:"Modalverb. (Zeit vor Ort)", words:["Wir","wollen","im Sommer","nach Spanien","fahren"], ok:["Wir wollen im Sommer nach Spanien fahren."], end:"."},
+  {hint:"Perfekt mit haben.", words:["Anna","hat","gestern","Brot","gekauft"], ok:["Anna hat gestern Brot gekauft.","Anna hat Brot gestern gekauft."], end:"."},
+  {hint:"Perfekt mit sein.", words:["Wir","sind","am Montag","nach Berlin","gefahren"], ok:["Wir sind am Montag nach Berlin gefahren."], end:"."},
+  {hint:"Trennbares Verb.", words:["Der Film","fängt","um 20 Uhr","an"], ok:["Der Film fängt um 20 Uhr an."], end:"."},
+  {hint:"Beginne mit »Morgen«.", words:["Morgen","ruft","Paul","seine Oma","an"], ok:["Morgen ruft Paul seine Oma an."], end:"."},
+  {hint:"W-Frage mit trennbarem Verb.", words:["Wann","kommt","der Zug","an"], ok:["Wann kommt der Zug an?"], end:"?"},
+  {hint:"Mit »nicht«.", words:["Ich","kann","heute","nicht","kommen"], ok:["Ich kann heute nicht kommen."], end:"."}
+ ]},
+
+/* ───────── TAB 5 ───────── */
+m_mc:{type:"mc", title:"Übung 1 – Welcher Satz ist richtig?",
+ intro:"Aussagesätze, Fragen und Klammern gemischt.",
+ items:[
+  {q:"Trennbares Verb", opts:["Ich einkaufe heute im Supermarkt.","Ich kaufe heute im Supermarkt ein.","Ich kaufe ein heute im Supermarkt."], c:1, exp:"Verb auf Position 2, Präfix »ein« am Ende."},
+  {q:"Perfekt", opts:["Ich habe gestern Deutsch gelernt.","Ich habe gelernt gestern Deutsch.","Ich gelernt habe gestern Deutsch."], c:0, exp:"Partizip II steht am Ende."},
+  {q:"Ja/Nein-Frage", opts:["Kommst heute du?","Heute kommst?","Kommst du heute?"], c:2, exp:"Verb auf Position 1, dann das Subjekt."},
+  {q:"W-Frage", opts:["Wo wohnst du?","Wo du wohnst?","Wohnst wo du?"], c:0, exp:"Fragewort Position 1, Verb Position 2."},
+  {q:"Modalverb", opts:["Wir müssen arbeiten morgen.","Wir müssen morgen arbeiten.","Wir arbeiten müssen morgen."], c:1, exp:"Modalverb Position 2, Infinitiv am Ende."},
+  {q:"W-Frage", opts:["Warum du lernst Deutsch?","Lernst warum du Deutsch?","Warum lernst du Deutsch?"], c:2, exp:"Fragewort Position 1, Verb Position 2."},
+  {q:"Ja/Nein-Frage mit Klammer", opts:["Kannst du heute kommen?","Kannst du kommen heute?","Du kannst kommen heute?"], c:0, exp:"Verb auf Position 1, Infinitiv am Ende."},
+  {q:"Negation und Klammer", opts:["Ich nicht kann heute kommen.","Ich kann heute nicht kommen.","Ich kann heute kommen nicht."], c:1, exp:"»nicht« steht vor dem zweiten Teil der Klammer."}
+ ]},
+m_build:{type:"build", title:"Übung 2 – Alles zusammen",
+ intro:"Aussage, Frage, Imperativ oder Satzverbindung – bau den Satz.",
+ items:[
+  {hint:"Aussage. Beginne mit »Am Sonntag«.", words:["Am Sonntag","besuchen","wir","unsere Oma"], ok:["Am Sonntag besuchen wir unsere Oma."], end:"."},
+  {hint:"W-Frage.", words:["Wie","heißt","deine Lehrerin"], ok:["Wie heißt deine Lehrerin?"], end:"?"},
+  {hint:"Ja/Nein-Frage.", words:["Sprichst","du","Italienisch"], ok:["Sprichst du Italienisch?"], end:"?"},
+  {hint:"Modalverb.", words:["Ich","will","nächstes Jahr","Spanisch","lernen"], ok:["Ich will nächstes Jahr Spanisch lernen."], end:"."},
+  {hint:"W-Frage mit trennbarem Verb.", words:["Wann","steht","ihr","am Montag","auf"], ok:["Wann steht ihr am Montag auf?"], end:"?"},
+  {hint:"Perfekt. Beginne mit »Gestern«.", words:["Gestern","habe","ich","einen Film","gesehen"], ok:["Gestern habe ich einen Film gesehen."], end:"."},
+  {hint:"Imperativ mit trennbarem Verb.", words:["Mach","bitte","das Fenster","zu"], ok:["Mach bitte das Fenster zu!","Mach das Fenster bitte zu!"], end:"!"},
+  {hint:"Verbinde mit »denn«.", words:["Wir gehen nicht schwimmen","denn","das Wasser","ist","kalt"], ok:["Wir gehen nicht schwimmen, denn das Wasser ist kalt."], end:"."}
+ ]},
+m_fill:{type:"fill", title:"Übung 3 – Dialog ergänzen",
+ intro:"Ergänze die Fragewörter und Verben.",
+ items:[
+  {t:"<span class='who'>Lena:</span> Hallo, ich bin Lena. ___ heißt du?", a:["Wie"]},
+  {t:"<span class='who'>Omar:</span> Ich heiße Omar. ___ kommst du?", a:["Woher"]},
+  {t:"<span class='who'>Lena:</span> Aus Wien. ___ du schon lange in Leipzig? (wohnen)", a:["Wohnst"]},
+  {t:"<span class='who'>Omar:</span> Nein, ich ___ erst seit drei Monaten hier. (wohnen)", a:["wohne"]},
+  {t:"<span class='who'>Omar:</span> ___ lernst du schon Deutsch?", a:["Wie lange"]},
+  {t:"<span class='who'>Lena:</span> Seit einem Jahr. ___ du morgen Zeit? (haben)", a:["Hast"]},
+  {t:"<span class='who'>Omar:</span> Ja. ___ wir zusammen Kaffee trinken?", a:[["Wollen","Möchten","Können","Sollen"]]},
+  {t:"<span class='who'>Lena:</span> Gern! ___ Uhr treffen wir uns?", a:["Um wie viel"]}
+ ]}
+};
+</script>
+
+<script>
+/* ════════════ HILFSFUNKTIONEN ════════════ */
+function fold(s){
+  return String(s).toLowerCase()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/[.,!?;:„“"»«()]/g,'').replace(/\s+/g,' ').trim();
+}
+function shuffleIdx(n){
+  const a=[...Array(n).keys()];
+  for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  if(n>1 && a.every((v,i)=>v===i)) a.push(a.shift());
+  return a;
+}
+function mk(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+/* ════════════ ÜBUNGS-ENGINE ════════════ */
+function mount(host){
+  const id=host.dataset.ex, ex=EX[id];
+  host.innerHTML='';
+  const box=mk('div','ex',`<h3>${ex.title}</h3><p class="intro">${ex.intro||''}</p><div class="items"></div><div class="btns"><button class="btn primary chk">Prüfen</button><button class="btn rst">Zurücksetzen</button></div><div class="res"></div>`);
+  host.appendChild(box);
+  const R={fill:rFill,build:rBuild,mc:rMc,pick:rPick}[ex.type];
+  const api=R(ex,box.querySelector('.items'));
+  box.querySelector('.chk').onclick=()=>{
+    const r=api.check(), res=box.querySelector('.res');
+    const all=r.ok===r.total;
+    res.className='res '+(all?'gut':'schlecht');
+    res.textContent=`${r.ok} von ${r.total} richtig`+(all?' – Ausgezeichnet! 🎉':' – Noch einmal versuchen!');
+    try{_dlLog(ex.title,r.ok,r.total);}catch(e){}
+  };
+  box.querySelector('.rst').onclick=()=>mount(host);
+}
+
+function rFill(ex,el){
+  ex.items.forEach((it,i)=>{
+    let k=0;
+    const html=it.t.replace(/___/g,()=>{
+      const w=Math.max(6,String([].concat(it.a[k])[0]).length+3);
+      return `<input class="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-k="${k++}" style="width:${w}ch">`;
+    });
+    el.appendChild(mk('div','q',`<span class="nr">${i+1}.</span><span class="qt">${html}</span><div class="sol"></div>`));
+  });
+  return {check(){
+    let ok=0;
+    [...el.children].forEach((d,i)=>{
+      const it=ex.items[i]; let all=true;
+      d.querySelectorAll('input').forEach(inp=>{
+        const alts=[].concat(it.a[+inp.dataset.k]).map(fold);
+        const good=alts.includes(fold(inp.value));
+        inp.classList.toggle('good',good); inp.classList.toggle('bad',!good);
+        if(!good) all=false;
+      });
+      d.classList.toggle('q-ok',all); d.classList.toggle('q-bad',!all);
+      d.querySelector('.sol').textContent=all?'':'Lösung: '+it.a.map(x=>[].concat(x)[0]).join(' · ');
+      if(all) ok++;
+    });
+    return {ok,total:ex.items.length};
+  }};
+}
+
+function rBuild(ex,el){
+  const S=[];
+  function clear(d){d.classList.remove('q-ok','q-bad');d.querySelector('.sol').textContent='';}
+  function paint(d,it,st){
+    const ans=d.querySelector('.ans'), pool=d.querySelector('.pool');
+    ans.innerHTML=''; pool.innerHTML='';
+    st.sel.forEach(idx=>{
+      const b=mk('button','chip',it.words[idx]); b.type='button';
+      b.onclick=()=>{st.sel=st.sel.filter(x=>x!==idx);paint(d,it,st);clear(d);};
+      ans.appendChild(b);
+    });
+    st.order.filter(idx=>!st.sel.includes(idx)).forEach(idx=>{
+      const b=mk('button','chip',it.words[idx]); b.type='button';
+      b.onclick=()=>{st.sel.push(idx);paint(d,it,st);clear(d);};
+      pool.appendChild(b);
+    });
+  }
+  ex.items.forEach((it,i)=>{
+    const st={sel:[],order:shuffleIdx(it.words.length)}; S.push(st);
+    const d=mk('div','q',`<div><span class="nr">${i+1}.</span><span class="hint">${it.hint||''}</span></div><div class="line"><div class="ans"></div><span class="end">${it.end||''}</span></div><div class="pool"></div><div class="sol"></div>`);
+    el.appendChild(d); paint(d,it,st);
+  });
+  return {check(){
+    let ok=0;
+    [...el.children].forEach((d,i)=>{
+      const it=ex.items[i], st=S[i];
+      const sent=st.sel.map(x=>it.words[x]).join(' ');
+      const good=st.sel.length===it.words.length && it.ok.some(o=>fold(o)===fold(sent));
+      d.classList.toggle('q-ok',good); d.classList.toggle('q-bad',!good);
+      d.querySelector('.sol').textContent=good?'✔ '+it.ok[0]:'Lösung: '+it.ok[0];
+      if(good) ok++;
+    });
+    return {ok,total:ex.items.length};
+  }};
+}
+
+function rMc(ex,el){
+  const pick=[];
+  ex.items.forEach((it,i)=>{
+    const d=mk('div','q',`<div><span class="nr">${i+1}.</span><span class="qt">${it.q}</span></div>${it.sit?`<div class="sit">${it.sit}</div>`:''}<div class="opts">${it.opts.map((o,j)=>`<button type="button" class="opt" data-j="${j}">${o}</button>`).join('')}</div><div class="sol"></div>`);
+    d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      d.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel','good','bad'));
+      b.classList.add('sel'); pick[i]=+b.dataset.j;
+      d.classList.remove('q-ok','q-bad'); d.querySelector('.sol').textContent='';
+    });
+    el.appendChild(d);
+  });
+  return {check(){
+    let ok=0;
+    [...el.children].forEach((d,i)=>{
+      const it=ex.items[i], good=pick[i]===it.c;
+      const opts=d.querySelectorAll('.opt');
+      opts.forEach(x=>x.classList.remove('good','bad'));
+      if(pick[i]!=null) opts[pick[i]].classList.add(good?'good':'bad');
+      if(!good) opts[it.c].classList.add('good');
+      d.classList.toggle('q-ok',good); d.classList.toggle('q-bad',!good);
+      d.querySelector('.sol').textContent=it.exp||'';
+      if(good) ok++;
+    });
+    return {ok,total:ex.items.length};
+  }};
+}
+
+function rPick(ex,el){
+  const S=[];
+  ex.items.forEach((it,i)=>{
+    const st={sel:[]}; S.push(st);
+    const d=mk('div','q',`<div><span class="nr">${i+1}.</span></div><div class="picks"></div><div class="sol"></div>`);
+    const row=d.querySelector('.picks');
+    it.words.forEach((w,j)=>{
+      const b=mk('button','chip',w); b.type='button';
+      b.onclick=()=>{
+        if(st.sel.includes(j)) st.sel=st.sel.filter(x=>x!==j);
+        else { st.sel.push(j); if(st.sel.length>2) st.sel.shift(); }
+        row.querySelectorAll('.chip').forEach((c,n)=>c.classList.toggle('sel',st.sel.includes(n)));
+        d.classList.remove('q-ok','q-bad'); d.querySelector('.sol').textContent='';
+      };
+      row.appendChild(b);
+    });
+    el.appendChild(d);
+  });
+  return {check(){
+    let ok=0;
+    [...el.children].forEach((d,i)=>{
+      const it=ex.items[i], st=S[i];
+      const good=st.sel.length===2 && [...st.sel].sort().join()===[...it.pick].sort().join();
+      d.classList.toggle('q-ok',good); d.classList.toggle('q-bad',!good);
+      d.querySelector('.sol').textContent=(good?'✔ ':'Lösung: ')+it.words[it.pick[0]]+' … '+it.words[it.pick[1]];
+      if(good) ok++;
+    });
+    return {ok,total:ex.items.length};
+  }};
+}
+
+/* ════════════ UMSTELL-SPIEL (Tab 1) ════════════ */
+(function(){
+  const P={s:{t:'Anna',c:'s'},v:{t:'trinkt',c:'v'},z:{t:'am Morgen',c:'z'},o:{t:'Tee',c:'o'}};
+  const ORD={s:['s','v','z','o'],z:['z','v','s','o'],o:['o','v','s','z']};
+  const HINT={s:'Normale Reihenfolge: Subjekt auf Position 1.',z:'Die Zeitangabe steht vorn – das Subjekt rutscht hinter das Verb (Inversion).',o:'Das Objekt steht vorn und wird betont – das Verb bleibt auf Position 2.'};
+  const out=document.getElementById('um-out'), hint=document.getElementById('um-hint'), btns=document.querySelectorAll('#um-btns .pbtn');
+  function show(k){
+    btns.forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+    out.innerHTML=ORD[k].map((x,i)=>{
+      let t=P[x].t; if(i===0) t=t.charAt(0).toUpperCase()+t.slice(1);
+      return `<span class="tk ${P[x].c}">${t}</span>`;
+    }).join(' ')+'.';
+    hint.textContent=HINT[k];
+  }
+  btns.forEach(b=>b.onclick=()=>show(b.dataset.k));
+  show('s');
+})();
+
+/* ════════════ FLIP-KARTEN (Tab 3) ════════════ */
+(function(){
+  const V=t=>`<span class="tk v">${t}</span>`, S=t=>`<span class="tk s">${t}</span>`;
+  const PAIRS=[
+    [`${S('Du')} ${V('magst')} Kaffee.`,`${V('Magst')} ${S('du')} Kaffee?`],
+    [`${S('Anna')} ${V('spricht')} Spanisch.`,`${V('Spricht')} ${S('Anna')} Spanisch?`],
+    [`${S('Ihr')} ${V('habt')} heute Zeit.`,`${V('Habt')} ${S('ihr')} heute Zeit?`],
+    [`${S('Wir')} ${V('können')} morgen ${V('kommen')}.`,`${V('Können')} ${S('wir')} morgen ${V('kommen')}?`]
+  ];
+  const g=document.getElementById('flips');
+  PAIRS.forEach(p=>{
+    const c=mk('div','flip',`<small>Aussagesatz ▸ tippen</small><div class="t">${p[0]}</div>`);
+    let q=false;
+    c.onclick=()=>{q=!q;c.classList.toggle('q',q);c.innerHTML=`<small>${q?'Ja/Nein-Frage ◂ tippen':'Aussagesatz ▸ tippen'}</small><div class="t">${q?p[1]:p[0]}</div>`;};
+    g.appendChild(c);
+  });
+})();
+
+/* ════════════ TABS ════════════ */
+const tabBtns=[...document.querySelectorAll('.tab-btn')];
+function showTab(id,scroll){
+  tabBtns.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab-'+id));
+  if(scroll!==false) window.scrollTo({top:0,behavior:'smooth'});
+}
+tabBtns.forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+const qTab=new URLSearchParams(location.search).get('tab');
+if(qTab && document.getElementById('tab-'+qTab)) showTab(qTab,false);
+
+document.querySelectorAll('[data-ex]').forEach(mount);
+</script>
+</body>
+</html>
