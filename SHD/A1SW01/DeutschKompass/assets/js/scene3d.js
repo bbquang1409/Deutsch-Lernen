@@ -189,5 +189,5 @@
     return true;
   };
 
-  DK.onReady(DK.bg3d);
+  /* background tiles removed (kept function DK.bg3d for optional use) */
 })();
