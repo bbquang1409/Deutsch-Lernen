@@ -367,48 +367,48 @@ window.DK_MODULES=[
   "name": "Kopfschmerzen",
   "mode": "diktat",
   "url": "modules/diktat-01.html",
-  "count": 5,
-  "sentences": 4
+  "count": 6,
+  "sentences": 5
  },
  {
   "id": "diktat-02",
   "name": "Der Wecker",
   "mode": "diktat",
   "url": "modules/diktat-02.html",
-  "count": 5,
-  "sentences": 4
+  "count": 7,
+  "sentences": 6
  },
  {
   "id": "diktat-03",
   "name": "Peters Tag",
   "mode": "diktat",
   "url": "modules/diktat-03.html",
-  "count": 5,
-  "sentences": 4
+  "count": 7,
+  "sentences": 6
  },
  {
   "id": "diktat-04",
   "name": "Das Familienfoto",
   "mode": "diktat",
   "url": "modules/diktat-04.html",
-  "count": 5,
-  "sentences": 4
+  "count": 7,
+  "sentences": 6
  },
  {
   "id": "diktat-05",
   "name": "Das Geburtstagsfest",
   "mode": "diktat",
   "url": "modules/diktat-05.html",
-  "count": 5,
-  "sentences": 4
+  "count": 7,
+  "sentences": 6
  },
  {
   "id": "diktat-06",
   "name": "Aprilwetter",
   "mode": "diktat",
   "url": "modules/diktat-06.html",
-  "count": 5,
-  "sentences": 4
+  "count": 7,
+  "sentences": 6
  },
  {
   "id": "diktat-07",

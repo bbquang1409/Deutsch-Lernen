@@ -75,13 +75,21 @@ function pickVoice() {
   const vs = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('de'));
   deVoice = vs.find(v => /de[-_]DE/i.test(v.lang) && /natural|neural|google|online/i.test(v.name)) || vs.find(v => /de[-_]DE/i.test(v.lang)) || vs[0] || null;
 }
-if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.addEventListener?.('voiceschanged', () => { pickVoice(); const n = document.getElementById('voice-note'); if (n) n.hidden = !!deVoice; }); }
+if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.addEventListener?.('voiceschanged', () => { pickVoice(); const n = document.getElementById('voice-note'); if (n) n.hidden = !noDeVoice(); }); }
+let spkId = 0;
+const noDeVoice = () => 'speechSynthesis' in window && speechSynthesis.getVoices().length > 0 && !deVoice;   // only warn when voices are known and none is German
 function speak(t, r, btn, cb) {
   if (!('speechSynthesis' in window)) { alert('Dein Browser hat keine Sprachausgabe. Nutze den ganzen Text mit der Originalaufnahme.'); return; }
+  if (!deVoice) pickVoice();
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(t); u.lang = 'de-DE'; u.rate = r; if (deVoice) u.voice = deVoice;
-  if (btn) btn.classList.add('go'); u.onend = u.onerror = () => { btn?.classList.remove('go'); cb?.(); };
-  speechSynthesis.speak(u);
+  const id = ++spkId;
+  const parts = String(t).split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(Boolean);   // one utterance per sentence (long utterances get cut off in some browsers)
+  if (btn) btn.classList.add('go');
+  parts.forEach((p, k) => {
+    const u = new SpeechSynthesisUtterance(p); u.lang = 'de-DE'; u.rate = r; if (deVoice) u.voice = deVoice;
+    u.onend = u.onerror = () => { if (id !== spkId) { btn?.classList.remove('go'); return; } if (k === parts.length - 1) { btn?.classList.remove('go'); cb?.(); } };
+    speechSynthesis.speak(u);
+  });
 }
 
 /* ================= Lückendiktat: choose the important words ================= */
@@ -236,7 +244,7 @@ function renderStep() {
       <div class="say"><button class="play" data-say="${i}" ${played ? 'disabled' : ''} aria-label="Satz anhören">▶</button><div style="display:grid;gap:8px">${tools}</div></div>
       ${S.hints[i] ? `<p class="hint">Tipp: ${toks(s).length} Wörter · beginnt mit „${esc(toks(s)[0])}“</p>` : ''}
       ${DM === 'luecke' ? gapHTML(i, chk) : `<textarea class="one" data-w="${i}" aria-label="Satz ${i + 1}" placeholder="Schreibe den Satz hier …" ${chk ? 'readonly' : ''}>${esc(S.dict[i] || '')}</textarea>`}
-      <div class="hint" id="voice-note" ${deVoice || !('speechSynthesis' in window) ? 'hidden' : ''}>Keine deutsche Stimme gefunden – installiere eine deutsche Stimme auf deinem Gerät.</div>`;
+      <div class="hint" id="voice-note" ${noDeVoice() ? '' : 'hidden'}>Keine deutsche Stimme gefunden – installiere eine deutsche Stimme auf deinem Gerät.</div>`;
     if (chk && DM === 'luecke') { const ok = S.dictOk[i], n = S.gapOk[i]; h += `<div class="fb ${ok ? 'ok' : 'no'}"><span>${ok ? '✅' : '✏️'}</span><div><b>${ok ? 'Alle Lücken richtig!' : `${n} von ${GAPS[i].length} Lücken richtig`}</b>${ok ? '' : `<div style="margin-top:6px"><b>Ganzer Satz:</b> ${esc(s)}</div>`}</div></div>`; }
     else if (chk) { const df = diff(S.dict[i] || '', s), um = df.some(x => x.t === 'umlaut'), ok = S.dictOk[i]; h += `<div class="fb ${ok ? 'ok' : 'no'}"><span>${ok ? '✅' : '✏️'}</span><div><b>${ok ? (um ? 'Richtig – achte auf ä/ö/ü/ß.' : 'Richtig!') : 'Vergleiche genau:'}</b>${diffHTML(df)}${ok ? '' : `<div style="margin-top:8px"><b>Lösung:</b> ${esc(s)}</div>`}</div></div>`; }
     h += '</div>';

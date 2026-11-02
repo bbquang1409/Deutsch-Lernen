@@ -1,4 +1,4 @@
-DeutschKompass – Version 8 (Rot · Gold)
+DeutschKompass – Version 10 (Rot · Gold)
 
 Start: ZIP entpacken, DeutschKompass_A1plus_Final/index.html öffnen (offline, kein Server nötig).
 
