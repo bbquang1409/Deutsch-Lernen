@@ -1,75 +1,89 @@
-/* KlassenLive Bridge v1 — standalone-safe, no Supabase credentials. */
+/* KlassenLive Bridge v1.1 — independent HTML; no Supabase credentials. */
 (function (global) {
   'use strict';
-  const VERSION = 1;
-  const CHANNEL = 'KLASSENLIVE_V1';
+  const VERSION = 1, CHANNEL = 'KLASSENLIVE_V1';
   const listeners = new Map();
-  let session = null;
-  let submitted = false;
-  let deadlineTimer = null;
   const embedded = global.parent !== global;
   const params = new URLSearchParams(global.location.search);
   const configuredOrigin = params.get('kl_origin');
-  const parentOrigin = configuredOrigin || (document.referrer ? new URL(document.referrer).origin : null);
-  // Explicit origin is mandatory for embedded mode. No wildcard postMessage.
+  let parentOrigin = configuredOrigin || null;
+  if (!parentOrigin && document.referrer) { try { parentOrigin = new URL(document.referrer).origin; } catch (_) {} }
   const connected = embedded && !!parentOrigin && parentOrigin !== 'null';
-  function emit(event, payload) { (listeners.get(event) || []).forEach(fn => { try { fn(payload); } catch (e) { console.error(e); } }); }
-  function send(type, data) {
+  let session = null, submitted = false, started = false, timer = null;
+  const emit = (event, payload) => (listeners.get(event) || []).forEach(fn => { try { fn(payload); } catch (err) { console.error(err); } });
+  function send(type, data = {}) {
     if (!connected) return false;
-    global.parent.postMessage({ channel: CHANNEL, version: VERSION, type, data: data || {} }, parentOrigin);
+    global.parent.postMessage({ channel: CHANNEL, version: VERSION, type, data }, parentOrigin);
     return true;
   }
-  function finish() {
+  function remaining() { return session && session.endsAt ? Math.max(0, new Date(session.endsAt).getTime() - Date.now()) : null; }
+  function stopTimer() { if (timer !== null) clearInterval(timer); timer = null; }
+  function tick() {
+    if (!started || submitted) return;
+    const ms = remaining();
+    emit('tick', { remainingMs: ms, endsAt: session.endsAt });
+    if (ms !== null && ms <= 0) requestSubmit('deadline');
+  }
+  function requestSubmit(reason) {
     if (submitted) return;
-    submitted = true;
-    emit('submit-request', { reason: 'deadline' });
+    // The exercise grades the current answer and calls submit().
+    emit('submit-request', { reason });
+    // Fallback for an exercise that failed to respond: close its session.
+    if (!submitted) {
+      submitted = true; started = false; stopTimer();
+      emit('locked', { reason });
+      send('SUBMITTED', { sessionId: session.sessionId, reason, answers: [], correct: null, total: null, error: 'exercise_did_not_submit' });
+    }
   }
-  function scheduleDeadline() {
-    clearTimeout(deadlineTimer);
-    if (!session || !session.endsAt) return;
-    const ms = new Date(session.endsAt).getTime() - Date.now();
-    if (!Number.isFinite(ms)) return;
-    if (ms <= 0) finish();
-    else deadlineTimer = setTimeout(finish, Math.min(ms, 2147483647));
-  }
-  global.addEventListener('message', function (event) {
+  global.addEventListener('message', event => {
     if (!connected || event.source !== global.parent || event.origin !== parentOrigin) return;
     const msg = event.data;
     if (!msg || msg.channel !== CHANNEL || msg.version !== VERSION || typeof msg.type !== 'string') return;
     if (msg.type === 'INIT') {
       if (!msg.data || typeof msg.data.sessionId !== 'string' || !msg.data.sessionId) return;
-      session = { sessionId: msg.data.sessionId, endsAt: msg.data.endsAt || null, mode: msg.data.mode || 'test' };
-      submitted = false;
-      scheduleDeadline();
-      emit('init', { ...session });
+      if (session && session.sessionId === msg.data.sessionId) {
+        // Updating deadline must never reopen an already submitted attempt.
+        if (!submitted && msg.data.endsAt !== undefined) session.endsAt = msg.data.endsAt;
+        emit('init', { ...session });
+        if (started) tick();
+      } else {
+        stopTimer();
+        session = { sessionId: msg.data.sessionId, endsAt: msg.data.endsAt || null, mode: msg.data.mode || 'test' };
+        submitted = false; started = false;
+        emit('init', { ...session });
+      }
       send('READY', { sessionId: session.sessionId });
-    } else if (session && msg.data && msg.data.sessionId === session.sessionId) {
-      if (msg.type === 'START') emit('start', msg.data);
-      if (msg.type === 'LOCK' || msg.type === 'SUBMIT') finish();
-      if (msg.type === 'OPEN_SENTENCE') emit('open-sentence', msg.data);
-      if (msg.type === 'CLOSE_SENTENCE') emit('close-sentence', msg.data);
-      if (msg.type === 'RELEASE_FEEDBACK') emit('release-feedback', msg.data);
+      return;
     }
+    if (!session || !msg.data || msg.data.sessionId !== session.sessionId) return;
+    if (msg.type === 'START' && !submitted) {
+      started = true;
+      emit('start', { ...session });
+      stopTimer(); timer = setInterval(tick, 250); tick();
+    } else if ((msg.type === 'LOCK' || msg.type === 'SUBMIT') && !submitted) requestSubmit(msg.type === 'LOCK' ? 'locked' : 'teacher');
+    else if (msg.type === 'OPEN_SENTENCE') emit('open-sentence', msg.data);
+    else if (msg.type === 'CLOSE_SENTENCE') emit('close-sentence', msg.data);
+    else if (msg.type === 'RELEASE_FEEDBACK') emit('release-feedback', msg.data);
   });
-  const api = {
-    version: VERSION,
-    connected,
+  global.KlassenLive = Object.freeze({
+    version: VERSION, connected,
     on(event, fn) {
       if (typeof fn !== 'function') throw new TypeError('Callback required');
       if (!listeners.has(event)) listeners.set(event, []);
       listeners.get(event).push(fn);
       return () => listeners.set(event, (listeners.get(event) || []).filter(x => x !== fn));
     },
-    progress(data) { return send('PROGRESS', { sessionId: session && session.sessionId, ...data }); },
-    sentence(data) { return send('SENTENCE_SUBMITTED', { sessionId: session && session.sessionId, ...data }); },
-    submit(data) {
-      if (submitted && data && data.reason !== 'deadline') return false;
-      submitted = true;
-      return send('SUBMITTED', { sessionId: session && session.sessionId, ...data });
+    progress(data = {}) { if (!session || submitted) return false; return send('PROGRESS', { sessionId: session.sessionId, ...data }); },
+    sentence(data = {}) { if (!session || submitted) return false; return send('SENTENCE_SUBMITTED', { sessionId: session.sessionId, ...data }); },
+    submit(data = {}) {
+      if (submitted) return false;
+      submitted = true; started = false; stopTimer();
+      emit('locked', { reason: data.reason || 'manual' });
+      return send('SUBMITTED', { ...data, sessionId: session && session.sessionId });
     },
-    result(data) { return send('RESULT', { sessionId: session && session.sessionId, ...data }); },
-    getSession() { return session && { ...session }; }
-  };
-  global.KlassenLive = Object.freeze(api);
+    result(data = {}) { if (!submitted) return false; return send('RESULT', { ...data, sessionId: session && session.sessionId }); },
+    getSession() { return session && { ...session }; },
+    isSubmitted() { return submitted; }
+  });
   send('HELLO', { version: VERSION });
 })(window);
