@@ -1,0 +1,8 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KlassenLive · Bridge Demo</title><style>body{font:15px system-ui;max-width:800px;margin:24px auto;padding:0 16px}button{background:#a91f32;color:white;border:0;padding:10px 14px;border-radius:8px;margin:4px}iframe{width:100%;height:370px;border:1px solid #ddd;border-radius:10px}pre{background:#f4f4f4;padding:14px;white-space:pre-wrap;max-height:200px;overflow:auto}</style></head><body><h1>KlassenLive Bridge v1 · Local Demo</h1><p>Chạy qua web server / GitHub Pages. Đây là mô phỏng host, chưa kết nối Supabase.</p><button id="start">Bắt đầu (60 giây)</button><button id="end">Yêu cầu nộp</button><iframe id="exercise" title="Exercise"></iframe><h3>Live messages</h3><pre id="log"></pre><script>
+const frame=document.getElementById('exercise'),log=document.getElementById('log');const channel='KLASSENLIVE_V1',sessionId='demo-room-01',origin=location.origin;let ready=false;
+frame.src='exercise-demo.html?kl_origin='+encodeURIComponent(origin);
+function send(type,data={}){if(!ready)return;frame.contentWindow.postMessage({channel,version:1,type,data:{sessionId,...data}},origin);}
+window.addEventListener('message',e=>{if(e.source!==frame.contentWindow||e.origin!==origin||!e.data||e.data.channel!==channel||e.data.version!==1)return;log.textContent+=JSON.stringify({type:e.data.type,data:e.data.data})+'\n';if(e.data.type==='HELLO'){ready=true;send('INIT',{endsAt:null,mode:'test'});}});
+document.getElementById('start').onclick=()=>{send('INIT',{endsAt:new Date(Date.now()+60000).toISOString(),mode:'test'});send('START');};
+document.getElementById('end').onclick=()=>send('SUBMIT');
+</script></body></html>

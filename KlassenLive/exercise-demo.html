@@ -1,0 +1,8 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KlassenLive · HTML Übung</title><style>body{font:16px system-ui;max-width:550px;margin:32px auto;padding:0 18px;color:#242424}button{background:#a91f32;color:white;border:0;border-radius:9px;padding:12px 18px;font-size:16px}input{padding:10px;font-size:16px;width:95%;margin:12px 0}#status{color:#666}section{background:#f6f6f6;border-radius:12px;padding:18px}</style></head><body><h1>HTML Übung · Demo</h1><p id="status">Standalone-Modus: ohne KlassenLive nutzbar.</p><section><p><b>Ergänzen Sie:</b> Ich ___ heute Deutsch. (lernen)</p><input id="answer" autocomplete="off" placeholder="Antwort eingeben"><br><button id="submit">Prüfen und abgeben</button><p id="feedback"></p></section><script src="klassenlive-bridge.js"></script><script>
+const $=id=>document.getElementById(id);let done=false;
+KlassenLive.on('init',s=>{$('status').textContent='Verbunden mit Sitzung '+s.sessionId;});
+KlassenLive.on('submit-request',()=>grade('deadline'));
+KlassenLive.on('start',()=>{$('status').textContent='Test gestartet';});
+function grade(reason='manual'){if(done)return;done=true;const actual=$('answer').value.trim().toLocaleLowerCase('de');const correct=actual==='lerne';$('feedback').textContent=correct?'Richtig!':'Nicht richtig. Lösung: lerne';$('submit').disabled=true;KlassenLive.submit({reason,answers:[{questionId:'q1',answer:actual,isCorrect:correct}],correct:correct?1:0,total:1});KlassenLive.result({correct:correct?1:0,total:1});}
+$('submit').onclick=()=>grade();
+</script></body></html>
