@@ -1,17 +1,15 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KlassenLive · Schüler</title><style>body{font:16px system-ui;background:#f8f8f8;color:#222;margin:0}main{max-width:760px;margin:auto;padding:16px}h1{color:#a91f32}section{background:white;padding:18px;border-radius:14px;border:1px solid #ddd;margin:15px 0}input,button{font:inherit;padding:12px;border-radius:8px;box-sizing:border-box}input{width:100%;border:1px solid #bbb;margin:8px 0}button{background:#a91f32;color:white;border:0}button.secondary{background:#555;margin-top:12px}iframe{width:100%;height:560px;border:1px solid #ddd;border-radius:10px}.hide{display:none}#error{color:#b00020;white-space:pre-wrap}#timer{font-weight:bold}</style></head><body><main><h1>KlassenLive</h1><p id="error"></p><section id="join"><h2>Raum beitreten</h2><input id="code" placeholder="Raumcode"><input id="name" placeholder="Vor- und Nachname"><button id="joinbtn">Beitreten</button></section><section id="room" class="hide"><h2 id="title"></h2><p id="status"></p><p id="timer"></p><iframe id="exercise" title="Übung"></iframe><p id="result"></p><button id="leavebtn" class="secondary" type="button">Raum verlassen / Anderen Raum beitreten</button></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="config.js"></script><script>
-const $=id=>document.getElementById(id),channel='KLASSENLIVE_V1';let db,token=sessionStorage.getItem('kl_token'),state=null,frameReady=false,started=false,sent=false,frameOrigin=null,roomGeneration=0,pollBusy=false;const err=e=>$('error').textContent=e?.message||String(e||'');
+const $=id=>document.getElementById(id),channel='KLASSENLIVE_V1';let db,token=sessionStorage.getItem('kl_token'),state=null,frameReady=false,started=false,sent=false,frameOrigin=null,roomGeneration=0,pollBusy=false,leaving=false,pendingLeave=null;const err=e=>$('error').textContent=e?.message||String(e||'');
 if(!window.KL_CONFIG||!window.supabase||KL_CONFIG.anonKey.includes('PASTE_'))err('Thiếu config.js hoặc Supabase public key.');else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);if(token)poll();setInterval(()=>{if(token)poll()},2000)}
-$('joinbtn').onclick=async()=>{if(!db)return;err('');const {data,error}=await db.rpc('kl_join',{p_room_code:$('code').value,p_name:$('name').value});if(error){err(error);return}roomGeneration++;token=data.token;sessionStorage.setItem('kl_token',token);sent=false;started=false;frameReady=false;state=null;$('result').textContent='';$('timer').textContent='';poll()};
+$('joinbtn').onclick=async()=>{if(!db||leaving)return;err('');const {data,error}=await db.rpc('kl_join',{p_room_code:$('code').value,p_name:$('name').value});if(error){err(error);return}roomGeneration++;token=data.token;sessionStorage.setItem('kl_token',token);sent=false;started=false;frameReady=false;state=null;$('result').textContent='';$('timer').textContent='';poll()};
 function send(type,data={}){if(!frameReady||!state)return;$('exercise').contentWindow.postMessage({channel,version:1,type,data:{sessionId:state.session_id,...data}},frameOrigin)}
 async function poll(){if(!db||!token||pollBusy)return;pollBusy=true;const generation=roomGeneration,activeToken=token;let data,error;try{({data,error}=await db.rpc('kl_student_state',{p_token:activeToken}));}catch(e){error=e}finally{pollBusy=false}if(generation!==roomGeneration||activeToken!==token)return;if(error){err(error);return}if(!data)return;state=data;$('join').classList.add('hide');$('room').classList.remove('hide');$('title').textContent=data.title;$('status').textContent=data.status==='waiting'?'Warten auf Lehrer…':data.status==='active'?'Test läuft':'Test beendet';if(data.result){$('result').textContent=data.result.correct!=null?`Ergebnis: ${data.result.correct}/${data.result.total}`:'Abgegeben';sent=true}
 if(!$('exercise').src||$('exercise').getAttribute('data-url')!==data.exercise_url){frameReady=false;started=false;const url=new URL(data.exercise_url);url.searchParams.set('kl_origin',location.origin);frameOrigin=url.origin;$('exercise').src=url.href;$('exercise').setAttribute('data-url',data.exercise_url)}
 if(frameReady){send('INIT',{endsAt:data.ends_at,mode:data.activity});if(data.status==='active'&&!started&&!sent){started=true;send('START')}if((data.status==='finished'||data.submitted)&&!sent){send('SUBMIT');sent=true}if(data.status==='finished'||data.submitted){send('LOCK');started=false}}
 const left=data.status==='finished'||data.submitted?null:data.ends_at?Math.max(0,Math.ceil((new Date(data.ends_at).getTime()-Date.now())/1000)):null;$('timer').textContent=left===null?'':`Zeit: ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;}
-window.addEventListener('message',async e=>{if(!state||e.source!==$('exercise').contentWindow||e.origin!==frameOrigin||e.data?.channel!==channel||e.data?.version!==1)return;const m=e.data;if(m.type==='HELLO'){frameReady=true;send('INIT',{endsAt:state.ends_at,mode:state.activity});if(state.status==='active'&&!sent){started=true;send('START')}if(state.status==='finished'||state.submitted){send('LOCK');started=false}}if(m.type==='SUBMITTED'&&!sent){sent=true;const generation=roomGeneration,activeToken=token;const {error}=await db.rpc('kl_student_event',{p_token:activeToken,p_kind:'submitted',p_payload:m.data});if(generation!==roomGeneration||activeToken!==token)return;if(error)err(error);else poll()}if(m.type==='PROGRESS'||m.type==='SENTENCE_SUBMITTED'){const activeToken=token;await db.rpc('kl_student_event',{p_token:activeToken,p_kind:'progress',p_payload:m.data})}});
+window.addEventListener('message',async e=>{if(!state||e.source!==$('exercise').contentWindow||e.origin!==frameOrigin||e.data?.channel!==channel||e.data?.version!==1)return;const m=e.data;if(m.type==='HELLO'){frameReady=true;send('INIT',{endsAt:state.ends_at,mode:state.activity});if(state.status==='active'&&!sent){started=true;send('START')}if(state.status==='finished'||state.submitted){send('LOCK');started=false}}if(m.type==='SUBMITTED'&&!sent){sent=true;const generation=roomGeneration,activeToken=token;let error;try{({error}=await db.rpc('kl_student_event',{p_token:activeToken,p_kind:'submitted',p_payload:m.data}));}catch(e){error=e}if(generation!==roomGeneration||activeToken!==token)return;if(error){sent=false;err(error);if(pendingLeave){pendingLeave.reject(error);pendingLeave=null}}else{if(pendingLeave){pendingLeave.resolve();pendingLeave=null}poll()}}if(m.type==='PROGRESS'||m.type==='SENTENCE_SUBMITTED'){const activeToken=token;await db.rpc('kl_student_event',{p_token:activeToken,p_kind:'progress',p_payload:m.data})}});
 
-$('leavebtn').onclick=()=>{
-  if(state?.status==='active'&&!sent&&!confirm('Du hast noch nicht abgegeben. Raum wirklich verlassen?'))return;
-  // Leaving changes only this browser's active room; submitted results stay in Supabase.
+function clearCurrentRoom(){
   roomGeneration++;
   token=null;sessionStorage.removeItem('kl_token');
   state=null;frameReady=false;started=false;sent=false;frameOrigin=null;
@@ -19,5 +17,28 @@ $('leavebtn').onclick=()=>{
   $('title').textContent='';$('status').textContent='';$('timer').textContent='';$('result').textContent='';
   $('code').value='';$('room').classList.add('hide');$('join').classList.remove('hide');err('');
   $('code').focus();
+}
+$('leavebtn').onclick=async()=>{
+  if(leaving)return;
+  const needsSubmit=state?.status==='active'&&!sent&&!state.submitted;
+  const question=needsSubmit
+    ? 'Test abgeben und Raum verlassen?\n\nDeine bisherigen Antworten werden abgegeben. Danach kannst du diesen Test nicht mehr fortsetzen.\n\nOK = Abgeben und verlassen | Abbrechen = Zurück zum Test'
+    : 'Raum wirklich verlassen?';
+  if(!confirm(question))return;
+  leaving=true;$('leavebtn').disabled=true;err('');
+  try{
+    if(needsSubmit){
+      if(!frameReady)throw new Error('Die Übung ist noch nicht bereit. Bitte versuche es erneut.');
+      await new Promise((resolve,reject)=>{
+        const timeout=setTimeout(()=>{
+          if(pendingLeave===waiter){pendingLeave=null;reject(new Error('Abgabe nicht bestätigt. Bitte erneut versuchen.'))}
+        },12000);
+        const waiter={resolve:()=>{clearTimeout(timeout);resolve()},reject:e=>{clearTimeout(timeout);reject(e)}};
+        pendingLeave=waiter;
+        send('SUBMIT');
+      });
+    }
+    clearCurrentRoom();
+  }catch(e){err(e)}finally{leaving=false;$('leavebtn').disabled=false}
 };
 </script></body></html>
