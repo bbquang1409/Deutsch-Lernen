@@ -60,7 +60,7 @@
       started = true;
       emit('start', { ...session });
       stopTimer(); timer = setInterval(tick, 250); tick();
-    } else if ((msg.type === 'LOCK' || msg.type === 'SUBMIT') && !submitted) requestSubmit(msg.type === 'LOCK' ? 'locked' : 'teacher');
+    } else if (msg.type === 'LOCK' || msg.type === 'SUBMIT') requestSubmit(msg.type === 'LOCK' ? 'locked' : 'teacher');
     else if (msg.type === 'OPEN_SENTENCE') emit('open-sentence', msg.data);
     else if (msg.type === 'CLOSE_SENTENCE') emit('close-sentence', msg.data);
     else if (msg.type === 'RELEASE_FEEDBACK') emit('release-feedback', msg.data);

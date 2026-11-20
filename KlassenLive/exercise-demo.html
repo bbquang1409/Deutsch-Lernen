@@ -5,12 +5,12 @@ KlassenLive.on('init',s=>{ $('status').textContent='Verbunden mit Sitzung '+s.se
 KlassenLive.on('start',()=>{if(done)return;active=true;$('status').textContent='Test gestartet';updateControls();});
 KlassenLive.on('tick',({remainingMs})=>{if(remainingMs===null)return;const secs=Math.ceil(remainingMs/1000);$('timer').textContent='Verbleibende Zeit: '+String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0');$('timer').classList.toggle('urgent',secs<=10);});
 KlassenLive.on('submit-request',({reason})=>grade(reason));
-KlassenLive.on('locked',()=>{active=false;updateControls();});
+KlassenLive.on('locked',()=>{active=false;done=true;$('timer').textContent='';$('timer').classList.remove('urgent');$('status').textContent='Test beendet';updateControls();});
 function grade(reason='manual'){
  if(done||!active)return;done=true;
  const actual=$('answer').value.trim().toLocaleLowerCase('de');const correct=actual==='lerne';
  $('feedback').textContent=correct?'Richtig!':'Nicht richtig. Lösung: lerne';
- $('status').textContent=reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':'Abgegeben';
+ $('status').textContent=reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':'Abgegeben';$('timer').textContent='';$('timer').classList.remove('urgent');
  updateControls();
  KlassenLive.submit({reason,answers:[{questionId:'q1',answer:actual,isCorrect:correct}],correct:correct?1:0,total:1});
  KlassenLive.result({correct:correct?1:0,total:1});
