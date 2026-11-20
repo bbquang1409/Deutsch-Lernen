@@ -7,13 +7,19 @@ KlassenLive.on('tick',({remainingMs})=>{if(remainingMs===null)return;const secs=
 KlassenLive.on('submit-request',({reason})=>grade(reason));
 KlassenLive.on('locked',()=>{active=false;done=true;$('timer').textContent='';$('timer').classList.remove('urgent');$('status').textContent='Test beendet';updateControls();});
 function grade(reason='manual'){
- if(done||!active)return;done=true;
- const actual=$('answer').value.trim().toLocaleLowerCase('de');const correct=actual==='lerne';
- $('feedback').textContent=correct?'Richtig!':'Nicht richtig. Lösung: lerne';
- $('status').textContent=reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':'Abgegeben';$('timer').textContent='';$('timer').classList.remove('urgent');
+ if(done||!active)return;
+ const raw=$('answer').value.trim();
+ // FINISH closes an unfinished attempt; it must not grade or reveal an answer.
+ const unsubmitted=reason==='locked'||reason==='teacher'||raw==='';
+ done=true;
+ const actual=raw.toLocaleLowerCase('de');
+ const correct=!unsubmitted&&actual==='lerne';
+ $('feedback').textContent=unsubmitted?'Nicht abgegeben':correct?'Richtig!':'Nicht richtig. Lösung: lerne';
+ $('status').textContent=unsubmitted?'Test beendet':reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':'Abgegeben';
+ $('timer').textContent='';$('timer').classList.remove('urgent');
  updateControls();
- KlassenLive.submit({reason,answers:[{questionId:'q1',answer:actual,isCorrect:correct}],correct:correct?1:0,total:1});
- KlassenLive.result({correct:correct?1:0,total:1});
+ KlassenLive.submit({reason,answers:unsubmitted?[]:[{questionId:'q1',answer:actual,isCorrect:correct}],correct:unsubmitted?null:correct?1:0,total:unsubmitted?null:1});
+ if(!unsubmitted)KlassenLive.result({correct:correct?1:0,total:1});
 }
 $('submit').onclick=()=>grade();updateControls();
 </script></body></html>
