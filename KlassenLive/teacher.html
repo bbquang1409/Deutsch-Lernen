@@ -51,7 +51,7 @@ section{padding:12px}
 const $=id=>document.getElementById(id);let db,selected=null,sub=null,roomsCache=[],archiveOpen=false;const err=e=>$('error').textContent=e?.message||String(e||'');
 if(!window.KL_CONFIG||!window.supabase||KL_CONFIG.anonKey.includes('PASTE_'))err('Thiếu config.js hoặc Supabase public key.');else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);init();}
 async function init(){const {data}=await db.auth.getSession();show(!!data.session);db.auth.onAuthStateChange((_e,s)=>show(!!s));}
-function show(on){$('login').classList.toggle('hide',on);$('app').classList.toggle('hide',!on);if(on)loadRooms();}
+function show(on){$('login').classList.toggle('hide',on);$('app').classList.toggle('hide',!on);if(on){loadRooms();finishExpiredRooms();}}
 $('signin').onclick=async()=>{err('');const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error)err(error)};
 $('signout').onclick=()=>db.auth.signOut();
 $('exercise-choice').onchange=()=>{$('custom-url-field').classList.toggle('hide',$('exercise-choice').value!=='custom')};
@@ -59,7 +59,7 @@ $('create').onclick=async()=>{err('');try{const {data:{user}}=await db.auth.getU
 function roomRow(s){
   const div=document.createElement('div');div.className='room-row';
   const label=document.createElement('span');label.className='room-label';label.textContent=`${s.title} · ${s.room_code} · ${s.status}`;div.append(label);
-  const copy=document.createElement('button');copy.className='copy';copy.type='button';copy.textContent='Code kopieren';copy.onclick=async()=>{try{await navigator.clipboard.writeText(s.room_code);copy.textContent='Kopiert ✓';setTimeout(()=>copy.textContent='Code kopieren',1800)}catch(e){err('Kopieren fehlgeschlagen: '+e.message)}};div.append(copy);
+  const copy=document.createElement('button');copy.className='copy';copy.type='button';copy.textContent='Code kopieren';copy.onclick=async()=>{try{await navigator.clipboard.writeText(s.room_code);copy.textContent='Kopiert ✓';setTimeout(()=>copy.textContent='Code kopieren',1800)}catch(e){err('Kopieren fehlgeschlagen: '+e.message)}};if(s.status!=='finished')div.append(copy);
   const view=document.createElement('button');view.textContent='Monitor';view.onclick=()=>selectRoom(s);div.append(view);
   if(s.status==='waiting'){const start=document.createElement('button');start.textContent='START';start.onclick=()=>update(s,'active');div.append(start)}
   if(s.status!=='finished'){const finish=document.createElement('button');finish.textContent='FINISH';finish.onclick=()=>update(s,'finished');div.append(finish)}
@@ -76,6 +76,24 @@ function renderRooms(){
   archive.classList.toggle('hide',!archiveOpen);
 }
 $('archive-toggle').onclick=async()=>{archiveOpen=!archiveOpen;if(!archiveOpen&&selected?.status==='finished')await clearMonitor();renderRooms()};
+let expirySweepBusy=false;
+async function finishExpiredRooms(){
+  if(!db||expirySweepBusy||$('app').classList.contains('hide'))return;
+  expirySweepBusy=true;
+  try{
+    const now=new Date().toISOString();
+    const {data:expired,error:lookupError}=await db.from('kl_sessions')
+      .select('id,ends_at').eq('status','active').not('ends_at','is',null).lte('ends_at',now);
+    if(lookupError)throw lookupError;
+    for(const room of expired||[]){
+      const {error:updateError}=await db.from('kl_sessions').update({status:'finished'})
+        .eq('id',room.id).eq('status','active').lte('ends_at',now);
+      if(updateError)throw updateError;
+    }
+    if(expired?.length)await loadRooms();
+  }catch(e){err(e)}
+  finally{expirySweepBusy=false}
+}
 async function loadRooms(){
   if(!db)return;
   const {data,error}=await db.from('kl_sessions').select('*').order('created_at',{ascending:false}).limit(100);
@@ -94,5 +112,5 @@ async function clearMonitor(){selected=null;const old=sub;sub=null;if(old)await 
 function renderMonitorTitle(){if(selected)$('roomtitle').textContent=`${selected.title} · Raumcode: ${selected.room_code} · ${selected.status}`}
 async function selectRoom(s){const old=sub;sub=null;if(old)await db.removeChannel(old);selected=s;renderMonitorTitle();sub=db.channel('kl-teacher-'+s.id).on('postgres_changes',{event:'*',schema:'public',table:'kl_participants',filter:'session_id=eq.'+s.id},refresh).subscribe();refresh();}
 async function refresh(){if(!selected)return;const roomId=selected.id;const {data,error}=await db.from('kl_participants').select('display_name,submitted_at,result,progress').eq('session_id',roomId).order('joined_at');if(!selected||selected.id!==roomId)return;if(error){err(error);return}const submitted=data.filter(p=>p.submitted_at).length;$('stats').textContent=`${submitted}/${data.length} abgegeben`;$('people').replaceChildren();for(const p of data){const tr=document.createElement('tr');const result=p.result;for(const value of [p.display_name,p.submitted_at?'Abgegeben':p.progress?'In Arbeit':'Verbunden',result?.correct!=null?`${result.correct}/${result.total}`:p.submitted_at?'Ohne Bewertung':'—']){const td=document.createElement('td');td.textContent=value;tr.append(td)}$('people').append(tr)}}
-setInterval(()=>{if(selected)refresh()},5000);setInterval(()=>{if(db&&$('app').classList.contains('hide')===false)loadRooms()},15000);
+setInterval(()=>{if(selected)refresh()},5000);setInterval(finishExpiredRooms,5000);setInterval(()=>{if(db&&$('app').classList.contains('hide')===false)loadRooms()},15000);
 </script></body></html>
