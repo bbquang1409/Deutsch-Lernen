@@ -23,7 +23,7 @@ section{padding:13px}
 }
 </style>
 </head><body><main><h1>KlassenLive</h1><p id="error"></p><section id="join"><h2>Raum beitreten</h2><div class="code-line"><input id="code" placeholder="Raumcode" maxlength="6" autocomplete="off" autocapitalize="characters"><button id="paste-code" type="button">Einfügen</button></div><input id="name" placeholder="Vor- und Nachname"><button id="joinbtn">Beitreten</button></section><section id="room" class="hide"><h2 id="title"></h2><p id="roominfo" class="room-info"></p><p id="status"></p><p id="timer"></p><iframe id="exercise" title="Übung"></iframe><p id="result"></p><button id="leavebtn" class="secondary" type="button">Raum verlassen / Anderen Raum beitreten</button></section><div id="leave-dialog" class="modal-overlay hide" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="leave-heading" aria-describedby="leave-description"><h2 id="leave-heading">Test abgeben und Raum verlassen?</h2><p id="leave-description">Deine bisherigen Antworten werden abgegeben. Danach kannst du diesen Test nicht mehr fortsetzen.</p><div class="modal-actions"><button id="leave-cancel" class="cancel" type="button">Abbrechen</button><button id="leave-confirm" type="button">Abgeben und verlassen</button></div></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="config.js"></script><script>
-const $=id=>document.getElementById(id),channel='KLASSENLIVE_V1';let db,token=sessionStorage.getItem('kl_token'),state=null,frameReady=false,started=false,sent=false,frameOrigin=null,roomGeneration=0,pollBusy=false,leaving=false,pendingLeave=null;const err=e=>$('error').textContent=e?.message||String(e||'');
+const $=id=>document.getElementById(id),channel='KLASSENLIVE_V1';let db,token=sessionStorage.getItem('kl_token'),state=null,frameReady=false,started=false,sent=false,frameOrigin=null,roomGeneration=0,pollBusy=false,leaving=false,joining=false,pendingLeave=null;const err=e=>$('error').textContent=e?.message||String(e||'');
 if(!window.KL_CONFIG||!window.supabase||KL_CONFIG.anonKey.includes('PASTE_'))err('Thiếu config.js hoặc Supabase public key.');else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);if(token)poll();setInterval(()=>{if(token)poll()},2000)}
 
 $('paste-code').onclick=async()=>{
@@ -37,9 +37,32 @@ $('paste-code').onclick=async()=>{
     $('code').focus();
   }
 };
-$('joinbtn').onclick=async()=>{if(!db||leaving)return;err('');const {data,error}=await db.rpc('kl_join',{p_room_code:$('code').value,p_name:$('name').value});if(error){err(error);return}roomGeneration++;token=data.token;sessionStorage.setItem('kl_token',token);sessionStorage.setItem('kl_room_code',$('code').value.trim().toUpperCase());sent=false;started=false;frameReady=false;state=null;$('result').textContent='';$('timer').textContent='';poll()};
+$('joinbtn').onclick=async()=>{
+  if(!db||leaving||joining)return;
+  if(token){$('join').classList.add('hide');$('room').classList.remove('hide');poll();return}
+  const code=$('code').value.trim().toUpperCase(),name=$('name').value.trim();
+  if(!/^[A-Z0-9]{6}$/.test(code)||!name){err('Bitte gültigen Raumcode und Namen eingeben.');return}
+  joining=true;
+  const btn=$('joinbtn');btn.disabled=true;btn.textContent='Verbinde…';
+  err('');
+  try{
+    const {data,error}=await db.rpc('kl_join',{p_room_code:code,p_name:name});
+    if(error)throw error;
+    if(!data?.token)throw new Error('Keine Verbindungsbestätigung erhalten.');
+    roomGeneration++;token=data.token;
+    sessionStorage.setItem('kl_token',token);
+    sessionStorage.setItem('kl_room_code',code);
+    sent=false;started=false;frameReady=false;state=null;
+    $('result').textContent='';$('timer').textContent='';
+    $('join').classList.add('hide');$('room').classList.remove('hide');
+    $('status').textContent='Verbindung wird hergestellt…';
+  }catch(e){
+    // A repeated join must never discard an already established session.
+    if(token){poll()}else{err(e)}
+  }finally{joining=false;btn.disabled=false;btn.textContent='Beitreten';if(token)poll()}
+};
 function send(type,data={}){if(!frameReady||!state)return;$('exercise').contentWindow.postMessage({channel,version:1,type,data:{sessionId:state.session_id,...data}},frameOrigin)}
-async function poll(){if(!db||!token||pollBusy)return;pollBusy=true;const generation=roomGeneration,activeToken=token;let data,error;try{({data,error}=await db.rpc('kl_student_state',{p_token:activeToken}));}catch(e){error=e}finally{pollBusy=false}if(generation!==roomGeneration||activeToken!==token)return;if(error){err(error);return}if(!data)return;state=data;$('join').classList.add('hide');$('room').classList.remove('hide');$('title').textContent=data.title;$('roominfo').textContent='Raumcode: '+(sessionStorage.getItem('kl_room_code')||'—');$('status').textContent=data.status==='waiting'?'Warten auf Lehrer…':data.status==='active'?'Test läuft':'Test beendet';if(data.result){$('result').textContent=data.result.correct!=null?`Ergebnis: ${data.result.correct}/${data.result.total}`:'Abgegeben';sent=true}
+async function poll(){if(!db||!token||pollBusy||joining)return;pollBusy=true;const generation=roomGeneration,activeToken=token;let data,error;try{({data,error}=await db.rpc('kl_student_state',{p_token:activeToken}));}catch(e){error=e}finally{pollBusy=false}if(generation!==roomGeneration||activeToken!==token)return;if(error){err(error);return}if(!data)return;state=data;$('join').classList.add('hide');$('room').classList.remove('hide');$('title').textContent=data.title;$('roominfo').textContent='Raumcode: '+(sessionStorage.getItem('kl_room_code')||'—');$('status').textContent=data.status==='waiting'?'Warten auf Lehrer…':data.status==='active'?'Test läuft':'Test beendet';if(data.result){$('result').textContent=data.result.correct!=null?`Ergebnis: ${data.result.correct}/${data.result.total}`:'Abgegeben';sent=true}
 if(!$('exercise').src||$('exercise').getAttribute('data-url')!==data.exercise_url){frameReady=false;started=false;const url=new URL(data.exercise_url);url.searchParams.set('kl_origin',location.origin);frameOrigin=url.origin;$('exercise').src=url.href;$('exercise').setAttribute('data-url',data.exercise_url)}
 if(frameReady){send('INIT',{endsAt:data.ends_at,mode:data.activity});if(data.status==='active'&&!started&&!sent){started=true;send('START')}if((data.status==='finished'||data.submitted)&&!sent){send('SUBMIT');sent=true}if(data.status==='finished'||data.submitted){send('LOCK');started=false}}
 const left=data.status==='finished'||data.submitted?null:data.ends_at?Math.max(0,Math.ceil((new Date(data.ends_at).getTime()-Date.now())/1000)):null;$('timer').textContent=left===null?'':`Zeit: ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;}
