@@ -1,6 +1,42 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KlassenLive · Schüler</title><style>body{font:16px system-ui;background:#f8f8f8;color:#222;margin:0}main{max-width:760px;margin:auto;padding:16px}h1{color:#a91f32}section{background:white;padding:18px;border-radius:14px;border:1px solid #ddd;margin:15px 0}input,button{font:inherit;padding:12px;border-radius:8px;box-sizing:border-box}input{width:100%;border:1px solid #bbb;margin:8px 0}button{background:#a91f32;color:white;border:0}button.secondary{background:#555;margin-top:12px}iframe{width:100%;height:560px;border:1px solid #ddd;border-radius:10px}.hide{display:none}.modal-overlay{position:fixed;inset:0;background:#1515159c;display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000}.modal-overlay.hide{display:none}.modal{background:#fff;border-radius:16px;padding:24px;width:min(100%,420px);box-shadow:0 16px 48px #0003}.modal h2{margin:0 0 12px;font-size:22px}.modal p{line-height:1.55;color:#444}.modal-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:20px}.modal-actions button{margin:0}.modal-actions .cancel{background:#e9e9e9;color:#222}.room-info{font-size:14px;color:#555;margin:0 0 12px}#error{color:#b00020;white-space:pre-wrap}#timer{font-weight:bold}</style></head><body><main><h1>KlassenLive</h1><p id="error"></p><section id="join"><h2>Raum beitreten</h2><input id="code" placeholder="Raumcode"><input id="name" placeholder="Vor- und Nachname"><button id="joinbtn">Beitreten</button></section><section id="room" class="hide"><h2 id="title"></h2><p id="roominfo" class="room-info"></p><p id="status"></p><p id="timer"></p><iframe id="exercise" title="Übung"></iframe><p id="result"></p><button id="leavebtn" class="secondary" type="button">Raum verlassen / Anderen Raum beitreten</button></section><div id="leave-dialog" class="modal-overlay hide" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="leave-heading" aria-describedby="leave-description"><h2 id="leave-heading">Test abgeben und Raum verlassen?</h2><p id="leave-description">Deine bisherigen Antworten werden abgegeben. Danach kannst du diesen Test nicht mehr fortsetzen.</p><div class="modal-actions"><button id="leave-cancel" class="cancel" type="button">Abbrechen</button><button id="leave-confirm" type="button">Abgeben und verlassen</button></div></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="config.js"></script><script>
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KlassenLive · Schüler</title><style>body{font:16px system-ui;background:#f8f8f8;color:#222;margin:0}main{max-width:760px;margin:auto;padding:16px}h1{color:#a91f32}section{background:white;padding:18px;border-radius:14px;border:1px solid #ddd;margin:15px 0}input,button{font:inherit;padding:12px;border-radius:8px;box-sizing:border-box}input{width:100%;border:1px solid #bbb;margin:8px 0}button{background:#a91f32;color:white;border:0}button.secondary{background:#555;margin-top:12px}iframe{width:100%;height:560px;border:1px solid #ddd;border-radius:10px}.hide{display:none}.modal-overlay{position:fixed;inset:0;background:#1515159c;display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000}.modal-overlay.hide{display:none}.modal{background:#fff;border-radius:16px;padding:24px;width:min(100%,420px);box-shadow:0 16px 48px #0003}.modal h2{margin:0 0 12px;font-size:22px}.modal p{line-height:1.55;color:#444}.modal-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:20px}.modal-actions button{margin:0}.modal-actions .cancel{background:#e9e9e9;color:#222}.room-info{font-size:14px;color:#555;margin:0 0 12px}#error{color:#b00020;white-space:pre-wrap}#timer{font-weight:bold}</style>
+<style id="kl-compact-student">
+main{max-width:760px;padding:12px 14px}
+h1{font-size:1.65rem;margin:10px 0}
+h2{font-size:1.18rem;margin:0 0 12px}
+section{padding:16px;margin:12px 0}
+#join{max-width:480px;margin:16px auto}
+#join .code-line{display:flex;align-items:center;gap:8px;margin:8px 0}
+#join #code{width:148px;flex:0 0 148px;min-width:0;text-transform:uppercase;letter-spacing:.08em;margin:0}
+#paste-code{white-space:nowrap;background:#555;padding:10px 13px;cursor:pointer}
+#join #name{max-width:360px;display:block;margin:9px 0}
+#joinbtn{padding:10px 16px}
+#room h2{margin-bottom:6px}
+#room-info,#status,#timer{margin:7px 0}
+#room iframe{display:block;margin-top:10px}
+#leavebtn{font-size:.9rem;padding:10px 12px}
+@media(max-width:440px){
+main{padding:10px}
+section{padding:13px}
+#join #code{width:130px;flex-basis:130px}
+#paste-code{padding:10px}
+#join #name{max-width:100%}
+}
+</style>
+</head><body><main><h1>KlassenLive</h1><p id="error"></p><section id="join"><h2>Raum beitreten</h2><div class="code-line"><input id="code" placeholder="Raumcode" maxlength="6" autocomplete="off" autocapitalize="characters"><button id="paste-code" type="button">Einfügen</button></div><input id="name" placeholder="Vor- und Nachname"><button id="joinbtn">Beitreten</button></section><section id="room" class="hide"><h2 id="title"></h2><p id="roominfo" class="room-info"></p><p id="status"></p><p id="timer"></p><iframe id="exercise" title="Übung"></iframe><p id="result"></p><button id="leavebtn" class="secondary" type="button">Raum verlassen / Anderen Raum beitreten</button></section><div id="leave-dialog" class="modal-overlay hide" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="leave-heading" aria-describedby="leave-description"><h2 id="leave-heading">Test abgeben und Raum verlassen?</h2><p id="leave-description">Deine bisherigen Antworten werden abgegeben. Danach kannst du diesen Test nicht mehr fortsetzen.</p><div class="modal-actions"><button id="leave-cancel" class="cancel" type="button">Abbrechen</button><button id="leave-confirm" type="button">Abgeben und verlassen</button></div></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="config.js"></script><script>
 const $=id=>document.getElementById(id),channel='KLASSENLIVE_V1';let db,token=sessionStorage.getItem('kl_token'),state=null,frameReady=false,started=false,sent=false,frameOrigin=null,roomGeneration=0,pollBusy=false,leaving=false,pendingLeave=null;const err=e=>$('error').textContent=e?.message||String(e||'');
 if(!window.KL_CONFIG||!window.supabase||KL_CONFIG.anonKey.includes('PASTE_'))err('Thiếu config.js hoặc Supabase public key.');else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);if(token)poll();setInterval(()=>{if(token)poll()},2000)}
+
+$('paste-code').onclick=async()=>{
+  try{
+    const raw=await navigator.clipboard.readText();
+    const value=raw.trim().toUpperCase().replace(/\s+/g,'');
+    if(!/^[A-Z0-9]{6}$/.test(value)){err('Zwischenablage enthält keinen gültigen 6-stelligen Raumcode.');return}
+    $('code').value=value;err('');$('name').focus();
+  }catch(e){
+    err('Einfügen nicht erlaubt. Bitte Raumcode manuell einfügen.');
+    $('code').focus();
+  }
+};
 $('joinbtn').onclick=async()=>{if(!db||leaving)return;err('');const {data,error}=await db.rpc('kl_join',{p_room_code:$('code').value,p_name:$('name').value});if(error){err(error);return}roomGeneration++;token=data.token;sessionStorage.setItem('kl_token',token);sessionStorage.setItem('kl_room_code',$('code').value.trim().toUpperCase());sent=false;started=false;frameReady=false;state=null;$('result').textContent='';$('timer').textContent='';poll()};
 function send(type,data={}){if(!frameReady||!state)return;$('exercise').contentWindow.postMessage({channel,version:1,type,data:{sessionId:state.session_id,...data}},frameOrigin)}
 async function poll(){if(!db||!token||pollBusy)return;pollBusy=true;const generation=roomGeneration,activeToken=token;let data,error;try{({data,error}=await db.rpc('kl_student_state',{p_token:activeToken}));}catch(e){error=e}finally{pollBusy=false}if(generation!==roomGeneration||activeToken!==token)return;if(error){err(error);return}if(!data)return;state=data;$('join').classList.add('hide');$('room').classList.remove('hide');$('title').textContent=data.title;$('roominfo').textContent='Raumcode: '+(sessionStorage.getItem('kl_room_code')||'—');$('status').textContent=data.status==='waiting'?'Warten auf Lehrer…':data.status==='active'?'Test läuft':'Test beendet';if(data.result){$('result').textContent=data.result.correct!=null?`Ergebnis: ${data.result.correct}/${data.result.total}`:'Abgegeben';sent=true}
