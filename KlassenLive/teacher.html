@@ -5,7 +5,7 @@ async function init(){const {data}=await db.auth.getSession();show(!!data.sessio
 function show(on){$('login').classList.toggle('hide',on);$('app').classList.toggle('hide',!on);if(on)loadRooms();}
 $('signin').onclick=async()=>{err('');const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error)err(error)};
 $('signout').onclick=()=>db.auth.signOut();
-$('create').onclick=async()=>{err('');try{const {data:{user}}=await db.auth.getUser();const url=new URL($('url').value);if(!['http:','https:'].includes(url.protocol))throw Error('URL không hợp lệ');const code=Math.random().toString(36).slice(2,8).toUpperCase();const {error}=await db.from('kl_sessions').insert({teacher_id:user.id,title:$('title').value.trim()||'Live-Test',exercise_url:url.href,activity:$('activity').value,duration_seconds:Math.round(Number($('minutes').value)*60),room_code:code});if(error)throw error;await loadRooms();}catch(e){err(e)}};
+$('create').onclick=async()=>{err('');try{const {data:{user}}=await db.auth.getUser();const url=new URL($('url').value);if(!['http:','https:'].includes(url.protocol))throw Error('URL không hợp lệ');const code=Math.random().toString(36).slice(2,8).toUpperCase();const {error}=await db.from('kl_sessions').insert({teacher_id:user.id,title:$('title').value.trim()||'Live-Test',exercise_url:url.href,activity:$('activity').value,duration_seconds:Math.round(Number($('minutes').value)*60),room_code:code});if(error)throw error;await clearMonitor();await loadRooms();}catch(e){err(e)}};
 function roomRow(s){
   const div=document.createElement('div');div.className='room-row';
   const label=document.createElement('span');label.className='room-label';label.textContent=`${s.title} · ${s.room_code} · ${s.status}`;div.append(label);
@@ -25,23 +25,24 @@ function renderRooms(){
   $('archive-toggle').textContent=`${archiveOpen?'Archiv ausblenden':'Archiv anzeigen'} (${finished.length})`;
   archive.classList.toggle('hide',!archiveOpen);
 }
-$('archive-toggle').onclick=()=>{archiveOpen=!archiveOpen;renderRooms()};
+$('archive-toggle').onclick=async()=>{archiveOpen=!archiveOpen;if(!archiveOpen&&selected?.status==='finished')await clearMonitor();renderRooms()};
 async function loadRooms(){
   if(!db)return;
   const {data,error}=await db.from('kl_sessions').select('*').order('created_at',{ascending:false}).limit(100);
   if(error){err(error);return}
   roomsCache=data||[];renderRooms();
-  if(selected){const latest=roomsCache.find(s=>s.id===selected.id);if(latest){selected=latest;renderMonitorTitle()}}
+  if(selected){const latest=roomsCache.find(s=>s.id===selected.id);if(latest){const wasLive=selected.status!=='finished';selected=latest;if(wasLive&&latest.status==='finished')await clearMonitor();else renderMonitorTitle()}}
 }
 async function update(s,status){
   const payload={status};if(status==='active')payload.ends_at=new Date(Date.now()+s.duration_seconds*1000).toISOString();
   const {error}=await db.from('kl_sessions').update(payload).eq('id',s.id);
   if(error){err(error);return}
-  if(selected?.id===s.id){selected={...selected,...payload};renderMonitorTitle()}
+  if(selected?.id===s.id){if(status==='finished')await clearMonitor();else{selected={...selected,...payload};renderMonitorTitle()}}
   await loadRooms();
 }
+async function clearMonitor(){selected=null;const old=sub;sub=null;if(old)await db.removeChannel(old);$('roomtitle').textContent='Kein Raum ausgewählt';$('stats').textContent='';$('people').replaceChildren()}
 function renderMonitorTitle(){if(selected)$('roomtitle').textContent=`${selected.title} · Raumcode: ${selected.room_code} · ${selected.status}`}
-async function selectRoom(s){selected=s;renderMonitorTitle();if(sub)await db.removeChannel(sub);sub=db.channel('kl-teacher-'+s.id).on('postgres_changes',{event:'*',schema:'public',table:'kl_participants',filter:'session_id=eq.'+s.id},refresh).subscribe();refresh();}
-async function refresh(){if(!selected)return;const {data,error}=await db.from('kl_participants').select('display_name,submitted_at,result,progress').eq('session_id',selected.id).order('joined_at');if(error){err(error);return}const submitted=data.filter(p=>p.submitted_at).length;$('stats').textContent=`${submitted}/${data.length} abgegeben`;$('people').replaceChildren();for(const p of data){const tr=document.createElement('tr');const result=p.result;for(const value of [p.display_name,p.submitted_at?'Abgegeben':p.progress?'In Arbeit':'Verbunden',result?.correct!=null?`${result.correct}/${result.total}`:p.submitted_at?'Ohne Bewertung':'—']){const td=document.createElement('td');td.textContent=value;tr.append(td)}$('people').append(tr)}}
+async function selectRoom(s){const old=sub;sub=null;if(old)await db.removeChannel(old);selected=s;renderMonitorTitle();sub=db.channel('kl-teacher-'+s.id).on('postgres_changes',{event:'*',schema:'public',table:'kl_participants',filter:'session_id=eq.'+s.id},refresh).subscribe();refresh();}
+async function refresh(){if(!selected)return;const roomId=selected.id;const {data,error}=await db.from('kl_participants').select('display_name,submitted_at,result,progress').eq('session_id',roomId).order('joined_at');if(!selected||selected.id!==roomId)return;if(error){err(error);return}const submitted=data.filter(p=>p.submitted_at).length;$('stats').textContent=`${submitted}/${data.length} abgegeben`;$('people').replaceChildren();for(const p of data){const tr=document.createElement('tr');const result=p.result;for(const value of [p.display_name,p.submitted_at?'Abgegeben':p.progress?'In Arbeit':'Verbunden',result?.correct!=null?`${result.correct}/${result.total}`:p.submitted_at?'Ohne Bewertung':'—']){const td=document.createElement('td');td.textContent=value;tr.append(td)}$('people').append(tr)}}
 setInterval(()=>{if(selected)refresh()},5000);setInterval(()=>{if(db&&$('app').classList.contains('hide')===false)loadRooms()},15000);
 </script></body></html>
