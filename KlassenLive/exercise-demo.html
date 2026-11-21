@@ -9,13 +9,14 @@ KlassenLive.on('locked',()=>{active=false;done=true;$('timer').textContent='';$(
 function grade(reason='manual'){
  if(done||!active)return;
  const raw=$('answer').value.trim();
- // FINISH closes an unfinished attempt; it must not grade or reveal an answer.
- const unsubmitted=reason==='locked'||reason==='teacher'||raw==='';
+ // A forced submission (including leaving the room) grades an entered answer.
+ // An empty answer or a teacher lock without a submission stays ungraded.
+ const unsubmitted=reason==='locked'||raw==='';
  done=true;
  const actual=raw.toLocaleLowerCase('de');
  const correct=!unsubmitted&&actual==='lerne';
- $('feedback').textContent=unsubmitted?'Nicht abgegeben':correct?'Richtig!':'Nicht richtig. Lösung: lerne';
- $('status').textContent=unsubmitted?'Test beendet':reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':'Abgegeben';
+ $('feedback').textContent=unsubmitted?'Keine Antwort eingereicht':correct?'Richtig!':'Nicht richtig. Lösung: lerne';
+ $('status').textContent=unsubmitted?'Keine Antwort abgegeben':reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':reason==='teacher'?'Automatisch abgegeben':'Abgegeben';
  $('timer').textContent='';$('timer').classList.remove('urgent');
  updateControls();
  KlassenLive.submit({reason,answers:unsubmitted?[]:[{questionId:'q1',answer:actual,isCorrect:correct}],correct:unsubmitted?null:correct?1:0,total:unsubmitted?null:1});
