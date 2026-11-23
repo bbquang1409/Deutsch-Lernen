@@ -45,14 +45,14 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
 <div class="wrap">
   <header class="top">
     <div class="brand"><span class="logo">K</span><span>KlassenLive</span><small>Live-Diktat</small></div>
-    <a class="btn ghost sm" href="teacher.html">← Live-Test</a>
+    <a class="btn ghost sm" href="../teacher.html">← Live-Test</a>
   </header>
   <p id="error" hidden></p>
 
   <section id="needlogin" class="card" hidden>
     <h2>Bitte zuerst anmelden</h2>
     <p>Melde dich auf der Lehrer-Seite an und öffne danach diese Seite erneut.</p>
-    <a class="btn" href="teacher.html">Zur Anmeldung</a>
+    <a class="btn" href="../teacher.html">Zur Anmeldung</a>
   </section>
 
   <div id="app" hidden>
@@ -83,7 +83,7 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
       </div>
       <div id="room-open" hidden>
         <button id="code" class="codebox" type="button" title="Code kopieren"></button>
-        <p class="hint">Tippen zum Kopieren · Schüler öffnen <b>diktat-student.html</b> und geben den Code ein</p>
+        <p class="hint">Tippen zum Kopieren · Schüler öffnen <b>Live-Diktat/student.html</b> und geben den Code ein</p>
         <p id="count" style="font-weight:700;margin:0 0 4px"></p>
         <div id="people"></div>
         <div class="row"><button id="end" class="btn ghost" type="button">Sitzung beenden</button></div>
@@ -93,13 +93,14 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="config.js"></script>
-<script src="diktat-lessons.js"></script>
+<script src="../config.js"></script>
+<script src="hoeren-diktat/assets/lessons.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n};
 const err=e=>{const m=e?.message||String(e||'');$('error').textContent=m;$('error').hidden=!m};
-const LESSONS=(window.DIKTAT_LESSONS||[]).slice();
+const AUDIO_BASE='hoeren-diktat/';
+const LESSONS=(window.HD_LESSONS||[]).map(l=>({...l,audio:AUDIO_BASE+l.audio})).sort((a,b)=>a.title.localeCompare(b.title,'de'));
 let db,lesson=null,player=null,ch=null,hb=null,room=null,objectUrl=null,ownMp3=null,ownJson=null;
 
 if(!window.KL_CONFIG||!window.supabase)err('Konfiguration fehlt: config.js nicht gefunden.');
@@ -157,7 +158,7 @@ function selectLesson(l,url){
   m.append(el('span','tag',lesson.level||'–'),el('span','tag',`${lesson.units.length} Sätze`),el('span','tag',`${lesson.questions.length} Fragen`));
   const at=el('span','tag','Audio wird geprüft…');m.append(at);
   player.ready.then(ok=>{
-    if(!ok){at.className='tag bad';at.textContent='Audio nicht gefunden';err(`Audio nicht gefunden: ${url?'(eigene Datei)':l.audio}\nLege die MP3 in den Ordner diktat/audio/ (oder wähle „Eigene Dateien“).`);return}
+    if(!ok){at.className='tag bad';at.textContent='Audio nicht gefunden';err(`Audio nicht gefunden: ${url?'(eigene Datei)':l.audio}\nLege die MP3 in den Ordner hoeren-diktat/assets/audio/ (oder wähle „Eigene Dateien“).`);return}
     const d=player.a.duration;const diff=Math.abs(d-lesson.duration);
     at.className='tag '+(diff>2?'warn':'ok');at.textContent=`Audio OK · ${Math.round(d)} s`+(diff>2?` (Lektion: ${Math.round(lesson.duration)} s – prüfen)`:'');
   });

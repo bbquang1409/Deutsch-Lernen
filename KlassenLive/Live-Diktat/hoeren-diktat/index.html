@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hören & Diktat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ Hören & Diktat · Modul ============
+   Alle Stile hängen unter .hd (Namespace), Farben sind CSS-Variablen -> leicht in andere Module einbettbar. */
+:root{color-scheme:light dark}
+.hd{
+  --hd-bg:#f6f4ff;--hd-card:#ffffff;--hd-ink:#1d1b3a;--hd-muted:#6b6890;--hd-line:#e6e2fb;
+  --hd-brand:#6c5ce7;--hd-brand2:#8e7cff;--hd-mint:#00c9a7;--hd-pink:#ff5d8f;--hd-sun:#ffc24b;
+  --hd-ok:#12b886;--hd-okbg:#d9f7ec;--hd-bad:#f03e5f;--hd-badbg:#ffe3ea;
+  --hd-shadow:0 10px 30px -12px rgba(76,56,190,.28);--hd-r:20px;--hd-display:var(--hd-font-d,"Baloo 2","Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);
+  font-family:var(--hd-font,"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);zoom:var(--hd-scale,1);color:var(--hd-ink);background:var(--hd-bg);
+  min-height:100vh;min-height:100dvh;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hd{
+  --hd-bg:#14122b;--hd-card:#1f1c3d;--hd-ink:#f1efff;--hd-muted:#a8a3d6;--hd-line:#322e60;
+  --hd-okbg:#0f3b32;--hd-badbg:#4a1b2a;--hd-shadow:0 10px 30px -12px rgba(0,0,0,.6)}}
+:root[data-theme="dark"] .hd{--hd-bg:#14122b;--hd-card:#1f1c3d;--hd-ink:#f1efff;--hd-muted:#a8a3d6;--hd-line:#322e60;--hd-okbg:#0f3b32;--hd-badbg:#4a1b2a;--hd-shadow:0 10px 30px -12px rgba(0,0,0,.6)}
+.hd *{box-sizing:border-box}
+.hd h1,.hd h2,.hd h3{font-family:var(--hd-display);margin:0;line-height:1.15;letter-spacing:.2px}
+.hd button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.hd button:focus-visible,.hd textarea:focus-visible,.hd input:focus-visible,.hd select:focus-visible{outline:3px solid var(--hd-brand2);outline-offset:2px}
+.hd-wrap{max-width:980px;margin:0 auto;padding:0 16px calc(32px + env(safe-area-inset-bottom))}
+/* Kopf */
+.hd-top{background:linear-gradient(135deg,#6c5ce7 0%,#8e7cff 55%,#ff5d8f 130%);color:#fff;padding:22px 0 64px;position:relative;overflow:hidden}
+.hd-top::before,.hd-top::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
+.hd-top::before{width:220px;height:220px;right:-60px;top:-80px}.hd-top::after{width:120px;height:120px;left:-30px;bottom:-50px}
+.hd-top .hd-wrap{position:relative;z-index:1}
+.hd-bar{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.hd-logo{display:flex;align-items:center;gap:10px;font-family:var(--hd-display);font-weight:800;font-size:1.35rem}
+.hd-logo i{font-style:normal;background:#fff;color:var(--hd-brand);width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.25rem;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.hd-iconbtn{background:rgba(255,255,255,.18);border-radius:12px;min-width:40px;height:40px;padding:0 12px;color:#fff;font-weight:700}
+.hd-iconbtn:hover{background:rgba(255,255,255,.3)}
+.hd-hero{margin-top:22px}.hd-hero h1{font-size:clamp(1.7rem,5vw,2.5rem);font-weight:800}.hd-hero p{margin:6px 0 0;opacity:.92;max-width:560px}
+.hd-main{margin-top:-40px;position:relative;z-index:2}
+/* Karten */
+.hd-card{background:var(--hd-card);border-radius:var(--hd-r);box-shadow:var(--hd-shadow);padding:20px}
+.hd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.hd-stat{background:var(--hd-card);border-radius:16px;padding:12px 14px;box-shadow:var(--hd-shadow);text-align:center}
+.hd-stat b{display:block;font-family:var(--hd-display);font-size:1.6rem;line-height:1.1;color:var(--hd-brand)}.hd-stat span{font-size:.78rem;color:var(--hd-muted);font-weight:700}
+.hd-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 14px}
+.hd-chip{padding:8px 14px;border-radius:999px;background:var(--hd-card);border:2px solid var(--hd-line);font-weight:700;font-size:.9rem;transition:.15s}
+.hd-chip:hover{border-color:var(--hd-brand2)}.hd-chip[aria-pressed="true"]{background:var(--hd-brand);border-color:var(--hd-brand);color:#fff}
+.hd-search{flex:1;min-width:150px;padding:9px 14px;border-radius:999px;border:2px solid var(--hd-line);background:var(--hd-card);color:var(--hd-ink);font:inherit}
+.hd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.hd-lesson{text-align:left;background:var(--hd-card);border-radius:var(--hd-r);padding:16px;box-shadow:var(--hd-shadow);display:flex;flex-direction:column;gap:10px;border:2px solid transparent;transition:transform .15s,border-color .15s;position:relative}
+.hd-lesson:hover{transform:translateY(-3px);border-color:var(--hd-brand2)}
+.hd-lesson h3{font-size:1.15rem}
+.hd-emoji{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.5rem;background:var(--c,#efeaff)}
+.hd-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hd-tag{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--hd-brand);background:color-mix(in srgb,var(--hd-brand) 12%,transparent);padding:3px 9px;border-radius:999px}
+.hd-meta{font-size:.82rem;color:var(--hd-muted);font-weight:600}
+.hd-badge{position:absolute;top:12px;right:12px;font-size:.78rem;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--hd-okbg);color:var(--hd-ok)}
+/* Lektion */
+.hd-lhead{display:flex;align-items:center;gap:12px}
+.hd-lhead{min-width:0}.hd-lhead .hd-logo{font-size:1.15rem;min-width:0}.hd-back{flex:none;white-space:nowrap;background:rgba(255,255,255,.2);color:#fff;border-radius:12px;height:40px;padding:0 14px;font-weight:800}
+.hd-back:hover{background:rgba(255,255,255,.32)}
+.hd-steps{display:flex;gap:8px;margin-top:18px}
+.hd-step{flex:1;text-align:center;font-size:.8rem;font-weight:800;padding:8px 4px;border-radius:12px;background:rgba(255,255,255,.16);color:#fff;opacity:.8}
+.hd-step.on{background:#fff;color:var(--hd-brand);opacity:1;box-shadow:0 6px 14px rgba(0,0,0,.16)}
+.hd-step.done{opacity:1;background:rgba(255,255,255,.34)}
+.hd h2{font-size:1.5rem}
+.hd-sub{color:var(--hd-muted);margin:4px 0 16px}
+.hd-big{display:flex;flex-direction:column;align-items:center;gap:16px;padding:12px 0}
+.hd-play{width:116px;height:116px;border-radius:50%;background:linear-gradient(135deg,var(--hd-brand),var(--hd-pink));color:#fff;font-size:2.6rem;display:grid;place-items:center;box-shadow:0 16px 34px -10px rgba(108,92,231,.7);transition:transform .15s}
+.hd-play:hover{transform:scale(1.05)}.hd-play:active{transform:scale(.96)}
+.hd-play.live{animation:hdpulse 1.6s infinite}
+@keyframes hdpulse{0%{box-shadow:0 0 0 0 rgba(255,93,143,.5),0 16px 34px -10px rgba(108,92,231,.7)}70%{box-shadow:0 0 0 22px rgba(255,93,143,0),0 16px 34px -10px rgba(108,92,231,.7)}100%{box-shadow:0 0 0 0 rgba(255,93,143,0)}}
+.hd-eq{display:flex;gap:4px;align-items:flex-end;height:28px}.hd-eq b{width:5px;background:var(--hd-mint);border-radius:3px;height:6px}
+.hd-eq.live b{animation:hdeq .9s ease-in-out infinite}.hd-eq.live b:nth-child(2){animation-delay:.15s}.hd-eq.live b:nth-child(3){animation-delay:.3s}.hd-eq.live b:nth-child(4){animation-delay:.45s}.hd-eq.live b:nth-child(5){animation-delay:.6s}
+@keyframes hdeq{0%,100%{height:6px}50%{height:28px}}
+.hd-dots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:420px}
+.hd-dot{width:14px;height:14px;border-radius:50%;background:var(--hd-line);transition:.2s}.hd-dot.on{background:var(--hd-pink);transform:scale(1.3)}.hd-dot.done{background:var(--hd-mint)}
+.hd-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:14px;font-weight:800;background:var(--hd-brand);color:#fff;box-shadow:0 8px 18px -8px rgba(108,92,231,.8);transition:transform .12s,filter .12s}
+.hd-btn:hover{filter:brightness(1.08)}.hd-btn:active{transform:translateY(1px)}
+.hd-btn.ghost{background:transparent;color:var(--hd-brand);box-shadow:none;border:2px solid var(--hd-line)}
+.hd-btn.mint{background:var(--hd-mint);box-shadow:0 8px 18px -8px rgba(0,201,167,.8);color:#04382f}
+.hd-btn.sun{background:var(--hd-sun);color:#4a3200;box-shadow:0 8px 18px -8px rgba(255,194,75,.9)}
+.hd-btn[disabled]{opacity:.45;cursor:not-allowed}
+.hd-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.hd-note{background:color-mix(in srgb,var(--hd-sun) 22%,transparent);border-radius:14px;padding:10px 14px;font-size:.9rem;font-weight:600}
+/* Quiz */
+.hd-qn{font-size:.85rem;font-weight:800;color:var(--hd-brand);margin-bottom:6px}
+.hd-q{font-family:var(--hd-display);font-weight:700;font-size:1.35rem;margin-bottom:14px}
+.hd-opts{display:grid;gap:10px}
+.hd-opt{display:flex;gap:12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:2px solid var(--hd-line);background:var(--hd-card);font-weight:700;transition:.15s}
+.hd-opt:hover:not([disabled]){border-color:var(--hd-brand2);transform:translateX(3px)}
+.hd-opt b{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--hd-brand) 14%,transparent);color:var(--hd-brand);font-family:"Baloo 2"}
+.hd-opt.ok{border-color:var(--hd-ok);background:var(--hd-okbg)}.hd-opt.ok b{background:var(--hd-ok);color:#fff}
+.hd-opt.no{border-color:var(--hd-bad);background:var(--hd-badbg)}.hd-opt.no b{background:var(--hd-bad);color:#fff}
+.hd-opt[disabled]{cursor:default}
+.hd-score{font-family:var(--hd-display);font-size:3.4rem;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--hd-brand),var(--hd-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* Diktat */
+.hd-prog{height:10px;background:var(--hd-line);border-radius:99px;overflow:hidden;margin:6px 0 16px}.hd-prog i{display:block;height:100%;background:linear-gradient(90deg,var(--hd-mint),var(--hd-brand));border-radius:99px;transition:width .3s}
+.hd-audio{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hd-aud{display:inline-flex;gap:8px;align-items:center;padding:11px 16px;border-radius:14px;font-weight:800;background:color-mix(in srgb,var(--hd-brand) 12%,transparent);color:var(--hd-brand);transition:.15s}
+.hd-aud:hover{background:color-mix(in srgb,var(--hd-brand) 22%,transparent)}.hd-aud.live{background:var(--hd-brand);color:#fff}
+.hd-aud.slow{background:color-mix(in srgb,var(--hd-mint) 18%,transparent);color:#067a65}.hd-aud.slow.live{background:var(--hd-mint);color:#04382f}
+.hd-text{width:100%;min-height:130px;margin-top:14px;padding:14px 16px;border-radius:16px;border:2px solid var(--hd-line);background:var(--hd-bg);color:var(--hd-ink);font:inherit;font-size:1.1rem;line-height:1.6;resize:vertical}
+.hd-text:focus{border-color:var(--hd-brand2);outline:none}
+.hd-peek{margin-top:12px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--hd-sun) 22%,transparent);font-size:1.05rem;font-weight:600}
+.hd-res{margin-top:16px;display:grid;gap:12px}
+.hd-line{padding:12px 14px;border-radius:14px;background:var(--hd-bg);font-size:1.08rem;line-height:2}
+.hd-line small{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--hd-muted);line-height:1.4;margin-bottom:2px}
+.hd-w{padding:1px 5px;border-radius:7px;margin-right:3px;white-space:pre-wrap}.hd-w.p{margin-right:0;padding:1px 2px}
+.hd-w.ok{background:var(--hd-okbg);color:var(--hd-ok)}.hd-w.bad{background:var(--hd-badbg);color:var(--hd-bad);font-weight:800}
+.hd-w.extra{background:var(--hd-badbg);color:var(--hd-bad);text-decoration:line-through}
+.hd-pct{display:inline-flex;align-items:center;gap:8px;font-family:var(--hd-display);font-size:1.4rem;font-weight:800}
+.hd-pill{padding:2px 10px;border-radius:99px;font-size:.9rem;color:#fff;background:var(--hd-ok)}.hd-pill.mid{background:var(--hd-sun);color:#4a3200}.hd-pill.low{background:var(--hd-pink)}
+.hd-sum{display:grid;gap:8px;margin-top:12px}.hd-sumrow{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--hd-bg)}
+.hd-sumrow span:first-child{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.85rem;background:var(--hd-line)}
+.hd-sumrow em{flex:1;font-style:normal;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Neue Lektion */
+.hd-admin{margin-top:26px}.hd-admin summary{cursor:pointer;font-weight:800;color:var(--hd-brand)}
+.hd-field{display:grid;gap:6px;margin:12px 0}.hd-field label{font-weight:800;font-size:.85rem}
+.hd-field input,.hd-field select,.hd-field textarea{padding:10px 12px;border-radius:12px;border:2px solid var(--hd-line);background:var(--hd-bg);color:var(--hd-ink);font:inherit}
+.hd-code{white-space:pre-wrap;word-break:break-word;background:#15122f;color:#d8d4ff;padding:14px;border-radius:14px;font:.78rem/1.5 ui-monospace,Menlo,Consolas,monospace;max-height:260px;overflow:auto}
+.hd-bar{position:relative}.hd-setpanel{position:fixed;right:16px;top:64px;z-index:40;width:min(300px,92vw);background:var(--hd-card);color:var(--hd-ink);border-radius:18px;padding:6px 16px 14px;box-shadow:0 20px 50px -10px rgba(0,0,0,.4)}.hd-setpanel .hd-field{margin:10px 0}.hd-setpanel input[type=color]{height:40px;width:100%;padding:2px}
+.hd-toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#1d1b3a;color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.hd-pop{animation:hdpop .35s ease}@keyframes hdpop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:560px){
+  .hd-top{padding-bottom:56px}.hd-card{padding:16px}.hd-play{width:96px;height:96px}
+  .hd-step{font-size:.68rem;padding:8px 2px}.hd-stats{gap:8px}.hd-stat b{font-size:1.35rem}
+  .hd-actions .hd-btn{flex:1 1 140px}
+}
+@media (prefers-reduced-motion:reduce){.hd *{animation:none!important;transition:none!important}}
+</style>
+<link rel="stylesheet" href="assets/theme.css">
+</head>
+<body>
+<div id="hd-root"></div>
+<script src="assets/lessons.js"></script>
+<script>
+/* ============ Hören & Diktat · Modul ============
+   Einbinden in andere Module:
+     <div id="mein-ziel"></div>
+     HoerenDiktat.mount(document.getElementById('mein-ziel'), {
+        lessons: window.HD_LESSONS,          // Lektionsdaten (assets/lessons.js)
+        onEvent: (name, data) => {...}       // 'quiz:done' | 'diktat:done' | 'lesson:done'
+     });
+   Alleinstehend startet das Modul automatisch in #hd-root. */
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+function h(tag,attrs,...kids){const e=document.createElement(tag);
+  for(const k in (attrs||{})){const v=attrs[k];if(v==null||v===false)continue;
+    if(k==="class")e.className=v;else if(k==="on")for(const ev in v)e.addEventListener(ev,v[ev]);
+    else if(k==="text")e.textContent=v;else if(k in e&&k!=="list"&&k!=="style")e[k]=v;else e.setAttribute(k,v===true?"":v)}
+  for(const c of kids.flat())if(c!=null&&c!==false)e.append(c.nodeType?c:document.createTextNode(c));return e}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const TAGS={Geschichte:["📖","#efe7ff"],Alltag:["🛒","#ffe9d6"],Brief:["✉️","#dff6ff"],Jahreszeiten:["🍂","#fff3cf"]};
+const store={get(){try{return JSON.parse(localStorage.getItem("hd.progress.v1")||"{}")}catch(e){return{}}},
+  set(o){try{localStorage.setItem("hd.progress.v1",JSON.stringify(o))}catch(e){}}};
+function toast(t){const e=h("div",{class:"hd-toast",role:"status",text:t});document.body.append(e);setTimeout(()=>e.remove(),2200)}
+
+/* ---------- Audio: Abschnitte aus einer Datei abspielen ---------- */
+class Player{
+  constructor(){this.a=new Audio();this.a.preload="auto";this.tok=0;this.src=""}
+  load(src){if(this.src===src)return;this.src=src;const a=this.a;a.src=src;a.load();this.ready=Promise.resolve();
+    /* Manche einfache Server (z. B. python -m http.server) unterstützen keine Range-Anfragen -> Springen im Audio würde scheitern.
+       Darum bei http(s) die Datei einmal als Blob laden (danach sind Zeitsprünge immer exakt). */
+    if(/^https?:/.test(location.protocol)&&!/^blob:/.test(src)){this.ready=fetch(src).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>{if(this.src===src){a.src=URL.createObjectURL(b)}}).catch(()=>{})}}
+  stop(){this.tok++;this.a.pause()}
+  _seek(t){return new Promise(res=>{const a=this.a;const done=()=>{a.removeEventListener("seeked",done);res()};
+    a.addEventListener("seeked",done);a.currentTime=t;setTimeout(done,1500)})}
+  async range(s,e){const my=++this.tok,a=this.a;await this.ready;if(my!==this.tok)return false;await this._seek(s);if(my!==this.tok)return false;
+    try{await a.play()}catch(err){return false}
+    return new Promise(res=>{const tick=()=>{if(my!==this.tok){res(false);return}
+      if(a.currentTime>=e-.03||a.ended){a.pause();res(true);return}requestAnimationFrame(tick)};requestAnimationFrame(tick)})}
+}
+
+/* ---------- Diktat-Vergleich (Wörter + Satzzeichen getrennt) ---------- */
+const nq=s=>s.replace(/[„“”"»«‚‘’']/g,'"').replace(/…/g,"...").replace(/[–—]/g,"-");
+const tok=s=>(nq(s).match(/[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*|\.\.\.|[^\s\p{L}\p{N}]/gu)||[]);
+const isP=t=>!/[\p{L}\p{N}]/u.test(t);
+function diff(ref,usr){const a=tok(ref),b=tok(usr),n=a.length,m=b.length;
+  const L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const R=a.map(t=>({t,ok:false})),U=b.map(t=>({t,ok:false}));let i=0,j=0;
+  while(i<n&&j<m){if(a[i]===b[j]){R[i].ok=U[j].ok=true;i++;j++}else if(L[i+1][j]>=L[i][j+1])i++;else j++}
+  const good=R.filter(x=>x.ok).length;return{R,U,pct:n?Math.round(good/n*100):0,refRaw:tok(ref)}}
+function renderTokens(arr,okCls,badCls){const f=document.createDocumentFragment();
+  arr.forEach(x=>f.append(h("span",{class:"hd-w "+(x.ok?"ok":badCls)+(isP(x.t)?" p":""),text:x.t})," "));return f}
+
+/* ---------- Automatische Abschnittserkennung (für neue Lektionen) ---------- */
+async function detectBlocks(file){
+  const buf=await file.arrayBuffer();const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const au=await ctx.decodeAudioData(buf);await ctx.close();
+  const d=au.getChannelData(0),sr=au.sampleRate,fr=Math.round(sr*.02),n=Math.floor(d.length/fr);
+  const low=new Uint8Array(n);for(let i=0;i<n;i++){let s=0;for(let k=0;k<fr;k++){const v=d[i*fr+k];s+=v*v}low[i]=20*Math.log10(Math.sqrt(s/fr)+1e-9)<-50?1:0}
+  const runs=[];for(let i=0;i<n;){if(low[i]){let j=i;while(j<n&&low[j])j++;runs.push([i*.02,j*.02]);i=j}else i++}
+  const gaps=runs.filter(r=>r[1]-r[0]>=1.2&&r[0]>.05),ends=gaps.filter(r=>{const l=r[1]-r[0];return l>=2.9&&l<=3.6});
+  const out=[];let start=.3;for(const e of ends){const inner=gaps.find(g=>g[0]>start&&g[0]<e[0]);
+    out.push([+(start-.05).toFixed(2),+((inner?inner[0]:e[0])+.1).toFixed(2),+e[0].toFixed(2)]);start=e[1]}
+  return{cues:out,duration:au.duration}}
+
+/* ================= Hauptmodul ================= */
+function mount(root,opts){
+  opts=opts||{};let LESSONS=(opts.lessons||window.HD_LESSONS||[]).slice();
+  const player=new Player();let progress=store.get();
+  const emit=(n,d)=>{try{opts.onEvent&&opts.onEvent(n,d);root.dispatchEvent(new CustomEvent("hd:"+n,{detail:d,bubbles:true}))}catch(e){}};
+  let state={view:"list",filter:"Alle",q:"",lesson:null,step:0,runId:0};
+  root.classList.add("hd");
+  function stopAll(){state.runId++;player.stop()}
+  function shell(header,body){root.replaceChildren(h("div",{class:"hd-top"},h("div",{class:"hd-wrap"},header)),h("div",{class:"hd-wrap hd-main hd-pop"},body));window.scrollTo({top:0})}
+  const SET_KEY="hd.settings.v1";const FONTS={"Verspielt (Standard)":["","" ],"Schlicht (System)":["system-ui,-apple-system,'Segoe UI',Roboto,sans-serif","system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"],"Serif (Georgia)":["Georgia,'Times New Roman',serif","Georgia,'Times New Roman',serif"],"Gut lesbar (Verdana)":["Verdana,Tahoma,sans-serif","Verdana,Tahoma,sans-serif"]};
+  let settings={font:"Verspielt (Standard)",scale:1,brand:"",dark:"auto"};try{Object.assign(settings,JSON.parse(localStorage.getItem(SET_KEY)||"{}"))}catch(e){}
+  function applySettings(){const st=root.style,f=FONTS[settings.font]||FONTS["Verspielt (Standard)"];
+    f[0]?(st.setProperty("--hd-font",f[0]),st.setProperty("--hd-font-d",f[1])):(st.removeProperty("--hd-font"),st.removeProperty("--hd-font-d"));
+    st.setProperty("--hd-scale",String(settings.scale));
+    if(settings.brand){st.setProperty("--hd-brand",settings.brand);st.setProperty("--hd-brand2",settings.brand)}else{st.removeProperty("--hd-brand");st.removeProperty("--hd-brand2")}
+    if(settings.dark==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",settings.dark);
+    try{localStorage.setItem(SET_KEY,JSON.stringify(settings))}catch(e){}}
+  function settingsPanel(){const fs=h("select",{"aria-label":"Schrift",on:{change:e=>{settings.font=e.target.value;applySettings()}}},...Object.keys(FONTS).map(k=>h("option",{value:k,text:k,selected:k===settings.font})));
+    const sz=h("input",{type:"range",min:.8,max:1.5,step:.05,value:settings.scale,"aria-label":"Schriftgröße",on:{input:e=>{settings.scale=+e.target.value;applySettings()}}});
+    const co=h("input",{type:"color",value:settings.brand||"#6c5ce7","aria-label":"Farbe",on:{input:e=>{settings.brand=e.target.value;applySettings()}}});
+    const dk=h("select",{"aria-label":"Modus",on:{change:e=>{settings.dark=e.target.value;applySettings()}}},...[["auto","Automatisch"],["light","Hell"],["dark","Dunkel"]].map(([v,t])=>h("option",{value:v,text:t,selected:v===settings.dark})));
+    const reset=h("button",{class:"hd-btn ghost",on:{click:()=>{settings={font:"Verspielt (Standard)",scale:1,brand:"",dark:"auto"};applySettings();viewList()}},text:"Zurücksetzen"});
+    return h("div",{class:"hd-pop hd-setpanel"},h("div",{class:"hd-field"},h("label",{text:"Schrift"}),fs),h("div",{class:"hd-field"},h("label",{text:"Schriftgröße"}),sz),h("div",{class:"hd-field"},h("label",{text:"Hauptfarbe"}),co),h("div",{class:"hd-field"},h("label",{text:"Hell / Dunkel"}),dk),reset)}
+  const topbar=(left)=>{let open=false,panel=null;const btn=h("button",{class:"hd-iconbtn","aria-label":"Einstellungen",on:{click:()=>{open=!open;if(open){panel=settingsPanel();bar.append(panel)}else if(panel)panel.remove()}},text:"⚙️ Aussehen"});
+    const bar=h("div",{class:"hd-bar"},left,btn);return bar};
+  const logo=()=>h("div",{class:"hd-logo"},h("i",{text:"🎧"}),"Hören & Diktat");
+
+  /* ---------- Liste ---------- */
+  function viewList(){stopAll();state.view="list";
+    const tags=["Alle",...new Set(LESSONS.map(l=>l.tag).filter(Boolean))];
+    const done=LESSONS.filter(l=>progress[l.id]&&progress[l.id].done).length;
+    const avgs=Object.values(progress).filter(p=>p.diktat!=null).map(p=>p.diktat);
+    const avg=avgs.length?Math.round(avgs.reduce((a,b)=>a+b,0)/avgs.length):0;
+    const grid=h("div",{class:"hd-grid"});
+    const draw=()=>{grid.replaceChildren(...LESSONS.filter(l=>(state.filter==="Alle"||l.tag===state.filter)&&l.title.toLowerCase().includes(state.q.toLowerCase())).map(l=>{
+      const p=progress[l.id],t=TAGS[l.tag]||["🎧","#efe7ff"];
+      return h("button",{class:"hd-lesson",on:{click:()=>openLesson(l.id)}},
+        p&&p.done?h("span",{class:"hd-badge",text:"✓ "+(p.diktat??"")+"%"}):null,
+        h("div",{class:"hd-emoji",style:"--c:"+t[1],text:t[0]}),
+        h("h3",{text:l.title}),
+        h("div",{class:"hd-row"},h("span",{class:"hd-tag",text:l.level||"A1-A2"}),h("span",{class:"hd-tag",text:l.tag||"Lektion"})),
+        h("div",{class:"hd-meta",text:"⏱ "+fmt(l.duration||0)+"  ·  "+l.units.length+" Sätze  ·  "+(l.questions||[]).length+" Fragen"}))}));
+      if(!grid.children.length)grid.append(h("p",{class:"hd-meta",text:"Keine Lektion gefunden."}))};
+    const chips=h("div",{class:"hd-tools"},...tags.map(t=>h("button",{class:"hd-chip","aria-pressed":String(state.filter===t),text:t,on:{click:e=>{state.filter=t;chips.querySelectorAll(".hd-chip").forEach(c=>c.setAttribute("aria-pressed",String(c.textContent===t)));draw()}}})),
+      h("input",{class:"hd-search",type:"search",placeholder:"🔎 Suchen…","aria-label":"Suchen",value:state.q,on:{input:e=>{state.q=e.target.value;draw()}}}));
+    draw();
+    shell([topbar(logo()),h("div",{class:"hd-hero"},h("h1",{text:"Hör zu, schreib mit, lern Deutsch."}),h("p",{text:"Erst das Ganze verstehen, dann Satz für Satz als Diktat schreiben – normal und langsam."}))],
+      [h("div",{class:"hd-stats"},stat(LESSONS.length,"Lektionen"),stat(done,"geschafft"),stat(avg+"%","Ø Diktat")),chips,grid,adminPanel()]);
+    function stat(a,b){return h("div",{class:"hd-stat"},h("b",{text:String(a)}),h("span",{text:b}))}}
+
+  /* ---------- Lektion ---------- */
+  function openLesson(id,step){const l=LESSONS.find(x=>x.id===id);if(!l)return;stopAll();state.lesson=l;state.step=step||0;player.load(l.audio);viewLesson()}
+  function stepsBar(){return h("div",{class:"hd-steps"},...["1 · Hören","2 · Fragen","3 · Diktat","4 · Ergebnis"].map((t,i)=>h("div",{class:"hd-step"+(i===state.step?" on":i<state.step?" done":""),text:t})))}
+  function viewLesson(){stopAll();const l=state.lesson;
+    const head=[topbar(h("div",{class:"hd-lhead"},h("button",{class:"hd-back",on:{click:viewList},text:"← Zurück"}),h("div",{class:"hd-logo"},l.title))),stepsBar()];
+    const fn=[stepListen,stepQuiz,stepDiktat,stepResult][state.step];shell(head,fn(l))}
+  const go=s=>{state.step=s;viewLesson()};
+
+  /* Schritt 1: gesamter Text einmal hören (nur die normalen Lesungen) */
+  function stepListen(l){
+    const dots=l.units.map(()=>h("span",{class:"hd-dot"}));const eq=h("div",{class:"hd-eq"},...[1,2,3,4,5].map(()=>h("b")));
+    const status=h("div",{class:"hd-meta",text:"Tippe auf Play – du hörst den ganzen Text einmal in normalem Tempo."});
+    let idx=0,playing=false;
+    const btn=h("button",{class:"hd-play","aria-label":"Abspielen",text:"▶",on:{click:toggle}});
+    function ui(on){playing=on;btn.textContent=on?"⏸":"▶";btn.classList.toggle("live",on);eq.classList.toggle("live",on)}
+    function paint(){dots.forEach((d,i)=>{d.className="hd-dot"+(i<idx?" done":i===idx&&playing?" on":"")})}
+    async function run(){const my=++state.runId;ui(true);
+      for(;idx<l.units.length;idx++){paint();status.textContent="Satz "+(idx+1)+" von "+l.units.length;
+        const c=l.units[idx].cue,ok=await player.range(c[0],c[1]);if(!ok||my!==state.runId){paint();return}await sleep(700);if(my!==state.runId)return}
+      idx=0;ui(false);paint();dots.forEach(d=>d.className="hd-dot done");status.textContent="Fertig! Jetzt kommen die Fragen.";next.disabled=false;next.classList.add("mint")}
+    function toggle(){if(playing){stopAll();ui(false);paint();status.textContent="Pausiert";return}run()}
+    const next=h("button",{class:"hd-btn",on:{click:()=>go(1)},text:"Weiter zu den Fragen →"});
+    return h("div",{class:"hd-card"},h("h2",{text:"Hören · ganzer Text"}),h("p",{class:"hd-sub",text:"Konzentriere dich auf die Hauptidee: Wer? Was? Wo? Danach beantwortest du Fragen zum Inhalt."}),
+      h("div",{class:"hd-big"},btn,eq,h("div",{class:"hd-dots"},...dots),status),
+      h("div",{class:"hd-actions"},h("button",{class:"hd-btn ghost",on:{click:()=>{stopAll();idx=0;ui(false);paint();run()}},text:"↺ Von vorn"}),next),
+      h("p",{class:"hd-note",style:"margin-top:16px",text:"💡 Tipp: Schreib noch nichts auf. Beim zweiten Mal (Diktat) hörst du jeden Satz normal und langsam."}))}
+
+  /* Schritt 2: Verständnisfragen */
+  function stepQuiz(l){const Qs=l.questions||[];let qi=0,right=0,locked=false;const box=h("div",{class:"hd-card"});
+    if(!Qs.length){box.append(h("h2",{text:"Keine Fragen"}),h("p",{class:"hd-sub",text:"Für diese Lektion gibt es noch keine Verständnisfragen."}),h("button",{class:"hd-btn",on:{click:()=>go(2)},text:"Weiter zum Diktat →"}));return box}
+    function draw(){locked=false;const q=Qs[qi];
+      const opts=q.o.map((o,i)=>h("button",{class:"hd-opt",on:{click:()=>pick(i)}},h("b",{text:"ABCD"[i]}),h("span",{text:o})));
+      const nextBtn=h("button",{class:"hd-btn",style:"margin-top:14px;display:none",on:{click:()=>{qi++;qi<Qs.length?draw():finish()}},text:qi===Qs.length-1?"Ergebnis →":"Weiter →"});
+      function pick(i){if(locked)return;locked=true;if(i===q.a)right++;
+        opts.forEach((b,k)=>{b.disabled=true;if(k===q.a)b.classList.add("ok");else if(k===i)b.classList.add("no")});nextBtn.style.display="inline-flex";nextBtn.focus()}
+      box.replaceChildren(h("div",{class:"hd-qn",text:"Frage "+(qi+1)+" / "+Qs.length}),h("div",{class:"hd-prog"},h("i",{style:"width:"+(qi/Qs.length*100)+"%"})),
+        h("div",{class:"hd-q",text:q.q}),h("div",{class:"hd-opts"},...opts),nextBtn,
+        h("div",{class:"hd-actions",style:"justify-content:flex-start"},h("button",{class:"hd-btn ghost",on:{click:()=>{const c=l.units[0].cue;stopAll();player.range(c[0],l.units[l.units.length-1].cue[1])}},text:"🔊 Noch einmal hören"}),h("button",{class:"hd-btn ghost",on:{click:stopAll},text:"■ Stopp"})))}
+    function finish(){stopAll();const pct=Math.round(right/Qs.length*100);const p=progress[l.id]=progress[l.id]||{};p.quiz=pct;p.ts=Date.now();store.set(progress);emit("quiz:done",{lessonId:l.id,right,total:Qs.length,pct});
+      box.replaceChildren(h("div",{class:"hd-big"},h("div",{text:pct>=75?"🎉":pct>=50?"👍":"💪",style:"font-size:3rem"}),h("div",{class:"hd-score",text:right+" / "+Qs.length}),
+        h("p",{class:"hd-sub",text:pct>=75?"Sehr gut verstanden!":pct>=50?"Schon gut – im Diktat hörst du alles genauer.":"Kein Problem, hör beim Diktat Satz für Satz genau zu."}),
+        h("div",{class:"hd-actions"},h("button",{class:"hd-btn ghost",on:{click:()=>go(1)},text:"↺ Nochmal"}),h("button",{class:"hd-btn mint",on:{click:()=>go(2)},text:"Weiter zum Diktat →"}))))}
+    draw();return box}
+
+  /* Schritt 3: Diktat Satz für Satz */
+  function stepDiktat(l){const U=l.units,n=U.length;const p=progress[l.id]=progress[l.id]||{};const res=p.units&&p.units.length===n?p.units.slice():new Array(n).fill(null);
+    let i=Math.max(0,res.findIndex(x=>x==null));if(i<0)i=0;let checked=false,peek=false;const box=h("div",{class:"hd-card"});
+    function draw(){checked=false;stopAll();const u=U[i];
+      const bn=h("button",{class:"hd-aud",on:{click:()=>play(bn,u.cue[0],u.cue[1])}},"▶ Normal"),
+            bs=h("button",{class:"hd-aud slow",on:{click:()=>play(bs,u.cue[1]+.05,u.cue[2])}},"🐢 Langsam ×2");
+      async function play(b,s,e){if(b.classList.contains("live")){stopAll();b.classList.remove("live");return}
+        box.querySelectorAll(".hd-aud").forEach(x=>x.classList.remove("live"));b.classList.add("live");await player.range(s,e);b.classList.remove("live")}
+      const ta=h("textarea",{class:"hd-text",rows:4,placeholder:"Schreibe den Satz – mit Satzzeichen (. , ! ? : „ “)…",autocomplete:"off",autocapitalize:"off",spellcheck:false,"aria-label":"Dein Text",value:res[i]?res[i].txt:""});
+      const out=h("div",{class:"hd-res"});const peekBox=h("div");
+      const hintBtn=h("button",{class:"hd-btn ghost",on:{click:()=>{peek=!peek;peekBox.replaceChildren(peek?h("div",{class:"hd-peek"},u.text):"");hintBtn.textContent=peek?"🙈 Text verbergen":"👀 Text zum Lesen"}},text:"👀 Text zum Lesen"});
+      const checkBtn=h("button",{class:"hd-btn mint",on:{click:check},text:"✓ Prüfen"});
+      const nextBtn=h("button",{class:"hd-btn",style:"display:none",on:{click:()=>{i<n-1?(i++,peek=false,draw()):go(3)}},text:i<n-1?"Nächster Satz →":"Ergebnis →"});
+      function check(){const r=diff(u.text,ta.value);checked=true;res[i]={pct:r.pct,txt:ta.value};p.units=res;store.set(progress);
+        const cls=r.pct===100?"":r.pct>=70?" mid":" low";
+        out.replaceChildren(h("div",{class:"hd-pct"},h("span",{class:"hd-pill"+cls,text:r.pct+"%"}),r.pct===100?"Perfekt! 🎉":r.pct>=70?"Fast richtig!":"Hör noch einmal genau hin."),
+          h("div",{class:"hd-line"},h("small",{text:"Dein Text"}),ta.value.trim()?renderTokens(r.U,"ok","extra"):h("em",{text:"(leer)"})),
+          h("div",{class:"hd-line"},h("small",{text:"Lösung"}),renderTokens(r.R,"ok","bad")));
+        nextBtn.style.display="inline-flex";checkBtn.textContent="↻ Nochmal prüfen";out.scrollIntoView({behavior:"smooth",block:"nearest"})}
+      ta.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();check()}});
+      box.replaceChildren(h("div",{class:"hd-qn",text:"Satz "+(i+1)+" von "+n}),h("div",{class:"hd-prog"},h("i",{style:"width:"+(i/n*100)+"%"})),
+        h("div",{class:"hd-audio"},bn,bs,h("button",{class:"hd-aud",on:{click:stopAll},"aria-label":"Stopp",text:"■ Stopp"})),
+        h("p",{class:"hd-meta",style:"margin:8px 0 0",text:"Langsam = zwei langsame Durchgänge. Satzzeichen schreibst du selbst."}),
+        ta,peekBox,h("div",{class:"hd-actions",style:"justify-content:flex-start"},hintBtn,checkBtn,nextBtn),out,
+        h("div",{class:"hd-actions",style:"justify-content:space-between"},h("button",{class:"hd-btn ghost",disabled:i===0,on:{click:()=>{i--;peek=false;draw()}},text:"← Zurück"}),h("button",{class:"hd-btn ghost",on:{click:()=>go(3)},text:"Beenden"})));
+      setTimeout(()=>bn.click(),250)}
+    draw();return box}
+
+  /* Schritt 4: Ergebnis */
+  function stepResult(l){const p=progress[l.id]=progress[l.id]||{};const U=l.units;const rs=(p.units||[]).filter(Boolean);
+    const avg=rs.length?Math.round(rs.reduce((a,b)=>a+b.pct,0)/rs.length):0;
+    p.diktat=avg;p.done=rs.length>=Math.ceil(U.length*.6)||p.done;store.set(progress);emit("diktat:done",{lessonId:l.id,avg,units:rs.length});if(p.done)emit("lesson:done",{lessonId:l.id,quiz:p.quiz??null,diktat:avg});
+    const idx=LESSONS.findIndex(x=>x.id===l.id),nxt=LESSONS[idx+1];
+    return h("div",{class:"hd-card"},h("div",{class:"hd-big"},h("div",{style:"font-size:3rem",text:avg>=90?"🏆":avg>=70?"🌟":"💪"}),
+      h("h2",{text:l.title}),h("div",{class:"hd-hero"}),
+      h("div",{class:"hd-row",style:"gap:28px;justify-content:center"},h("div",{style:"text-align:center"},h("div",{class:"hd-score",text:p.quiz!=null?p.quiz+"%":"–"}),h("div",{class:"hd-meta",text:"Verstehen"})),h("div",{style:"text-align:center"},h("div",{class:"hd-score",text:avg+"%"}),h("div",{class:"hd-meta",text:"Diktat"})))),
+      h("div",{class:"hd-sum"},...U.map((u,k)=>{const r=(p.units||[])[k];return h("div",{class:"hd-sumrow"},h("span",{text:String(k+1)}),h("em",{text:u.text}),h("span",{class:"hd-pill"+(!r?" low":r.pct===100?"":r.pct>=70?" mid":" low"),style:"width:auto;height:auto;border-radius:99px;padding:2px 10px;color:#fff;background:"+(!r?"var(--hd-line)":""),text:r?r.pct+"%":"–"}))})),
+      h("div",{class:"hd-actions"},h("button",{class:"hd-btn ghost",on:{click:()=>{p.units=[];store.set(progress);go(2)}},text:"↺ Diktat wiederholen"}),h("button",{class:"hd-btn ghost",on:{click:viewList},text:"Alle Lektionen"}),nxt?h("button",{class:"hd-btn mint",on:{click:()=>openLesson(nxt.id)},text:"Nächste Lektion →"}):null))}
+
+  /* ---------- Neue Lektion hinzufügen (Hilfswerkzeug) ---------- */
+  function adminPanel(){
+    const f={t:h("input",{placeholder:"z. B. Im Zoo"}),tag:h("select",{},...["Geschichte","Alltag","Brief","Jahreszeiten"].map(x=>h("option",{text:x}))),
+      file:h("input",{type:"file",accept:"audio/*"}),txt:h("textarea",{rows:6,placeholder:"Ein Satz (oder Abschnitt) pro Zeile – genau in der Reihenfolge der Audio-Abschnitte"}),qs:h("textarea",{rows:4,placeholder:"(optional) Fragen als JSON von der KI einfügen: [{\"q\":\"…\",\"o\":[…],\"a\":0}]"})};
+    const info=h("div",{class:"hd-meta"}),code=h("pre",{class:"hd-code",style:"display:none"});let last=null;
+    const run=h("button",{class:"hd-btn",on:{click:async()=>{
+      const file=f.file.files[0],lines=f.txt.value.split("\n").map(s=>s.trim()).filter(Boolean);
+      if(!file||!lines.length){info.textContent="Bitte Audio-Datei und Text angeben.";return}
+      info.textContent="Analysiere Audio…";
+      try{const r=await detectBlocks(file);
+        if(r.cues.length!==lines.length){info.textContent="⚠️ "+r.cues.length+" Abschnitte im Audio erkannt, aber "+lines.length+" Textzeilen. Stimmt die Zeilenzahl? (Erkennung: Pause ≈ 3 s nach jedem Abschnitt)";code.style.display="none";return}
+        const id=(f.t.value||file.name).toLowerCase().replace(/[^a-z0-9äöüß]+/g,"-").replace(/^-|-$/g,"");
+        last={id,title:f.t.value||file.name,level:"A1-A2",tag:f.tag.value,audio:"assets/audio/"+file.name,duration:Math.round(r.duration),units:lines.map((t,i)=>({text:t,cue:r.cues[i]})),questions:[]};
+        if(f.qs.value.trim()){try{last.questions=JSON.parse(f.qs.value)}catch(e){info.textContent="⚠️ Fragen-JSON ungültig: "+e.message;return}}
+        info.textContent="✅ "+r.cues.length+" Abschnitte erkannt. Lade die .json herunter und lege sie in assets/lessons/ ab, dann: python tools/sync.py";
+        code.textContent=JSON.stringify(last,null,1);code.style.display="block";tryBtn.style.display="inline-flex";if(window.__hdApi)saveBtn.style.display="inline-flex";else copyBtn.style.display="inline-flex"}
+      catch(e){info.textContent="Fehler: "+e.message}}},text:"🔍 Analysieren"});
+    const copyBtn=h("button",{class:"hd-btn sun",style:"display:none",on:{click:()=>{const a=h("a",{href:URL.createObjectURL(new Blob([code.textContent],{type:"application/json"})),download:last.id+".json"});document.body.append(a);a.click();a.remove();toast("Gespeichert: "+last.id+".json")}},text:"💾 .json speichern"});
+    const saveBtn=h("button",{class:"hd-btn",style:"display:none",on:{click:async()=>{try{saveBtn.disabled=true;info.textContent="Speichere…";
+      await fetch("/api/audio?name="+encodeURIComponent(f.file.files[0].name),{method:"POST",body:f.file.files[0]});
+      const r=await fetch("/api/lesson",{method:"POST",body:JSON.stringify(last)});if(!r.ok)throw new Error(await r.text());
+      info.textContent="✅ Gespeichert in assets/. Lade neu…";setTimeout(()=>location.reload(),900)}catch(e){info.textContent="Fehler: "+e.message;saveBtn.disabled=false}}},text:"💾 Direkt speichern"});
+    fetch("/api/ping").then(r=>r.ok&&(window.__hdApi=true)).catch(()=>{});
+    const tryBtn=h("button",{class:"hd-btn mint",style:"display:none",on:{click:()=>{const url=URL.createObjectURL(f.file.files[0]);LESSONS.push(Object.assign({},last,{audio:url}));toast("Lektion nur für diese Sitzung hinzugefügt");viewList()}},text:"▶ Jetzt testen"});
+    const prompt=h("button",{class:"hd-btn ghost",on:{click:()=>{const t=f.txt.value.trim();navigator.clipboard&&navigator.clipboard.writeText("Schreibe 4 Verständnisfragen (A2, einfaches Deutsch) zum Hauptinhalt dieses Textes. Je Frage 4 Antworten, genau eine richtig. Gib NUR JSON zurück: [{\"q\":\"...\",\"o\":[\"A\",\"B\",\"C\",\"D\"],\"a\":0}] (a = Index der richtigen Antwort 0-3, richtige Antwort nicht immer an gleicher Stelle).\n\nText:\n"+t).then(()=>toast("KI-Prompt kopiert ✓"))}},text:"🤖 KI-Prompt für Fragen"});
+    return h("details",{class:"hd-admin hd-card"},h("summary",{text:"➕ Neue Lektion hinzufügen"}),
+      h("p",{class:"hd-meta",text:"Audio im Standardformat (normal → langsam → langsam, je Abschnitt 3 s Pause) wählen, Text einfügen – die Zeitmarken erkennt die Seite selbst. Mit start.bat/start.command gestartet: „Direkt speichern“ legt mp3 + json selbst in assets/ ab. Sonst: .json speichern und in assets/lessons/ legen."}),
+      h("div",{class:"hd-field"},h("label",{text:"Titel"}),f.t),h("div",{class:"hd-field"},h("label",{text:"Kategorie"}),f.tag),
+      h("div",{class:"hd-field"},h("label",{text:"Audio-Datei (.mp3, liegt später in assets/audio/)"}),f.file),h("div",{class:"hd-field"},h("label",{text:"Text (Zeile = Abschnitt)"}),f.txt),h("div",{class:"hd-field"},h("label",{text:"Fragen (optional, JSON)"}),f.qs),
+      h("div",{class:"hd-row"},run,prompt,saveBtn,tryBtn,copyBtn),info,code)}
+
+  /* Start */
+  applySettings();window.addEventListener("pagehide",stopAll);
+  const q=new URLSearchParams(location.search).get("lesson");
+  if(opts.startLessonId||q)openLesson(opts.startLessonId||q);else viewList();
+  return{destroy(){stopAll();root.replaceChildren()},open:openLesson,list:viewList,get lessons(){return LESSONS}}
+}
+window.HoerenDiktat={mount};
+document.addEventListener("DOMContentLoaded",()=>{const r=document.getElementById("hd-root");if(r&&window.HD_LESSONS&&!r.dataset.manual)mount(r,{})});
+})();
+</script>
+</body>
+</html>
