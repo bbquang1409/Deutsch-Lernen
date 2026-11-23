@@ -29,6 +29,20 @@ input{width:100%;height:50px;padding:0 14px;border:1px solid #cfd5dc;border-radi
 .pill.wait{background:var(--warn-l);color:var(--warn)}.pill.ok{background:var(--ok-l);color:var(--ok)}.pill.off{background:#fdecee;color:#9b1c2c}
 .big{text-align:center;padding:26px 8px;color:var(--mut)}.big b{display:block;color:var(--ink);font-size:1.15rem;margin-bottom:6px}
 #leave{margin-top:12px}
+.qintro{margin:6px 0 14px;color:var(--mut);font-size:.92rem}
+.q{margin:0 0 16px}.qt{font-weight:700;margin:0 0 8px;overflow-wrap:anywhere}
+.opt{display:grid;grid-template-columns:30px minmax(0,1fr) 22px;gap:10px;align-items:center;min-height:52px;padding:8px 12px;margin:0 0 8px;border:1.5px solid #d5dae0;border-radius:12px;background:#fff;font-size:1rem;font-weight:500;color:var(--ink);cursor:pointer}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .l{width:28px;height:28px;border-radius:50%;background:var(--gray-l);display:grid;place-items:center;font-weight:750;font-size:.85rem;color:#4b5663}
+.opt:has(input:checked){border-color:var(--red);background:var(--red-l)}.opt:has(input:checked) .l{background:var(--red);color:#fff}
+.opt:has(input:disabled){cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-l)}.opt.right .l{background:var(--ok);color:#fff}
+.opt.wrong{border-color:#c0392b;background:#fdecee}.opt.wrong .l{background:#c0392b;color:#fff}
+.opt.right:has(input:checked){border-color:var(--ok);background:var(--ok-l)}.opt.right:has(input:checked) .l{background:var(--ok);color:#fff}
+.opt.wrong:has(input:checked){border-color:#c0392b;background:#fdecee}.opt.wrong:has(input:checked) .l{background:#c0392b;color:#fff}
+.opt .m{font-weight:800}
+.score{margin:6px 0 14px;padding:12px;border-radius:12px;background:var(--ok-l);color:var(--ok);font-weight:750;text-align:center}
+.sent{padding:12px;border-radius:12px;background:var(--ok-l);color:var(--ok);font-weight:700;text-align:center}
 </style>
 </head>
 <body>
@@ -49,6 +63,7 @@ input{width:100%;height:50px;padding:0 14px;border:1px solid #cfd5dc;border-radi
   <section id="room" class="card" hidden>
     <div class="room-top"><h2 id="title">Live-Diktat</h2><span id="codetag" class="codetag"></span></div>
     <span id="pill" class="pill wait">Verbinde…</span>
+    <div id="quiz" hidden></div>
     <div id="body" class="big"><b>Warten auf den Lehrer</b>Gleich geht es los. Lass diese Seite geöffnet.</div>
     <button id="leave" class="btn ghost" type="button">Raum verlassen</button>
   </section>
@@ -73,7 +88,7 @@ function setPill(cls,t){const p=$('pill');p.className='pill '+cls;p.textContent=
 function showRoom(code){$('join').hidden=true;$('room').hidden=false;$('codetag').textContent=code}
 function backToJoin(msg){
   clearInterval(watch);if(ch){const c=ch;ch=null;try{c.untrack()}catch(_){}db.removeChannel(c)}
-  sessionStorage.removeItem('dik_me');me=null;joining=false;$('room').hidden=true;$('join').hidden=false;$('joinbtn').disabled=false;$('joinbtn').textContent='Beitreten';err(msg||'');
+  sessionStorage.removeItem('dik_me');try{sessionStorage.removeItem(qKey())}catch(_){}picks=[];submitted=false;curKey='';lastSentEpoch=null;pickQid=null;me=null;joining=false;$('room').hidden=true;$('join').hidden=false;$('joinbtn').disabled=false;$('joinbtn').textContent='Beitreten';err(msg||'');
 }
 function teacherPresent(){return Object.values(ch.presenceState()).some(a=>a.some(m=>m.role==='teacher'))}
 function duplicateName(){
@@ -101,10 +116,58 @@ function connect(code,name,id,at,resume){
   });
   setTimeout(()=>{if(joining&&ch===c&&!checked)backToJoin('Verbindung zum Raum nicht möglich. Bitte Code prüfen.')},8000);
 }
+const LET='ABCD';
+let picks=[],submitted=false,curKey='',lastSentEpoch=null,lastState=null,pickQid=null;
+const qKey=()=>'dik_q_'+(me?.code||'');
+function loadPicks(n,qid){
+  try{const s=JSON.parse(sessionStorage.getItem(qKey())||'null');
+    if(s&&s.qid===qid&&Array.isArray(s.picks)&&s.picks.length===n){picks=s.picks;submitted=!!s.submitted;pickQid=qid;return}}catch(_){}
+  picks=new Array(n).fill(null);submitted=false;pickQid=qid;
+}
+function savePicks(){try{sessionStorage.setItem(qKey(),JSON.stringify({qid:pickQid,picks,submitted}))}catch(_){}}
+function sendAnswer(){if(ch)ch.send({type:'broadcast',event:'answer',payload:{id:me.id,name:me.name,picks}})}
+function mk(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n}
 function render(s){
-  $('title').textContent=s.title||'Live-Diktat';
+  lastState=s;$('title').textContent=s.title||'Live-Diktat';
+  const showQuiz=(s.phase==='quiz'||s.phase==='quizResult')&&Array.isArray(s.quiz);
+  $('quiz').hidden=!showQuiz;$('body').hidden=showQuiz;
   if(s.phase==='lobby'){setPill('wait','Warten auf den Start');$('body').innerHTML='<b>Du bist im Raum</b>Der Lehrer startet gleich. Lass diese Seite geöffnet.'}
+  else if(s.phase==='listen'){setPill('ok','Zuhören');$('body').innerHTML='<b>Bitte gut zuhören</b>Der Lehrer spielt den Text ab. Du musst noch nichts tun.'}
+  else if(showQuiz){renderQuiz(s)}
   else{setPill('ok','Verbunden');$('body').innerHTML='<b>Bitte warten</b>'}
+}
+function renderQuiz(s){
+  if(pickQid!==s.qid||picks.length!==s.quiz.length)loadPicks(s.quiz.length,s.qid);
+  if(submitted&&lastSentEpoch!==s.epoch){lastSentEpoch=s.epoch;sendAnswer()} // Lehrer neu geladen: Antwort erneut senden
+  const res=s.phase==='quizResult',key=s.phase+'|'+s.qid+'|'+submitted;
+  if(key===curKey)return;curKey=key;
+  setPill('ok',res?'Auflösung':'Fragen');
+  const box=$('quiz');box.replaceChildren();
+  box.append(mk('p','qintro',res?'So hast du geantwortet:':'Was ist die Hauptidee? Wähle pro Frage eine Antwort.'));
+  s.quiz.forEach((q,i)=>{
+    const card=mk('div','q');card.append(mk('p','qt',`${i+1}. ${q.q}`));
+    q.o.forEach((txt,j)=>{
+      const lab=mk('label','opt');const inp=document.createElement('input');inp.type='radio';inp.name='q'+i;inp.value=j;
+      inp.checked=picks[i]===j;inp.disabled=submitted||res;
+      inp.onchange=()=>{picks[i]=j;savePicks();upd()};
+      lab.append(inp,mk('span','l',LET[j]),mk('span',null,txt));
+      const mark=mk('span','m','');
+      if(res){if(s.correct[i]===j){lab.classList.add('right');mark.textContent='✓'}else if(picks[i]===j){lab.classList.add('wrong');mark.textContent='✗'}}
+      lab.append(mark);card.append(lab);
+    });
+    box.append(card);
+  });
+  if(res){
+    const any=picks.some(x=>x!==null);
+    if(any){let n=0;s.quiz.forEach((_,i)=>{if(picks[i]===s.correct[i])n++});box.append(mk('div','score',`Du hast ${n} von ${s.quiz.length} richtig.`))}
+    box.append(mk('p','qintro','Gleich geht es weiter. Lass diese Seite geöffnet.'));
+  }else if(submitted){box.append(mk('div','sent','Abgegeben ✓ Warte auf die Auflösung.'))}
+  else{
+    const b=mk('button','btn','Abgeben');b.id='qsubmit';b.type='button';b.disabled=!picks.every(x=>x!==null);
+    b.onclick=()=>{if(!picks.every(x=>x!==null))return;submitted=true;savePicks();lastSentEpoch=lastState.epoch;sendAnswer();curKey='';renderQuiz(lastState)};
+    box.append(b);
+  }
+  function upd(){const b=$('qsubmit');if(b)b.disabled=!picks.every(x=>x!==null)}
 }
 $('leave').onclick=()=>{if(confirm('Raum wirklich verlassen?'))backToJoin('')};
 </script>

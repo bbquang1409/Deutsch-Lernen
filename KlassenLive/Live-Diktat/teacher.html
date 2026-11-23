@@ -42,6 +42,17 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
 .empty{padding:14px 6px;text-align:center;color:var(--mut)}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row .btn{flex:1 1 150px}
 .sticky{position:sticky;top:0;background:#fff;padding:6px 0 10px;z-index:2;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ctrl{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fafbfc}
+.ctrl-title{font-weight:750;margin-bottom:8px}.ctrl-now{margin:0 0 10px;font-weight:650;color:var(--red)}
+.ctrl-hint{margin:8px 0 0;color:var(--mut);font-size:.85rem}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap}.row-btns .btn{flex:1 1 150px}
+.qstat{margin:14px 0 4px}.qstat>b{display:block;margin-bottom:6px;overflow-wrap:anywhere}
+.orow{display:grid;grid-template-columns:22px minmax(0,1fr) 30px;gap:8px;align-items:center;margin:4px 0;font-size:.9rem}
+.orow .let{font-weight:750;color:var(--mut)}.orow .cnt{text-align:right;font-weight:750}
+.orow .bar{position:relative;background:var(--gray-l);border-radius:8px;min-height:32px;overflow:hidden;padding:6px 9px}
+.orow .bar i{position:absolute;inset:0 auto 0 0;background:#f0c6cb}.orow .bar span{position:relative}
+.orow.right .bar{outline:2px solid var(--ok)}.orow.right .bar i{background:#bfe3cd}
+.badge{margin-left:auto;font-size:.8rem;font-weight:700;color:var(--ok)}.badge.wait{color:var(--mut);font-weight:600}
 </style>
 </head>
 <body>
@@ -79,6 +90,7 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
       <div id="room-open" hidden>
         <button id="code" class="codebox" type="button" title="Code kopieren"></button>
         <p class="hint">Tippen zum Kopieren · Schüler öffnen <b>Live-Diktat/student.html</b> und geben den Code ein</p>
+        <div id="ctrl" class="ctrl"></div>
         <p id="count" style="font-weight:700;margin:0 0 4px"></p>
         <div id="people"></div>
         <div class="row"><button id="end" class="btn ghost" type="button">Sitzung beenden</button></div>
@@ -116,7 +128,7 @@ async function start(){
   if(!data.session){$('needlogin').hidden=false;return}
   $('app').hidden=false;fillLibrary();
   let saved=null;try{saved=JSON.parse(sessionStorage.getItem('dik_room')||'null')}catch(_){}
-  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);openRoom(saved.code)}}
+  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);openRoom(saved.code,true)}}
 }
 
 /* ---------- Audio ---------- */
@@ -219,35 +231,129 @@ $('f-json').onchange=async e=>{const f=e.target.files[0];ownJson=f?await f.text(
 /* ---------- Raum (Supabase Realtime, ohne Datenbank) ---------- */
 const ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode(){const a=new Uint32Array(6);crypto.getRandomValues(a);return Array.from(a,n=>ALPHA[n%ALPHA.length]).join('')}
-const phase={name:'lobby'};
-function stateMsg(){return{phase:phase.name,title:lesson.title,sentences:lesson.units.length,questions:lesson.questions.length,t:Date.now()}}
+/* ---- Ablauf: Überblick -> Fragen -> (Schritt 3: Diktat) ---- */
+const EPOCH=Date.now();
+const phase={name:'lobby',playing:false,idx:0,done:false,qid:0};
+const answers=new Map(); // Schüler-ID -> {name,picks}
+let runId=0;
+const LET='ABCD';
+function stateMsg(){
+  const m={epoch:EPOCH,phase:phase.name,title:lesson.title,sentences:lesson.units.length,nq:lesson.questions.length,t:Date.now()};
+  if(phase.name==='quiz'||phase.name==='quizResult'){m.qid=phase.qid;m.quiz=lesson.questions.map(q=>({q:q.q,o:q.o}))}
+  if(phase.name==='quizResult')m.correct=lesson.questions.map(q=>q.a);
+  return m;
+}
 function sendState(){if(ch&&lesson)ch.send({type:'broadcast',event:'state',payload:stateMsg()})}
+function setPhase(n){phase.name=n;try{sessionStorage.setItem('dik_phase',JSON.stringify({n,qid:phase.qid}))}catch(_){}sendState();renderCtrl();renderPeople()}
+const btn=(t,cls,fn,dis)=>{const b=el('button','btn '+cls,t);b.type='button';b.onclick=fn;if(dis)b.disabled=true;return b};
+
+async function startOverview(){
+  err('');if(phase.name!=='listen')setPhase('listen');
+  const my=++runId;phase.playing=true;phase.done=false;phase.idx=0;renderCtrl();
+  try{
+    for(let i=0;i<lesson.units.length;i++){
+      if(my!==runId)return;
+      phase.idx=i+1;renderCtrl();
+      const u=lesson.units[i];
+      const ok=await player.range(u.cue[0],u.cue[1]);
+      if(!ok||my!==runId)return;
+      await new Promise(r=>setTimeout(r,500));
+    }
+    if(my===runId)phase.done=true;
+  }catch(e){err(e)}
+  if(my===runId){phase.playing=false;renderCtrl()}
+}
+function stopOverview(){runId++;player?.stop();phase.playing=false;phase.done=false;renderCtrl()}
+function startQuiz(){runId++;player?.stop();phase.playing=false;answers.clear();phase.qid=Date.now();setPhase('quiz')}
+function reveal(){setPhase('quizResult')}
+
+function presentStudents(){
+  if(!ch)return[];
+  return Object.entries(ch.presenceState()).flatMap(([k,arr])=>arr.filter(m=>m.role==='student').map(m=>({k,name:m.name,at:m.joined_at||0}))).sort((a,b)=>a.at-b.at);
+}
+function renderStats(c){
+  const list=presentStudents(),ids=new Set(list.map(p=>p.k));
+  const sub=[...answers.entries()].filter(([id])=>ids.has(id)).map(([,v])=>v);
+  c.append(el('p','ctrl-now',`${sub.length}/${list.length} haben abgegeben`));
+  lesson.questions.forEach((q,i)=>{
+    const box=el('div','qstat');box.append(el('b',null,`${i+1}. ${q.q}`));
+    const counts=[0,0,0,0];sub.forEach(s=>{const v=s.picks[i];if(v!=null)counts[v]++});
+    const max=Math.max(1,sub.length);
+    q.o.forEach((txt,j)=>{
+      const r=el('div','orow'+(phase.name==='quizResult'&&q.a===j?' right':''));
+      r.append(el('span','let',LET[j]));
+      const bar=el('div','bar');const fill=el('i');fill.style.width=Math.round(counts[j]/max*100)+'%';bar.append(fill,el('span',null,txt+(phase.name==='quizResult'&&q.a===j?'  ✓':'')));
+      r.append(bar,el('span','cnt',String(counts[j])));box.append(r);
+    });
+    c.append(box);
+  });
+}
+function renderCtrl(){
+  const c=$('ctrl');c.replaceChildren();if(!ch||!lesson)return;
+  const hasQ=lesson.questions.length>0,n=lesson.units.length;
+  if(phase.name==='lobby'){
+    c.append(el('div','ctrl-title','Schritt 1 · Überblick'),btn('▶ Überblick starten','green',startOverview),
+      el('p','ctrl-hint','Der ganze Text wird einmal normal vorgelesen. Die Schüler hören nur zu.'));
+  }else if(phase.name==='listen'){
+    c.append(el('div','ctrl-title','Überblick'));
+    if(phase.playing){c.append(el('p','ctrl-now',`Läuft … Satz ${phase.idx}/${n}`),btn('⏹ Stopp','ghost',stopOverview))}
+    else{
+      c.append(el('p','ctrl-now',phase.done?'Überblick beendet.':'Gestoppt.'));
+      const r=el('div','row-btns');r.append(btn('↻ Nochmal anhören','ghost',startOverview));
+      if(hasQ)r.append(btn('Weiter zu den Fragen →','green',startQuiz));
+      c.append(r);
+      if(!hasQ)c.append(el('p','ctrl-hint','Diese Lektion hat keine Fragen. Das Diktat folgt in Schritt 3.'));
+    }
+  }else if(phase.name==='quiz'||phase.name==='quizResult'){
+    c.append(el('div','ctrl-title',phase.name==='quiz'?'Fragen · Schüler antworten':'Fragen · Auflösung gezeigt'));
+    renderStats(c);
+    const r=el('div','row-btns');
+    if(phase.name==='quiz')r.append(btn('Lösung zeigen','green',reveal));
+    else r.append(btn('Weiter: Diktat (folgt in Schritt 3)','ghost',()=>{},true));
+    c.append(r);
+  }
+}
+
 $('open').onclick=()=>openRoom(makeCode());
-function openRoom(code){
+function openRoom(code,resume){
   if(!lesson||ch)return;
   room=code;sessionStorage.setItem('dik_room',JSON.stringify({code,lessonId:lesson.id}));
+  phase.name='lobby';phase.playing=false;phase.done=false;phase.qid=0;answers.clear();
+  if(resume){try{const s=JSON.parse(sessionStorage.getItem('dik_phase')||'null');if(s&&['lobby','listen','quiz','quizResult'].includes(s.n)){phase.name=s.n;phase.qid=s.qid||0}}catch(_){}}
+  else sessionStorage.removeItem('dik_phase');
   ch=db.channel('kl-dik-'+code,{config:{broadcast:{self:false},presence:{key:'teacher'}}});
   ch.on('broadcast',{event:'hello'},()=>sendState());
-  ch.on('presence',{event:'sync'},renderPeople);
+  ch.on('broadcast',{event:'answer'},({payload})=>{
+    if(!payload||typeof payload.id!=='string'||!['quiz','quizResult'].includes(phase.name))return;
+    const nq=lesson.questions.length;
+    const picks=Array.isArray(payload.picks)?payload.picks.slice(0,nq).map(x=>Number.isInteger(x)&&x>=0&&x<4?x:null):[];
+    answers.set(payload.id,{name:String(payload.name||'').slice(0,60),picks});renderCtrl();renderPeople();
+  });
+  ch.on('presence',{event:'sync'},()=>{renderPeople();renderCtrl()});
   ch.subscribe(async st=>{
     if(st==='SUBSCRIBED'){await ch.track({role:'teacher'});sendState();hb=setInterval(sendState,5000)}
     else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')err('Verbindung zum Echtzeit-Dienst fehlgeschlagen ('+st+').');
   });
   $('code').textContent=code;$('room-closed').hidden=true;$('room-open').hidden=false;
-  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;renderPeople();
+  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;renderPeople();renderCtrl();
 }
 function renderPeople(){
   const box=$('people');box.replaceChildren();if(!ch)return;
-  const st=ch.presenceState();
-  const list=Object.entries(st).flatMap(([k,arr])=>arr.filter(m=>m.role==='student').map(m=>({k,name:m.name,at:m.joined_at||0}))).sort((a,b)=>a.at-b.at);
+  const list=presentStudents();
   $('count').textContent=list.length?`${list.length} Schüler im Raum`:'Noch keine Schüler im Raum';
   if(!list.length){box.append(el('p','empty','Warten auf Schüler…'));return}
-  list.forEach(p=>{const r=el('div','person');r.append(el('span','dot'),el('span',null,p.name));box.append(r)});
+  const inQuiz=phase.name==='quiz'||phase.name==='quizResult';
+  list.forEach(p=>{
+    const r=el('div','person');r.append(el('span','dot'),el('span',null,p.name));
+    if(inQuiz){const done=answers.has(p.k);r.append(el('span','badge'+(done?'':' wait'),done?'✓ abgegeben':'…'))}
+    box.append(r);
+  });
 }
 $('code').onclick=async()=>{try{await navigator.clipboard.writeText(room)}catch(_){}};
 function endSession(){
+  runId++;player?.stop();
   if(ch){ch.send({type:'broadcast',event:'end',payload:{}});clearInterval(hb);const c=ch;ch=null;setTimeout(()=>db.removeChannel(c),300)}
-  room=null;sessionStorage.removeItem('dik_room');
+  room=null;answers.clear();sessionStorage.removeItem('dik_room');sessionStorage.removeItem('dik_phase');
   $('room-closed').hidden=false;$('room-open').hidden=true;
   $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;
 }
