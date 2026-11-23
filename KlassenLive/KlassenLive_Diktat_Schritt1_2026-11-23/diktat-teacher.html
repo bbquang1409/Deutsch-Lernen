@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#a91f32">
+<title>KlassenLive · Live-Diktat (Lehrer)</title>
+<style>
+:root{--red:#a91f32;--red-l:#fbeaec;--ink:#1b2430;--mut:#67727f;--line:#e3e6eb;--bg:#f4f5f7;--ok:#1d7f48;--ok-l:#e5f4ec;--warn:#a16207;--warn-l:#fdf3dc;--gray-l:#eceff2}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:12px 14px calc(36px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:1.25rem;letter-spacing:-.03em;color:var(--red)}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:1.05rem;letter-spacing:0}
+.brand small{font-weight:600;font-size:.78rem;color:var(--mut);letter-spacing:0;background:var(--gray-l);padding:2px 8px;border-radius:99px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 12px;box-shadow:0 1px 8px #1420340a}
+h2{font-size:1.05rem;margin:0 0 12px}
+label{display:block;font-size:.82rem;font-weight:650;color:#4b5663;margin:0 0 5px}
+select,input[type=file]{width:100%;min-height:46px;padding:8px 12px;border:1px solid #cfd5dc;border-radius:11px;background:#fff;font:inherit;font-size:16px}
+.btn{min-height:44px;padding:0 16px;border:1px solid transparent;border-radius:11px;background:var(--red);color:#fff;font:inherit;font-weight:650;font-size:.95rem;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}.btn.ghost{background:#fff;color:#3a4552;border-color:#d5dae0}.btn.sm{min-height:36px;padding:0 12px;font-size:.85rem}
+.btn.green{background:var(--ok)}.btn.full{width:100%}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
+#error{margin:0 0 12px;padding:10px 12px;border-radius:11px;background:#fdecee;color:#9b1c2c;font-size:.9rem;white-space:pre-wrap}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.tag{padding:3px 10px;border-radius:99px;background:var(--gray-l);font-size:.8rem;font-weight:650;color:#4b5663}
+.tag.ok{background:var(--ok-l);color:var(--ok)}.tag.bad{background:#fdecee;color:#9b1c2c}.tag.warn{background:var(--warn-l);color:var(--warn)}
+details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
+.own{display:grid;gap:10px;margin-top:10px}
+.unit{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 10px;padding:10px 0;border-top:1px solid var(--line)}
+.unit .n{font-weight:750;color:var(--mut)}.unit .t{overflow-wrap:anywhere}
+.unit .btns{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.unit.playing{background:var(--red-l);border-radius:10px}
+.codebox{display:block;width:100%;margin:6px 0 4px;padding:12px;border:2px dashed #e3b3ba;border-radius:14px;background:var(--red-l);color:var(--red);font:700 clamp(2rem,9vw,3rem)/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-align:center;cursor:pointer}
+.hint{text-align:center;color:var(--mut);font-size:.82rem;margin:0 0 12px}
+.person{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok)}
+.empty{padding:14px 6px;text-align:center;color:var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row .btn{flex:1 1 150px}
+.sticky{position:sticky;top:0;background:#fff;padding:6px 0 10px;z-index:2;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="logo">K</span><span>KlassenLive</span><small>Live-Diktat</small></div>
+    <a class="btn ghost sm" href="teacher.html">← Live-Test</a>
+  </header>
+  <p id="error" hidden></p>
+
+  <section id="needlogin" class="card" hidden>
+    <h2>Bitte zuerst anmelden</h2>
+    <p>Melde dich auf der Lehrer-Seite an und öffne danach diese Seite erneut.</p>
+    <a class="btn" href="teacher.html">Zur Anmeldung</a>
+  </section>
+
+  <div id="app" hidden>
+    <section class="card">
+      <h2>1 · Diktat auswählen</h2>
+      <label for="lesson">Bibliothek</label>
+      <select id="lesson"></select>
+      <details>
+        <summary>Eigene Dateien verwenden (MP3 + JSON)</summary>
+        <div class="own">
+          <div><label for="f-mp3">MP3-Datei</label><input id="f-mp3" type="file" accept="audio/mpeg,audio/*,.mp3"></div>
+          <div><label for="f-json">Lektion (JSON)</label><input id="f-json" type="file" accept="application/json,.json"></div>
+        </div>
+      </details>
+      <div class="meta" id="meta"></div>
+    </section>
+
+    <section class="card" id="preview-card" hidden>
+      <div class="sticky"><h2 style="margin:0">2 · Vorschau &amp; Audio-Test</h2><button id="stop" class="btn ghost sm" type="button">⏹ Stopp</button></div>
+      <p class="hint" style="text-align:left;margin:0 0 6px">Prüfe Text und Zeitmarken, bevor du den Raum öffnest. Normal = 1× normal gelesen · Langsam = 2× langsam mit Schreibpause.</p>
+      <div id="units"></div>
+    </section>
+
+    <section class="card" id="room-card" hidden>
+      <h2>3 · Raum</h2>
+      <div id="room-closed">
+        <button id="open" class="btn green full" type="button">Raum öffnen</button>
+      </div>
+      <div id="room-open" hidden>
+        <button id="code" class="codebox" type="button" title="Code kopieren"></button>
+        <p class="hint">Tippen zum Kopieren · Schüler öffnen <b>diktat-student.html</b> und geben den Code ein</p>
+        <p id="count" style="font-weight:700;margin:0 0 4px"></p>
+        <div id="people"></div>
+        <div class="row"><button id="end" class="btn ghost" type="button">Sitzung beenden</button></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="diktat-lessons.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n};
+const err=e=>{const m=e?.message||String(e||'');$('error').textContent=m;$('error').hidden=!m};
+const LESSONS=(window.DIKTAT_LESSONS||[]).slice();
+let db,lesson=null,player=null,ch=null,hb=null,room=null,objectUrl=null,ownMp3=null,ownJson=null;
+
+if(!window.KL_CONFIG||!window.supabase)err('Konfiguration fehlt: config.js nicht gefunden.');
+else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);start()}
+async function start(){
+  const {data}=await db.auth.getSession();
+  if(!data.session){$('needlogin').hidden=false;return}
+  $('app').hidden=false;fillLibrary();
+  let saved=null;try{saved=JSON.parse(sessionStorage.getItem('dik_room')||'null')}catch(_){}
+  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);openRoom(saved.code)}}
+}
+
+/* ---------- Audio ---------- */
+class Player{
+  constructor(src){this.a=new Audio();this.a.preload='auto';this.a.src=src;this.tok=0;this.timer=null;
+    this.ready=new Promise(res=>{if(this.a.readyState>=1)res(true);else{this.a.addEventListener('loadedmetadata',()=>res(true),{once:true});this.a.addEventListener('error',()=>res(false),{once:true})}})}
+  stop(){this.tok++;clearInterval(this.timer);this.a.pause()}
+  async range(s,e){
+    const my=++this.tok;clearInterval(this.timer);this.a.pause();
+    if(!(await this.ready)||my!==this.tok)return false;
+    await new Promise(r=>{if(Math.abs(this.a.currentTime-s)<.05){r();return}const d=()=>{this.a.removeEventListener('seeked',d);r()};this.a.addEventListener('seeked',d);this.a.currentTime=s;setTimeout(d,1500)});
+    if(my!==this.tok)return false;
+    try{await this.a.play()}catch(x){throw new Error('Audio konnte nicht gestartet werden. Bitte erneut tippen.')}
+    return new Promise(res=>{this.timer=setInterval(()=>{if(my!==this.tok){clearInterval(this.timer);res(false);return}
+      if(this.a.currentTime>=e-.03||this.a.ended){clearInterval(this.timer);this.a.pause();res(true)}},40)});
+  }
+}
+
+/* ---------- Bibliothek ---------- */
+function fillLibrary(){
+  const s=$('lesson');s.replaceChildren();
+  const o0=el('option',null,'– Diktat wählen –');o0.value='';s.append(o0);
+  for(const l of LESSONS){const o=el('option',null,`${l.title} · ${l.level} · ${l.units.length} Sätze`);o.value=l.id;s.append(o)}
+}
+$('lesson').onchange=()=>{const l=LESSONS.find(x=>x.id===$('lesson').value);if(l)selectLesson(l);else clearLesson()};
+function validate(l){
+  const w=[];
+  if(!Array.isArray(l.units)||!l.units.length)throw new Error('Die Lektion enthält keine Sätze (units).');
+  l.units.forEach((u,i)=>{
+    if(typeof u.text!=='string'||!u.text.trim())throw new Error(`Satz ${i+1}: Text fehlt.`);
+    if(!Array.isArray(u.cue)||u.cue.length!==3||u.cue.some(x=>typeof x!=='number'))throw new Error(`Satz ${i+1}: Zeitmarken (cue) ungültig.`);
+    const [a,b,c]=u.cue;if(!(a<b&&b<c))throw new Error(`Satz ${i+1}: Zeitmarken nicht aufsteigend.`);
+    if(c-b<(b-a)*1.5)w.push(i+1);
+  });
+  return w;
+}
+function clearLesson(){if(player)player.stop();player=null;lesson=null;$('preview-card').hidden=true;$('room-card').hidden=true;$('meta').replaceChildren()}
+function selectLesson(l,url){
+  err('');if(room)endSession();
+  clearLesson();
+  let suspicious;try{suspicious=validate(l)}catch(e){err(e);return}
+  lesson={...l,questions:l.questions||[]};
+  player=new Player(url||l.audio);
+  const m=$('meta');m.replaceChildren();
+  m.append(el('span','tag',lesson.level||'–'),el('span','tag',`${lesson.units.length} Sätze`),el('span','tag',`${lesson.questions.length} Fragen`));
+  const at=el('span','tag','Audio wird geprüft…');m.append(at);
+  player.ready.then(ok=>{
+    if(!ok){at.className='tag bad';at.textContent='Audio nicht gefunden';err(`Audio nicht gefunden: ${url?'(eigene Datei)':l.audio}\nLege die MP3 in den Ordner diktat/audio/ (oder wähle „Eigene Dateien“).`);return}
+    const d=player.a.duration;const diff=Math.abs(d-lesson.duration);
+    at.className='tag '+(diff>2?'warn':'ok');at.textContent=`Audio OK · ${Math.round(d)} s`+(diff>2?` (Lektion: ${Math.round(lesson.duration)} s – prüfen)`:'');
+  });
+  if(suspicious.length)m.append(el('span','tag warn','Zeitmarken prüfen: Satz '+suspicious.join(', ')));
+  renderUnits(suspicious);
+  $('preview-card').hidden=false;$('room-card').hidden=false;
+}
+function renderUnits(suspicious){
+  const box=$('units');box.replaceChildren();
+  lesson.units.forEach((u,i)=>{
+    const r=el('div','unit');r.id='u'+i;r.append(el('span','n',i+1),el('span','t',u.text));
+    const b=el('div','btns');
+    const play=(kind)=>async()=>{
+      err('');document.querySelectorAll('.unit.playing').forEach(x=>x.classList.remove('playing'));r.classList.add('playing');
+      const [a,bb,c]=u.cue;
+      try{await player.range(kind==='n'?a:bb,kind==='n'?bb:c)}catch(e){err(e)}
+      r.classList.remove('playing');
+    };
+    const n=el('button','btn sm ghost','▶ Normal');n.type='button';n.onclick=play('n');
+    const s=el('button','btn sm ghost','▶ Langsam');s.type='button';s.onclick=play('s');
+    b.append(n,s);if(suspicious.includes(i+1))b.append(el('span','tag warn','Zeitmarken prüfen'));
+    r.append(b);box.append(r);
+  });
+}
+$('stop').onclick=()=>{player?.stop();document.querySelectorAll('.unit.playing').forEach(x=>x.classList.remove('playing'))};
+
+/* ---------- Eigene Dateien ---------- */
+function tryOwn(){
+  if(!ownMp3||!ownJson)return;
+  if(objectUrl)URL.revokeObjectURL(objectUrl);
+  objectUrl=URL.createObjectURL(ownMp3);
+  try{const l=JSON.parse(ownJson);l.id=l.id||'eigene';l.title=l.title||'Eigene Lektion';l.duration=l.duration||0;$('lesson').value='';selectLesson(l,objectUrl)}catch(e){err('JSON nicht lesbar: '+e.message)}
+}
+$('f-mp3').onchange=e=>{ownMp3=e.target.files[0]||null;tryOwn()};
+$('f-json').onchange=async e=>{const f=e.target.files[0];ownJson=f?await f.text():null;tryOwn()};
+
+/* ---------- Raum (Supabase Realtime, ohne Datenbank) ---------- */
+const ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function makeCode(){const a=new Uint32Array(6);crypto.getRandomValues(a);return Array.from(a,n=>ALPHA[n%ALPHA.length]).join('')}
+const phase={name:'lobby'};
+function stateMsg(){return{phase:phase.name,title:lesson.title,sentences:lesson.units.length,questions:lesson.questions.length,t:Date.now()}}
+function sendState(){if(ch&&lesson)ch.send({type:'broadcast',event:'state',payload:stateMsg()})}
+$('open').onclick=()=>openRoom(makeCode());
+function openRoom(code){
+  if(!lesson||ch)return;
+  room=code;sessionStorage.setItem('dik_room',JSON.stringify({code,lessonId:lesson.id}));
+  ch=db.channel('kl-dik-'+code,{config:{broadcast:{self:false},presence:{key:'teacher'}}});
+  ch.on('broadcast',{event:'hello'},()=>sendState());
+  ch.on('presence',{event:'sync'},renderPeople);
+  ch.subscribe(async st=>{
+    if(st==='SUBSCRIBED'){await ch.track({role:'teacher'});sendState();hb=setInterval(sendState,5000)}
+    else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')err('Verbindung zum Echtzeit-Dienst fehlgeschlagen ('+st+').');
+  });
+  $('code').textContent=code;$('room-closed').hidden=true;$('room-open').hidden=false;
+  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;renderPeople();
+}
+function renderPeople(){
+  const box=$('people');box.replaceChildren();if(!ch)return;
+  const st=ch.presenceState();
+  const list=Object.entries(st).flatMap(([k,arr])=>arr.filter(m=>m.role==='student').map(m=>({k,name:m.name,at:m.joined_at||0}))).sort((a,b)=>a.at-b.at);
+  $('count').textContent=list.length?`${list.length} Schüler im Raum`:'Noch keine Schüler im Raum';
+  if(!list.length){box.append(el('p','empty','Warten auf Schüler…'));return}
+  list.forEach(p=>{const r=el('div','person');r.append(el('span','dot'),el('span',null,p.name));box.append(r)});
+}
+$('code').onclick=async()=>{try{await navigator.clipboard.writeText(room)}catch(_){}};
+function endSession(){
+  if(ch){ch.send({type:'broadcast',event:'end',payload:{}});clearInterval(hb);const c=ch;ch=null;setTimeout(()=>db.removeChannel(c),300)}
+  room=null;sessionStorage.removeItem('dik_room');
+  $('room-closed').hidden=false;$('room-open').hidden=true;
+  $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;
+}
+$('end').onclick=()=>{if(confirm('Sitzung wirklich beenden? Alle Schüler werden getrennt.'))endSession()};
+</script>
+</body>
+</html>
