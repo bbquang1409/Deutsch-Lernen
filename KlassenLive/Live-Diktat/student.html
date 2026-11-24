@@ -43,6 +43,17 @@ input{width:100%;height:50px;padding:0 14px;border:1px solid #cfd5dc;border-radi
 .opt .m{font-weight:800}
 .score{margin:6px 0 14px;padding:12px;border-radius:12px;background:var(--ok-l);color:var(--ok);font-weight:750;text-align:center}
 .sent{padding:12px;border-radius:12px;background:var(--ok-l);color:var(--ok);font-weight:700;text-align:center}
+.audiobar{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--warn-l);color:var(--warn);font-size:.9rem;font-weight:650}
+.audiobar.on{background:var(--ok-l);color:var(--ok)}.audiobar span{flex:1}
+.audiobar button{min-height:38px;padding:0 14px;border:0;border-radius:10px;background:var(--red);color:#fff;font:inherit;font-weight:700;font-size:.9rem}
+.now{margin:0 0 12px;padding:9px 12px;border-radius:12px;background:var(--red-l);color:var(--red);font-weight:700;font-size:.92rem}
+.dsent{font-size:.82rem;font-weight:700;color:var(--mut);margin:0 0 8px}
+textarea{width:100%;min-height:110px;padding:12px 14px;border:1px solid #cfd5dc;border-radius:12px;font:inherit;font-size:17px;line-height:1.5;resize:vertical;color:var(--ink);margin-bottom:12px}
+.tkbox{padding:12px 14px;border-radius:12px;background:var(--gray-l);font-size:1.05rem;line-height:1.7;margin-bottom:12px;overflow-wrap:anywhere}
+.tk.bad{color:#b3202f;background:#fdecee;border-radius:4px;padding:0 2px;font-weight:700;text-decoration:underline wavy #b3202f}
+.refbox{padding:12px 14px;border-radius:12px;background:var(--ok-l);color:#14532d;font-size:1.05rem;line-height:1.6;margin-bottom:12px}
+.refbox .tk.bad{background:#fff3c4;color:#7a4b00;text-decoration:none}
+.fbline{font-weight:750;margin:0 0 10px}.fbline.ok{color:var(--ok)}.fbline.no{color:#b3202f}
 </style>
 </head>
 <body>
@@ -63,7 +74,10 @@ input{width:100%;height:50px;padding:0 14px;border:1px solid #cfd5dc;border-radi
   <section id="room" class="card" hidden>
     <div class="room-top"><h2 id="title">Live-Diktat</h2><span id="codetag" class="codetag"></span></div>
     <span id="pill" class="pill wait">Verbinde…</span>
+    <div id="audiobar" class="audiobar" hidden><span id="abtxt"></span><button id="abbtn" type="button">Ton aktivieren</button></div>
+    <div id="now" class="now" hidden></div>
     <div id="quiz" hidden></div>
+    <div id="dikt" hidden></div>
     <div id="body" class="big"><b>Warten auf den Lehrer</b>Gleich geht es los. Lass diese Seite geöffnet.</div>
     <button id="leave" class="btn ghost" type="button">Raum verlassen</button>
   </section>
@@ -88,7 +102,7 @@ function setPill(cls,t){const p=$('pill');p.className='pill '+cls;p.textContent=
 function showRoom(code){$('join').hidden=true;$('room').hidden=false;$('codetag').textContent=code}
 function backToJoin(msg){
   clearInterval(watch);if(ch){const c=ch;ch=null;try{c.untrack()}catch(_){}db.removeChannel(c)}
-  sessionStorage.removeItem('dik_me');try{sessionStorage.removeItem(qKey())}catch(_){}picks=[];submitted=false;curKey='';lastSentEpoch=null;pickQid=null;me=null;joining=false;$('room').hidden=true;$('join').hidden=false;$('joinbtn').disabled=false;$('joinbtn').textContent='Beitreten';err(msg||'');
+  sessionStorage.removeItem('dik_me');try{sessionStorage.removeItem(qKey())}catch(_){}picks=[];submitted=false;curKey='';lastSentEpoch=null;pickQid=null;stopAudio();aud=null;audUrl='';unlocked=false;dk=null;dkKey='';showNow('');$('audiobar').hidden=true;me=null;joining=false;$('room').hidden=true;$('join').hidden=false;$('joinbtn').disabled=false;$('joinbtn').textContent='Beitreten';err(msg||'');
 }
 function teacherPresent(){return Object.values(ch.presenceState()).some(a=>a.some(m=>m.role==='teacher'))}
 function duplicateName(){
@@ -101,6 +115,10 @@ function connect(code,name,id,at,resume){
   const c=db.channel('kl-dik-'+code,{config:{broadcast:{self:false},presence:{key:id}}});ch=c;
   let checked=false;
   c.on('broadcast',{event:'state'},({payload})=>{lastBeat=Date.now();render(payload)});
+  c.on('broadcast',{event:'play'},({payload})=>onPlay(payload));
+  c.on('broadcast',{event:'stop'},()=>{showNow('');stopAudio()});
+  c.on('broadcast',{event:'idle'},()=>showNow(''));
+  c.on('broadcast',{event:'fb'},({payload})=>onFb(payload));
   c.on('broadcast',{event:'end'},()=>backToJoin('Der Lehrer hat die Sitzung beendet.'));
   const verify=()=>{
     if(!ch||ch!==c||checked)return;checked=true;
@@ -130,9 +148,13 @@ function mk(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=
 function render(s){
   lastState=s;$('title').textContent=s.title||'Live-Diktat';
   const showQuiz=(s.phase==='quiz'||s.phase==='quizResult')&&Array.isArray(s.quiz);
-  $('quiz').hidden=!showQuiz;$('body').hidden=showQuiz;
+  const showDik=s.phase==='dikt';
+  $('quiz').hidden=!showQuiz;$('dikt').hidden=!showDik;$('body').hidden=showQuiz||showDik;
+  audioSetup(s.audio);
   if(s.phase==='lobby'){setPill('wait','Warten auf den Start');$('body').innerHTML='<b>Du bist im Raum</b>Der Lehrer startet gleich. Lass diese Seite geöffnet.'}
   else if(s.phase==='listen'){setPill('ok','Zuhören');$('body').innerHTML='<b>Bitte gut zuhören</b>Der Lehrer spielt den Text ab. Du musst noch nichts tun.'}
+  else if(s.phase==='final'){setPill('ok','Zuhören');$('body').innerHTML='<b>Zum Abschluss: Bitte noch einmal zuhören</b>Der Lehrer spielt den ganzen Text noch einmal ab.'}
+  else if(showDik){renderDikt(s)}
   else if(showQuiz){renderQuiz(s)}
   else{setPill('ok','Verbunden');$('body').innerHTML='<b>Bitte warten</b>'}
 }
@@ -168,6 +190,94 @@ function renderQuiz(s){
     box.append(b);
   }
   function upd(){const b=$('qsubmit');if(b)b.disabled=!picks.every(x=>x!==null)}
+}
+
+/* ---- Ton auf dem eigenen Handy (für Online-Unterricht) ---- */
+let aud=null,audUrl='',unlocked=false,audReady=false,audOn=false,playTok=0;
+function mmss(){return ''}
+function audioSetup(a){
+  const bar=$('audiobar');
+  if(!a||!a.on||!a.url){audOn=false;bar.hidden=true;return}
+  audOn=true;bar.hidden=false;
+  if(!aud||audUrl!==a.url){stopAudio();audUrl=a.url;audReady=false;unlocked=false;aud=new Audio();aud.preload='auto';
+    aud.addEventListener('loadedmetadata',()=>{audReady=true;abUpd()});aud.addEventListener('error',()=>{audReady=false;$('abtxt').textContent='Audio konnte nicht geladen werden. Bitte mit dem Lehrer-Ton zuhören.';$('abbtn').hidden=true});
+    aud.src=a.url;aud.load()}
+  abUpd();
+}
+function abUpd(){
+  const bar=$('audiobar'),t=$('abtxt'),b=$('abbtn');
+  bar.classList.toggle('on',unlocked);
+  if(unlocked){t.textContent=audReady?'🔊 Ton ist aktiv – du hörst den Text hier auf deinem Handy.':'Ton wird geladen…';b.hidden=true}
+  else{t.textContent='Online? Aktiviere den Ton, um den Text hier zu hören.';b.hidden=false}
+}
+$('abbtn').onclick=()=>{
+  if(!aud)return;aud.muted=true;
+  const p=aud.play();
+  const fin=()=>{try{aud.pause()}catch(_){};aud.muted=false;unlocked=true;abUpd()};
+  if(p&&p.then)p.then(fin,()=>{aud.muted=false;$('abtxt').textContent='Ton konnte nicht aktiviert werden. Bitte erneut tippen.'});else fin();
+};
+function stopAudio(){playTok++;if(aud){try{aud.pause()}catch(_){}}}
+function showNow(t){const n=$('now');n.textContent=t?'▶ '+t:'';n.hidden=!t}
+function onPlay(p){
+  if(!p)return;showNow(p.info||'');
+  if(!audOn||!unlocked||!audReady||!aud)return;
+  const tk=++playTok;
+  const go=()=>{if(tk!==playTok)return;aud.currentTime=p.from;aud.muted=false;const pr=aud.play();if(pr&&pr.catch)pr.catch(()=>{});
+    const iv=setInterval(()=>{if(tk!==playTok){clearInterval(iv);return}if(aud.currentTime>=p.to-0.04||aud.ended){clearInterval(iv);try{aud.pause()}catch(_){}}},40)};
+  go();
+}
+
+/* ---- Diktat: Satz schreiben, abgeben, Rückmeldung ---- */
+const nrm=s=>s.replace(/[„“”"»«‚‘’']/g,'"').replace(/…/g,"...").replace(/[–—]/g,"-");
+const tok=s=>(nrm(s).match(/[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*|\.\.\.|[^\s\p{L}\p{N}]/gu)||[]);
+function diff(ref,usr){const a=tok(ref),b=tok(usr),n=a.length,m=b.length;
+  const L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const R=a.map(t=>({t,ok:false})),U=b.map(t=>({t,ok:false}));let i=0,j=0;
+  while(i<n&&j<m){if(a[i]===b[j]){R[i].ok=U[j].ok=true;i++;j++}else if(L[i+1][j]>=L[i][j+1])i++;else j++}
+  return{R,U}}
+const gap=n=>n&&/^[\p{L}\p{N}"(]/u.test(n.t)?' ':'';
+let dk=null,dkKey='',dkSentEpoch=null;
+const dKey=()=>'dik_s_'+(me?.code||'');
+function dkLoad(i){
+  try{const s=JSON.parse(sessionStorage.getItem(dKey())||'null');if(s&&s.i===i){dk=s;return}}catch(_){}
+  dk={i,text:'',submitted:false,fb:null};
+}
+function dkSave(){try{sessionStorage.setItem(dKey(),JSON.stringify(dk))}catch(_){}}
+function dkSend(){if(ch&&dk)ch.send({type:'broadcast',event:'sentence',payload:{id:me.id,name:me.name,i:dk.i,text:dk.text}})}
+function onFb(p){if(!p||p.to!==me?.id||!dk||p.i!==dk.i)return;dk.fb={marks:p.marks,missing:p.missing};dkSave();dkDraw()}
+function renderDikt(s){
+  if(!dk||dk.i!==s.i)dkLoad(s.i);
+  if(dk.submitted&&dkSentEpoch!==s.epoch){dkSentEpoch=s.epoch;dkSend()}
+  setPill('ok','Diktat');dkLast=s;dkDraw();
+}
+let dkLast=null;
+function dkDraw(){
+  const s=dkLast;if(!s||s.phase!=='dikt'||!dk)return;
+  const rev=!!s.rev,key=[s.i,rev,dk.submitted,dk.fb?dk.fb.missing+'/'+dk.fb.marks.length:'-'].join('|');
+  if(key===dkKey)return;dkKey=key;
+  const box=$('dikt');box.replaceChildren();
+  box.append(mk('p','dsent',`Satz ${s.i+1} von ${s.sentences}`));
+  if(!dk.submitted&&!rev){
+    const ta=document.createElement('textarea');ta.value=dk.text;ta.placeholder='Schreibe, was du hörst…';ta.setAttribute('autocapitalize','sentences');ta.setAttribute('autocorrect','off');ta.spellcheck=false;
+    const b=mk('button','btn','Abgeben');b.type='button';b.disabled=!dk.text.trim();
+    ta.oninput=()=>{dk.text=ta.value;dkSave();b.disabled=!ta.value.trim()};
+    b.onclick=()=>{if(!dk.text.trim())return;dk.submitted=true;dkSave();dkSentEpoch=lastState.epoch;dkSend();dkKey='';dkDraw()};
+    box.append(ta,b);return;
+  }
+  if(!dk.submitted&&rev){box.append(mk('div','sent','Der Lehrer zeigt die richtige Lösung.'))}
+  if(dk.submitted){
+    const t=mk('div','tkbox');
+    if(dk.fb){dk.fb.marks.forEach((m,k,arr)=>t.append(mk('span','tk'+(m.ok?'':' bad'),m.t+gap(arr[k+1]))));
+      box.append(mk('p','fbline '+(dk.fb.missing===0&&dk.fb.marks.every(m=>m.ok)?'ok':'no'),dk.fb.missing===0&&dk.fb.marks.every(m=>m.ok)?'Alles richtig! ✓':(dk.fb.missing>0?`${dk.fb.missing} ${dk.fb.missing===1?'Wort fehlt':'Wörter fehlen'} oder ${dk.fb.missing===1?'ist':'sind'} falsch`:'Rot markierte Stellen sind falsch')))}
+    else{t.textContent=dk.text}
+    box.append(t);
+    if(!dk.fb)box.append(mk('div','sent','Abgegeben ✓ Wird geprüft…'));
+  }
+  if(rev&&s.ref){
+    const d=diff(s.ref,dk.text||'');box.append(mk('p','qintro','Richtig ist:'));
+    const r=mk('div','refbox');d.R.forEach((m,k,arr)=>r.append(mk('span','tk'+(m.ok||!dk.text.trim()?'':' bad'),m.t+gap(arr[k+1]))));box.append(r);
+  }else if(dk.submitted&&dk.fb)box.append(mk('p','qintro','Warte, bis der Lehrer die Lösung zeigt.'));
 }
 $('leave').onclick=()=>{if(confirm('Raum wirklich verlassen?'))backToJoin('')};
 </script>

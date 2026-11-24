@@ -53,6 +53,12 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
 .orow .bar i{position:absolute;inset:0 auto 0 0;background:#f0c6cb}.orow .bar span{position:relative}
 .orow.right .bar{outline:2px solid var(--ok)}.orow.right .bar i{background:#bfe3cd}
 .badge{margin-left:auto;font-size:.8rem;font-weight:700;color:var(--ok)}.badge.wait{color:var(--mut);font-weight:600}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:0 0 12px;font-size:.92rem;font-weight:500;color:var(--ink)}
+.chk input{width:20px;height:20px;margin-top:2px;flex:none}.chk small{display:block;color:var(--mut);font-weight:400}
+.tk{display:inline-block;margin-right:5px}.tk.bad{color:#c0392b;font-weight:700;text-decoration:underline}
+.sub{padding:8px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+.sub .nm{font-weight:650}.sub .tx{grid-column:1/-1;font-size:.92rem;overflow-wrap:anywhere}
+.sentence{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:1.02rem}
 </style>
 </head>
 <body>
@@ -85,6 +91,7 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
       <div id="room-card" hidden style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
       
       <div id="room-closed">
+        <label class="chk"><input type="checkbox" id="stu-audio"><span>Ton auch auf den Schülerhandys abspielen<small>Für Online-Unterricht. Im Klassenzimmer ausgeschaltet lassen (sonst Echo).</small></span></label>
         <button id="open" class="btn green full" type="button">Raum öffnen</button>
       </div>
       <div id="room-open" hidden>
@@ -128,7 +135,7 @@ async function start(){
   if(!data.session){$('needlogin').hidden=false;return}
   $('app').hidden=false;fillLibrary();
   let saved=null;try{saved=JSON.parse(sessionStorage.getItem('dik_room')||'null')}catch(_){}
-  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);openRoom(saved.code,true)}}
+  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);$('stu-audio').checked=!!saved.audio;openRoom(saved.code,true)}}
 }
 
 /* ---------- Audio ---------- */
@@ -185,7 +192,7 @@ function selectLesson(l,url){
   err('');if(room)endSession();
   clearLesson();
   let suspicious;try{suspicious=validate(l)}catch(e){err(e);return}
-  lesson={...l,questions:l.questions||[]};
+  lesson={...l,questions:l.questions||[],own:!!url};$('stu-audio').disabled=!!url;if(url)$('stu-audio').checked=false;
   player=new Player(url||l.audio);
   const m=$('meta');m.replaceChildren();
   m.append(el('span','tag',lesson.level||'–'),el('span','tag',`${lesson.units.length} Sätze`),el('span','tag',`${lesson.questions.length} Fragen`));
@@ -231,41 +238,71 @@ $('f-json').onchange=async e=>{const f=e.target.files[0];ownJson=f?await f.text(
 /* ---------- Raum (Supabase Realtime, ohne Datenbank) ---------- */
 const ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode(){const a=new Uint32Array(6);crypto.getRandomValues(a);return Array.from(a,n=>ALPHA[n%ALPHA.length]).join('')}
-/* ---- Ablauf: Überblick -> Fragen -> (Schritt 3: Diktat) ---- */
+/* ---- Vergleich (Wörter + Satzzeichen getrennt, Groß-/Kleinschreibung zählt) ---- */
+const nrm=s=>s.replace(/[„“”"»«‚‘’']/g,'"').replace(/…/g,"...").replace(/[–—]/g,"-");
+const tok=s=>(nrm(s).match(/[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*|\.\.\.|[^\s\p{L}\p{N}]/gu)||[]);
+function diff(ref,usr){const a=tok(ref),b=tok(usr),n=a.length,m=b.length;
+  const L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const R=a.map(t=>({t,ok:false})),U=b.map(t=>({t,ok:false}));let i=0,j=0;
+  while(i<n&&j<m){if(a[i]===b[j]){R[i].ok=U[j].ok=true;i++;j++}else if(L[i+1][j]>=L[i][j+1])i++;else j++}
+  return{R,U}}
+function tokens(marks,box){marks.forEach(m=>{const s=el('span','tk'+(m.ok?'':' bad'),m.t);box.append(s)})}
+
+/* ---- Ablauf: Überblick -> Fragen -> Diktat (Satz für Satz) -> Abschluss ---- */
 const EPOCH=Date.now();
-const phase={name:'lobby',playing:false,idx:0,done:false,qid:0};
-const answers=new Map(); // Schüler-ID -> {name,picks}
-let runId=0;
-const LET='ABCD';
+const phase={name:'lobby',playing:false,idx:0,done:false,qid:0,i:0,rev:false,audio:false,url:null};
+const answers=new Map(); // Fragen: Schüler-ID -> {name,picks}
+const subs=new Map();    // Diktat, aktueller Satz: Schüler-ID -> {name,text,marks,missing,wrong}
+let runId=0,seq=0;
+const LET='ABCD',sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const cast=(event,payload)=>{if(ch)ch.send({type:'broadcast',event,payload})};
 function stateMsg(){
-  const m={epoch:EPOCH,phase:phase.name,title:lesson.title,sentences:lesson.units.length,nq:lesson.questions.length,t:Date.now()};
+  const m={epoch:EPOCH,phase:phase.name,title:lesson.title,sentences:lesson.units.length,nq:lesson.questions.length,audio:{on:phase.audio,url:phase.audio?phase.url:null},t:Date.now()};
   if(phase.name==='quiz'||phase.name==='quizResult'){m.qid=phase.qid;m.quiz=lesson.questions.map(q=>({q:q.q,o:q.o}))}
   if(phase.name==='quizResult')m.correct=lesson.questions.map(q=>q.a);
+  if(phase.name==='dikt'){m.i=phase.i;m.rev=phase.rev;if(phase.rev)m.ref=lesson.units[phase.i].text}
   return m;
 }
-function sendState(){if(ch&&lesson)ch.send({type:'broadcast',event:'state',payload:stateMsg()})}
-function setPhase(n){phase.name=n;try{sessionStorage.setItem('dik_phase',JSON.stringify({n,qid:phase.qid}))}catch(_){}sendState();renderCtrl();renderPeople()}
+function sendState(){if(ch&&lesson)cast('state',stateMsg())}
+function persist(){try{sessionStorage.setItem('dik_phase',JSON.stringify({n:phase.name,qid:phase.qid,i:phase.i,rev:phase.rev}))}catch(_){}}
+function setPhase(n){phase.name=n;persist();sendState();renderCtrl();renderPeople()}
 const btn=(t,cls,fn,dis)=>{const b=el('button','btn '+cls,t);b.type='button';b.onclick=fn;if(dis)b.disabled=true;return b};
 
+/* Audio: läuft immer auf dem Lehrer-PC; zusätzlich Befehle an die Schülerhandys (dort nur hörbar, wenn „Ton“ aktiv ist) */
+async function playSeg(s,e,info){cast('play',{seq:++seq,from:s,to:e,info});return player.range(s,e)}
+function stopAll(){runId++;player?.stop();phase.playing=false;cast('stop',{})}
+
 async function startOverview(){
-  err('');if(phase.name!=='listen')setPhase('listen');
+  err('');if(phase.name!=='listen'&&phase.name!=='final')setPhase('listen');
   const my=++runId;phase.playing=true;phase.done=false;phase.idx=0;renderCtrl();
+  const n=lesson.units.length;
   try{
-    for(let i=0;i<lesson.units.length;i++){
+    for(let i=0;i<n;i++){
       if(my!==runId)return;
       phase.idx=i+1;renderCtrl();
       const u=lesson.units[i];
-      const ok=await player.range(u.cue[0],u.cue[1]);
+      const ok=await playSeg(u.cue[0],u.cue[1],`Überblick · Satz ${i+1}/${n}`);
       if(!ok||my!==runId)return;
-      await new Promise(r=>setTimeout(r,500));
+      await sleep(500);
     }
     if(my===runId)phase.done=true;
   }catch(e){err(e)}
-  if(my===runId){phase.playing=false;renderCtrl()}
+  if(my===runId){phase.playing=false;cast('idle',{});renderCtrl()}
 }
-function stopOverview(){runId++;player?.stop();phase.playing=false;phase.done=false;renderCtrl()}
-function startQuiz(){runId++;player?.stop();phase.playing=false;answers.clear();phase.qid=Date.now();setPhase('quiz')}
+function stopOverview(){stopAll();phase.done=false;renderCtrl()}
+function startQuiz(){stopAll();answers.clear();phase.qid=Date.now();setPhase('quiz')}
 function reveal(){setPhase('quizResult')}
+function startDikt(){stopAll();phase.i=0;phase.rev=false;subs.clear();setPhase('dikt')}
+function nextSentence(){stopAll();subs.clear();phase.rev=false;if(phase.i<lesson.units.length-1){phase.i++;setPhase('dikt')}else{phase.done=false;setPhase('final')}}
+function revealSentence(){phase.rev=true;setPhase('dikt')}
+async function playSentence(kind){
+  err('');const my=++runId,i=phase.i,n=lesson.units.length,[a,b,c]=lesson.units[i].cue;
+  const seg=kind==='n'?[a,b]:kind==='s'?[b,c]:[a,c];
+  phase.playing=true;renderCtrl();
+  try{await playSeg(seg[0],seg[1],`Satz ${i+1}/${n}`)}catch(e){err(e)}
+  if(my===runId){phase.playing=false;cast('idle',{});renderCtrl()}
+}
 
 function presentStudents(){
   if(!ch)return[];
@@ -280,36 +317,59 @@ function renderStats(c){
     const counts=[0,0,0,0];sub.forEach(s=>{const v=s.picks[i];if(v!=null)counts[v]++});
     const max=Math.max(1,sub.length);
     q.o.forEach((txt,j)=>{
-      const r=el('div','orow'+(phase.name==='quizResult'&&q.a===j?' right':''));
+      const right=phase.name==='quizResult'&&q.a===j;
+      const r=el('div','orow'+(right?' right':''));
       r.append(el('span','let',LET[j]));
-      const bar=el('div','bar');const fill=el('i');fill.style.width=Math.round(counts[j]/max*100)+'%';bar.append(fill,el('span',null,txt+(phase.name==='quizResult'&&q.a===j?'  ✓':'')));
+      const bar=el('div','bar');const fill=el('i');fill.style.width=Math.round(counts[j]/max*100)+'%';bar.append(fill,el('span',null,txt+(right?'  ✓':'')));
       r.append(bar,el('span','cnt',String(counts[j])));box.append(r);
     });
     c.append(box);
   });
 }
+function overviewPanel(c,final){
+  const n=lesson.units.length,hasQ=lesson.questions.length>0;
+  c.append(el('div','ctrl-title',final?'Abschluss · Überblick noch einmal':'Überblick'));
+  if(phase.playing){c.append(el('p','ctrl-now',`Läuft … Satz ${phase.idx}/${n}`),btn('⏹ Stopp','ghost',stopOverview));return}
+  c.append(el('p','ctrl-now',phase.done?'Überblick beendet.':'Gestoppt.'));
+  const r=el('div','row-btns');r.append(btn('↻ Nochmal anhören','ghost',startOverview));
+  if(final){r.append(btn('Sitzung beenden','green',()=>{if(confirm('Sitzung beenden? Alle Schüler werden getrennt.'))endSession()}))}
+  else r.append(hasQ?btn('Weiter zu den Fragen →','green',startQuiz):btn('Weiter zum Diktat →','green',startDikt));
+  c.append(r);
+}
 function renderCtrl(){
   const c=$('ctrl');c.replaceChildren();if(!ch||!lesson)return;
-  const hasQ=lesson.questions.length>0,n=lesson.units.length;
+  const n=lesson.units.length;
   if(phase.name==='lobby'){
     c.append(el('div','ctrl-title','Schritt 1 · Überblick'),btn('▶ Überblick starten','green',startOverview),
       el('p','ctrl-hint','Der ganze Text wird einmal normal vorgelesen. Die Schüler hören nur zu.'));
-  }else if(phase.name==='listen'){
-    c.append(el('div','ctrl-title','Überblick'));
-    if(phase.playing){c.append(el('p','ctrl-now',`Läuft … Satz ${phase.idx}/${n}`),btn('⏹ Stopp','ghost',stopOverview))}
-    else{
-      c.append(el('p','ctrl-now',phase.done?'Überblick beendet.':'Gestoppt.'));
-      const r=el('div','row-btns');r.append(btn('↻ Nochmal anhören','ghost',startOverview));
-      if(hasQ)r.append(btn('Weiter zu den Fragen →','green',startQuiz));
-      c.append(r);
-      if(!hasQ)c.append(el('p','ctrl-hint','Diese Lektion hat keine Fragen. Das Diktat folgt in Schritt 3.'));
-    }
-  }else if(phase.name==='quiz'||phase.name==='quizResult'){
+  }else if(phase.name==='listen'){overviewPanel(c,false)}
+  else if(phase.name==='final'){overviewPanel(c,true);if(!phase.playing&&!phase.done&&phase.idx===0)c.append(el('p','ctrl-hint','Starte den abschließenden Überblick mit „Nochmal anhören“.'))}
+  else if(phase.name==='quiz'||phase.name==='quizResult'){
     c.append(el('div','ctrl-title',phase.name==='quiz'?'Fragen · Schüler antworten':'Fragen · Auflösung gezeigt'));
     renderStats(c);
     const r=el('div','row-btns');
     if(phase.name==='quiz')r.append(btn('Lösung zeigen','green',reveal));
-    else r.append(btn('Weiter: Diktat (folgt in Schritt 3)','ghost',()=>{},true));
+    else r.append(btn('Weiter: Diktat →','green',startDikt));
+    c.append(r);
+  }else if(phase.name==='dikt'){
+    const i=phase.i,list=presentStudents(),ids=new Set(list.map(p=>p.k));
+    c.append(el('div','ctrl-title',`Diktat · Satz ${i+1}/${n}`));
+    c.append(el('div','sentence',lesson.units[i].text));
+    const pl=el('div','row-btns');
+    pl.append(btn('▶ Ganzer Satz','green',()=>playSentence('all')),btn('Normal','ghost',()=>playSentence('n')),btn('Langsam','ghost',()=>playSentence('s')),btn('⏹ Stopp','ghost',()=>{stopAll();renderCtrl()}));
+    c.append(pl);
+    if(phase.playing)c.append(el('p','ctrl-now','Läuft …'));
+    const got=[...subs.keys()].filter(id=>ids.has(id)).length;
+    c.append(el('p','ctrl-now',`${got}/${list.length} haben abgegeben`));
+    list.forEach(p=>{
+      const s=subs.get(p.k);const row=el('div','sub');row.append(el('span','nm',p.name));
+      if(s){row.append(el('span','badge',s.wrong===0&&s.missing===0?'✓ richtig':`${s.wrong+s.missing} Fehler`));const tx=el('div','tx');tokens(s.marks,tx);row.append(tx)}
+      else row.append(el('span','badge wait','…'));
+      c.append(row);
+    });
+    const r=el('div','row-btns');r.style.marginTop='12px';
+    if(!phase.rev){r.append(btn('Lösung zeigen','green',revealSentence));r.append(btn(i<n-1?'Nächster Satz →':'Abschluss →','ghost',nextSentence))}
+    else r.append(btn(i<n-1?'Nächster Satz →':'Weiter: Abschluss →','green',nextSentence));
     c.append(r);
   }
 }
@@ -317,9 +377,10 @@ function renderCtrl(){
 $('open').onclick=()=>openRoom(makeCode());
 function openRoom(code,resume){
   if(!lesson||ch)return;
-  room=code;sessionStorage.setItem('dik_room',JSON.stringify({code,lessonId:lesson.id}));
-  phase.name='lobby';phase.playing=false;phase.done=false;phase.qid=0;answers.clear();
-  if(resume){try{const s=JSON.parse(sessionStorage.getItem('dik_phase')||'null');if(s&&['lobby','listen','quiz','quizResult'].includes(s.n)){phase.name=s.n;phase.qid=s.qid||0}}catch(_){}}
+  room=code;phase.audio=!lesson.own&&$('stu-audio').checked;phase.url=lesson.audio;
+  sessionStorage.setItem('dik_room',JSON.stringify({code,lessonId:lesson.id,audio:phase.audio}));
+  Object.assign(phase,{name:'lobby',playing:false,done:false,idx:0,qid:0,i:0,rev:false});answers.clear();subs.clear();
+  if(resume){try{const s=JSON.parse(sessionStorage.getItem('dik_phase')||'null');if(s&&['lobby','listen','quiz','quizResult','dikt','final'].includes(s.n)){phase.name=s.n;phase.qid=s.qid||0;phase.i=Math.min(s.i||0,lesson.units.length-1);phase.rev=!!s.rev}}catch(_){}}
   else sessionStorage.removeItem('dik_phase');
   ch=db.channel('kl-dik-'+code,{config:{broadcast:{self:false},presence:{key:'teacher'}}});
   ch.on('broadcast',{event:'hello'},()=>sendState());
@@ -329,23 +390,30 @@ function openRoom(code,resume){
     const picks=Array.isArray(payload.picks)?payload.picks.slice(0,nq).map(x=>Number.isInteger(x)&&x>=0&&x<4?x:null):[];
     answers.set(payload.id,{name:String(payload.name||'').slice(0,60),picks});renderCtrl();renderPeople();
   });
+  ch.on('broadcast',{event:'sentence'},({payload})=>{
+    if(!payload||typeof payload.id!=='string'||phase.name!=='dikt'||payload.i!==phase.i)return;
+    const text=String(payload.text||'').slice(0,400),d=diff(lesson.units[phase.i].text,text);
+    const marks=d.U.map(x=>({t:x.t,ok:x.ok})),missing=d.R.filter(x=>!x.ok).length,wrong=marks.filter(m=>!m.ok).length;
+    subs.set(payload.id,{name:String(payload.name||'').slice(0,60),text,marks,missing,wrong});
+    cast('fb',{to:payload.id,i:phase.i,marks,missing});renderCtrl();renderPeople();
+  });
   ch.on('presence',{event:'sync'},()=>{renderPeople();renderCtrl()});
   ch.subscribe(async st=>{
     if(st==='SUBSCRIBED'){await ch.track({role:'teacher'});sendState();hb=setInterval(sendState,5000)}
     else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')err('Verbindung zum Echtzeit-Dienst fehlgeschlagen ('+st+').');
   });
   $('code').textContent=code;$('room-closed').hidden=true;$('room-open').hidden=false;
-  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;renderPeople();renderCtrl();
+  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;$('stu-audio').disabled=true;renderPeople();renderCtrl();
 }
 function renderPeople(){
   const box=$('people');box.replaceChildren();if(!ch)return;
   const list=presentStudents();
   $('count').textContent=list.length?`${list.length} Schüler im Raum`:'Noch keine Schüler im Raum';
   if(!list.length){box.append(el('p','empty','Warten auf Schüler…'));return}
-  const inQuiz=phase.name==='quiz'||phase.name==='quizResult';
+  const mode=phase.name==='quiz'||phase.name==='quizResult'?answers:phase.name==='dikt'?subs:null;
   list.forEach(p=>{
     const r=el('div','person');r.append(el('span','dot'),el('span',null,p.name));
-    if(inQuiz){const done=answers.has(p.k);r.append(el('span','badge'+(done?'':' wait'),done?'✓ abgegeben':'…'))}
+    if(mode){const done=mode.has(p.k);r.append(el('span','badge'+(done?'':' wait'),done?'✓ abgegeben':'…'))}
     box.append(r);
   });
 }
@@ -353,9 +421,9 @@ $('code').onclick=async()=>{try{await navigator.clipboard.writeText(room)}catch(
 function endSession(){
   runId++;player?.stop();
   if(ch){ch.send({type:'broadcast',event:'end',payload:{}});clearInterval(hb);const c=ch;ch=null;setTimeout(()=>db.removeChannel(c),300)}
-  room=null;answers.clear();sessionStorage.removeItem('dik_room');sessionStorage.removeItem('dik_phase');
+  room=null;answers.clear();subs.clear();sessionStorage.removeItem('dik_room');sessionStorage.removeItem('dik_phase');
   $('room-closed').hidden=false;$('room-open').hidden=true;
-  $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;
+  $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;$('stu-audio').disabled=!!lesson?.own;
 }
 $('end').onclick=()=>{if(confirm('Sitzung wirklich beenden? Alle Schüler werden getrennt.'))endSession()};
 </script>
