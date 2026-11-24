@@ -69,10 +69,18 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
   </header>
   <p id="error" hidden></p>
 
-  <section id="needlogin" class="card" hidden>
-    <h2>Bitte zuerst anmelden</h2>
-    <p>Melde dich auf der Lehrer-Seite an und öffne danach diese Seite erneut.</p>
-    <a class="btn" href="../teacher.html">Zur Anmeldung</a>
+  <section id="needlogin" class="card" hidden style="max-width:380px;margin:24px auto">
+    <h2>Anmelden</h2>
+    <form id="loginform">
+      <label for="email">E-Mail</label>
+      <input id="email" type="email" autocomplete="username" required style="width:100%;height:48px;padding:0 14px;border:1px solid #cfd5dc;border-radius:12px;font:inherit;font-size:16px;margin-bottom:12px">
+      <label for="password">Passwort</label>
+      <div style="position:relative;margin-bottom:16px">
+        <input id="password" type="password" autocomplete="current-password" required style="width:100%;height:48px;padding:0 74px 0 14px;border:1px solid #cfd5dc;border-radius:12px;font:inherit;font-size:16px">
+        <button id="showpw" type="button" aria-label="Passwort anzeigen" style="position:absolute;right:6px;top:6px;height:36px;padding:0 12px;border:0;border-radius:9px;background:#eceff2;color:#3a4552;font:inherit;font-size:.85rem;font-weight:650;cursor:pointer">Zeigen</button>
+      </div>
+      <button class="btn" type="submit" style="width:100%">Anmelden</button>
+    </form>
   </section>
 
   <div id="app" hidden>
@@ -133,10 +141,16 @@ else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);start()}
 async function start(){
   const {data}=await db.auth.getSession();
   if(!data.session){$('needlogin').hidden=false;return}
-  $('app').hidden=false;fillLibrary();
+  $('needlogin').hidden=true;$('app').hidden=false;fillLibrary();
   let saved=null;try{saved=JSON.parse(sessionStorage.getItem('dik_room')||'null')}catch(_){}
   if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);$('stu-audio').checked=!!saved.audio;openRoom(saved.code,true)}}
 }
+
+$('showpw').onclick=()=>{const i=$('password'),h=i.type==='password';i.type=h?'text':'password';$('showpw').textContent=h?'Verbergen':'Zeigen'};
+$('loginform').onsubmit=async e=>{e.preventDefault();err('');
+  const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+  if(error){err('Anmeldung fehlgeschlagen: '+error.message);return}
+  start()};
 
 /* ---------- Audio ---------- */
 class Player{
