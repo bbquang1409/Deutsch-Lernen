@@ -152,6 +152,13 @@ $('loginform').onsubmit=async e=>{e.preventDefault();err('');
   if(error){err('Anmeldung fehlgeschlagen: '+error.message);return}
   start()};
 
+/* Herzschlag über Web Worker: wird vom Browser nicht gedrosselt, auch wenn der Tab im Hintergrund ist */
+let hbw=null;
+function startHb(){stopHb();
+  try{const u=URL.createObjectURL(new Blob(['setInterval(()=>postMessage(1),5000)'],{type:'application/javascript'}));hbw=new Worker(u);hbw.onmessage=sendState}
+  catch(_){hb=setInterval(sendState,5000)}}
+function stopHb(){if(hbw){hbw.terminate();hbw=null}if(hb){clearInterval(hb);hb=null}}
+
 /* ---------- Audio ---------- */
 class Player{
   constructor(src){this.a=new Audio();this.a.preload='auto';this.a.src=src;this.tok=0;this.timer=null;
@@ -413,7 +420,7 @@ function openRoom(code,resume){
   });
   ch.on('presence',{event:'sync'},()=>{renderPeople();renderCtrl()});
   ch.subscribe(async st=>{
-    if(st==='SUBSCRIBED'){await ch.track({role:'teacher'});sendState();hb=setInterval(sendState,5000)}
+    if(st==='SUBSCRIBED'){await ch.track({role:'teacher'});sendState();startHb()}
     else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')err('Verbindung zum Echtzeit-Dienst fehlgeschlagen ('+st+').');
   });
   $('code').textContent=code;$('room-closed').hidden=true;$('room-open').hidden=false;
@@ -434,7 +441,7 @@ function renderPeople(){
 $('code').onclick=async()=>{try{await navigator.clipboard.writeText(room)}catch(_){}};
 function endSession(){
   runId++;player?.stop();
-  if(ch){ch.send({type:'broadcast',event:'end',payload:{}});clearInterval(hb);const c=ch;ch=null;setTimeout(()=>db.removeChannel(c),300)}
+  if(ch){ch.send({type:'broadcast',event:'end',payload:{}});stopHb();const c=ch;ch=null;setTimeout(()=>db.removeChannel(c),300)}
   room=null;answers.clear();subs.clear();sessionStorage.removeItem('dik_room');sessionStorage.removeItem('dik_phase');
   $('room-closed').hidden=false;$('room-open').hidden=true;
   $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;$('stu-audio').disabled=!!lesson?.own;

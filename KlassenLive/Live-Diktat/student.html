@@ -109,16 +109,16 @@ function duplicateName(){
   const mine=me,list=Object.entries(ch.presenceState()).flatMap(([k,a])=>a.filter(m=>m.role==='student').map(m=>({k,...m})));
   return list.some(m=>m.k!==mine.id&&m.name.toLowerCase()===mine.name.toLowerCase()&&(m.joined_at<mine.at||(m.joined_at===mine.at&&m.k<mine.id)))
 }
-function connect(code,name,id,at,resume){
+function connect(code,name,id,at,resume,try_){try_=try_||0;
   joining=true;err('');$('joinbtn').disabled=true;$('joinbtn').textContent='Verbinde…';
   me={code,name,id,at};
   const c=db.channel('kl-dik-'+code,{config:{broadcast:{self:false},presence:{key:id}}});ch=c;
   let checked=false;
   c.on('broadcast',{event:'state'},({payload})=>{lastBeat=Date.now();render(payload)});
-  c.on('broadcast',{event:'play'},({payload})=>onPlay(payload));
-  c.on('broadcast',{event:'stop'},()=>{showNow('');stopAudio()});
-  c.on('broadcast',{event:'idle'},()=>showNow(''));
-  c.on('broadcast',{event:'fb'},({payload})=>onFb(payload));
+  c.on('broadcast',{event:'play'},({payload})=>{lastBeat=Date.now();onPlay(payload)});
+  c.on('broadcast',{event:'stop'},()=>{lastBeat=Date.now();showNow('');stopAudio()});
+  c.on('broadcast',{event:'idle'},()=>{lastBeat=Date.now();showNow('')});
+  c.on('broadcast',{event:'fb'},({payload})=>{lastBeat=Date.now();onFb(payload)});
   c.on('broadcast',{event:'end'},()=>backToJoin('Der Lehrer hat die Sitzung beendet.'));
   const verify=()=>{
     if(!ch||ch!==c||checked)return;checked=true;
@@ -126,11 +126,14 @@ function connect(code,name,id,at,resume){
     if(duplicateName()){backToJoin('Dieser Name ist im Raum schon vergeben. Bitte anderen Namen eingeben (z. B. mit Nachname).');return}
     sessionStorage.setItem('dik_me',JSON.stringify(me));showRoom(code);joining=false;
     c.send({type:'broadcast',event:'hello',payload:{}});
-    lastBeat=Date.now();watch=setInterval(()=>{if(Date.now()-lastBeat>16000)setPill('off','Verbindung zum Lehrer unterbrochen')},3000);
+    lastBeat=Date.now();watch=setInterval(()=>{const d=Date.now()-lastBeat;if(d>8000)c.send({type:'broadcast',event:'hello',payload:{}});if(d>25000)setPill('off','Verbindung zum Lehrer unterbrochen')},3000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ch===c)c.send({type:'broadcast',event:'hello',payload:{}})});
   };
   c.subscribe(async st=>{
     if(st==='SUBSCRIBED'){await c.track({role:'student',name,joined_at:at});setTimeout(verify,1200)}
-    else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')backToJoin('Verbindung fehlgeschlagen ('+st+'). Bitte erneut versuchen.');
+    else if((st==='CHANNEL_ERROR'||st==='TIMED_OUT')&&!checked){
+      if(try_<3&&ch===c){ch=null;try{c.untrack()}catch(_){}db.removeChannel(c);setTimeout(()=>{if(!ch&&me&&me.id===id)connect(code,name,id,at,resume,try_+1)},1500+try_*1000)}
+      else backToJoin('Verbindung fehlgeschlagen ('+st+'). Bitte erneut versuchen.')}
   });
   setTimeout(()=>{if(joining&&ch===c&&!checked)backToJoin('Verbindung zum Raum nicht möglich. Bitte Code prüfen.')},8000);
 }
