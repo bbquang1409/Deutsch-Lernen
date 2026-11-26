@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KlassenLive · HTML Übung</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;background:#fff;color:#1b2430;font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1{margin:0 0 4px;font-size:1.1rem;letter-spacing:-.01em}
+#status{margin:0 0 12px;font-size:.82rem;color:#67727f}
+#timer{display:none}
+section{padding:16px;background:#f7f8fa;border:1px solid #edf0f2;border-radius:14px}
+.task{margin:0 0 12px;font-size:1.05rem;line-height:1.6}
+.gap{display:inline-block;min-width:56px;border-bottom:2px solid #a91f32;text-align:center;color:#a91f32;font-weight:700}
+#answer{display:block;width:min(100%,280px);height:48px;margin:0 0 12px;padding:0 12px;border:1px solid #cdd3db;border-radius:11px;font:inherit;font-size:16px;background:#fff;color:inherit}
+#answer:focus-visible,#submit:focus-visible{outline:2px solid #a91f32;outline-offset:2px}
+#submit{min-height:46px;padding:0 18px;border:0;border-radius:11px;background:#a91f32;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+button:disabled,input:disabled{opacity:.55;cursor:not-allowed}
+#feedback{margin:14px 0 0;font-weight:700}
+#feedback.ok{color:#1d7f48}#feedback.bad{color:#a91f32}#feedback.none{color:#67727f}
+body.embedded h1,body.embedded #status{display:none}
+@media(max-width:480px){#submit{width:100%}#answer{width:100%}}
+</style>
+</head>
+<body>
+<h1>HTML Übung · Demo</h1>
+<p id="status">Standalone-Modus: ohne KlassenLive nutzbar.</p>
+<p id="timer" aria-live="off"></p>
+<section>
+  <p class="task"><b>Ergänzen Sie:</b> Ich <span class="gap">&nbsp;&nbsp;&nbsp;</span> heute Deutsch. (lernen)</p>
+  <input id="answer" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Antwort eingeben">
+  <button id="submit" type="button">Prüfen und abgeben</button>
+  <p id="feedback"></p>
+</section>
+<script src="klassenlive-bridge.js"></script>
+<script>
+const $=id=>document.getElementById(id);let done=false;let active=!KlassenLive.connected;if(KlassenLive.connected)document.body.classList.add('embedded');
+function updateControls(){$('answer').disabled=done||!active;$('submit').disabled=done||!active}
+KlassenLive.on('init',()=>{if(!done&&!active)$('status').textContent='Mit KlassenLive verbunden · wartet auf START';updateControls()});
+KlassenLive.on('start',()=>{if(done)return;active=true;$('status').textContent='Test läuft';updateControls();$('answer').focus({preventScroll:true})});
+KlassenLive.on('tick',({remainingMs})=>{if(remainingMs===null)return;const s=Math.ceil(remainingMs/1000);$('timer').textContent='Verbleibende Zeit: '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')});
+KlassenLive.on('submit-request',({reason})=>grade(reason));
+KlassenLive.on('locked',()=>{active=false;done=true;$('timer').textContent='';if(!$('feedback').textContent){$('feedback').textContent='Keine Antwort eingereicht';$('feedback').className='none';$('status').textContent='Test beendet'}updateControls()});
+function grade(reason='manual'){
+  if(done||!active)return;
+  const raw=$('answer').value.trim();
+  // Eine getippte Antwort wird bei jeder Abgabe bewertet (auch bei FINISH / Zeitablauf).
+  // Ohne Antwort oder bei reinem Sperren bleibt die Aufgabe unbewertet.
+  const unsubmitted=reason==='locked'||raw==='';
+  done=true;
+  const actual=raw.toLocaleLowerCase('de'),correct=!unsubmitted&&actual==='lerne';
+  $('feedback').textContent=unsubmitted?'Keine Antwort eingereicht':correct?'Richtig!':'Nicht richtig. Lösung: lerne';
+  $('feedback').className=unsubmitted?'none':correct?'ok':'bad';
+  $('status').textContent=unsubmitted?'Keine Antwort abgegeben':reason==='deadline'?'Zeit abgelaufen · automatisch abgegeben':reason==='teacher'?'Automatisch abgegeben':'Abgegeben';
+  $('timer').textContent='';
+  updateControls();
+  KlassenLive.submit({reason,answers:unsubmitted?[]:[{questionId:'q1',answer:actual,isCorrect:correct}],correct:unsubmitted?null:correct?1:0,total:unsubmitted?null:1});
+  if(!unsubmitted)KlassenLive.result({correct:correct?1:0,total:1});
+}
+$('submit').onclick=()=>grade();
+$('answer').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();grade()}});
+updateControls();
+</script>
+</body>
+</html>

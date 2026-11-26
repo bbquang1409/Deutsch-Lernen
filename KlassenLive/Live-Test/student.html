@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#a91f32">
+<title>KlassenLive · Schüler</title>
+<style>
+:root{--red:#a91f32;--red-l:#fbeaec;--ink:#1b2430;--mut:#67727f;--line:#e3e6eb;--bg:#f4f5f7;--ok:#1d7f48;--ok-l:#e5f4ec;--warn:#a16207;--warn-l:#fdf3dc;--gray-l:#eceff2}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom))}
+.brand{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 18px;color:var(--red);font-weight:750;font-size:1.5rem;letter-spacing:-.04em}
+.brand .logo{width:38px;height:38px;border-radius:11px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:1.15rem;letter-spacing:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 18px;box-shadow:0 1px 8px #1420340a}
+h2{margin:0 0 14px;font-size:1.15rem;letter-spacing:-.01em}
+#join{max-width:440px;margin:0 auto}
+label{display:block;margin:0 0 6px;font-size:.82rem;font-weight:650;color:#4b5663}
+input{width:100%;height:50px;padding:0 14px;border:1px solid #cfd5dc;border-radius:12px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}
+input:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+#code{text-align:center;text-transform:uppercase;letter-spacing:.3em;font:700 1.5rem ui-monospace,SFMono-Regular,Menlo,monospace}
+.code-row{display:flex;gap:8px;margin-bottom:14px}
+.code-row input{flex:1;min-width:0}
+.field{margin-bottom:16px}
+.btn{min-height:50px;padding:0 18px;border:1px solid transparent;border-radius:12px;background:var(--red);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.btn:disabled{opacity:.55}
+.btn.full{width:100%}
+.btn.ghost{background:#fff;color:#3a4552;border-color:#d5dae0;font-weight:600}
+.btn.small{min-height:50px;white-space:nowrap}
+#error{max-width:440px;margin:0 auto 12px;padding:10px 12px;border-radius:11px;background:#fdecee;color:#9b1c2c;font-size:.92rem;white-space:pre-wrap}
+/* room */
+.room-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.room-top h2{margin:0;overflow-wrap:anywhere}
+.codetag{font:700 .85rem ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;color:var(--mut);background:var(--gray-l);padding:3px 9px;border-radius:8px;white-space:nowrap}
+.statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 4px;min-height:34px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:99px;font-size:.88rem;font-weight:700}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.waiting{background:var(--warn-l);color:var(--warn)}
+.pill.active{background:var(--ok-l);color:var(--ok)}
+.pill.finished{background:var(--gray-l);color:#56616d}
+#timer{font:700 1.35rem ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:var(--red)}
+iframe{display:block;width:100%;height:clamp(300px,calc(100dvh - 330px),620px);margin-top:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
+#result{margin:14px 0 0;padding:12px 14px;border-radius:12px;background:var(--ok-l);color:var(--ok);font-weight:750;font-size:1.05rem;text-align:center}
+#result:empty{display:none}
+#leavebtn{margin-top:16px}
+/* dialog */
+.modal-overlay{position:fixed;inset:0;background:#15151599;display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:1000}
+@media(min-width:520px){.modal-overlay{align-items:center}}
+.modal{background:#fff;border-radius:18px;padding:22px 20px;width:min(100%,420px);box-shadow:0 16px 48px #0003}
+.modal h2{margin:0 0 10px;font-size:1.2rem}
+.modal p{margin:0;line-height:1.55;color:#444}
+.modal-actions{display:grid;gap:10px;margin-top:20px}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><span class="logo">K</span><span>KlassenLive</span></div>
+  <p id="error" role="alert" hidden></p>
+
+  <section id="join" class="card">
+    <h2>Raum beitreten</h2>
+    <form id="joinform" autocomplete="off">
+      <label for="code">Raumcode</label>
+      <div class="code-row">
+        <input id="code" maxlength="6" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="ABC123">
+        <button id="paste-code" class="btn ghost small" type="button">Einfügen</button>
+      </div>
+      <div class="field">
+        <label for="name">Vor- und Nachname</label>
+        <input id="name" maxlength="60" autocomplete="name" placeholder="Anna Muster">
+      </div>
+      <button id="joinbtn" class="btn full" type="submit">Beitreten</button>
+    </form>
+  </section>
+
+  <section id="room" class="card" hidden>
+    <div class="room-top"><h2 id="title"></h2><span id="roominfo" class="codetag"></span></div>
+    <div class="statusbar"><span id="status" class="pill"></span><span id="timer"></span></div>
+    <iframe id="exercise" title="Übung"></iframe>
+    <p id="result"></p>
+    <button id="leavebtn" class="btn ghost full" type="button">Raum verlassen</button>
+  </section>
+
+  <div id="leave-dialog" class="modal-overlay" role="presentation" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leave-heading" aria-describedby="leave-description">
+      <h2 id="leave-heading"></h2><p id="leave-description"></p>
+      <div class="modal-actions">
+        <button id="leave-confirm" class="btn" type="button"></button>
+        <button id="leave-cancel" class="btn ghost" type="button">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../config.js"></script>
+<script>
+const $=id=>document.getElementById(id),channel='KLASSENLIVE_V1';
+const STATUS={waiting:'Warten auf den Lehrer',active:'Test läuft',finished:'Test beendet'};
+let db,token=sessionStorage.getItem('kl_token'),state=null;
+let frameReady=false,started=false,sent=false,submitAsked=false,localSubmitted=false,frameOrigin=null;
+let roomGeneration=0,pollBusy=false,leaving=false,joining=false,pendingLeave=null,queued=null,flushing=false,pollFailed=false;
+const err=e=>{const m=e?.message||String(e||'');$('error').textContent=m;$('error').hidden=!m};
+
+if(!window.KL_CONFIG||!window.supabase||String(KL_CONFIG.anonKey||'').includes('PASTE_'))err('Konfiguration fehlt: config.js oder Supabase-Schlüssel nicht gefunden.');
+else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);if(token)poll();setInterval(()=>{if(token){poll();flush()}},2000)}
+
+$('paste-code').onclick=async()=>{
+  try{
+    const v=(await navigator.clipboard.readText()).trim().toUpperCase().replace(/\s+/g,'');
+    if(!/^[A-Z0-9]{6}$/.test(v)){err('Die Zwischenablage enthält keinen gültigen 6-stelligen Raumcode.');return}
+    $('code').value=v;err('');$('name').focus();
+  }catch(e){err('Einfügen nicht erlaubt. Bitte den Code selbst eingeben.');$('code').focus()}
+};
+$('code').addEventListener('input',()=>{$('code').value=$('code').value.toUpperCase().replace(/[^A-Z0-9]/g,'')});
+
+function resetRoomFlags(){sent=false;submitAsked=false;localSubmitted=false;started=false;frameReady=false;state=null;queued=null}
+
+$('joinform').onsubmit=async e=>{
+  e.preventDefault();
+  if(!db||leaving||joining)return;
+  if(token){$('join').hidden=true;$('room').hidden=false;poll();return}
+  const code=$('code').value.trim().toUpperCase(),name=$('name').value.trim();
+  if(!/^[A-Z0-9]{6}$/.test(code)||!name){err('Bitte einen gültigen Raumcode und deinen Namen eingeben.');return}
+  joining=true;const btn=$('joinbtn');btn.disabled=true;btn.textContent='Verbinde…';err('');
+  try{
+    const {data,error}=await db.rpc('kl_join',{p_room_code:code,p_name:name});
+    if(error)throw error;
+    if(!data?.token)throw new Error('Keine Verbindungsbestätigung erhalten.');
+    roomGeneration++;token=data.token;
+    sessionStorage.setItem('kl_token',token);sessionStorage.setItem('kl_room_code',code);
+    resetRoomFlags();
+    $('result').textContent='';$('timer').textContent='';
+    $('join').hidden=true;$('room').hidden=false;
+    $('status').className='pill waiting';$('status').textContent='Verbindung wird hergestellt…';
+  }catch(x){if(token){poll()}else{err(x)}}
+  finally{joining=false;btn.disabled=false;btn.textContent='Beitreten';if(token)poll()}
+};
+
+function send(type,data={}){if(!frameReady||!state)return;$('exercise').contentWindow.postMessage({channel,version:1,type,data:{sessionId:state.session_id,...data}},frameOrigin)}
+
+async function poll(){
+  if(!db||!token||pollBusy||joining)return;
+  pollBusy=true;const generation=roomGeneration,activeToken=token;let data,error;
+  try{({data,error}=await db.rpc('kl_student_state',{p_token:activeToken}))}catch(e){error=e}finally{pollBusy=false}
+  if(generation!==roomGeneration||activeToken!==token)return;
+  if(error){pollFailed=true;err(error);return}
+  if(pollFailed){pollFailed=false;err('')}
+  if(!data)return;
+  state=data;
+  $('join').hidden=true;$('room').hidden=false;
+  $('title').textContent=data.title;
+  $('roominfo').textContent=sessionStorage.getItem('kl_room_code')||'';
+  const st=$('status');st.className='pill '+data.status;st.textContent=STATUS[data.status]||data.status;
+  if(data.result||data.submitted)sent=true;
+  const closed=data.status==='finished'||!!data.submitted;
+  // Seite wurde neu geladen, Abgabe liegt schon auf dem Server: Übung nicht erneut zeigen.
+  $('exercise').hidden=sent&&!localSubmitted&&closed;
+  if(data.result)$('result').textContent=data.result.correct!=null?`Ergebnis: ${data.result.correct}/${data.result.total}`:'Abgegeben';
+  else if(data.submitted)$('result').textContent='Abgegeben';
+
+  if(!$('exercise').getAttribute('src')||$('exercise').getAttribute('data-url')!==data.exercise_url){
+    frameReady=false;started=false;
+    const url=new URL(data.exercise_url);url.searchParams.set('kl_origin',location.origin);
+    frameOrigin=url.origin;$('exercise').src=url.href;$('exercise').setAttribute('data-url',data.exercise_url);
+  }
+  if(frameReady){
+    send('INIT',{endsAt:data.ends_at,mode:data.activity});
+    if(data.status==='active'&&!started&&!sent){started=true;send('START')}
+    if(closed){
+      // Eigene Abgabe zuerst anfordern, damit eine bereits getippte Antwort nicht verloren geht.
+      if(!sent&&!submitAsked){submitAsked=true;send('SUBMIT')}
+      send('LOCK');started=false;
+    }
+  }
+  const left=closed?null:data.ends_at?Math.max(0,Math.ceil((new Date(data.ends_at).getTime()-Date.now())/1000)):null;
+  $('timer').textContent=left===null?'':`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;
+}
+
+/* Abgabe mit Warteschlange: bei Fehler bleibt sie erhalten und wird erneut versucht. */
+async function flush(){
+  if(!queued||flushing||!token||!db)return;
+  flushing=true;const generation=roomGeneration,activeToken=token,payload=queued;let error;
+  try{({error}=await db.rpc('kl_student_event',{p_token:activeToken,p_kind:'submitted',p_payload:payload}))}catch(e){error=e}
+  flushing=false;
+  if(generation!==roomGeneration||activeToken!==token)return;
+  if(error){err('Abgabe konnte nicht gespeichert werden – neuer Versuch läuft…\n'+(error.message||''));if(pendingLeave){pendingLeave.reject(error);pendingLeave=null}return}
+  queued=null;sent=true;err('');
+  if(pendingLeave){pendingLeave.resolve();pendingLeave=null}
+  poll();
+}
+
+window.addEventListener('message',async e=>{
+  if(!state||e.source!==$('exercise').contentWindow||e.origin!==frameOrigin||e.data?.channel!==channel||e.data?.version!==1)return;
+  const m=e.data;
+  if(m.type==='HELLO'){
+    frameReady=true;send('INIT',{endsAt:state.ends_at,mode:state.activity});
+    if(state.status==='active'&&!sent){started=true;send('START')}
+    if(state.status==='finished'||state.submitted){send('LOCK');started=false}
+  }
+  if(m.type==='SUBMITTED'&&!sent&&!queued){localSubmitted=true;queued=m.data;flush()}
+  if(m.type==='PROGRESS'||m.type==='SENTENCE_SUBMITTED'){
+    try{await db.rpc('kl_student_event',{p_token:token,p_kind:'progress',p_payload:m.data})}catch(_){}
+  }
+});
+
+function clearCurrentRoom(){
+  roomGeneration++;
+  token=null;sessionStorage.removeItem('kl_token');sessionStorage.removeItem('kl_room_code');
+  resetRoomFlags();frameOrigin=null;
+  $('exercise').removeAttribute('data-url');$('exercise').removeAttribute('src');$('exercise').hidden=false;
+  $('title').textContent='';$('roominfo').textContent='';$('status').textContent='';$('timer').textContent='';$('result').textContent='';
+  $('code').value='';$('room').hidden=true;$('join').hidden=false;err('');$('code').focus();
+}
+function askLeave(needsSubmit){
+  $('leave-heading').textContent=needsSubmit?'Test abgeben und Raum verlassen?':'Raum wirklich verlassen?';
+  $('leave-description').textContent=needsSubmit?'Deine bisherigen Antworten werden abgegeben. Danach kannst du diesen Test nicht mehr fortsetzen.':'Du verlässt diesen Raum. Eine erneute Teilnahme mit demselben Namen ist nicht möglich.';
+  $('leave-confirm').textContent=needsSubmit?'Abgeben und verlassen':'Raum verlassen';
+  $('leave-dialog').hidden=false;$('leave-cancel').focus();
+  return new Promise(resolve=>{
+    const close=a=>{$('leave-dialog').hidden=true;$('leave-cancel').onclick=$('leave-confirm').onclick=$('leave-dialog').onclick=null;document.removeEventListener('keydown',onKey);resolve(a)};
+    const onKey=ev=>{if(ev.key==='Escape')close(false)};
+    document.addEventListener('keydown',onKey);
+    $('leave-cancel').onclick=()=>close(false);
+    $('leave-confirm').onclick=()=>close(true);
+    $('leave-dialog').onclick=ev=>{if(ev.target===$('leave-dialog'))close(false)};
+  });
+}
+$('leavebtn').onclick=async()=>{
+  if(leaving)return;
+  const needsSubmit=state?.status==='active'&&!sent&&!state.submitted;
+  if(!await askLeave(needsSubmit))return;
+  leaving=true;$('leavebtn').disabled=true;err('');
+  try{
+    if(needsSubmit){
+      if(!frameReady&&!queued)throw new Error('Die Übung ist noch nicht bereit. Bitte versuche es erneut.');
+      await new Promise((resolve,reject)=>{
+        const timeout=setTimeout(()=>{if(pendingLeave===waiter){pendingLeave=null;reject(new Error('Abgabe nicht bestätigt. Bitte erneut versuchen.'))}},12000);
+        const waiter={resolve:()=>{clearTimeout(timeout);resolve()},reject:x=>{clearTimeout(timeout);reject(x)}};
+        pendingLeave=waiter;
+        if(queued)flush();else send('SUBMIT',{reason:'leave'});
+      });
+    }
+    clearCurrentRoom();
+  }catch(x){err(x)}finally{leaving=false;$('leavebtn').disabled=false}
+};
+</script>
+</body>
+</html>

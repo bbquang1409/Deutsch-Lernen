@@ -65,23 +65,11 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
 <div class="wrap">
   <header class="top">
     <div class="brand"><span class="logo">K</span><span>KlassenLive</span><small>Live-Diktat · v3.3</small></div>
-    <a class="btn ghost sm" href="../teacher.html">← Live-Test</a>
+    <a class="btn ghost sm" href="../index.html">← Hub</a>
   </header>
   <p id="error" hidden></p>
 
-  <section id="needlogin" class="card" hidden style="max-width:380px;margin:24px auto">
-    <h2>Anmelden</h2>
-    <form id="loginform">
-      <label for="email">E-Mail</label>
-      <input id="email" type="email" autocomplete="username" required style="width:100%;height:48px;padding:0 14px;border:1px solid #cfd5dc;border-radius:12px;font:inherit;font-size:16px;margin-bottom:12px">
-      <label for="password">Passwort</label>
-      <div style="position:relative;margin-bottom:16px">
-        <input id="password" type="password" autocomplete="current-password" required style="width:100%;height:48px;padding:0 74px 0 14px;border:1px solid #cfd5dc;border-radius:12px;font:inherit;font-size:16px">
-        <button id="showpw" type="button" aria-label="Passwort anzeigen" style="position:absolute;right:6px;top:6px;height:36px;padding:0 12px;border:0;border-radius:9px;background:#eceff2;color:#3a4552;font:inherit;font-size:.85rem;font-weight:650;cursor:pointer">Zeigen</button>
-      </div>
-      <button class="btn" type="submit" style="width:100%">Anmelden</button>
-    </form>
-  </section>
+  
 
   <div id="app" hidden>
     <section class="card">
@@ -104,7 +92,9 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
       </div>
       <div id="room-open" hidden>
         <button id="code" class="codebox" type="button" title="Code kopieren"></button>
-        <p class="hint">Tippen zum Kopieren · Schüler öffnen <b>Live-Diktat/student.html</b> und geben den Code ein</p>
+        <p class="hint">Schüler scannen den QR-Code oder öffnen <b>Live-Diktat/student.html</b> und geben den Code ein</p>
+        <div class="row-btns" style="margin-bottom:12px"><button id="qrshow" class="btn green" type="button">QR-Code anzeigen</button><button id="linkcopy" class="btn ghost" type="button">Link kopieren</button></div>
+        <div id="qrov" hidden style="position:fixed;inset:0;z-index:50;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;cursor:pointer"><div id="qrimg" style="width:min(80vmin,560px);height:min(80vmin,560px)"></div><div id="qrcode" style="font:700 clamp(2rem,9vw,4rem)/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;color:#a91f32"></div><p style="margin:0;color:#67727f">Mit der Handykamera scannen · Tippen zum Schließen</p></div>
         <div id="ctrl" class="ctrl"></div>
         <p id="count" style="font-weight:700;margin:0 0 4px"></p>
         <div id="people"></div>
@@ -125,6 +115,7 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../config.js"></script>
 <script src="hoeren-diktat/assets/lessons.js"></script>
@@ -134,23 +125,19 @@ const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=nu
 const err=e=>{const m=e?.message||String(e||'');$('error').textContent=m;$('error').hidden=!m};
 const AUDIO_BASE='hoeren-diktat/';
 const LESSONS=(window.HD_LESSONS||[]).map(l=>({...l,audio:AUDIO_BASE+l.audio})).sort((a,b)=>a.title.localeCompare(b.title,'de'));
-let db,lesson=null,player=null,ch=null,hb=null,room=null,objectUrl=null,ownMp3=null,ownJson=null;
+let ovPlayer=null,db,lesson=null,player=null,ch=null,hb=null,room=null,objectUrl=null,ownMp3=null,ownJson=null;
 
 if(!window.KL_CONFIG||!window.supabase)err('Konfiguration fehlt: config.js nicht gefunden.');
 else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);start()}
 async function start(){
   const {data}=await db.auth.getSession();
-  if(!data.session){$('needlogin').hidden=false;return}
-  $('needlogin').hidden=true;$('app').hidden=false;fillLibrary();
+  if(!data.session){location.replace('../index.html');return}
+  $('app').hidden=false;fillLibrary();
   let saved=null;try{saved=JSON.parse(sessionStorage.getItem('dik_room')||'null')}catch(_){}
   if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);$('stu-audio').checked=!!saved.audio;openRoom(saved.code,true)}}
 }
 
-$('showpw').onclick=()=>{const i=$('password'),h=i.type==='password';i.type=h?'text':'password';$('showpw').textContent=h?'Verbergen':'Zeigen'};
-$('loginform').onsubmit=async e=>{e.preventDefault();err('');
-  const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
-  if(error){err('Anmeldung fehlgeschlagen: '+error.message);return}
-  start()};
+
 
 /* Herzschlag über Web Worker: wird vom Browser nicht gedrosselt, auch wenn der Tab im Hintergrund ist */
 let hbw=null;
@@ -208,13 +195,15 @@ function validate(l){
   });
   return w;
 }
-function clearLesson(){if(player)player.stop();player=null;lesson=null;$('preview-card').hidden=true;$('room-card').hidden=true;$('meta').replaceChildren()}
+function clearLesson(){if(player)player.stop();if(ovPlayer)ovPlayer.stop();ovPlayer=null;player=null;lesson=null;$('preview-card').hidden=true;$('room-card').hidden=true;$('meta').replaceChildren()}
 function selectLesson(l,url){
   err('');if(room)endSession();
   clearLesson();
   let suspicious;try{suspicious=validate(l)}catch(e){err(e);return}
   lesson={...l,questions:l.questions||[],own:!!url};$('stu-audio').disabled=!!url;if(url)$('stu-audio').checked=false;
   player=new Player(url||l.audio);
+  if(!url){const ov=AUDIO_BASE+'assets/audio/'+l.id+'_ueberblick.mp3';
+    fetch(ov,{method:'HEAD'}).then(r=>{if(r.ok&&lesson&&lesson.id===l.id){lesson.ov=ov;ovPlayer=new Player(ov);const t=el('span','tag ok','Überblick-Datei ✓');$('meta').append(t);if(ch)sendState()}}).catch(()=>{})}
   const m=$('meta');m.replaceChildren();
   m.append(el('span','tag',lesson.level||'–'),el('span','tag',`${lesson.units.length} Sätze`),el('span','tag',`${lesson.questions.length} Fragen`));
   const at=el('span','tag','Audio wird geprüft…');m.append(at);
@@ -260,13 +249,14 @@ $('f-json').onchange=async e=>{const f=e.target.files[0];ownJson=f?await f.text(
 const ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode(){const a=new Uint32Array(6);crypto.getRandomValues(a);return Array.from(a,n=>ALPHA[n%ALPHA.length]).join('')}
 /* ---- Vergleich (Wörter + Satzzeichen getrennt, Groß-/Kleinschreibung zählt) ---- */
-const nrm=s=>s.replace(/[„“”"»«‚‘’']/g,'"').replace(/…/g,"...").replace(/[–—]/g,"-");
-const tok=s=>(nrm(s).match(/[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*|\.\.\.|[^\s\p{L}\p{N}]/gu)||[]);
+const nrm=s=>s.replace(/[’‘`´]/g,"'");
+const WORD=/[\p{L}\p{N}]+(?:[-'][\p{L}\p{N}]+)*/gu;
+const tok=s=>(nrm(s).match(WORD)||[]).map(t=>({t,k:t.toLowerCase()}));
 function diff(ref,usr){const a=tok(ref),b=tok(usr),n=a.length,m=b.length;
   const L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
-  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
-  const R=a.map(t=>({t,ok:false})),U=b.map(t=>({t,ok:false}));let i=0,j=0;
-  while(i<n&&j<m){if(a[i]===b[j]){R[i].ok=U[j].ok=true;i++;j++}else if(L[i+1][j]>=L[i][j+1])i++;else j++}
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i].k===b[j].k?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const R=a.map(x=>({t:x.t,ok:false})),U=b.map(x=>({t:x.t,ok:false}));let i=0,j=0;
+  while(i<n&&j<m){if(a[i].k===b[j].k){R[i].ok=U[j].ok=true;i++;j++}else if(L[i+1][j]>=L[i][j+1])i++;else j++}
   return{R,U}}
 function tokens(marks,box){marks.forEach(m=>{const s=el('span','tk'+(m.ok?'':' bad'),m.t);box.append(s)})}
 
@@ -279,7 +269,7 @@ let runId=0,seq=0;
 const LET='ABCD',sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const cast=(event,payload)=>{if(ch)ch.send({type:'broadcast',event,payload})};
 function stateMsg(){
-  const m={epoch:EPOCH,phase:phase.name,title:lesson.title,sentences:lesson.units.length,nq:lesson.questions.length,audio:{on:phase.audio,url:phase.audio?phase.url:null},t:Date.now()};
+  const m={epoch:EPOCH,phase:phase.name,title:lesson.title,sentences:lesson.units.length,nq:lesson.questions.length,audio:{on:phase.audio,url:phase.audio?phase.url:null,ov:phase.audio&&lesson.ov?lesson.ov:null},t:Date.now()};
   if(phase.name==='quiz'||phase.name==='quizResult'){m.qid=phase.qid;m.quiz=lesson.questions.map(q=>({q:q.q,o:q.o}))}
   if(phase.name==='quizResult')m.correct=lesson.questions.map(q=>q.a);
   if(phase.name==='dikt'){m.i=phase.i;m.rev=phase.rev;if(phase.rev)m.ref=lesson.units[phase.i].text}
@@ -292,13 +282,16 @@ const btn=(t,cls,fn,dis)=>{const b=el('button','btn '+cls,t);b.type='button';b.o
 
 /* Audio: läuft immer auf dem Lehrer-PC; zusätzlich Befehle an die Schülerhandys (dort nur hörbar, wenn „Ton“ aktiv ist) */
 async function playSeg(s,e,info){cast('play',{seq:++seq,from:s,to:e,info});return player.range(s,e)}
-function stopAll(){runId++;player?.stop();phase.playing=false;cast('stop',{})}
+function stopAll(){runId++;player?.stop();ovPlayer?.stop();phase.playing=false;cast('stop',{})}
 
 async function startOverview(){
   err('');if(phase.name!=='listen'&&phase.name!=='final')setPhase('listen');
   const my=++runId;phase.playing=true;phase.done=false;phase.idx=0;renderCtrl();
   const n=lesson.units.length;
   try{
+    if(lesson.ov&&ovPlayer){
+      const ok=await ovSeg();if(ok&&my===runId)phase.done=true;
+      if(my===runId){phase.playing=false;cast('idle',{});renderCtrl()}return}
     for(let i=0;i<n;i++){
       if(my!==runId)return;
       phase.idx=i+1;renderCtrl();
@@ -311,6 +304,7 @@ async function startOverview(){
   }catch(e){err(e)}
   if(my===runId){phase.playing=false;cast('idle',{});renderCtrl()}
 }
+async function ovSeg(){cast('play',{seq:++seq,from:0,to:1e9,info:'Überblick · ganzer Text',src:lesson.ov});return ovPlayer.range(0,1e9)}
 function stopOverview(){stopAll();phase.done=false;renderCtrl()}
 function startQuiz(){stopAll();answers.clear();phase.qid=Date.now();setPhase('quiz')}
 function reveal(){setPhase('quizResult')}
@@ -350,7 +344,7 @@ function renderStats(c){
 function overviewPanel(c,final){
   const n=lesson.units.length,hasQ=lesson.questions.length>0;
   c.append(el('div','ctrl-title',final?'Abschluss · Überblick noch einmal':'Überblick'));
-  if(phase.playing){c.append(el('p','ctrl-now',`Läuft … Satz ${phase.idx}/${n}`),btn('⏹ Stopp','ghost',stopOverview));return}
+  if(phase.playing){c.append(el('p','ctrl-now',lesson.ov?'Läuft … ganzer Text':`Läuft … Satz ${phase.idx}/${n}`),btn('⏹ Stopp','ghost',stopOverview));return}
   c.append(el('p','ctrl-now',phase.done?'Überblick beendet.':'Gestoppt.'));
   const r=el('div','row-btns');r.append(btn('↻ Nochmal anhören','ghost',startOverview));
   if(final){r.append(btn('Sitzung beenden','green',()=>{if(confirm('Sitzung beenden? Alle Schüler werden getrennt.'))endSession()}))}
@@ -438,6 +432,12 @@ function renderPeople(){
     box.append(r);
   });
 }
+const stuLink=()=>new URL('student.html?code='+room,location.href).href;
+function drawQr(){const t=$('qrimg');t.replaceChildren();if(!window.qrcode){t.textContent=stuLink();return}
+  const q=qrcode(0,'M');q.addData(stuLink());q.make();t.innerHTML=q.createSvgTag({cellSize:8,margin:2,scalable:true});const sv=t.querySelector('svg');if(sv){sv.style.width='100%';sv.style.height='100%'}}
+$('qrshow').onclick=()=>{if(!room)return;drawQr();$('qrcode').textContent=room;$('qrov').hidden=false};
+$('qrov').onclick=()=>{$('qrov').hidden=true};
+$('linkcopy').onclick=async()=>{if(!room)return;try{await navigator.clipboard.writeText(stuLink());$('linkcopy').textContent='Kopiert ✓';setTimeout(()=>$('linkcopy').textContent='Link kopieren',1500)}catch(_){prompt('Link:',stuLink())}};
 $('code').onclick=async()=>{try{await navigator.clipboard.writeText(room)}catch(_){}};
 function endSession(){
   runId++;player?.stop();
