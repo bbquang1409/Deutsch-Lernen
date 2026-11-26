@@ -8,15 +8,15 @@
 <link rel="stylesheet" href="style.css">
 <style>
 .hello{font-size:2rem;margin:10px 0 2px}.sub{color:var(--mut);font-weight:700;margin:0 0 18px}
-.pick{flex:1;display:flex;flex-direction:column;gap:16px}
-.opt{flex:1;min-height:170px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;border-radius:26px;padding:20px;color:#fff;text-decoration:none}
+.pick{display:flex;flex-direction:column;gap:14px;padding-bottom:6px}
+.opt{display:flex;align-items:center;gap:14px;border-radius:24px;padding:22px 20px;color:#fff;text-decoration:none}
 .opt.t1{background:linear-gradient(135deg,#3b78ff,#1f4fd6);box-shadow:0 6px 0 #14349b}
 .opt.t2{background:linear-gradient(135deg,#1d93d6,#145aa6);box-shadow:0 6px 0 #0c3d78}
 .opt:active{transform:translateY(4px);box-shadow:0 2px 0 #0c2a66}
-.opt .ic{position:absolute;right:16px;top:14px;width:68px;height:68px;border-radius:22px;background:#ffffff2e;display:grid;place-items:center;font-size:2.3rem}
-.opt b{display:block;font-size:1.7rem;font-weight:900;text-shadow:0 1px 0 #0003}
-.opt small{display:block;font:700 .98rem/1.35 var(--font);margin-top:2px;text-shadow:0 1px 0 #0002}
-.opt .go{margin-top:12px;font-weight:900}
+.opt .tx{flex:1;min-width:0}
+.opt b{display:block;font-size:1.6rem;font-weight:900;letter-spacing:-.02em;text-shadow:0 1px 0 #0003}
+.opt small{display:block;font:700 1rem/1.35 var(--font);margin-top:4px;text-shadow:0 1px 0 #0002}
+.opt .go{flex:none;width:46px;height:46px;border-radius:50%;background:#fff;color:var(--blue-d);display:grid;place-items:center;font-size:1.7rem;font-weight:900;line-height:1;padding-bottom:3px}
 .login{margin:auto 0;padding:22px 18px}
 .field{margin-bottom:14px}.pw{position:relative}.pw input{padding-right:96px}
 .pw button{position:absolute;right:8px;top:8px;height:40px;padding:0 14px;border:0;border-radius:11px;background:#e8effc;color:var(--blue-d);font:800 .85rem var(--font);cursor:pointer}
@@ -26,7 +26,7 @@
 <div class="app">
   <header class="ah">
     <div class="brand"><span class="logo">K</span><span>KlassenLive</span></div>
-    <button id="signout" class="btn ghost sm" type="button" hidden>Abmelden</button>
+    <span class="chip" id="who" hidden></span><button id="signout" class="btn ghost sm" type="button" hidden>Abmelden</button>
   </header>
   <div class="ab">
     <p id="error" hidden></p>
@@ -40,16 +40,15 @@
       </form>
     </section>
 
-    <section id="hub" hidden style="flex:1;display:flex;flex-direction:column">
+    <section id="hub" hidden>
       <h1 class="hello">Hallo! 👋</h1>
       <p class="sub">Was möchtest du starten?</p>
       <div class="pick">
-        <a class="opt t1" href="Live-Test/teacher.html"><span class="ic">✏️</span><b>Live-Test</b><small>Übung mit Zeitlimit. Ergebnisse live.</small><span class="go">Starten ›</span></a>
-        <a class="opt t2" href="Live-Diktat/teacher.html"><span class="ic">🎧</span><b>Live-Diktat</b><small>Hören und Satz für Satz schreiben.</small><span class="go">Starten ›</span></a>
+        <a class="opt t1" href="Live-Test/teacher.html"><span class="tx"><b>Live-Test</b><small>Übung mit Zeitlimit. Ergebnisse live.</small></span><span class="go">›</span></a>
+        <a class="opt t2" href="Live-Diktat/teacher.html"><span class="tx"><b>Live-Diktat</b><small>Hören und Satz für Satz schreiben.</small></span><span class="go">›</span></a>
       </div>
     </section>
   </div>
-  <div class="af" id="who"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -62,7 +61,7 @@ if(!window.KL_CONFIG||!window.supabase||String(KL_CONFIG.anonKey||'').includes('
 else{db=supabase.createClient(KL_CONFIG.url,KL_CONFIG.anonKey);init()}
 function show(session){
   $('login').hidden=!!session;$('hub').hidden=!session;$('signout').hidden=!session;
-  $('who').textContent=session?('Angemeldet als '+(session.user?.email||'')):'';
+  $('who').hidden=!session;$('who').textContent=session?(session.user?.email||''):'';
 }
 async function init(){
   const {data}=await db.auth.getSession();show(data.session);
