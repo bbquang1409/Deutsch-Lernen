@@ -64,7 +64,7 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="logo">K</span><span>KlassenLive</span><small>Live-Diktat · v3.3</small></div>
+    <div class="brand"><span class="logo">K</span><span>KlassenLive</span><small>Live-Diktat · v3.5</small></div>
     <a class="btn ghost sm" href="../index.html">← Hub</a>
   </header>
   <p id="error" hidden></p>
@@ -87,7 +87,6 @@ details summary{cursor:pointer;font-weight:650;color:#3a4552;margin-top:12px}
       <div id="room-card" hidden style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
       
       <div id="room-closed">
-        <label class="chk"><input type="checkbox" id="stu-audio"><span>Ton auch auf den Schülerhandys abspielen<small>Für Online-Unterricht. Im Klassenzimmer ausgeschaltet lassen (sonst Echo).</small></span></label>
         <button id="open" class="btn green full" type="button">Raum öffnen</button>
       </div>
       <div id="room-open" hidden>
@@ -134,7 +133,7 @@ async function start(){
   if(!data.session){location.replace('../index.html');return}
   $('app').hidden=false;fillLibrary();
   let saved=null;try{saved=JSON.parse(sessionStorage.getItem('dik_room')||'null')}catch(_){}
-  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);$('stu-audio').checked=!!saved.audio;openRoom(saved.code,true)}}
+  if(saved){const l=LESSONS.find(x=>x.id===saved.lessonId);if(l){$('lesson').value=l.id;selectLesson(l);openRoom(saved.code,true)}}
 }
 
 
@@ -200,7 +199,7 @@ function selectLesson(l,url){
   err('');if(room)endSession();
   clearLesson();
   let suspicious;try{suspicious=validate(l)}catch(e){err(e);return}
-  lesson={...l,questions:l.questions||[],own:!!url};$('stu-audio').disabled=!!url;if(url)$('stu-audio').checked=false;
+  lesson={...l,questions:l.questions||[],own:!!url};
   player=new Player(url||l.audio);
   if(!url){const ov=AUDIO_BASE+'assets/audio/'+l.id+'_ueberblick.mp3';
     fetch(ov,{method:'HEAD'}).then(r=>{if(r.ok&&lesson&&lesson.id===l.id){lesson.ov=ov;ovPlayer=new Player(ov);const t=el('span','tag ok','Überblick-Datei ✓');$('meta').append(t);if(ch)sendState()}}).catch(()=>{})}
@@ -392,7 +391,7 @@ function renderCtrl(){
 $('open').onclick=()=>openRoom(makeCode());
 function openRoom(code,resume){
   if(!lesson||ch)return;
-  room=code;phase.audio=!lesson.own&&$('stu-audio').checked;phase.url=lesson.audio;
+  room=code;phase.audio=!lesson.own;phase.url=lesson.audio;
   sessionStorage.setItem('dik_room',JSON.stringify({code,lessonId:lesson.id,audio:phase.audio}));
   Object.assign(phase,{name:'lobby',playing:false,done:false,idx:0,qid:0,i:0,rev:false});answers.clear();subs.clear();
   if(resume){try{const s=JSON.parse(sessionStorage.getItem('dik_phase')||'null');if(s&&['lobby','listen','quiz','quizResult','dikt','final'].includes(s.n)){phase.name=s.n;phase.qid=s.qid||0;phase.i=Math.min(s.i||0,lesson.units.length-1);phase.rev=!!s.rev}}catch(_){}}
@@ -418,7 +417,7 @@ function openRoom(code,resume){
     else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')err('Verbindung zum Echtzeit-Dienst fehlgeschlagen ('+st+').');
   });
   $('code').textContent=code;$('room-closed').hidden=true;$('room-open').hidden=false;
-  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;$('stu-audio').disabled=true;renderPeople();renderCtrl();
+  $('lesson').disabled=true;$('f-mp3').disabled=true;$('f-json').disabled=true;renderPeople();renderCtrl();
 }
 function renderPeople(){
   const box=$('people');box.replaceChildren();if(!ch)return;
@@ -444,7 +443,7 @@ function endSession(){
   if(ch){ch.send({type:'broadcast',event:'end',payload:{}});stopHb();const c=ch;ch=null;setTimeout(()=>db.removeChannel(c),300)}
   room=null;answers.clear();subs.clear();sessionStorage.removeItem('dik_room');sessionStorage.removeItem('dik_phase');
   $('room-closed').hidden=false;$('room-open').hidden=true;
-  $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;$('stu-audio').disabled=!!lesson?.own;
+  $('lesson').disabled=false;$('f-mp3').disabled=false;$('f-json').disabled=false;
 }
 $('end').onclick=()=>{if(confirm('Sitzung wirklich beenden? Alle Schüler werden getrennt.'))endSession()};
 </script>
