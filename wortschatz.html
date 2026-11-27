@@ -20,7 +20,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-h
 /* ── HEADER ── */
 header{
   background:linear-gradient(135deg,#0b1e3d 0%,#1a3461 100%);
-  padding:44px 20px 40px;text-align:center;color:#fff;
+  padding:68px 20px 40px;text-align:center;color:#fff;
   position:relative;overflow:hidden;
 }
 header::before{
@@ -94,17 +94,37 @@ main{max-width:640px;margin:0 auto;padding:24px 14px 80px;}
 }
 
 footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);}
+
+/* ── LOGIN (optional) ── */
+.hdr-top{position:absolute;top:14px;left:14px;right:14px;z-index:10;display:flex;justify-content:space-between;align-items:center;}
+.hdr-link{color:rgba(255,255,255,.7);font-size:.78rem;font-weight:700;text-decoration:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:6px 14px;}
+.btn-anmelden{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-family:inherit;font-size:.78rem;font-weight:700;border-radius:99px;padding:6px 14px;cursor:pointer;}
+.user-chip{display:none;align-items:center;gap:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:4px 12px 4px 5px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;}
+.user-chip img{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.4);}
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(11,30,61,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay.show{display:flex;}
+.login-card{background:#fff;border-radius:24px;padding:36px 28px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;}
+.login-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin-bottom:4px;}
+.login-sub{font-size:.82rem;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+.close-x{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;}
+.inapp-note{display:none;font-size:.78rem;color:#9a3412;line-height:1.6;text-align:left;}
+.btn-out{width:100%;padding:9px;border:none;border-radius:8px;background:#f4f6fa;font-family:inherit;font-size:.8rem;font-weight:700;color:#e53e3e;cursor:pointer;margin-top:14px;}
 </style>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b1e3d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Deutsch-Lernen">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
 
 <header>
+  <div class="hdr-top">
+    <a class="hdr-link" href="index.html">← Hub</a>
+    <button class="btn-anmelden" id="btnAnmelden" onclick="openLogin()">Anmelden</button>
+    <div class="user-chip" id="userChip" onclick="openLogin()"><img id="chipAvatar" src="" alt=""><span id="chipName"></span></div>
+  </div>
   <div class="hdr-badge">Deutsch-Lernen · Wortschatz</div>
   <h1>Deutscher Wortschatz</h1>
   <p>Von den ersten Wörtern bis zum fortgeschrittenen Niveau — alles auf einen Blick.</p>
@@ -178,5 +198,61 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
 <footer>Made with ♥ by Bảo Quang</footer>
 
+
+<div class="overlay" id="loginOverlay">
+  <div class="login-card">
+    <button class="close-x" onclick="closeLogin()" aria-label="Schließen">×</button>
+    <div class="login-logo">Deutsch-Lernen</div>
+    <div id="loggedOut">
+      <div class="login-sub">Bitte melde dich mit Google an.</div>
+      <div id="normalLogin"><div id="gBtnBox" style="display:flex;justify-content:center;min-height:44px;"></div></div>
+      <div class="inapp-note" id="inappNote">Bạn đang mở trong Messenger/Zalo/Facebook — Google chặn đăng nhập ở đây. Hãy mở link bằng <b>Safari hoặc Chrome</b>.</div>
+    </div>
+    <div id="loggedIn" style="display:none">
+      <div class="login-sub" id="whoami"></div>
+      <button class="btn-out" onclick="signOut()">Abmelden</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GOOGLE_CLIENT_ID = "565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com";
+let currentUser = null;
+function decodeJwt(t){try{const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}catch(e){return null;}}
+function handleCredentialResponse(r){
+  const p=decodeJwt(r.credential); if(!p)return;
+  currentUser={name:p.name,email:p.email,picture:p.picture};
+  try{localStorage.setItem('dl_user',JSON.stringify(currentUser));}catch(e){}
+  closeLogin(); renderUser();
+}
+function initGoogleLogin(){
+  if(typeof google==='undefined'||!google.accounts){setTimeout(initGoogleLogin,300);return;}
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleCredentialResponse,use_fedcm_for_prompt:true});
+  google.accounts.id.renderButton(document.getElementById('gBtnBox'),{theme:'outline',size:'large',shape:'pill',text:'signin_with',width:260});
+}
+function isInAppBrowser(){return /FBAN|FBAV|FB_IAB|Instagram|Line\/|Zalo|MessengerLite|TikTok|musical_ly|Snapchat|WhatsApp|Twitter|GSA\/|WeChat|MicroMessenger/i.test(navigator.userAgent||'');}
+function openLogin(){document.getElementById('loginOverlay').classList.add('show');}
+function closeLogin(){document.getElementById('loginOverlay').classList.remove('show');}
+function signOut(){currentUser=null;try{localStorage.removeItem('dl_user');}catch(e){}closeLogin();renderUser();}
+function renderUser(){
+  const u=currentUser;
+  document.getElementById('btnAnmelden').style.display=u?'none':'inline-block';
+  document.getElementById('userChip').style.display=u?'flex':'none';
+  document.getElementById('loggedOut').style.display=u?'none':'block';
+  document.getElementById('loggedIn').style.display=u?'block':'none';
+  if(u){
+    document.getElementById('chipAvatar').src=u.picture||'';
+    document.getElementById('chipName').textContent=(u.name||'').split(' ')[0];
+    document.getElementById('whoami').textContent=(u.name||'')+' · '+(u.email||'');
+  }
+}
+window.addEventListener('load',()=>{
+  try{const sv=localStorage.getItem('dl_user'); if(sv) currentUser=JSON.parse(sv);}catch(e){}
+  renderUser();
+  if(isInAppBrowser()){document.getElementById('normalLogin').style.display='none';document.getElementById('inappNote').style.display='block';}
+  else{const g=document.createElement('script');g.src='https://accounts.google.com/gsi/client';g.async=true;g.onload=initGoogleLogin;document.head.appendChild(g);}
+});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}
+</script>
 </body>
 </html>

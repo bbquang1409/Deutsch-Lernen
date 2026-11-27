@@ -299,6 +299,29 @@ header .badge{display:inline-block;background:var(--orange);color:#fff;border-ra
 <div class="footer-credit">Made with ♥ by Bảo Quang</div>
 
 <script>
+/* ================= DEUTSCH-LERNEN LOGGING (Ergebnisse → Dashboard) ================= */
+var _DL_SHEET = "https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+var _DL_FILE  = "Wortschatz A1 · 11 Arbeit und Beruf";   // enthält "A1" → Niveau-Filter im Dashboard
+var _DL_HUB   = "../../../index.html";                    // Pfad zum Hub (an Ordnertiefe anpassen)
+var _DL_SETS  = {'ex1-1':'Ü1 Wie heißen die Wörter?','ex2-1':'Ü2 E-Mail','ex3-1':'Ü3 Dialog 1','ex3-2':'Ü3 Dialog 2','ex3-3':'Ü3 Dialog 3','ex4-1':'Ü4 Dialoge 1+2','ex4-2':'Ü4 Dialoge 3+4','testArea':'Schnelltest'};
+var _dlBest = {};
+function _dlUser(){ try{ var s=localStorage.getItem('dl_user'); return s?JSON.parse(s):null; }catch(e){ return null; } }
+function _dlLog(setName, score, total){
+  var u=_dlUser(); if(!u) return;
+  var best=_dlBest[setName];
+  if(best!==undefined && score<=best) return;          // nicht mehrfach gleiche/schlechtere Ergebnisse senden
+  _dlBest[setName]=score;
+  fetch(_DL_SHEET,{method:'POST',mode:'no-cors',
+    body:JSON.stringify({name:u.name,email:u.email,file:_DL_FILE,set:setName,score:score,total:total})}).catch(function(){});
+}
+(function(){
+  if(_dlUser()) return;
+  var d=document.createElement('div');
+  d.style.cssText='background:#fff7ed;border-bottom:1px solid #fdba74;color:#9a3412;font-size:.82rem;text-align:center;padding:8px 12px;';
+  d.innerHTML='Nicht angemeldet – deine Ergebnisse werden nicht gespeichert. <a href="'+_DL_HUB+'" style="color:#9a3412;font-weight:700">Anmelden</a>';
+  document.body.insertBefore(d,document.body.firstChild);
+})();
+
 /* ================= TTS (Web Speech API) ================= */
 function speakDE(input){
   if(!('speechSynthesis' in window)) return;
@@ -600,6 +623,7 @@ function checkGroup(containerId, ci){
   if(res && total>0){
     res.textContent = correct+' / '+total+' richtig';
     res.style.color = (correct===total) ? 'var(--ok)' : 'var(--teal)';
+    _dlLog(_DL_SETS[containerId] || containerId, correct, total);
   }
 }
 

@@ -64,21 +64,8 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
 .stu-stat-lbl{font-size:0.6rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
 .stu-files{display:flex;flex-wrap:wrap;gap:4px;}
 .stu-file-tag{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:99px;background:#e8edf2;color:var(--ink);}
-.ai-panel{max-width:1100px;margin:16px auto 32px;padding:0 20px;}
-.ai-card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;}
-.ai-head{background:linear-gradient(135deg,#0f2644,#2563eb);padding:16px 20px;}
-.ai-head h2{color:#fff;font-size:0.95rem;font-weight:800;}
-.ai-head p{color:rgba(255,255,255,.5);font-size:0.72rem;margin-top:2px;}
-.ai-body{padding:20px;}
-.ai-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
-.ai-row select{padding:9px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Outfit',sans-serif;font-size:0.83rem;color:var(--ink);background:#fff;outline:none;flex:1;min-width:160px;}
-.btn-analyze{display:flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border:none;font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:800;padding:10px 22px;border-radius:10px;cursor:pointer;white-space:nowrap;}
-.btn-analyze:hover{opacity:.85;}
-.btn-analyze:disabled{opacity:.5;cursor:not-allowed;}
-.ai-result{background:#f8fafc;border-radius:12px;padding:20px;font-size:0.85rem;line-height:1.8;color:var(--ink);border:1px solid var(--border);min-height:80px;white-space:pre-wrap;}
-.ai-result.loading{color:var(--muted);font-style:italic;}
 @media(max-width:600px){
-  .filters,.stats,.section,.ai-panel,.tabs{padding:0 12px;}
+  .filters,.stats,.section,.tabs{padding:0 12px;}
   thead th:nth-child(4),tbody td:nth-child(4),thead th:nth-child(5),tbody td:nth-child(5){display:none;}
 }
 </style>
@@ -93,14 +80,13 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
   <div class="hdr-right">
     <span class="status-dot" id="statusDot"></span>
     <button class="btn-hdr" onclick="loadData()">⟳ Aktualisieren</button>
-    <a class="btn-hdr" href="grammatik.html">← Zurück</a>
+    <a class="btn-hdr" href="index.html">← Hub</a>
   </div>
 </div>
 
 <div class="tabs">
   <button class="tab-btn active" onclick="showTab('overview')">📋 Übersicht</button>
   <button class="tab-btn" onclick="showTab('students')">👥 Schüler</button>
-  <button class="tab-btn" onclick="showTab('ai')">🤖 KI-Analyse</button>
 </div>
 
 <!-- OVERVIEW -->
@@ -143,62 +129,62 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
   </div>
 </div>
 
-<!-- AI -->
-<div id="tab-ai" style="display:none">
-  <div class="ai-panel">
-    <div class="ai-card">
-      <div class="ai-head">
-        <h2>🤖 KI-Analyse mit Gemini</h2>
-        <p>Automatische Auswertung · Stärken · Schwächen · Empfehlungen</p>
-      </div>
-      <div class="ai-body">
-        <div class="ai-row">
-          <select id="aiTarget"><option value="class">📊 Gesamte Klasse</option></select>
-          <select id="aiType">
-            <option value="overall">🎯 Gesamtauswertung</option>
-            <option value="weak">⚠️ Schwächen & Verbesserung</option>
-            <option value="strong">✅ Stärken & Lob</option>
-            <option value="recommend">📚 Empfehlungen für nächste Stunde</option>
-            <option value="compare">📊 Schüler vergleichen</option>
-          </select>
-          <button class="btn-analyze" id="btnAnalyze" onclick="runAnalysis()">✨ Analysieren</button>
-        </div>
-        <div class="ai-result" id="aiResult">Wähle einen Schüler oder die Klasse und klicke auf „Analysieren".</div>
-      </div>
-    </div>
-  </div>
-</div>
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const SHEET_URL="https://script.google.com/macros/s/AKfycbw7uN5J6WwDG2vl5SgcpeeJ_ZnXDEaXLh-49VzYhQV11baq0pklFJEdhT660frW1kVS/exec";
+const GOOGLE_CLIENT_ID='565949426173-cg9jat7abv9jbk2hktuak1sud8pc11do.apps.googleusercontent.com';
 let allData=[];
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function showTab(tab){
-  ['overview','students','ai'].forEach(t=>{
+  ['overview','students'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
   document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['overview','students','ai'][i]===tab);
+    b.classList.toggle('active',['overview','students'][i]===tab);
   });
   if(tab==='students')renderStudents();
-  if(tab==='ai')populateAiTarget();
 }
 
+function decodeJwt(t){try{const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}catch(e){return null;}}
+function getToken(){
+  try{const t=JSON.parse(sessionStorage.getItem('dl_teacher_token')||'null');
+    if(t&&t.exp*1000>Date.now()+60000)return t.token;}catch(e){}
+  return null;
+}
+function onCredential(r){
+  const p=decodeJwt(r.credential); if(!p)return;
+  try{sessionStorage.setItem('dl_teacher_token',JSON.stringify({token:r.credential,exp:p.exp}));}catch(e){}
+  loadData();
+}
+function showLogin(msg){
+  document.getElementById('statusDot').style.background='#e53e3e';
+  document.getElementById('tableBody').innerHTML='<div class="state"><div class="ico">🔒</div><p>'+esc(msg||'Bitte als Lehrer mit Google anmelden.')+'</p><div id="gBtnBox" style="display:flex;justify-content:center;margin-top:16px;min-height:44px"></div></div>';
+  (function init(){
+    if(typeof google==='undefined'||!google.accounts){setTimeout(init,300);return;}
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onCredential,use_fedcm_for_prompt:true});
+    google.accounts.id.renderButton(document.getElementById('gBtnBox'),{theme:'outline',size:'large',shape:'pill',text:'signin_with',width:260});
+  })();
+}
 function loadData(){
   document.getElementById('statusDot').style.background='#d97706';
-  const _u = JSON.parse(localStorage.getItem('dl_user') || '{}');
-  fetch(SHEET_URL + '?email=' + encodeURIComponent(_u.email || '')).then(r=>r.json()).then(res=>{
-    if(res.status!=='ok')throw new Error(res.msg);
+  const token=getToken();
+  if(!token){showLogin();return;}
+  fetch(SHEET_URL+'?action=all&token='+encodeURIComponent(token)).then(r=>r.json()).then(res=>{
+    if(res.status!=='ok'){
+      if(res.code==='auth'){try{sessionStorage.removeItem('dl_teacher_token');}catch(e){}showLogin(res.msg);return;}
+      throw new Error(res.msg);
+    }
     allData=(res.data||[]).filter(r=>r['Tên học sinh']);
     document.getElementById('statusDot').style.background='#16a34a';
     populateFileFilter();render();
   }).catch(err=>{
     document.getElementById('statusDot').style.background='#e53e3e';
-    document.getElementById('tableBody').innerHTML=`<div class="state"><div class="ico">❌</div><p>${err.message}</p></div>`;
+    document.getElementById('tableBody').innerHTML=`<div class="state"><div class="ico">❌</div><p>${esc(err.message)}</p></div>`;
   });
 }
 
-function getLevel(f=''){
+function getLevel(f=''){f=String(f).toUpperCase();
   if(f.includes('A1')||f.includes('A2'))return 'A1-A2';
   if(f.includes('B1'))return 'B1';
   if(f.includes('B2')||f.includes('C1'))return 'B2';
@@ -214,7 +200,7 @@ function fmtDate(v){
 
 function populateFileFilter(){
   const files=[...new Set(allData.map(r=>r['File bài tập']).filter(Boolean))].sort();
-  document.getElementById('filterFile').innerHTML='<option value="">Alle</option>'+files.map(f=>`<option value="${f}">${f}</option>`).join('');
+  document.getElementById('filterFile').innerHTML='<option value="">Alle</option>'+files.map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('');
 }
 
 function getFiltered(){
@@ -249,9 +235,9 @@ function render(){
   document.getElementById('tableBody').innerHTML=`<table><thead><tr><th>Schüler</th><th>Datei</th><th>Übung</th><th>Ergebnis</th><th>Zeitpunkt</th></tr></thead><tbody>`+
     sorted.map(row=>{
       const p=getPct(row),c=barColor(p),lv=getLevel(row['File bài tập']||'');
-      return `<tr><td><div class="td-name">${row['Tên học sinh']||'—'}</div><div class="td-email">${row['Email']||''}</div></td>
-        <td>${row['File bài tập']||'—'}${lv?`<span class="badge-lv ${getLvClass(lv)}">${lv}</span>`:''}</td>
-        <td>${row['Bộ câu hỏi']||'—'}</td>
+      return `<tr><td><div class="td-name">${esc(row['Tên học sinh']||'—')}</div><div class="td-email">${esc(row['Email'])}</div></td>
+        <td>${esc(row['File bài tập']||'—')}${lv?`<span class="badge-lv ${getLvClass(lv)}">${lv}</span>`:''}</td>
+        <td>${esc(row['Bộ câu hỏi']||'—')}</td>
         <td><div class="pct-bar"><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${c}"></div></div><span class="pct-text" style="color:${c}">${p}%</span></div>
         <div style="font-size:.7rem;color:var(--muted)">${row['Điểm']||0}/${row['Tổng câu']||0}</div></td>
         <td class="td-time">${fmtDate(row['Thời gian'])}</td></tr>`;
@@ -277,88 +263,18 @@ function renderStudents(){
     const files=[...new Set(s.rows.map(r=>r['File bài tập']).filter(Boolean))];
     const c=barColor(avg);
     return `<div class="stu-card">
-      <div class="stu-name">${s.name||'—'}</div>
-      <div class="stu-email">${s.email}</div>
+      <div class="stu-name">${esc(s.name||'—')}</div>
+      <div class="stu-email">${esc(s.email)}</div>
       <div class="stu-stats">
         <div><div class="stu-stat-val" style="color:${c}">${avg}%</div><div class="stu-stat-lbl">Ø Note</div></div>
         <div><div class="stu-stat-val">${s.rows.length}</div><div class="stu-stat-lbl">Übungen</div></div>
         <div><div class="stu-stat-val">${Math.max(...pcts)}%</div><div class="stu-stat-lbl">Beste</div></div>
       </div>
-      <div class="stu-files">${files.slice(0,5).map(f=>`<span class="stu-file-tag">${f.replace(/\s*\([^)]+\)/,'')}</span>`).join('')}${files.length>5?`<span class="stu-file-tag">+${files.length-5}</span>`:''}</div>
+      <div class="stu-files">${files.slice(0,5).map(f=>`<span class="stu-file-tag">${esc(f.replace(/\s*\([^)]+\)/,''))}</span>`).join('')}${files.length>5?`<span class="stu-file-tag">+${files.length-5}</span>`:''}</div>
     </div>`;
   }).join('');
 }
 
-function populateAiTarget(){
-  const emails=[...new Set(allData.map(r=>r['Email']).filter(Boolean))];
-  const names={};allData.forEach(r=>{if(r['Email'])names[r['Email']]=r['Tên học sinh'];});
-  document.getElementById('aiTarget').innerHTML='<option value="class">📊 Gesamte Klasse</option>'+
-    emails.map(e=>`<option value="${e}">👤 ${names[e]||e}</option>`).join('');
-}
-
-async function runAnalysis(){
-  const target=document.getElementById('aiTarget').value;
-  const type=document.getElementById('aiType').value;
-  const btn=document.getElementById('btnAnalyze');
-  const resultEl=document.getElementById('aiResult');
-  let data=target==='class'?allData:allData.filter(r=>r['Email']===target);
-  if(!data.length){resultEl.textContent='Keine Daten vorhanden.';return;}
-  btn.disabled=true;
-  resultEl.className='ai-result loading';
-  resultEl.textContent='Gemini analysiert die Daten...';
-
-  const by={};
-  data.forEach(row=>{
-    const name=row['Tên học sinh']||row['Email'];
-    if(!by[name])by[name]={name,entries:[]};
-    by[name].entries.push({
-      file:row['File bài tập'],set:row['Bộ câu hỏi'],
-      score:parseInt(row['Điểm'])||0,total:parseInt(row['Tổng câu'])||1,
-      pct:Math.round((parseInt(row['Điểm'])||0)/(parseInt(row['Tổng câu'])||1)*100),
-      date:row['Thời gian']
-    });
-  });
-
-  const summary=Object.values(by).map(s=>{
-    const avg=Math.round(s.entries.reduce((a,e)=>a+e.pct,0)/s.entries.length);
-    const details=s.entries.map(e=>`${e.file}:${e.pct}%`).join(' ');
-    return `${s.name} Ø${avg}% | ${details}`;
-  }).join('\n').slice(0,3000);
-
-  const prompts={
-    overall:'Gesamtauswertung',
-    weak:'Schwächen & Problembereiche',
-    strong:'Stärken & gute Leistungen',
-    recommend:'Empfehlungen für nächste Stunde',
-    compare:'Vergleich der Schüler'
-  };
-
-  const prompt=`Du bist Datenanalyst für Deutschunterricht. Hier sind die Rohdaten:
-
-${summary}
-
-Aufgabe: ${prompts[type]}
-
-REGELN:
-- Nenne IMMER konkrete Namen und Zahlen aus den Daten oben (z.B. "Mai: 45% in Konjunktiv")
-- KEINE allgemeinen Floskeln wie "weiter üben" oder "gute Arbeit" ohne Bezug zu Zahlen
-- KEINE Anrede, KEINE Begrüßung, KEINE Grußformel
-- Jede Zeile = ein konkreter Fakt oder eine konkrete Handlungsempfehlung mit Namen/Zahl
-- Maximal 8 Zeilen, mit "•" beginnend
-- Wenn die Daten nicht ausreichen für eine Aussage, schreibe das nicht — überspringe es`;
-
-  try{
-    const res=await fetch(SHEET_URL+'?action=analyze&prompt='+encodeURIComponent(prompt));
-    const json=await res.json();
-    const text=json.text||json.msg||'Keine Antwort.';
-    resultEl.className='ai-result';
-    resultEl.textContent=text;
-  }catch(err){
-    resultEl.className='ai-result';
-    resultEl.textContent='Fehler: '+err.message;
-  }
-  btn.disabled=false;
-}
 
 loadData();
 </script>
