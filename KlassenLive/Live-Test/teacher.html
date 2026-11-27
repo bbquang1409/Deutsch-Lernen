@@ -56,6 +56,7 @@ details.create[open]>summary::after{content:"–"}
 .person .name{font-weight:700;overflow-wrap:anywhere}
 .person .res{font-weight:700;font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
 @media(max-width:480px){.person{grid-template-columns:minmax(0,1fr) auto}.person .res{grid-column:2;grid-row:1}.person .pill{grid-column:1;justify-self:start}}
+.person .ans{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}.ans .a{padding:4px 10px;border-radius:8px;background:#eef3fc;font-weight:500;font-size:.9rem;overflow-wrap:anywhere}.ans .a.ok{background:var(--ok-l);color:var(--ok-d)}.ans .a.bad{background:var(--bad-l);color:var(--bad)}
 .empty{padding:18px 8px;text-align:center;color:var(--mut);font-weight:700}
 .ab.pad{padding-bottom:24px}
 </style>
@@ -290,6 +291,8 @@ function renderPeople(){
     const row=el('div','person');row.append(el('span','name',p.display_name));
     const [t,c]=personStatus(p);row.append(el('span','pill '+c,t));
     const r=p.result;row.append(el('span','res',r?.correct!=null?`${r.correct}/${r.total}`:p.submitted_at?'Ohne Bewertung':'—'));
+    const an=Array.isArray(r?.answers)?r.answers.filter(x=>x&&x.answer!=null&&String(x.answer).trim()!==''):[];
+    if(an.length){const d=el('div','ans');an.forEach(x=>{const i=el('span','a '+(x.isCorrect===true?'ok':x.isCorrect===false?'bad':''),String(x.answer).slice(0,200)+(x.isCorrect===true?'  ✓':x.isCorrect===false?'  ✗':''));d.append(i)});row.append(d)}
     box.append(row);
   }
 }
