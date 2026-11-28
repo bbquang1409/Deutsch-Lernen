@@ -31,9 +31,14 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-h
 /* ── HEADER ── */
 header{
   background:linear-gradient(135deg,#0b1e3d 0%,#1a3461 100%);
-  padding:44px 20px 40px;text-align:center;color:#fff;
+  padding:68px 20px 40px;text-align:center;color:#fff;
   position:relative;overflow:hidden;
 }
+.hdr-top{position:absolute;top:14px;left:14px;right:14px;z-index:10;display:flex;justify-content:space-between;align-items:center;}
+.hdr-link{color:rgba(255,255,255,.8);font-size:.78rem;font-weight:700;text-decoration:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:6px 14px;}
+.btn-anmelden{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-family:inherit;font-size:.78rem;font-weight:700;border-radius:99px;padding:6px 14px;cursor:pointer;}
+.close-x{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.5rem;color:#7a8fa8;cursor:pointer;}
+.login-skip{display:inline-block;margin-top:16px;background:none;border:none;font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:700;color:#7a8fa8;cursor:pointer;text-decoration:underline;}
 header::before{
   content:'';position:absolute;inset:0;
   background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
@@ -77,6 +82,7 @@ main{max-width:640px;margin:0 auto;padding:24px 14px 80px;}
 .acc-a1 .acc-header{background:linear-gradient(135deg,#3d6b6b,#4A7C7C);}
 .acc-b1 .acc-header{background:linear-gradient(135deg,#21867a,#2a9d8f);}
 .acc-b2 .acc-header{background:linear-gradient(135deg,#1e40af,#2563eb);}
+.acc-c1 .acc-header{background:linear-gradient(135deg,#5b21b6,#7c3aed);}
 .acc-icon{
   width:46px;height:46px;flex:none;border-radius:14px;
   background:rgba(255,255,255,0.15);
@@ -118,6 +124,8 @@ main{max-width:640px;margin:0 auto;padding:24px 14px 80px;}
 .acc-b1 .mini-card:active{border-color:var(--b1-color);box-shadow:0 0 0 1.5px var(--b1-color);}
 .acc-b2 .mini-card{border-color:var(--b2-mid);}
 .acc-b2 .mini-card:active{border-color:var(--b2-color);box-shadow:0 0 0 1.5px var(--b2-color);}
+.acc-c1 .mini-card{border-color:#ddd6fe;}
+.acc-c1 .mini-card:active{border-color:var(--c1-color);box-shadow:0 0 0 1.5px var(--c1-color);}
 .mini-emoji{font-size:1.8rem;line-height:1;}
 .mini-title{font-size:0.78rem;font-weight:800;color:var(--ink);line-height:1.25;}
 .mini-sub{font-size:0.64rem;color:var(--muted);line-height:1.35;}
@@ -140,9 +148,10 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 }
 .login-overlay.hidden{display:none;}
 .login-card{
-  background:#fff;border-radius:24px;padding:40px 32px 36px;
+  background:#fff;border-radius:24px;padding:40px 32px 30px;
   max-width:340px;width:100%;text-align:center;
   box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  position:relative;
 }
 .login-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#0f2644;margin-bottom:4px;}
 .login-sub{font-size:0.82rem;color:#7a8fa8;margin-bottom:28px;line-height:1.5;}
@@ -179,7 +188,7 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
 /* ── USER CHIP (header) ── */
 .user-chip{
-  position:absolute;top:14px;right:14px;z-index:10;
+  position:relative;z-index:10;
   display:flex;align-items:center;gap:8px;
   background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
   border-radius:99px;padding:5px 12px 5px 6px;cursor:pointer;
@@ -204,17 +213,18 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 .btn-signout:hover{background:#fee2e2;}
 </style>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#CC0000">
+  <meta name="theme-color" content="#0b1e3d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Deutsch-Lernen">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
 
-<!-- ── LOGIN OVERLAY ── -->
-<div class="login-overlay" id="loginOverlay">
+<!-- ── LOGIN OVERLAY (optional, schließbar) ── -->
+<div class="login-overlay hidden" id="loginOverlay">
   <div class="login-card">
+    <button type="button" class="close-x" onclick="closeLogin()" aria-label="Schließen">×</button>
     <div class="login-logo">Deutsch-Lernen</div>
 
     <!-- Hiện khi mở trong Messenger/Zalo/FB/Instagram webview -->
@@ -229,28 +239,32 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
     <!-- Hiện khi ở trình duyệt bình thường -->
     <div id="normalLogin">
-      <div class="login-sub">Bitte melde dich mit Google an.</div>
+      <div class="login-sub">Melde dich mit Google an, um Ergebnisse zu speichern.</div>
       <div id="gBtnBox" style="display:flex;justify-content:center;min-height:44px;"></div>
     </div>
+    <button type="button" class="login-skip" onclick="closeLogin()">Ohne Anmeldung fortfahren</button>
   </div>
 </div>
 
 <header>
-  <!-- user chip (hiện sau khi login) -->
-  <div class="user-chip" id="userChip" style="display:none" onclick="this.classList.toggle('open')">
-    <img id="chipAvatar" src="" alt="">
-    <span class="user-chip-name" id="chipName"></span>
-    <div class="chip-dropdown">
-      <div class="chip-info">
-        <img id="chipAvatar2" src="" alt="">
-        <div>
-          <div class="chip-fullname" id="chipFullName"></div>
-          <div class="chip-email" id="chipEmail"></div>
+  <div class="hdr-top">
+    <a class="hdr-link" href="index.html">← Hub</a>
+    <button type="button" class="btn-anmelden" id="btnAnmelden" onclick="openLogin()">Anmelden</button>
+    <div class="user-chip" id="userChip" style="display:none" onclick="this.classList.toggle('open')">
+      <img id="chipAvatar" src="" alt="">
+      <span class="user-chip-name" id="chipName"></span>
+      <div class="chip-dropdown">
+        <div class="chip-info">
+          <img id="chipAvatar2" src="" alt="">
+          <div>
+            <div class="chip-fullname" id="chipFullName"></div>
+            <div class="chip-email" id="chipEmail"></div>
+          </div>
         </div>
+        <a id="btnDashboard" href="dashboard.html" style="display:none;width:100%;padding:8px;border-radius:8px;background:#eff6ff;font-family:Outfit,sans-serif;font-size:0.78rem;font-weight:700;color:#2563eb;text-align:center;text-decoration:none;margin-bottom:6px;align-items:center;justify-content:center;gap:6px;">📊 Dashboard</a>
+        <a id="btnMyResults" href="my-results.html" style="display:none;width:100%;padding:8px;border-radius:8px;background:#ecfdf5;font-family:Outfit,sans-serif;font-size:0.78rem;font-weight:700;color:#15803d;text-align:center;text-decoration:none;margin-bottom:6px;align-items:center;justify-content:center;gap:6px;">📈 Meine Ergebnisse</a>
+        <button class="btn-signout" onclick="signOut()">Abmelden</button>
       </div>
-      <a id="btnDashboard" href="dashboard.html" style="display:none;width:100%;padding:8px;border-radius:8px;background:#eff6ff;font-family:Outfit,sans-serif;font-size:0.78rem;font-weight:700;color:#2563eb;text-align:center;text-decoration:none;margin-bottom:6px;align-items:center;justify-content:center;gap:6px;">📊 Dashboard</a>
-      <a id="btnMyResults" href="my-results.html" style="display:none;width:100%;padding:8px;border-radius:8px;background:#ecfdf5;font-family:Outfit,sans-serif;font-size:0.78rem;font-weight:700;color:#15803d;text-align:center;text-decoration:none;margin-bottom:6px;align-items:center;justify-content:center;gap:6px;">📈 Meine Ergebnisse</a>
-      <button class="btn-signout" onclick="signOut()">Abmelden</button>
     </div>
   </div>
   <div class="hdr-badge">Deutsch-Lernen · Grammatik</div>
@@ -287,32 +301,32 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Nomen &amp; Artikel</div>
         <div class="mini-grid">
-          <a class="mini-card" href="A1A2/Grammatik/nomen.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/nomen.html">
             <div class="mini-emoji">📄</div>
             <div class="mini-title">Nomen &amp; Artikel</div>
             <div class="mini-sub">der, die, das · Grundlagen</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/artikel.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/artikel.html">
             <div class="mini-emoji">🏷️</div>
             <div class="mini-title">Bestimmte &amp; unbestimmte Artikel</div>
             <div class="mini-sub">der/die/das vs. ein/eine</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/kasus_training.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/kasus_training.html">
             <div class="mini-emoji">⚖️</div>
             <div class="mini-title">Kasus-Training</div>
             <div class="mini-sub">Nom. · Akk. · Dat. üben</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/nomi_akku_uebung.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/nomi_akku_uebung.html">
             <div class="mini-emoji">✅</div>
             <div class="mini-title">Nominativ &amp; Akkusativ</div>
             <div class="mini-sub">Fälle erkennen und anwenden</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/negation.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/negation.html">
             <div class="mini-emoji">🚫</div>
             <div class="mini-title">Negation</div>
             <div class="mini-sub">nicht · kein · keine</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/zahlen.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/zahlen.html">
             <div class="mini-emoji">🔢</div>
             <div class="mini-title">Zahlen</div>
             <div class="mini-sub">Kardinal- &amp; Ordinalzahlen · Brüche</div>
@@ -321,22 +335,22 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Pronomen</div>
         <div class="mini-grid">
-          <a class="mini-card" href="A1A2/Grammatik/personalpronomen.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/personalpronomen.html">
             <div class="mini-emoji">👥</div>
             <div class="mini-title">Personalpronomen</div>
             <div class="mini-sub">ich, du, er, sie … in allen Fällen</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/possesive.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/possesive.html">
             <div class="mini-emoji">🔒</div>
             <div class="mini-title">Possessivpronomen</div>
             <div class="mini-sub">mein, dein, sein, ihr …</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/welche-diese.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/welche-diese.html">
             <div class="mini-emoji">❓</div>
             <div class="mini-title">welche- / diese-</div>
             <div class="mini-sub">Fragewörter &amp; Demonstrativpronomen</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/reflexiv.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/reflexiv.html">
             <div class="mini-emoji">🔁</div>
             <div class="mini-title">Reflexivpronomen</div>
             <div class="mini-sub">mich, dich, sich …</div>
@@ -345,31 +359,36 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Verben</div>
         <div class="mini-grid">
-          <a class="mini-card" href="A1A2/Grammatik/zeitformen.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/zeitformen.html">
             <div class="mini-emoji">⏰</div>
             <div class="mini-title">Zeitformen</div>
             <div class="mini-sub">Präsens · Perfekt · Präteritum</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/verben-akku-dativ.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/verben-akku-dativ.html">
             <div class="mini-emoji">➡️</div>
             <div class="mini-title">Verben mit Akk. &amp; Dat.</div>
             <div class="mini-sub">Welches Verb braucht welchen Fall?</div>
+          </a>
+          <a class="mini-card" href="A1A2/Grammatik/satzstruktur.html">
+            <div class="mini-emoji">🧱</div>
+            <div class="mini-title">Satzstruktur</div>
+            <div class="mini-sub">Position 2 · Satzklammer · Wortstellung</div>
           </a>
         </div>
 
         <div class="sub-label">Präpositionen</div>
         <div class="mini-grid">
-          <a class="mini-card" href="A1A2/Grammatik/pp-in-akk-dat.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/pp-in-akk-dat.html">
             <div class="mini-emoji">📦</div>
             <div class="mini-title">in, an, auf … (Akk./Dat.)</div>
             <div class="mini-sub">Wechselpräpositionen</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/praepositionen_a1_a2.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/praepositionen_a1_a2.html">
             <div class="mini-emoji">📍</div>
             <div class="mini-title">Präpositionen A1–A2</div>
             <div class="mini-sub">Orts- &amp; Zeitangaben</div>
           </a>
-          <a class="mini-card" href="A1A2/Grammatik/zeitangaben.html" target="_blank">
+          <a class="mini-card" href="A1A2/Grammatik/zeitangaben.html">
             <div class="mini-emoji">🕐</div>
             <div class="mini-title">Zeitangaben</div>
             <div class="mini-sub">Uhrzeit · Datum · Tageszeiten</div>
@@ -396,22 +415,22 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Adjektive &amp; Nomen</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B1/Grammatik/adjektiv.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/adjektiv.html">
             <div class="mini-emoji">🎨</div>
             <div class="mini-title">Adjektiv</div>
             <div class="mini-sub">Steigerung · Vergleich · Superlativ</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/adjektivdeklination.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/adjektivdeklination.html">
             <div class="mini-emoji">📐</div>
             <div class="mini-title">Adjektivdeklination</div>
             <div class="mini-sub">Nom. · Akk. · Dat. · Gen.</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/genitiv.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/genitiv.html">
             <div class="mini-emoji">🔑</div>
             <div class="mini-title">Genitiv</div>
             <div class="mini-sub">Besitz · Präpositionen · Artikel</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/n-deklination.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/n-deklination.html">
             <div class="mini-emoji">🧩</div>
             <div class="mini-title">N-Deklination</div>
             <div class="mini-sub">schwache Nomen · Mensch · Student</div>
@@ -420,22 +439,22 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Verben &amp; Verbformen</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B1/Grammatik/infinitiv-mit-und-ohne-zu.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/infinitiv-mit-und-ohne-zu.html">
             <div class="mini-emoji">⚙️</div>
             <div class="mini-title">Infinitiv mit/ohne zu</div>
             <div class="mini-sub">zu + Inf. · Modalverben · lassen</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/konjunktiv2.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/konjunktiv2.html">
             <div class="mini-emoji">💭</div>
             <div class="mini-title">Konjunktiv II</div>
             <div class="mini-sub">Wünsche · Hypothesen · Bitten</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/partizip-i-ii.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/partizip-i-ii.html">
             <div class="mini-emoji">🔀</div>
             <div class="mini-title">Partizip I &amp; II</div>
             <div class="mini-sub">als Adjektiv · Partizipialkonstruktion</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/passiv-vorgang-zustand.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/passiv-vorgang-zustand.html">
             <div class="mini-emoji">🔄</div>
             <div class="mini-title">Passiv</div>
             <div class="mini-sub">Vorgang · Zustand · Präs. · Prät.</div>
@@ -444,32 +463,32 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Sätze &amp; Konnektoren</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B1/Grammatik/nebensatz-1.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/nebensatz-1.html">
             <div class="mini-emoji">📎</div>
             <div class="mini-title">Nebensatz 1</div>
             <div class="mini-sub">dass · ob · weil · obwohl</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/nebensatz-2.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/nebensatz-2.html">
             <div class="mini-emoji">📝</div>
             <div class="mini-title">Nebensatz 2</div>
             <div class="mini-sub">wenn · als · damit · sodass</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/konnektoren.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/konnektoren.html">
             <div class="mini-emoji">🔧</div>
             <div class="mini-title">Konjunktionen</div>
             <div class="mini-sub">weil · obwohl · zweiteilig</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/relativsatz.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/relativsatz.html">
             <div class="mini-emoji">🔗</div>
             <div class="mini-title">Relativsätze</div>
             <div class="mini-sub">Nom. · Akk. · Dat. · Gen.</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/satzbildung.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/satzbildung.html">
             <div class="mini-emoji">✏️</div>
             <div class="mini-title">Satzbildung</div>
             <div class="mini-sub">Sätze bilden · Perfekt · Präteritum</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/tekamolo.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/tekamolo.html">
             <div class="mini-emoji">📊</div>
             <div class="mini-title">Tekamolo</div>
             <div class="mini-sub">Satzgliedstellung · Adverbiale</div>
@@ -478,22 +497,22 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Präpositionen &amp; Wortschatz</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B1/Grammatik/praepositionaladverbien.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/praepositionaladverbien.html">
             <div class="mini-emoji">📍</div>
             <div class="mini-title">Präpositionaladverbien</div>
             <div class="mini-sub">da(r)+ · wo(r)+ · worüber</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/verben-mit-praeposition.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/verben-mit-praeposition.html">
             <div class="mini-emoji">🎯</div>
             <div class="mini-title">Verben mit Präposition</div>
             <div class="mini-sub">warten auf · denken an</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/wechsel-praepositionen.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/wechsel-praepositionen.html">
             <div class="mini-emoji">🗺️</div>
             <div class="mini-title">Wechselpräpositionen</div>
             <div class="mini-sub">in/an/auf · Akk. vs. Dat.</div>
           </a>
-          <a class="mini-card" href="B1/Grammatik/nomen-verb-verbindungen.html" target="_blank">
+          <a class="mini-card" href="B1/Grammatik/nomen-verb-verbindungen.html">
             <div class="mini-emoji">🧲</div>
             <div class="mini-title">Nomen-Verb-Verbindungen</div>
             <div class="mini-sub">stellen · machen · nehmen · treffen</div>
@@ -520,43 +539,43 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">B2 — Grammatik &amp; Verben</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=k2" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=k2">
             <div class="mini-emoji">💭</div>
             <div class="mini-title">Konjunktiv II Verg.</div>
             <div class="mini-sub">hätte · wäre · würde + Inf.</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=k1" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=k1">
             <div class="mini-emoji">📰</div>
             <div class="mini-title">Konjunktiv I</div>
             <div class="mini-sub">Indirekte Rede · Er sagt, er sei…</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=pa" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=pa">
             <div class="mini-emoji">🔄</div>
             <div class="mini-title">Passiv B2+</div>
             <div class="mini-sub">Perfekt · Modal · Ersatzformen</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/indirekte-rede.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/indirekte-rede.html">
             <div class="mini-emoji">💬</div>
             <div class="mini-title">Indirekte Rede</div>
             <div class="mini-sub">Konj. I · Berichte · Meldungen</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/adjektive.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/adjektive.html">
             <div class="mini-emoji">🎨</div>
             <div class="mini-title">Adjektive B2</div>
             <div class="mini-sub">Deklination · Steigerung · Stil</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/praepositionen.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/praepositionen.html">
             <div class="mini-emoji">🗺️</div>
             <div class="mini-title">Präpositionen B2</div>
             <div class="mini-sub">Genitiv · temporal · kausal</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/verben.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/verben.html">
             <div class="mini-emoji">⚡</div>
             <div class="mini-title">Verben B2</div>
             <div class="mini-sub">Rektion · Valenz · Verbgruppen</div>
@@ -566,25 +585,25 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">B2 — Sätze &amp; Konnektoren</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=re" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=re">
             <div class="mini-emoji">🔗</div>
             <div class="mini-title">Relativsatz B2+</div>
             <div class="mini-sub">Genitiv · Präposition · worüber</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=zk" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=zk">
             <div class="mini-emoji">🧶</div>
             <div class="mini-title">Zweiteilige Konnektoren</div>
             <div class="mini-sub">sowohl … als auch · weder … noch</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=ko" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=ko">
             <div class="mini-emoji">🧵</div>
             <div class="mini-title">Konnektoren B2+</div>
             <div class="mini-sub">konzessiv · konsekutiv · kausal</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=sb" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=sb">
             <div class="mini-emoji">🏗️</div>
             <div class="mini-title">Komplexer Satzbau</div>
             <div class="mini-sub">Satzgliedstellung · Rahmenbau</div>
@@ -594,19 +613,19 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">B2 — Wortschatz &amp; Stil</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B2/Grammatik/nomen-verb.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/nomen-verb.html">
             <div class="mini-emoji">🧲</div>
             <div class="mini-title">Nomen-Verb-Verbindungen</div>
             <div class="mini-sub">stellen · machen · nehmen</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/redemittel.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/redemittel.html">
             <div class="mini-emoji">🗣️</div>
             <div class="mini-title">Redemittel</div>
             <div class="mini-sub">Meinung · Diskussion · Schreiben</div>
             <span class="badge-b2">B2</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/redewendungen.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/redewendungen.html">
             <div class="mini-emoji">💡</div>
             <div class="mini-title">Redewendungen</div>
             <div class="mini-sub">Idiome · feste Ausdrücke</div>
@@ -616,19 +635,19 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">C1 — Fortgeschrittenes Niveau</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=no" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=no">
             <div class="mini-emoji">📋</div>
             <div class="mini-title">Nominalstil</div>
             <div class="mini-sub">Nominalisierung · Funktionsverbgefüge</div>
             <span class="badge-c1">C1</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=pz" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/b2c1-grammatik.html?tab=pz">
             <div class="mini-emoji">⚙️</div>
             <div class="mini-title">Partizipialattribute</div>
             <div class="mini-sub">erweitertes Partizip · Attributsatz</div>
             <span class="badge-c1">C1</span>
           </a>
-          <a class="mini-card" href="B2/Grammatik/verbalisierung.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/verbalisierung.html">
             <div class="mini-emoji">🔀</div>
             <div class="mini-title">Verbalisierung &amp; Nominalisierung</div>
             <div class="mini-sub">Nominalstil · Funktionsverbgefüge</div>
@@ -638,11 +657,103 @@ footer{text-align:center;padding:16px;font-size:0.72rem;color:var(--muted);borde
 
         <div class="sub-label">Übungen</div>
         <div class="mini-grid">
-          <a class="mini-card" href="B2/Grammatik/uebung-b2c1.html" target="_blank">
+          <a class="mini-card" href="B2/Grammatik/uebung-b2c1.html">
             <div class="mini-emoji">✏️</div>
             <div class="mini-title">Übungen B2–C1</div>
             <div class="mini-sub">Gemischte Grammatikübungen</div>
             <span class="badge-b2">B2</span>
+          </a>
+          <a class="mini-card" href="B1/lueckentext-b1-c1.html">
+            <div class="mini-emoji">🧩</div>
+            <div class="mini-title">Lückentext B1–C1</div>
+            <div class="mini-sub">Gemischte Lückentext-Übungen</div>
+            <span class="badge-b2">B1–C1</span>
+          </a>
+          <a class="mini-card" href="praefixe.html">
+            <div class="mini-emoji">🔤</div>
+            <div class="mini-title">Verbpräfixe</div>
+            <div class="mini-sub">Trennbar · untrennbar · Bedeutungen</div>
+            <span class="badge-b2">B1–C1</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ C1 ══════════════ -->
+  <div class="accordion acc-c1" id="acc-c1">
+    <div class="acc-header" onclick="toggle('acc-c1')">
+      <div class="acc-icon">📓</div>
+      <div class="acc-labels">
+        <div class="acc-level">Oberstufe</div>
+        <div class="acc-title">Grammatik C1</div>
+        <div class="acc-count">8 Themen · 520 Übungen (Goethe · ÖSD · telc)</div>
+      </div>
+      <span class="acc-chevron">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+
+        <div class="sub-label">C1 — Grammatik &amp; Syntax</div>
+        <div class="mini-grid">
+          <a class="mini-card" href="C1/Grammatik/subjektive-modalverben.html">
+            <div class="mini-emoji">💭</div>
+            <div class="mini-title">Subjektive Modalverben</div>
+            <div class="mini-sub">Vermutung · Gerücht · Einschätzung</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/modales-partizip.html">
+            <div class="mini-emoji">📎</div>
+            <div class="mini-title">Modales Partizip</div>
+            <div class="mini-sub">zu + Partizip I · Gerundivum</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/konjunktiv2-c1.html">
+            <div class="mini-emoji">🔮</div>
+            <div class="mini-title">Konjunktiv II · C1</div>
+            <div class="mini-sub">Irrealis · als ob · Modalverben K2</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/infinitivkonstruktionen-c1.html">
+            <div class="mini-emoji">🔗</div>
+            <div class="mini-title">Infinitivkonstruktionen</div>
+            <div class="mini-sub">um … zu · ohne … zu · anstatt … zu</div>
+            <span class="badge-c1">C1</span>
+          </a>
+        </div>
+
+        <div class="sub-label">C1 — Wortschatz, Stil &amp; Prüfung</div>
+        <div class="mini-grid">
+          <a class="mini-card" href="C1/Grammatik/funktionsverbgefuege-c1.html">
+            <div class="mini-emoji">⚙️</div>
+            <div class="mini-title">Funktionsverbgefüge</div>
+            <div class="mini-sub">Formeller Stil · Nomen-Verb</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/wortbildung.html">
+            <div class="mini-emoji">🧩</div>
+            <div class="mini-title">Wortbildung</div>
+            <div class="mini-sub">Suffixe · Verbpräfixe · Lückentext</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/modalpartikeln.html">
+            <div class="mini-emoji">🗣️</div>
+            <div class="mini-title">Modalpartikeln</div>
+            <div class="mini-sub">doch · ja · wohl · halt · eben</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/grafik-beschreiben.html">
+            <div class="mini-emoji">📊</div>
+            <div class="mini-title">Grafik beschreiben</div>
+            <div class="mini-sub">4-Schritte-Aufbau · Redemittel</div>
+            <span class="badge-c1">C1</span>
+          </a>
+          <a class="mini-card" href="C1/Grammatik/index.html">
+            <div class="mini-emoji">🎯</div>
+            <div class="mini-title">C1 Übersicht &amp; Fortschritt</div>
+            <div class="mini-sub">Alle 8 Themen mit Fortschrittsbalken</div>
+            <span class="badge-c1">C1</span>
           </a>
         </div>
 
@@ -697,28 +808,32 @@ function initGoogleLogin(){
 
 const TEACHER_EMAIL = 'baoquang@gmail.com';
 
+function openLogin() { document.getElementById('loginOverlay').classList.remove('hidden'); }
+function closeLogin() { document.getElementById('loginOverlay').classList.add('hidden'); }
+
 function showUser() {
-  document.getElementById('loginOverlay').classList.add('hidden');
+  closeLogin();
+  const btnA = document.getElementById('btnAnmelden');
+  if (btnA) btnA.style.display = 'none';
   const chip = document.getElementById('userChip');
   chip.style.display = 'flex';
-  document.getElementById('chipAvatar').src = currentUser.picture;
-  document.getElementById('chipAvatar2').src = currentUser.picture;
-  document.getElementById('chipName').textContent = currentUser.name.split(' ')[0];
-  document.getElementById('chipFullName').textContent = currentUser.name;
-  document.getElementById('chipEmail').textContent = currentUser.email;
-  // Show dashboard button only for teacher
+  document.getElementById('chipAvatar').src = currentUser.picture || '';
+  document.getElementById('chipAvatar2').src = currentUser.picture || '';
+  document.getElementById('chipName').textContent = (currentUser.name || '').split(' ')[0];
+  document.getElementById('chipFullName').textContent = currentUser.name || '';
+  document.getElementById('chipEmail').textContent = currentUser.email || '';
   const btn = document.getElementById('btnDashboard');
   if (btn) btn.style.display = currentUser.email === TEACHER_EMAIL ? 'flex' : 'none';
-  // Show Meine Ergebnisse for all users
   const btnMR = document.getElementById('btnMyResults');
   if (btnMR) btnMR.style.display = 'flex';
 }
 
 function signOut() {
   currentUser = null;
-  localStorage.removeItem('dl_user');
+  try { localStorage.removeItem('dl_user'); } catch (e) {}
   document.getElementById('userChip').style.display = 'none';
-  document.getElementById('loginOverlay').classList.remove('hidden');
+  const btnA = document.getElementById('btnAnmelden');
+  if (btnA) btnA.style.display = 'inline-block';
 }
 
 // ── Phát hiện in-app browser (Messenger, Zalo, Facebook, Instagram, TikTok...) ──
@@ -746,8 +861,11 @@ window.addEventListener('load', ()=>{
   } else {
     initGoogleLogin();
   }
-  const saved = localStorage.getItem('dl_user');
-  if (saved) { currentUser = JSON.parse(saved); showUser(); }
+  try {
+    const saved = localStorage.getItem('dl_user');
+    if (saved) { currentUser = JSON.parse(saved); showUser(); }
+  } catch (e) {}
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogin(); });
 });
 
 document.addEventListener('click', e=>{

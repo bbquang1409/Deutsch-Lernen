@@ -1,9 +1,12 @@
 // Bump this number whenever you change the list below or want to force a reset.
-const CACHE = 'deutsch-lernen-v2';
+const CACHE = 'deutsch-lernen-v3';
 const ASSETS = [
+  './',
   './index.html',
   './grammatik.html',
   './wortschatz.html',
+  './dashboard.html',
+  './my-results.html',
   './manifest.json',
   './icon-192.png',
 ];
@@ -34,7 +37,7 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     fetch(req)
       .then(res => {
-        if (res.ok && ASSETS.some(a => url.pathname.endsWith(a.slice(1)))) {
+        if (res.ok && ASSETS.some(a => a === './' ? url.pathname.endsWith('/') : url.pathname.endsWith(a.slice(1)))) {
           const copy = res.clone();
           caches.open(CACHE).then(c => c.put(req, copy));
         }

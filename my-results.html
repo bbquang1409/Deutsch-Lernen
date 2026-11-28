@@ -65,6 +65,10 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
 .lv-a{background:#e0f2fe;color:#0369a1;}
 .lv-b1{background:#dcfce7;color:#15803d;}
 .lv-b2{background:#ede9fe;color:#6d28d9;}
+.lv-c1{background:#fef3c7;color:#b45309;}
+#histTable{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.login-back{display:inline-block;margin-top:18px;font-size:0.8rem;font-weight:700;color:var(--muted);text-decoration:none;}
+.login-back:hover{color:var(--ink);}
 
 .state{text-align:center;padding:40px;color:var(--muted);}
 .state .ico{font-size:2rem;margin-bottom:8px;}
@@ -79,6 +83,7 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
     <p>Melde dich an, um deine Ergebnisse zu sehen.</p>
     <div id="normalLogin"><div id="gBtnBox" style="display:flex;justify-content:center;min-height:44px;"></div></div>
     <p id="inappNote" style="display:none;margin:0;color:#9a3412">Bạn đang mở trong Messenger/Zalo/Facebook — Google chặn đăng nhập ở đây. Hãy mở link bằng <b>Safari hoặc Chrome</b>.</p>
+    <a class="login-back" href="index.html">← Zurück zum Hub</a>
   </div>
 </div>
 
@@ -179,7 +184,9 @@ function pillClass(p) { return p >= 80 ? 'pill-green' : p >= 50 ? 'pill-amber' :
 function getLevel(f = '') { f = String(f).toUpperCase();
   if (f.includes('A1') || f.includes('A2')) return 'A1-A2';
   if (f.includes('B1')) return 'B1';
-  if (f.includes('B2') || f.includes('C1')) return 'B2';
+  if (f.includes('C1') && !f.includes('B2')) return 'C1';
+  if (f.includes('B2')) return 'B2';
+  if (f.includes('C1')) return 'C1';
   return '';
 }
 function fmtDate(v) {
@@ -212,14 +219,14 @@ function renderAll() {
 }
 
 function renderLevels() {
-  const levels = { 'A1-A2': [], 'B1': [], 'B2': [] };
+  const levels = { 'A1-A2': [], 'B1': [], 'B2': [], 'C1': [] };
   myData.forEach(r => {
     const lv = getLevel(r['File bài tập'] || '');
-    if (lv) levels[lv].push(getPct(r));
+    if (lv && levels[lv]) levels[lv].push(getPct(r));
   });
 
-  const colors = { 'A1-A2': '#0369a1', 'B1': '#15803d', 'B2': '#6d28d9' };
-  const bgColors = { 'A1-A2': '#bae6fd', 'B1': '#86efac', 'B2': '#c4b5fd' };
+  const colors = { 'A1-A2': '#0369a1', 'B1': '#15803d', 'B2': '#6d28d9', 'C1': '#b45309' };
+  const bgColors = { 'A1-A2': '#bae6fd', 'B1': '#86efac', 'B2': '#c4b5fd', 'C1': '#fde68a' };
 
   document.getElementById('levelCards').innerHTML = Object.entries(levels).map(([lv, pcts]) => {
     if (!pcts.length) return '';
@@ -238,7 +245,7 @@ function renderLevels() {
 
 function renderHistory() {
   const sorted = [...myData].sort((a, b) => new Date(b['Thời gian']) - new Date(a['Thời gian']));
-  const lvClass = { 'A1-A2': 'lv-a', 'B1': 'lv-b1', 'B2': 'lv-b2' };
+  const lvClass = { 'A1-A2': 'lv-a', 'B1': 'lv-b1', 'B2': 'lv-b2', 'C1': 'lv-c1' };
   document.getElementById('histTable').innerHTML = `<table>
     <thead><tr><th>Datei</th><th>Übung</th><th>Ergebnis</th><th>Datum</th></tr></thead>
     <tbody>` + sorted.map(row => {

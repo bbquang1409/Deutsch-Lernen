@@ -57,8 +57,8 @@ body {
 
 .sticky-header input[type="text"] {
   flex: 1;
-  min-width: 120px;
-  max-width: 200px;
+  min-width: 140px;
+  max-width: 220px;
   border: 1.5px solid var(--slate-border);
   border-radius: 8px;
   padding: 6px 10px;
@@ -66,6 +66,10 @@ body {
   font-family: 'DM Sans', sans-serif;
   color: var(--text);
   background: var(--slate-light);
+}
+@media (max-width: 520px) {
+  .sticky-header { padding: 8px 12px; gap: 8px; }
+  .sticky-header input[type="text"] { min-width: 150px; max-width: none; }
 }
 
 .timer-box {
@@ -369,7 +373,8 @@ textarea {
   font-size: 13px;
   line-height: 1.7;
   color: var(--text);
-  white-space: pre-wrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .feedback-content.loading {
@@ -388,14 +393,14 @@ textarea {
 
 .score-pill {
   text-align: center;
-  padding: 8px 14px;
+  padding: 8px 10px;
   border-radius: 10px;
   font-size: 12px;
-  flex: 1;
-  min-width: 80px;
+  flex: 1 1 90px;
+  min-width: 0;
 }
 
-.score-pill .val { font-size: 18px; font-weight: 700; display: block; }
+.score-pill .val { font-size: 15px; font-weight: 700; display: block; }
 .score-pill .lbl { font-size: 10px; font-weight: 500; opacity: 0.8; }
 .sp-inhalt   { background: var(--teal-light); color: var(--teal-dark); }
 .sp-struktur { background: var(--indigo-light); color: var(--indigo); }
@@ -797,12 +802,24 @@ async function submitAI() {
   var fb = document.getElementById('feedbackBox');
   var fc = document.getElementById('feedbackContent');
   fb.classList.add('show');
-  fc.className = 'feedback-content loading';
-  fc.textContent = 'KI bewertet deinen Text ...';
-  document.getElementById('scoreRow').style.display = 'none';
+  fc.className = 'feedback-content';
 
   var typeLabel = { formell: 'formelle E-Mail', informell: 'informelle E-Mail', forum: 'Forenbeitrag' }[currentType];
   var aufgabe = currentAufgabe;
+
+  var words = text.split(/\s+/).filter(Boolean).length;
+  var paragraphs = text.split(/\n\s*\n/).filter(function(p){ return p.trim().length > 0; }).length;
+  var hasGreeting = /^(sehr geehrte|liebe[rs]?|hallo|guten tag|moin)/i.test(text);
+  var hasClosing = /(mit freundlichen grüßen|viele grüße|liebe grüße|herzliche grüße|bis bald|schöne grüße)/i.test(text);
+
+  var inhaltScore = words >= 80 ? 4 : words >= 50 ? 3 : 2;
+  var strukturScore = (paragraphs >= 2 ? 2 : 1) + (currentType === 'forum' ? 3 : (hasGreeting ? 1.5 : 0) + (hasClosing ? 1.5 : 0));
+  strukturScore = Math.min(5, Math.round(strukturScore));
+
+  document.getElementById('s-inhalt').textContent = words + ' Wörter';
+  document.getElementById('s-struktur').textContent = strukturScore + '/5 (Auto)';
+  document.getElementById('s-sprache').textContent = 'Manuell / KI';
+  document.getElementById('scoreRow').style.display = 'flex';
 
   var prompt = 'Du bist Deutschlehrer und bewertest eine Schreiben-Aufgabe auf Niveau B1 (Goethe-Zertifikat).\n\n'
     + 'Aufgabentyp: ' + typeLabel + '\n'
@@ -813,41 +830,43 @@ async function submitAI() {
     + '1. INHALT (0-5 Punkte): Wurden alle Inhaltspunkte bearbeitet?\n'
     + '2. STRUKTUR (0-5 Punkte): Ist der Text logisch aufgebaut? Gibt es Einleitung, Hauptteil, Schluss? Sind Redemittel passend verwendet?\n'
     + '3. SPRACHE (0-5 Punkte): Grammatik, Wortschatz, Satzbau, Stil (formell/informell passend?)\n\n'
-    + 'Format deiner Antwort (genau so, kein Markdown):\n'
-    + 'INHALT: [Punkte]/5 – [kurzer Kommentar, 1-2 Sätze]\n'
-    + 'STRUKTUR: [Punkte]/5 – [kurzer Kommentar, 1-2 Sätze]\n'
-    + 'SPRACHE: [Punkte]/5 – [kurzer Kommentar, 1-2 Sätze]\n'
-    + 'GESAMTEINDRUCK: [2-3 Sätze allgemeines Feedback]\n'
-    + 'VERBESSERUNG: [1-2 konkrete Verbesserungsvorschläge]';
+    + 'Gib am Ende 2 konkrete Verbesserungsvorschläge und eine korrigierte Version.';
 
-  try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    var data = await resp.json();
-    var result = data.content && data.content[0] ? data.content[0].text : 'Keine Antwort erhalten.';
-    fc.className = 'feedback-content';
-    fc.textContent = result;
+  window._lastWritingPrompt = prompt;
 
-    var inhaltMatch = result.match(/INHALT:\s*(\d)/);
-    var strukturMatch = result.match(/STRUKTUR:\s*(\d)/);
-    var spracheMatch = result.match(/SPRACHE:\s*(\d)/);
+  var checks = [];
+  checks.push((words >= 80 ? '✅' : '⚠️') + ' Wortzahl: ' + words + ' Wörter (Empfehlung Goethe B1: mindestens 80 Wörter)');
+  checks.push((paragraphs >= 2 ? '✅' : '⚠️') + ' Absätze: ' + paragraphs + ' erkannt (Einleitung, Hauptteil und Schluss klar trennen)');
+  if (currentType !== 'forum') {
+    checks.push((hasGreeting ? '✅' : '⚠️') + ' Anrede am Anfang ' + (hasGreeting ? 'vorhanden' : 'fehlt noch (z. B. Sehr geehrte … / Liebe …)'));
+    checks.push((hasClosing ? '✅' : '⚠️') + ' Grußformel am Ende ' + (hasClosing ? 'vorhanden' : 'fehlt noch (z. B. Mit freundlichen Grüßen / Viele Grüße)'));
+  }
 
-    if (inhaltMatch && strukturMatch && spracheMatch) {
-      document.getElementById('s-inhalt').textContent = inhaltMatch[1] + '/5';
-      document.getElementById('s-struktur').textContent = strukturMatch[1] + '/5';
-      document.getElementById('s-sprache').textContent = spracheMatch[1] + '/5';
-      document.getElementById('scoreRow').style.display = 'flex';
-    }
-  } catch (e) {
-    fc.className = 'feedback-content';
-    fc.textContent = 'Fehler bei der KI-Bewertung. Bitte versuche es erneut.';
+  fc.innerHTML =
+    '<div style="font-weight:700;margin-bottom:8px;color:var(--teal-dark)">📋 Automatischer Struktur-Check (' + typeLabel + ')</div>'
+    + '<ul style="margin:0 0 12px 18px;line-height:1.7">'
+    + checks.map(function(c){ return '<li>' + c + '</li>'; }).join('')
+    + '</ul>'
+    + '<div style="font-weight:700;margin-bottom:6px">Inhaltspunkte selbst abhaken:</div>'
+    + '<ul style="margin:0 0 14px 18px;line-height:1.65">'
+    + aufgabe.punkte.map(function(p){ return '<li>☐ ' + p + '</li>'; }).join('')
+    + '</ul>'
+    + '<div style="padding:10px 12px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;font-size:13px;line-height:1.6">'
+    + '<strong>Tipp für detaillierte KI-Korrektur:</strong> Auf der statischen Website ist kein direkter KI-API-Schlüssel hinterlegt. Kopiere deinen Text inkl. Bewertungs-Prompt und füge ihn in ChatGPT, Gemini oder Claude ein:'
+    + '<div style="margin-top:8px"><button type="button" id="btnCopyPrompt" style="padding:8px 14px;border:none;border-radius:8px;background:var(--teal);color:#fff;font-weight:600;font-size:13px;cursor:pointer">📋 Text + Korrektur-Prompt kopieren</button></div>'
+    + '</div>';
+
+  var cpBtn = document.getElementById('btnCopyPrompt');
+  if (cpBtn) {
+    cpBtn.onclick = function() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(window._lastWritingPrompt).then(function(){
+          cpBtn.textContent = '✅ Kopiert! Jetzt in ChatGPT / Gemini / Claude einfügen';
+        }).catch(function(){ prompt('Kopiere diesen Prompt:', window._lastWritingPrompt); });
+      } else {
+        window.prompt('Kopiere diesen Prompt:', window._lastWritingPrompt);
+      }
+    };
   }
 }
 

@@ -51,6 +51,7 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
 .lv-a{background:#e0f2fe;color:#0369a1;}
 .lv-b1{background:#dcfce7;color:#15803d;}
 .lv-b2{background:#ede9fe;color:#6d28d9;}
+.lv-c1{background:#fef3c7;color:#b45309;}
 .td-time{color:var(--muted);font-size:0.72rem;}
 .state{text-align:center;padding:50px 20px;color:var(--muted);}
 .state .ico{font-size:2.2rem;margin-bottom:10px;}
@@ -97,7 +98,7 @@ tbody td{padding:10px 14px;font-size:0.81rem;}
     <div class="fg"><label>Niveau</label>
       <select id="filterLevel" onchange="render()">
         <option value="">Alle</option><option value="A1-A2">A1–A2</option>
-        <option value="B1">B1</option><option value="B2">B2</option>
+        <option value="B1">B1</option><option value="B2">B2</option><option value="C1">C1</option>
       </select>
     </div>
     <div class="fg"><label>Von</label><input type="date" id="filterFrom" onchange="render()"></div>
@@ -187,10 +188,12 @@ function loadData(){
 function getLevel(f=''){f=String(f).toUpperCase();
   if(f.includes('A1')||f.includes('A2'))return 'A1-A2';
   if(f.includes('B1'))return 'B1';
-  if(f.includes('B2')||f.includes('C1'))return 'B2';
+  if(f.includes('C1')&&!f.includes('B2'))return 'C1';
+  if(f.includes('B2'))return 'B2';
+  if(f.includes('C1'))return 'C1';
   return '';
 }
-function getLvClass(l){return l==='A1-A2'?'lv-a':l==='B1'?'lv-b1':'lv-b2';}
+function getLvClass(l){return l==='A1-A2'?'lv-a':l==='B1'?'lv-b1':l==='C1'?'lv-c1':'lv-b2';}
 function getPct(row){const s=parseInt(row['Điểm'])||0,t=parseInt(row['Tổng câu'])||1;return Math.round(s/t*100);}
 function barColor(p){return p>=80?'#16a34a':p>=50?'#d97706':'#e53e3e';}
 function fmtDate(v){
