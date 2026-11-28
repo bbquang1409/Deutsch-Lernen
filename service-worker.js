@@ -1,10 +1,11 @@
 // Bump this number whenever you change the list below or want to force a reset.
-const CACHE = 'deutsch-lernen-v3';
+const CACHE = 'deutsch-lernen-v4';
 const ASSETS = [
   './',
   './index.html',
   './grammatik.html',
   './wortschatz.html',
+  './schreiben.html',
   './dashboard.html',
   './my-results.html',
   './manifest.json',
