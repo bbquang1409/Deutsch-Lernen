@@ -47,6 +47,7 @@ details>summary::after{content:" ▾"}
 .orow .bar{position:relative;background:#e8effc;border-radius:10px;min-height:34px;overflow:hidden;padding:7px 10px}
 .orow .bar i{position:absolute;inset:0 auto 0 0;background:#b9d0f5}.orow .bar span{position:relative}
 .orow.right .bar{outline:3px solid var(--ok)}.orow.right .bar i{background:#a8e6c9}
+.who{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 6px 30px}.who .nm{padding:2px 10px;border-radius:99px;background:var(--bad-l);color:var(--bad);font-size:.8rem;font-weight:600}
 .badge{margin-left:auto;font-size:.8rem;font-weight:700;color:var(--ok-d)}.badge.wait{color:var(--mut)}.badge.err{color:var(--bad)}.row-btns+.ctrl-now,.row-btns+p{margin-top:12px}
 .tk{display:inline-block;margin-right:5px}.tk.bad{color:var(--bad);font-weight:700;text-decoration:underline}
 .sub{padding:10px 0;border-top:2px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
@@ -167,16 +168,18 @@ function fillLibrary(){
 }
 // Prüft, für welche Lektionen die MP3 im Ordner liegt, und sortiert die Liste entsprechend.
 async function probeAudio(){
-  const ok=await Promise.all(LESSONS.map(l=>fetch(l.audio,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)));
+  const head=u=>fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+  const ok=await Promise.all(LESSONS.map(l=>head(l.audio)));
+  const ovOk=await Promise.all(LESSONS.map((l,i)=>ok[i]?head(AUDIO_BASE+'assets/audio/'+l.id+'_ueberblick.mp3'):false));
   const cur=$('lesson').value,s=$('lesson');
   const label=l=>`${l.title} · ${l.level} · ${l.units.length} Sätze`;
-  const withA=LESSONS.filter((_,i)=>ok[i]),without=LESSONS.filter((_,i)=>!ok[i]);
+  const full=LESSONS.filter((_,i)=>ok[i]&&ovOk[i]),only=LESSONS.filter((_,i)=>ok[i]&&!ovOk[i]),without=LESSONS.filter((_,i)=>!ok[i]);
   s.replaceChildren();
   const o0=el('option',null,'– Diktat wählen –');o0.value='';s.append(o0);
-  const g1=document.createElement('optgroup');g1.label=`Mit Audio (${withA.length})`;
-  withA.forEach(l=>{const o=el('option',null,label(l));o.value=l.id;g1.append(o)});s.append(g1);
-  if(without.length){const g2=document.createElement('optgroup');g2.label=`Ohne Audio – MP3 fehlt (${without.length})`;
-    without.forEach(l=>{const o=el('option',null,label(l)+' · MP3 fehlt');o.value=l.id;g2.append(o)});s.append(g2)}
+  const grp=(t,arr,sfx)=>{if(!arr.length)return;const g=document.createElement('optgroup');g.label=`${t} (${arr.length})`;arr.forEach(l=>{const o=el('option',null,label(l)+(sfx||''));o.value=l.id;g.append(o)});s.append(g)};
+  grp('Live-Diktat · mit Originalaufnahme',full);
+  grp('Nur Diktat-Datei · Überblick aus Einzelsätzen',only);
+  if(without.length)o0.textContent=`– Diktat wählen – (${without.length} ohne MP3 ausgeblendet)`;
   s.value=cur;
 }
 $('lesson').onchange=()=>{const l=LESSONS.find(x=>x.id===$('lesson').value);if(l)selectLesson(l);else clearLesson()};
@@ -333,6 +336,7 @@ function renderStats(c){
       r.append(el('span','let',LET[j]));
       const bar=el('div','bar');const fill=el('i');fill.style.width=Math.round(counts[j]/max*100)+'%';bar.append(fill,el('span',null,txt+(right?'  ✓':'')));
       r.append(bar,el('span','cnt',String(counts[j])));box.append(r);
+      if(q.a!==j){const who=sub.filter(s=>s.picks[i]===j).map(s=>s.name);if(who.length){const w=el('div','who');who.forEach(n=>w.append(el('span','nm',n)));box.append(w)}}
     });
     c.append(box);
   });
